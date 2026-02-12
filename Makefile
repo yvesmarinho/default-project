@@ -140,13 +140,15 @@ create-gitignore:
 		echo "# Environment variables" >> .gitignore; \
 		echo ".env" >> .gitignore; \
 		echo ".env.local" >> .gitignore; \
-		echo "" >> .gitignore; \		echo "# Secrets and sensitive data" >> .gitignore; 
-		echo ".secrets/" >> .gitignore; 
-		echo "*.key" >> .gitignore; 
-		echo "*.pem" >> .gitignore; 
-		echo "*.crt" >> .gitignore; 
-		echo "*.p12" >> .gitignore; 
-		echo "" >> .gitignore; 		echo "# Build outputs" >> .gitignore; \
+		echo "" >> .gitignore; \
+		echo "# Secrets and sensitive data" >> .gitignore; \
+		echo ".secrets/" >> .gitignore; \
+		echo "*.key" >> .gitignore; \
+		echo "*.pem" >> .gitignore; \
+		echo "*.crt" >> .gitignore; \
+		echo "*.p12" >> .gitignore; \
+		echo "" >> .gitignore; \
+		echo "# Build outputs" >> .gitignore; \
 		echo "dist/" >> .gitignore; \
 		echo "build/" >> .gitignore; \
 		echo "*.egg-info/" >> .gitignore; \
@@ -538,3 +540,118 @@ status:
 	@echo ""
 	@echo "$(YELLOW)Configuration Files:$(NC)"
 	@ls -1 | grep -E '(package.json|requirements.txt|Makefile|README.md|Dockerfile|docker-compose.yml)' || echo "  No config files found"
+
+##
+## ═══════════════════════════════════════════════════════════════════════
+## TEMPLATE MANAGEMENT
+## ═══════════════════════════════════════════════════════════════════════
+##
+
+## init-new-project: Initialize a new project from this template
+init-new-project:
+	@if [ -z "$(NAME)" ]; then \
+		echo "$(RED)Error: Project name required$(NC)"; \
+		echo ""; \
+		echo "Usage: make init-new-project NAME=my-project"; \
+		echo ""; \
+		echo "The name must:"; \
+		echo "  - Use only lowercase letters (a-z)"; \
+		echo "  - Use numbers (0-9)"; \
+		echo "  - Use hyphens (-) to separate words"; \
+		echo ""; \
+		echo "Examples:"; \
+		echo "  make init-new-project NAME=my-app"; \
+		echo "  make init-new-project NAME=api-v2"; \
+		echo "  make init-new-project NAME=data-processor-2024"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)🚀 Initializing new project: $(NAME)$(NC)"
+	@./scripts/init-new-project.sh $(NAME)
+
+## setup-shared-configs: Setup shared configuration repository
+setup-shared-configs:
+	@echo "$(BLUE)📦 Setting up shared configuration repository...$(NC)"
+	@if [ -d "$$HOME/Documentos/DevOps/.copilot-shared" ]; then \
+		echo "$(YELLOW)⚠ Shared configs already exist at ~/Documentos/DevOps/.copilot-shared$(NC)"; \
+		read -p "Overwrite? (y/N): " confirm; \
+		if [ "$$confirm" != "y" ] && [ "$$confirm" != "Y" ]; then \
+			echo "$(YELLOW)Cancelled$(NC)"; \
+			exit 0; \
+		fi; \
+	fi
+	@mkdir -p "$$HOME/Documentos/DevOps/.copilot-shared"/{rules,scripts,templates,docs}
+	@echo "$(GREEN)✅ Shared directory structure created$(NC)"
+	@echo ""
+	@echo "$(BLUE)Copying configuration files...$(NC)"
+	@cp .copilot-rules.md "$$HOME/Documentos/DevOps/.copilot-shared/rules/" 2>/dev/null || true
+	@cp .copilot-git-rules.md "$$HOME/Documentos/DevOps/.copilot-shared/rules/" 2>/dev/null || true
+	@cp .copilot-strict-enforcement.md "$$HOME/Documentos/DevOps/.copilot-shared/rules/" 2>/dev/null || true
+	@cp .copilot-strict-rules.md "$$HOME/Documentos/DevOps/.copilot-shared/rules/" 2>/dev/null || true
+	@cp .copilot-file-rules.sh "$$HOME/Documentos/DevOps/.copilot-shared/rules/" 2>/dev/null || true
+	@echo "$(GREEN)✅ Configuration files copied$(NC)"
+	@echo ""
+	@echo "$(BLUE)Copying scripts...$(NC)"
+	@cp scripts/setup-project-links.sh "$$HOME/Documentos/DevOps/.copilot-shared/scripts/" 2>/dev/null || true
+	@cp scripts/check-project-links.sh "$$HOME/Documentos/DevOps/.copilot-shared/scripts/" 2>/dev/null || true
+	@chmod +x "$$HOME/Documentos/DevOps/.copilot-shared/scripts"/*.sh
+	@echo "$(GREEN)✅ Scripts copied and made executable$(NC)"
+	@echo ""
+	@echo "$(BLUE)Copying documentation...$(NC)"
+	@if [ -f "docs/SHARED_CONFIGS_SOLUTION.md" ]; then \
+		cp docs/SHARED_CONFIGS_SOLUTION.md "$$HOME/Documentos/DevOps/.copilot-shared/docs/" 2>/dev/null || true; \
+		echo "$(GREEN)✅ Documentation copied$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠ SHARED_CONFIGS_SOLUTION.md not found (may already be moved)$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(BLUE)Initializing Git repository...$(NC)"
+	@cd "$$HOME/Documentos/DevOps/.copilot-shared" && \
+		if [ ! -d .git ]; then \
+			git init && \
+			git add . && \
+			git commit -m "feat: Initial shared configs"; \
+			echo "$(GREEN)✅ Git repository initialized$(NC)"; \
+		else \
+			echo "$(YELLOW)⚠ Git already initialized$(NC)"; \
+		fi
+	@echo ""
+	@echo "$(GREEN)🎉 Shared configuration repository ready!$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Location: $$HOME/Documentos/DevOps/.copilot-shared/$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Structure created:$(NC)"
+	@echo "  rules/     - Copilot configuration files"
+	@echo "  scripts/   - Automation scripts"
+	@echo "  templates/ - Project templates"
+	@echo "  docs/      - Shared documentation"
+	@echo ""
+	@echo "$(YELLOW)Suggested aliases (add to ~/.zshrc or ~/.bashrc):$(NC)"
+	@echo '  alias copilot-setup="$$HOME/Documentos/DevOps/.copilot-shared/scripts/setup-project-links.sh"'
+	@echo '  alias copilot-check="$$HOME/Documentos/DevOps/.copilot-shared/scripts/check-project-links.sh"'
+	@echo ""
+	@echo "$(YELLOW)Next steps:$(NC)"
+	@echo "  1. Setup links for this project:"
+	@echo "     make setup-project-links"
+	@echo "  2. Or create a new project:"
+	@echo "     make init-new-project NAME=my-project"
+
+## setup-project-links: Setup symlinks to shared configs for this project
+setup-project-links:
+	@echo "$(BLUE)🔗 Setting up symlinks to shared configs...$(NC)"
+	@if [ ! -d "$$HOME/Documentos/DevOps/.copilot-shared" ]; then \
+		echo "$(RED)Error: Shared configs not found$(NC)"; \
+		echo ""; \
+		echo "Run first: make setup-shared-configs"; \
+		exit 1; \
+	fi
+	@"$$HOME/Documentos/DevOps/.copilot-shared/scripts/setup-project-links.sh" .
+	@echo "$(GREEN)✅ Symlinks configured$(NC)"
+
+## check-project-links: Verify symlinks status
+check-project-links:
+	@echo "$(BLUE)🔍 Checking symlinks status...$(NC)"
+	@if [ ! -d "$$HOME/Documentos/DevOps/.copilot-shared" ]; then \
+		echo "$(RED)Error: Shared configs not found$(NC)"; \
+		exit 1; \
+	fi
+	@"$$HOME/Documentos/DevOps/.copilot-shared/scripts/check-project-links.sh" .
