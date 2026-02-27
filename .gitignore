@@ -66,6 +66,11 @@ dmypy.json
 
 # IDEs
 .vscode/
+!.vscode/settings.json
+!.vscode/mcp.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea/
 *.swp
 *.swo

@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-01-28
+**Last Updated**: 2026-02-27 (Sessão encerrada)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -8,7 +8,46 @@
 
 ## 🎯 Current Sprint
 
+### 🚀 Próximas Ações — Implementação Domain Profiles (Sessão seguinte)
+
+> Todas as 19 decisões de design estão resolvidas. Ver [`docs/copilot/DOMAIN-PROFILES-DECISIONS.md`](copilot/DOMAIN-PROFILES-DECISIONS.md)
+
+- [ ] **[IMP-01]** Criar `scripts/manager.py` — TUI Python com fluxo condicional, absorvendo `init-new-project.sh`, `setup-project-links.sh`, `check-project-links.sh`
+- [ ] **[IMP-02]** Criar `.github/prompts/session-start.prompt.md` — ritual de início de sessão genérico
+- [ ] **[IMP-03]** Criar `.github/prompts/session-start-first.prompt.md` — ritual de primeira vez
+- [ ] **[IMP-04]** Criar `.github/prompts/session-end.prompt.md` — ritual de encerramento com `git push`
+- [ ] **[IMP-05]** Criar `.github/prompts/domain/devops-programming.prompt.md` — Domain Profile programação
+- [ ] **[IMP-06]** Criar `.github/prompts/domain/devops-infrastructure.prompt.md` — Domain Profile infra
+- [ ] **[IMP-07]** Criar `.github/prompts/domain/devops-analysis.prompt.md` — Domain Profile análise
+- [ ] **[IMP-08]** Atualizar `Makefile` — `make init` → `python scripts/manager.py`
+- [ ] **[IMP-09]** Criar template `.vscode/.copilot-rules-[projeto].md` gerado pelo `manager.py`
+- [ ] **[IMP-10]** Criar documentação humana dos 3 domínios em `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
+
+---
+
 ### ✅ Completed Recently
+
+#### 2026-02-27 (Sessão encerrada)
+- [x] Iniciar sessão MCP (2026-02-27)
+- [x] Recuperar dados da sessão anterior (2026-01-28)
+- [x] Carregar regras Copilot na memória (.copilot-strict-rules, .copilot-strict-enforcement, .copilot-rules)
+- [x] Scan de credenciais/arquivos sensíveis (nenhum encontrado)
+- [x] Criar `.secrets/` directory com README de segurança
+- [x] Verificar `.secrets/` no `.gitignore` (confirmado)
+- [x] Remover `temp.log` da raiz (arquivo órfão)
+- [x] Organizar raiz do projeto
+- [x] Criar `.vscode/mcp.json` com configuração MCP (memory + sequential-thinking ativos)
+- [x] Criar `docs/SESSIONS/2026-02-27/SESSION_RECOVERY_2026-02-27.md`
+- [x] Criar `docs/SESSIONS/2026-02-27/TODAY_ACTIVITIES_2026-02-27.md`
+- [x] Debate arquitetural: Domain Profiles adaptáveis para DevOps
+- [x] Criar `docs/copilot/DOMAIN-PROFILES-STRATEGY.md` — estratégia completa 3 camadas
+- [x] Criar `docs/copilot/DOMAIN-PROFILES-DECISIONS.md` — 10 decisões iniciais
+- [x] Analisar respostas D-01 a D-10, identificar D-11 a D-15
+- [x] Analisar respostas D-11 a D-15, identificar D-16 a D-18
+- [x] Analisar respostas D-16 a D-18, identificar D-19
+- [x] D-19 respondida — **todas as 19 decisões de design resolvidas** 🟢
+- [x] Atualizar INDEX.md, TODO.md, TODAY_ACTIVITIES.md, DECISIONS.md
+- [x] Criar sessão de encerramento (DAILY_ACTIVITIES, SESSION_REPORT, FINAL_STATUS)
 
 #### 2026-01-27
 - [x] Generate comprehensive README.md
@@ -186,11 +225,11 @@
 ## 🎯 Next Session Goals
 
 ### Immediate (Next Session)
-1. Test all Makefile commands
-2. Add Python code examples
-3. Add TypeScript code examples
-4. Implement CI/CD workflows
-5. Create unit test examples
+1. **[IMP-01]** Implementar `scripts/manager.py` — TUI condicional em Python
+2. **[IMP-02–04]** Criar os 3 prompt files de sessão (session-start, session-start-first, session-end)
+3. **[IMP-05–07]** Criar os 3 Domain Profile files (programming, infrastructure, analysis)
+4. **[IMP-08]** Atualizar Makefile (`make init` → `manager.py`)
+5. **[IMP-09]** Criar template `.copilot-rules-[projeto].md`
 
 ### Short-term (This Week)
 1. Complete code examples for all patterns

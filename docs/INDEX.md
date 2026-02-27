@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-01-28 (Template Conversion Complete)
+**Last Updated**: 2026-02-27 (Sessão encerrada — Domain Profiles 19/19 decisões ✅)
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.0.0
-**Current Session**: 2026-01-28 - Template Features Added
+**Current Session**: 2026-02-27 — MCP Config + Security + Root Org + Domain Profiles Strategy (CLOSED)
 
 ---
 
@@ -63,12 +63,14 @@ a-default-project/
 │   ├── MAKEFILE.md               # Makefile documentation
 │   ├── SHARED_CONFIGS_SOLUTION.md # Shared configs architecture
 │   └── SESSIONS/                 # Session records
-│       ├── 2026-01-27/          # Previous session
-│       └── 2026-01-28/          # Current session
+│       ├── 2026-01-27/          # Foundation session
+│       ├── 2026-01-28/          # Testing session
+│       └── 2026-02-27/          # Domain Profiles strategy session (encerrada)
 ├── scripts/                        # Automation scripts
-│   ├── init-new-project.sh       # Template initialization
-│   ├── setup-project-links.sh    # Symlink setup
-│   └── check-project-links.sh    # Link verification
+│   ├── init-new-project.sh       # ⚠ será absorvido pelo manager.py (IMP-01)
+│   ├── setup-project-links.sh    # ⚠ será absorvido pelo manager.py (IMP-01)
+│   ├── check-project-links.sh    # ⚠ será absorvido pelo manager.py (IMP-01)
+│   └── manage.py                 # TUI Python (versão inicial — customização pendente)
 ├── src/                            # Source code
 ├── tests/                          # Test suites
 ├── Makefile                        # Build automation (40+ commands)
@@ -100,6 +102,17 @@ a-default-project/
   - Troubleshooting
   - Checklist
 
+### Copilot / Speckit Strategy
+- **[docs/copilot/DOMAIN-PROFILES-STRATEGY.md](copilot/DOMAIN-PROFILES-STRATEGY.md)** - ⭐ Templates adaptáveis por domínio DevOps
+  - Arquitetura de três camadas (Foundation / Domain Profile / Context Injection)
+  - Diferença entre os três modos: programação, infraestrutura, análise
+  - Como o Speckit + MCP amplifica cada modo
+  - Estrutura de arquivos proposta
+
+- **[docs/copilot/DOMAIN-PROFILES-DECISIONS.md](copilot/DOMAIN-PROFILES-DECISIONS.md)** - Questões e decisões
+  - 🟢 **19 decisões completamente resolvidas (D-01 a D-19)**
+  - Implementação mapeada em IMP-01 a IMP-10 no TODO.md
+
 ### Technical Documentation
 - **[docs/MAKEFILE.md](MAKEFILE.md)** - Complete Makefile guide
   - All commands reference (40+ commands)
@@ -127,6 +140,13 @@ a-default-project/
   - TODAY_ACTIVITIES - Detailed timeline
   - Makefile tests (11 commands, 100% success)
 
+- **[docs/SESSIONS/2026-02-27/](SESSIONS/2026-02-27/)** - Sessão: Domain Profiles Strategy (encerrada)
+  - [SESSION_RECOVERY](SESSIONS/2026-02-27/SESSION_RECOVERY_2026-02-27.md) — Recuperação de contexto e regras
+  - [TODAY_ACTIVITIES](SESSIONS/2026-02-27/TODAY_ACTIVITIES_2026-02-27.md) — Atividades do início
+  - [DAILY_ACTIVITIES](SESSIONS/2026-02-27/DAILY_ACTIVITIES_2026-02-27.md) — Log detalhado completo
+  - [SESSION_REPORT](SESSIONS/2026-02-27/SESSION_REPORT_2026-02-27.md) — Relatório e artefatos
+  - [FINAL_STATUS](SESSIONS/2026-02-27/FINAL_STATUS_2026-02-27.md) — Status final 🏁
+
 ---
 
 ## 🛠️ Core Files
@@ -134,9 +154,10 @@ a-default-project/
 ### Template Scripts
 | File | Purpose | Status |
 |------|---------|--------|
-| `scripts/init-new-project.sh` | Initialize new project from template | ✅ Complete |
-| `scripts/setup-project-links.sh` | Setup symlinks to shared configs | ✅ Complete |
-| `scripts/check-project-links.sh` | Verify symlink integrity | ✅ Complete |
+| `scripts/manage.py` | TUI Python interativo — ponto único de entrada (IMP-01) | 🟡 Versão inicial |
+| `scripts/init-new-project.sh` | Initialize new project from template | ⚠ Será absorvido (IMP-01) |
+| `scripts/setup-project-links.sh` | Setup symlinks to shared configs | ⚠ Será absorvido (IMP-01) |
+| `scripts/check-project-links.sh` | Verify symlink integrity | ⚠ Será absorvido (IMP-01) |
 
 ### Automation
 | File | Purpose | Status |
@@ -355,6 +376,15 @@ make dev
 
 ## 📅 Version History
 
+### Version 1.1.0 (2026-02-27)
+- ✅ MCP configurado (`.vscode/mcp.json`) — `memory` + `sequential-thinking`
+- ✅ `.secrets/` directory criado com guia de segurança
+- ✅ `.gitignore` atualizado com exceções `.vscode/`
+- ✅ Arquitetura Domain Profiles definida (estratégia 3 camadas)
+- ✅ 19 decisões de design arquitetural resolvidas
+- ✅ `scripts/manage.py` adicionado (versão inicial TUI Python)
+- ✅ `docs/copilot/` — Strategy + Decisions documentados
+
 ### Version 1.0.0 (2026-01-27)
 - ✅ Initial project structure
 - ✅ Complete README documentation
@@ -388,17 +418,19 @@ make dev
 - ✅ Project template complete
 - ✅ Documentation comprehensive
 - ✅ Security implemented
-- ✅ Ready for use
+- ✅ MCP configured
+- ✅ Domain Profiles design — 19 decisões concluídas
+- 🟡 Domain Profiles implementation — pendente (IMP-01 a IMP-10)
 
 ### Next Steps
-1. Test Makefile commands
-2. Add more language examples
-3. Implement CI/CD workflows
-4. Add code examples
-5. Create video tutorials
+1. Implementar `scripts/manager.py` (IMP-01)
+2. Criar 3 session prompt files (IMP-02/03/04)
+3. Criar 3 Domain Profile files (IMP-05/06/07)
+4. Atualizar Makefile `make init` (IMP-08)
+5. Criar template `.copilot-rules-[projeto].md` (IMP-09)
 
 ---
 
-**Last Modified**: 2026-01-27
+**Last Modified**: 2026-02-27
 **Maintained By**: Vya-Jobs Team
 **License**: MIT
