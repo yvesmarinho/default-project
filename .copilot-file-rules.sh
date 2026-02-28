@@ -1,1 +1,0 @@
-../../.copilot-shared/scripts/.copilot-file-rules.sh

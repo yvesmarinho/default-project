@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-02-27 (Sessão encerrada — Domain Profiles 19/19 decisões ✅)
+**Last Updated**: 2026-02-28 ✅ Encerrado
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.0.0
-**Current Session**: 2026-02-27 — MCP Config + Security + Root Org + Domain Profiles Strategy (CLOSED)
+**Last Session**: 2026-02-28 — IMP-01 Debate + IMP-13 Consolidação Copilot Files (ENCERRADA)
 
 ---
 
@@ -40,11 +40,7 @@ make init-new-project NAME=my-new-project
 
 ```
 a-default-project/
-├── .copilot-rules.md               # Copilot rules (symlink to shared)
-├── .copilot-git-rules.md          # Git rules (symlink to shared)
-├── .copilot-strict-enforcement.md # Enforcement (symlink to shared)
-├── .copilot-strict-rules.md       # Strict rules (symlink to shared)
-├── .copilot-file-rules.sh         # File rules (symlink to shared)
+├── .copilot-rules.md               # Copilot rules — consolidado (7 seções, ~193 linhas)
 ├── .git/                           # Git repository
 ├── .github/                        # GitHub configurations
 │   ├── workflows/                 # CI/CD pipelines
@@ -65,12 +61,14 @@ a-default-project/
 │   └── SESSIONS/                 # Session records
 │       ├── 2026-01-27/          # Foundation session
 │       ├── 2026-01-28/          # Testing session
-│       └── 2026-02-27/          # Domain Profiles strategy session (encerrada)
+│       ├── 2026-02-27/          # Domain Profiles — 19 decisões de design (encerrada)
+│       └── 2026-02-28/          # IMP-01 debate + IMP-13 consolidação copilot files (encerrada)
 ├── scripts/                        # Automation scripts
-│   ├── init-new-project.sh       # ⚠ será absorvido pelo manager.py (IMP-01)
-│   ├── setup-project-links.sh    # ⚠ será absorvido pelo manager.py (IMP-01)
-│   ├── check-project-links.sh    # ⚠ será absorvido pelo manager.py (IMP-01)
-│   └── manage.py                 # TUI Python (versão inicial — customização pendente)
+│   ├── init-new-project.sh       # ⚠ será absorvido pelo scaffold.py (IMP-01)
+│   ├── setup-project-links.sh    # ⚠ será absorvido pelo scaffold.py (IMP-01)
+│   ├── check-project-links.sh    # ⚠ será absorvido pelo scaffold.py (IMP-01)
+│   ├── manage.py                 # TUI Python (mantido temporariamente)
+│   └── lib/                      # Módulos de scaffold.py (IMP-01): config, ui, project, links, git, templates
 ├── src/                            # Source code
 ├── tests/                          # Test suites
 ├── Makefile                        # Build automation (40+ commands)
