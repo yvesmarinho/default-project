@@ -91,9 +91,33 @@ default-project/                 # Template repository
 └── default-project.code-workspace
 ```
 
-### After Initialization (`make init`)
+### After Initialization (`uv run scripts/scaffold.py`)
 
-After running the initialization script or `make init`, the project will have:
+Após executar `uv run scripts/scaffold.py --new`, o novo projeto terá:
+
+```
+my-awesome-project/             # Your new project
+├── .copilot-rules.md          # Symlink para shared configs
+├── .copilot-rules-[nome].md   # Regras específicas geradas pelo scaffold
+├── .github/
+│   └── prompts/               # Symlink para shared prompts
+├── .git/                      # Fresh Git repository
+├── .gitignore
+├── .secrets/                  # Secrets directory (git-ignored)
+│   └── README.md
+├── .vscode/
+│   ├── mcp.json               # MCP servers por domínio
+│   ├── settings.json          # Settings por linguagem
+│   └── extensions.json        # Extensões por domínio+linguagem
+├── docs/
+│   ├── INDEX.md
+│   ├── TODO.md
+│   └── SESSIONS/
+├── src/
+├── tests/
+├── Makefile
+└── README.md
+```
 
 ```
 my-awesome-project/             # Your new project
@@ -261,27 +285,25 @@ class IUserRepository(ABC):
 
 ## 🚀 Quick Start
 
-### Option 1: Automatic Initialization (Recommended)
+### Inicializar novo projeto (Recomendado)
 
 ```bash
-# 1. Clone this template
-git clone <template-url> my-new-project
-cd my-new-project
+# 1. Clone este template
+git clone https://github.com/yvesmarinho/default-project.git meu-projeto
+cd meu-projeto
 
-# 2. Run the initialization script
-./scripts/init-new-project.sh my-new-project
+# 2. Executar o scaffold (interativo)
+uv run scripts/scaffold.py
 
-# 3. Setup your environment
-cp .env.example .env
-code .env  # Edit configuration
+# 3. Ou modo não-interativo (CI/CD)
+uv run scripts/scaffold.py --new \
+  --name meu-projeto \
+  --domain programming \
+  --language python \
+  --repo https://github.com/org/meu-projeto
 
-# 4. Choose your language and install dependencies
-make setup-python  # For Python
-# OR
-make setup-node    # For Node.js
-
-# 5. Start coding!
-make dev
+# 4. Verificar links e estrutura
+uv run scripts/scaffold.py --check
 ```
 
 ### Option 2: Using Makefile
@@ -589,6 +611,34 @@ npm run test:coverage
 - **ESLint/Pylint**: Code linting
 - **Husky**: Git hooks for pre-commit checks
 - **Commitlint**: Commit message validation
+
+## 📅 Version History
+
+### v1.3.0 (2026-03-01)
+- ✅ `scripts/scaffold.py` implementado — PEP 723, `uv run`, 9 módulos em `scripts/lib/`
+- ✅ `make init` → redirect-only para `scaffold.py` (D-21: zero duplicidade)
+- ✅ Domain Profiles: `devops-programming`, `devops-infrastructure`, `devops-analysis`
+- ✅ Rituais de sessão: `session-start`, `session-start-first`, `session-end`
+- ✅ Geração automática `.vscode/mcp.json`, `settings.json`, `extensions.json` por domínio+linguagem
+- ✅ `.copilot-rules.md` atualizado (v2026-03-01)
+
+### v1.2.0 (2026-02-28)
+- ✅ IMP-13: 5 arquivos `.copilot-*` (1910 linhas) → 1 arquivo `.copilot-rules.md` (193 linhas, 7 seções)
+- ✅ `docs/PROJECT-KNOWLEDGE-MAP.md` criado (mapa de funcionalidades v1.1)
+- ✅ `scripts/scaffold.py` especificado (SPEC, USER-STORIES, DEBATE)
+
+### v1.1.0 (2026-02-27)
+- ✅ MCP configurado (`memory` + `sequential-thinking`)
+- ✅ Arquitetura Domain Profiles definida (estratégia 3 camadas, 19 decisões D-01–D-19)
+- ✅ `docs/copilot/` — Strategy + Decisions documentados
+- ✅ `scripts/manage.py` adicionado (TUI Python inicial)
+
+### v1.0.0 (2026-01-27)
+- ✅ Estrutura inicial do projeto template
+- ✅ Makefile (40+ comandos)
+- ✅ Documentação completa (README, INDEX, MAKEFILE.md)
+- ✅ `.secrets/` implementado e protegido
+- ✅ Suporte multi-linguagem (Python, TypeScript, Go)
 
 ## 🤝 Contributing
 

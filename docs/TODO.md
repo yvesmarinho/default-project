@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-02-28 ✅ Encerrado
+**Last Updated**: 2026-03-01 — IMP-01∙02∙03∙04∙05∙06∙07∙08 ✅ Concluídos
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -12,24 +12,26 @@
 
 > Todas as 19 decisões de design estão resolvidas. Ver [`docs/copilot/DOMAIN-PROFILES-DECISIONS.md`](copilot/DOMAIN-PROFILES-DECISIONS.md)
 
-- [ ] **[IMP-01]** Criar `scripts/scaffold.py` — Python interativo com fluxo condicional, absorvendo `init-new-project.sh`, `setup-project-links.sh`, `check-project-links.sh`
+- [x] **[IMP-01]** ✅ **CONCLUÍDO 2026-03-01** — Criar `scripts/scaffold.py` — Python interativo com fluxo condicional, absorvendo `init-new-project.sh`, `setup-project-links.sh`, `check-project-links.sh`
   - [x] Debate de funcionalidades gerado → `docs/SESSIONS/2026-02-28/IMP-01-DEBATE.md`
   - [x] Spec técnica gerada → `docs/SESSIONS/2026-02-28/IMP-01-SPEC.md`
   - [x] User Stories geradas → `docs/SESSIONS/2026-02-28/IMP-01-USER-STORIES.md`
-  - [ ] Implementar `scripts/lib/config.py`
-  - [ ] Implementar `scripts/lib/ui.py`
-  - [ ] Implementar `scripts/lib/project.py`
-  - [ ] Implementar `scripts/lib/links.py`
-  - [ ] Implementar `scripts/lib/git.py`
-  - [ ] Implementar `scripts/lib/templates.py`
-  - [ ] Implementar `scripts/scaffold.py` como entry point
-- [ ] **[IMP-02]** Criar `.github/prompts/session-start.prompt.md` — ritual de início de sessão genérico
-- [ ] **[IMP-03]** Criar `.github/prompts/session-start-first.prompt.md` — ritual de primeira vez
-- [ ] **[IMP-04]** Criar `.github/prompts/session-end.prompt.md` — ritual de encerramento com `git push`
-- [ ] **[IMP-05]** Criar `.github/prompts/domain/devops-programming.prompt.md` — Domain Profile programação
-- [ ] **[IMP-06]** Criar `.github/prompts/domain/devops-infrastructure.prompt.md` — Domain Profile infra
-- [ ] **[IMP-07]** Criar `.github/prompts/domain/devops-analysis.prompt.md` — Domain Profile análise
-- [ ] **[IMP-08]** Redefinir `make init` no `Makefile` — de executor para **redirect** para `uv run scripts/scaffold.py` (sem duplicar lógica)
+  - [x] Implementar `scripts/lib/__init__.py`
+  - [x] Implementar `scripts/lib/config.py`
+  - [x] Implementar `scripts/lib/ui.py`
+  - [x] Implementar `scripts/lib/project.py`
+  - [x] Implementar `scripts/lib/links.py`
+  - [x] Implementar `scripts/lib/git.py`
+  - [x] Implementar `scripts/lib/templates.py`
+  - [x] Implementar `scripts/lib/vscode.py`
+  - [x] Implementar `scripts/scaffold.py` como entry point
+- [x] **[IMP-02]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/session-start.prompt.md` — ritual de início de sessão genérico
+- [x] **[IMP-03]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/session-start-first.prompt.md` — ritual de primeira vez
+- [x] **[IMP-04]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/session-end.prompt.md` — ritual de encerramento com `git push`
+- [x] **[IMP-05]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/domain/devops-programming.prompt.md` — Domain Profile programação
+- [x] **[IMP-06]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/domain/devops-infrastructure.prompt.md` — Domain Profile infra
+- [x] **[IMP-07]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/domain/devops-analysis.prompt.md` — Domain Profile análise
+- [x] **[IMP-08]** ✅ **CONCLUÍDO 2026-03-01** — Redefinir `make init` no `Makefile` — de executor para **redirect** para `uv run scripts/scaffold.py` (sem duplicar lógica)
 - [ ] **[IMP-09]** Criar template `.copilot-rules-[projeto].md` gerado pelo `scaffold.py` — específico por projeto
 - [ ] **[IMP-10]** Criar documentação humana dos 3 domínios em `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
 - [x] **[IMP-11]** ~~Criar `.copilot-strict-rules.md`~~ → **CONCLUÍDO em IMP-13**: arquivo consolidado em `.copilot-rules.md`
@@ -40,13 +42,32 @@
   - [x] Eliminar `.copilot-strict-enforcement.md` (migrar REGRA 0.A e REGRA 0.B para rules.md)
   - [x] Eliminar `.copilot-file-rules.sh` (100% duplicado)
   - [x] Reduzir `.copilot-git-rules.md` para seção em `rules.md`
-  - [ ] Atualizar `SHARED_COPILOT_FILES` em `lib/config.py` para lista de 1 item (executar quando IMP-01 estiver sendo implementado)
+  - [x] Atualizar `SHARED_COPILOT_FILES` em `lib/config.py` para lista de 1 item ✅ (pós-IMP-13: apenas `.copilot-rules.md`)
 
 ---
 
 ### ✅ Completed Recently
 
-#### 2026-02-28 (Sessão em andamento)
+#### 2026-03-01 (Sessão atual)
+- [x] Iniciar sessão MCP (2026-03-01)
+- [x] Recuperar dados da sessão anterior (2026-02-28)
+- [x] Carregar regras Copilot na memória (`.copilot-rules.md` ativo — único arquivo desde IMP-13)
+- [x] Scan de credenciais/arquivos sensíveis → 🟢 LIMPO
+- [x] Verificar `.secrets/` no `.gitignore` (confirmado)
+- [x] Verificar organização da raiz (limpa — nenhum arquivo solto)
+- [x] Criar `docs/SESSIONS/2026-03-01/SESSION_RECOVERY_2026-03-01.md`
+- [x] Criar `docs/SESSIONS/2026-03-01/DAILY_ACTIVITIES_2026-03-01.md`
+- [x] Atualizar `docs/TODO.md` e `docs/INDEX.md`
+- [x] **[IMP-01]** ✅ Implementar `scripts/scaffold.py` + 8 módulos em `scripts/lib/`
+- [x] **[IMP-02]** ✅ Criar `.github/prompts/session-start.prompt.md`
+- [x] **[IMP-03]** ✅ Criar `.github/prompts/session-start-first.prompt.md`
+- [x] **[IMP-04]** ✅ Criar `.github/prompts/session-end.prompt.md`
+- [x] **[IMP-05]** ✅ Criar `.github/prompts/domain/devops-programming.prompt.md`
+- [x] **[IMP-06]** ✅ Criar `.github/prompts/domain/devops-infrastructure.prompt.md`
+- [x] **[IMP-07]** ✅ Criar `.github/prompts/domain/devops-analysis.prompt.md`
+- [x] **[IMP-08]** ✅ Redefinir `make init` → redirect para `uv run scripts/scaffold.py`
+
+#### 2026-02-28 (Sessão encerrada)
 - [x] Iniciar sessão MCP (2026-02-28)
 - [x] Recuperar dados da sessão anterior (2026-02-27)
 - [x] Carregar regras Copilot na memória (`.copilot-rules.md` ativo; strict-rules/enforcement não encontrados)

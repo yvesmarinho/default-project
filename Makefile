@@ -25,17 +25,16 @@ help:
 	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/^## /  /' | awk -F: '{printf "  $(YELLOW)%-20s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 
-## init: Initialize complete project structure (recommended for new projects)
+## init: [DEPRECATED] — use: uv run scripts/scaffold.py
 init:
-	@echo "$(BLUE)🚀 Initializing Enterprise Project Structure...$(NC)"
-	@$(MAKE) structure
-	@$(MAKE) create-base-files
-	@echo "$(GREEN)✅ Project structure created successfully!$(NC)"
 	@echo ""
-	@echo "$(YELLOW)Next steps:$(NC)"
-	@echo "  1. Run 'make setup-python' or 'make setup-node' to configure your language"
-	@echo "  2. Run 'make install-deps' to install dependencies"
-	@echo "  3. Run 'make dev' to start development"
+	@echo "  ⚠️  Para criar/configurar o projeto, use diretamente:"
+	@echo "      uv run scripts/scaffold.py"
+	@echo "      python scripts/scaffold.py"
+	@echo ""
+	@echo "  O scaffold.py é o dono exclusivo da lógica de scaffolding."
+	@echo "  O Makefile é responsável por: build, test, lint, CI/CD."
+	@echo ""
 
 ## structure: Create complete directory structure
 structure: dirs github specify docs src tests scripts config docker

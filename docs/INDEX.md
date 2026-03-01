@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-02-28 ✅ Encerrado
+**Last Updated**: 2026-03-01 🟢 Em andamento
 **Project Status**: ✅ Production Ready Template
-**Version**: 1.0.0
-**Last Session**: 2026-02-28 — IMP-01 Debate + IMP-13 Consolidação Copilot Files (ENCERRADA)
+**Version**: 1.3.0
+**Last Session**: 2026-03-01 — IMP-01/02/03/04/05/06/07/08 ✅ Concluídos
 
 ---
 
@@ -57,6 +57,7 @@ a-default-project/
 │   ├── TODAY_ACTIVITIES.md       # Daily activities
 │   ├── TEMPLATE_USAGE.md         # Template usage guide
 │   ├── MAKEFILE.md               # Makefile documentation
+│   ├── PROJECT-KNOWLEDGE-MAP.md  # Mapa de conhecimento: funcionalidades, menus, estruturas
 │   ├── SHARED_CONFIGS_SOLUTION.md # Shared configs architecture
 │   └── SESSIONS/                 # Session records
 │       ├── 2026-01-27/          # Foundation session
@@ -64,11 +65,12 @@ a-default-project/
 │       ├── 2026-02-27/          # Domain Profiles — 19 decisões de design (encerrada)
 │       └── 2026-02-28/          # IMP-01 debate + IMP-13 consolidação copilot files (encerrada)
 ├── scripts/                        # Automation scripts
-│   ├── init-new-project.sh       # ⚠ será absorvido pelo scaffold.py (IMP-01)
-│   ├── setup-project-links.sh    # ⚠ será absorvido pelo scaffold.py (IMP-01)
-│   ├── check-project-links.sh    # ⚠ será absorvido pelo scaffold.py (IMP-01)
-│   ├── manage.py                 # TUI Python (mantido temporariamente)
-│   └── lib/                      # Módulos de scaffold.py (IMP-01): config, ui, project, links, git, templates
+│   ├── scaffold.py               # ✅ CRIADO 2026-03-01 — PEP 723, uv run, entry point
+│   ├── lib/                      # Módulos: config, ui, project, links, git, templates, vscode
+│   ├── init-new-project.sh       # ⚠ Legado (absorvido pelo scaffold.py)
+│   ├── setup-project-links.sh    # ⚠ Legado
+│   ├── check-project-links.sh    # ⚠ Legado
+│   └── manage.py                 # TUI Python (mantido temporariamente)
 ├── src/                            # Source code
 ├── tests/                          # Test suites
 ├── Makefile                        # Build automation (40+ commands)
@@ -152,10 +154,28 @@ a-default-project/
 ### Template Scripts
 | File | Purpose | Status |
 |------|---------|--------|
-| `scripts/manage.py` | TUI Python interativo — ponto único de entrada (IMP-01) | 🟡 Versão inicial |
-| `scripts/init-new-project.sh` | Initialize new project from template | ⚠ Será absorvido (IMP-01) |
-| `scripts/setup-project-links.sh` | Setup symlinks to shared configs | ⚠ Será absorvido (IMP-01) |
-| `scripts/check-project-links.sh` | Verify symlink integrity | ⚠ Será absorvido (IMP-01) |
+| `scripts/scaffold.py` | ✅ **CRIADO** — PEP 723, uv run, entry point principal | ✅ v1.0.0 |
+| `scripts/lib/config.py` | `ProjectConfig` dataclass, constantes | ✅ Criado |
+| `scripts/lib/ui.py` | Prompts Rich, menus interativos | ✅ Criado |
+| `scripts/lib/project.py` | Cria estrutura: 13 pastas + 11 arquivos | ✅ Criado |
+| `scripts/lib/links.py` | Symlinks relativos, verificação de status | ✅ Criado |
+| `scripts/lib/git.py` | git init + remote add | ✅ Criado |
+| `scripts/lib/templates.py` | Gera `.copilot-rules-[projeto].md` | ✅ Criado |
+| `scripts/lib/vscode.py` | Gera `mcp.json`, `settings.json`, `extensions.json` | ✅ Criado |
+| `scripts/manage.py` | TUI Python | 🟡 Legado |
+| `scripts/init-new-project.sh` | Initialize new project | ⚠ Legado (absorvido) |
+| `scripts/setup-project-links.sh` | Setup symlinks | ⚠ Legado (absorvido) |
+| `scripts/check-project-links.sh` | Verify symlink integrity | ⚠ Legado (absorvido) |
+
+### Prompt Files (GitHub Copilot)
+| File | Purpose | Status |
+|------|---------|--------|
+| `.github/prompts/session-start.prompt.md` | Ritual início de sessão | ✅ Criado 2026-03-01 |
+| `.github/prompts/session-start-first.prompt.md` | Ritual 1ª sessão | ✅ Criado 2026-03-01 |
+| `.github/prompts/session-end.prompt.md` | Ritual encerramento | ✅ Criado 2026-03-01 |
+| `.github/prompts/domain/devops-programming.prompt.md` | Domain Profile: Programação | ✅ Criado 2026-03-01 |
+| `.github/prompts/domain/devops-infrastructure.prompt.md` | Domain Profile: Infraestrutura | ✅ Criado 2026-03-01 |
+| `.github/prompts/domain/devops-analysis.prompt.md` | Domain Profile: Análise | ✅ Criado 2026-03-01 |
 
 ### Automation
 | File | Purpose | Status |
@@ -417,18 +437,19 @@ make dev
 - ✅ Documentation comprehensive
 - ✅ Security implemented
 - ✅ MCP configured
-- ✅ Domain Profiles design — 19 decisões concluídas
-- 🟡 Domain Profiles implementation — pendente (IMP-01 a IMP-10)
+- ✅ Domain Profiles — strategy, decisions (19 D-xx) E implementação (IMP-05/06/07) concluídas
+- ✅ `scripts/scaffold.py` — 9 módulos, PEP 723, modo interativo e CI
+- ✅ Rituais de sessão (IMP-02/03/04) criados
+- 🔵 IMP-09 — melhorar template `.copilot-rules-[projeto].md` em `templates.py`
+- 🔵 IMP-10 — `docs/copilot/DOMAIN-*.md` (docs humanos dos domínios)
 
-### Next Steps
-1. Implementar `scripts/manager.py` (IMP-01)
-2. Criar 3 session prompt files (IMP-02/03/04)
-3. Criar 3 Domain Profile files (IMP-05/06/07)
-4. Atualizar Makefile `make init` (IMP-08)
-5. Criar template `.copilot-rules-[projeto].md` (IMP-09)
+### Next Actions
+1. IMP-09: Enriquecer `generate_copilot_rules()` em `scripts/lib/templates.py`
+2. IMP-10: Criar `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
+3. Testar `scaffold.py` em projeto real
 
 ---
 
-**Last Modified**: 2026-02-27
+**Last Modified**: 2026-03-01
 **Maintained By**: Vya-Jobs Team
 **License**: MIT
