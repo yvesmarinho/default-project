@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-01 🟢 Em andamento
+**Last Updated**: 2026-03-05 🟢 Em andamento
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-01 — IMP-01/02/03/04/05/06/07/08 ✅ Concluídos
+**Last Session**: 2026-03-05 — IMP-14 Fase A ✅ concluída (A.1–A.8) — IMP-17 debate aberto (Issue Templates + load-mcp.sh + VS Code tasks/launch)
 
 ---
 
@@ -63,7 +63,9 @@ a-default-project/
 │       ├── 2026-01-27/          # Foundation session
 │       ├── 2026-01-28/          # Testing session
 │       ├── 2026-02-27/          # Domain Profiles — 19 decisões de design (encerrada)
-│       └── 2026-02-28/          # IMP-01 debate + IMP-13 consolidação copilot files (encerrada)
+│       ├── 2026-02-28/          # IMP-01 debate + IMP-13 consolidação copilot files (encerrada)
+│       ├── 2026-03-01/          # IMP-01..08 concluídos: scaffold.py, prompts, domain profiles (encerrada)
+│       └── 2026-03-05/          # IMP-14 debate: SpecKit no filho + novos profiles (em andamento)
 ├── scripts/                        # Automation scripts
 │   ├── scaffold.py               # ✅ CRIADO 2026-03-01 — PEP 723, uv run, entry point
 │   ├── lib/                      # Módulos: config, ui, project, links, git, templates, vscode

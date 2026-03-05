@@ -51,14 +51,15 @@ def flow_new_project(args: argparse.Namespace) -> int:
     ci_mode = args.ci
 
     overrides = {
-        "name":        args.name,
-        "title":       args.title,
-        "description": args.description,
-        "domain":      args.domain,
-        "language":    args.language,
-        "repo":        args.repo,
-        "shared_dir":  args.shared_dir,
-        "target_dir":  args.target_dir,
+        "name":           args.name,
+        "title":          args.title,
+        "description":    args.description,
+        "domain":         args.domain,
+        "language":       args.language,
+        "repo":           args.repo,
+        "shared_dir":     args.shared_dir,
+        "target_dir":     args.target_dir,
+        "extra_profiles": getattr(args, "extra_profiles", None),
     }
     # Remove chaves None para não substituir defaults
     overrides = {k: v for k, v in overrides.items() if v is not None}
@@ -94,7 +95,15 @@ def flow_new_project(args: argparse.Namespace) -> int:
     results.append(vscode.generate_mcp(cfg))
     results.append(vscode.generate_extensions(cfg))
 
-    # 5. Git
+    # 5. SpecKit: agents, prompts e perfis de domínio
+    console.print("  [blue]🤖 Copiando assets SpecKit...[/blue]")
+    results.extend(project.copy_speckit(cfg))
+
+    # 6. Constitution: .specify/memory/constitution.md
+    console.print("  [blue]📜 Gerando constitution.md...[/blue]")
+    results.append(project.generate_constitution(cfg))
+
+    # 7. Git
     console.print("  [blue]🗃️  Inicializando repositório Git...[/blue]")
     results.append(git.init_repository(cfg))
 
@@ -206,6 +215,19 @@ def build_parser() -> argparse.ArgumentParser:
     fields_group.add_argument("--repo",       metavar="URL",  help="URL do repositório GitHub")
     fields_group.add_argument("--shared-dir", metavar="PATH", dest="shared_dir", help="caminho para .copilot-shared")
     fields_group.add_argument("--target-dir", metavar="PATH", dest="target_dir", help="onde criar o projeto (default: cwd)")
+    fields_group.add_argument(
+        "--extra-profiles",
+        metavar="PROFILES",
+        dest="extra_profiles",
+        default="domain-only",
+        help=(
+            "perfis SpecKit extras além do domínio principal\n"
+            "  domain-only  apenas perfil do domínio (default)\n"
+            "  all          todos os perfis disponíveis\n"
+            "  none         equivalente a domain-only\n"
+            "  p1,p2        lista separada por vírgulas"
+        ),
+    )
 
     return parser
 

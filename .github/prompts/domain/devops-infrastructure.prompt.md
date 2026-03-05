@@ -225,6 +225,40 @@ Objetivo desta sessão: [1 frase].
 
 ---
 
+---
+
+## 🔍 Modo Review — Revisão de IaC e Configurações
+
+> Ative com: `Modo: INFRASTRUCTURE + REVIEW. Escopo: [terraform|helm|k8s|ansible|dockerfile].`
+
+### Processo
+1. Declarar claramente o escopo (terraform module, helm chart, namespace específico)
+2. Verificar estado atual antes de comentar (`terraform show`, `helm status`, `kubectl get`)
+3. Classificar achados por severidade (mesmo padrão do modo PROGRAMMING + REVIEW)
+
+### Checklist de IaC Review
+
+- [ ] **Segurança**: IAM least-privilege, portas mínimas expostas, TLS habilitado, secrets via Vault/SSM?
+- [ ] **Idempotência**: `apply` repetido produz o mesmo estado?
+- [ ] **Recursos com limites**: K8s tem `resources.requests`/`limits`; RDS tem Multi-AZ se prod?
+- [ ] **Tagging/labeling**: padrão de tags aplicado (env, team, product)?
+- [ ] **Rollback**: mudança é revertível? Runbook de rollback documentado?
+- [ ] **Estado remoto**: backend configurado (não local) para Terraform?
+- [ ] **Hardcode de ambiente**: valores de dev não foram deixados em valores de prod?
+- [ ] **Secrets em código**: nenhuma credencial hardcodada em values.yaml, tfvars, playbooks?
+
+### Formato de Comentário
+
+```
+[BLOCKER] terraform/modules/s3/main.tf:28
+O bucket está com `acl = "public-read"`. Qualquer dado armazenado
+neste bucket fica acessível publicamente.
+Correção: remover `acl` e usar bucket policy restritiva. Adicionar
+`block_public_acls = true` no `aws_s3_bucket_public_access_block`.
+```
+
+---
+
 ## 🔗 Referências
 
 - [.copilot-rules.md](../../../.copilot-rules.md) — Regras base da Camada 1 (sempre prevalecem)
@@ -234,4 +268,4 @@ Objetivo desta sessão: [1 frase].
 
 ---
 
-*Domain Profile v1.0 | Gerado em 2026-03-01 | IMP-06*
+*Domain Profile v1.1 | Atualizado em 2026-03-05 | IMP-06 + IMP-14 (A.7)*

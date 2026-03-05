@@ -206,6 +206,45 @@ Objetivo desta sessão: [1 frase].
 
 ---
 
+---
+
+## 🔍 Modo Review — Code Review Estruturado
+
+> Ative com: `Modo: PROGRAMMING + REVIEW. PR/Branch: [identificação].`
+
+### Processo
+1. Entender o contexto do PR: qual problema resolve, qual é o design adotado
+2. Leitura completa antes de comentar (não comentar linha por linha sem visão do todo)
+3. Classificar cada comentário com nível de severidade:
+
+| Nível | Descrição | Bloqueia merge? |
+|-------|-----------|----------------|
+| `[BLOCKER]` | Bug, falha de segurança, regressão, quebra de contrato | ✅ Sim |
+| `[SUGGESTION]` | Melhoria de legibilidade, refatoração benéfica, alternativa de design | ❌ Não |
+| `[NIT]` | Estilo menor, preferência pessoal, formatação automática | ❌ Não |
+| `[QUESTION]` | Clarificação necessária antes de decidir sobre bloqueio | ⏳ Aguardar |
+
+### Checklist de Code Review
+
+- [ ] **Lógica**: o código faz o que a tarefa/issue descreve?
+- [ ] **Edge cases**: entradas vazias, None, listas com 0/1/N elementos, overflow?
+- [ ] **Testes**: cobertura dos cenários novos; nenhum teste removido sem justificativa
+- [ ] **Segurança**: injeções, autorização por recurso, dados sensíveis em logs?
+- [ ] **Performance**: O(N²) desnecessário, N+1 queries, bloqueio em thread principal?
+- [ ] **Legibilidade**: nomes claros, funções < 50 linhas, sem hardcode mágico?
+- [ ] **Compatibilidade**: breaking change sem versionamento?
+
+### Formato de Comentário
+
+```
+[BLOCKER] src/auth/handler.py:42
+A verificação de autorização acontece após a leitura do recurso.
+Qualquer usuário autenticado pode ler dados de outro usuário.
+Correção: mover `check_ownership(user_id, resource_id)` para antes da query.
+```
+
+---
+
 ## 🔗 Referências
 
 - [.copilot-rules.md](../../../.copilot-rules.md) — Regras base da Camada 1 (sempre prevalecem)
@@ -214,4 +253,4 @@ Objetivo desta sessão: [1 frase].
 
 ---
 
-*Domain Profile v1.0 | Gerado em 2026-03-01 | IMP-05*
+*Domain Profile v1.1 | Atualizado em 2026-03-05 | IMP-05 + IMP-14 (A.7)*

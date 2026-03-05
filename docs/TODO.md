@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-01 — IMP-01∙02∙03∙04∙05∙06∙07∙08 ✅ Concluídos
+**Last Updated**: 2026-03-05 — IMP-14 Fase A ✅ CONCLUÍDA — 8 sub-tarefas implementadas — zero erros de compilação
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -34,6 +34,20 @@
 - [x] **[IMP-08]** ✅ **CONCLUÍDO 2026-03-01** — Redefinir `make init` no `Makefile` — de executor para **redirect** para `uv run scripts/scaffold.py` (sem duplicar lógica)
 - [ ] **[IMP-09]** Criar template `.copilot-rules-[projeto].md` gerado pelo `scaffold.py` — específico por projeto
 - [ ] **[IMP-10]** Criar documentação humana dos 3 domínios em `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
+- [x] **[IMP-14]** ✅ **FASE A CONCLUÍDA 2026-03-05** — SpecKit instalado no projeto filho + Novos Domain Profiles + Perfis Profissionais
+  - Debate: `docs/SESSIONS/2026-03-05/IMP-14-DEBATE.md`
+  - Decisões: D-20..D-25 todas respondidas 🟢 (2026-03-05)
+  - **Fase A (P0) ✅**: A.1 `SPECKIT_SYNC_DATE` em config.py • A.2 `copy_speckit()` • A.3 `generate_constitution()` • A.4 questão `[8]` em ui.py • A.5 integrar em scaffold.py • A.6 `devops-security.prompt.md` • A.7 extensões Review/Runbook nos 3 perfis • A.8 `constitution.md` v1.0.0
+  - **Fase B (P1)** 🔵: `devops-cicd.prompt.md` + testes scaffold + docs de uso
+  - **Fase C (P2)** 🔵: melhorias UX `ui.py`
+- [ ] **[IMP-15]** (futuro) Geração de `Dockerfile`, `docker-compose.yml`, workflows CI/CD pelo scaffold
+- [ ] **[IMP-16]** (futuro) Testes para `scaffold.py` e `scripts/lib/`
+- [ ] **[IMP-17]** 🔵 **Em debate (2026-03-05)** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
+  - Debate: `docs/SESSIONS/2026-03-05/IMP-17-DEBATE.md`
+  - Decisões abertas: D-26..D-34 (9 decisões)
+  - **Fase A (P0)**: A.1–A.4 Issue Templates • A.5 `generate_load_mcp()` • A.6 `generate_tasks()` • A.7–A.9 integrações
+  - **Fase B (P1)**: `launch.json` + `.code-workspace` enriquecido
+  - **Fase C (P2)**: `.code-profile` exportável
 - [x] **[IMP-11]** ~~Criar `.copilot-strict-rules.md`~~ → **CONCLUÍDO em IMP-13**: arquivo consolidado em `.copilot-rules.md`
 - [x] **[IMP-12]** ~~Criar `.copilot-strict-enforcement.md`~~ → **CONCLUÍDO em IMP-13**: arquivo consolidado em `.copilot-rules.md`
 - [x] **[IMP-13]** Consolidar arquivos `.copilot-*` — **CONCLUÍDO 2026-02-28** — 5 arquivos (1910 linhas) → 1 arquivo (`.copilot-rules.md`, ~180 linhas, 7 seções). Ver debate: `docs/SESSIONS/2026-02-28/COPILOT-FILES-DEBATE.md`
@@ -48,7 +62,30 @@
 
 ### ✅ Completed Recently
 
-#### 2026-03-01 (Sessão atual)
+#### 2026-03-05 (Sessão atual)
+- [x] Iniciar sessão MCP (2026-03-05)
+- [x] Recuperar dados da sessão anterior (2026-03-01)
+- [x] Carregar regras Copilot na memória (`.copilot-rules.md` ativo — único arquivo desde IMP-13)
+- [x] Scan de credenciais/arquivos sensíveis → 🟢 LIMPO
+- [x] Verificar `.secrets/` no `.gitignore` (confirmado)
+- [x] Verificar organização da raiz (limpa — nenhum arquivo solto)
+- [x] Criar `docs/SESSIONS/2026-03-05/SESSION_RECOVERY_2026-03-05.md`
+- [x] Criar `docs/SESSIONS/2026-03-05/DAILY_ACTIVITIES_2026-03-05.md`
+- [x] Atualizar `docs/TODO.md` e `docs/INDEX.md`
+- [x] Análise de perfis profissionais e domain profiles faltantes
+- [x] Abrir IMP-14 com debate estruturado (4 perspectivas, D-20..D-25)
+- [x] Verificar e corrigir 3 gaps em `.copilot-rules.md` (Seção 3 + Seção 5)
+- [x] **IMP-14 Fase A — 8 sub-tarefas implementadas (zero erros)**
+  - [x] A.1 `config.py`: SPECKIT_SYNC_DATE, DOMAIN_DEFAULT_PROFILES, SPECKIT_TRANSVERSAL_PROFILES, extra_profiles
+  - [x] A.2 `project.py`: `copy_speckit()` — idempotente, shutil+pathlib, logging
+  - [x] A.3 `project.py`: `generate_constitution()` — placeholders resolvidos
+  - [x] A.4 `ui.py`: questão [8] — `_collect_extra_profiles()`, `_parse_extra_profiles()`
+  - [x] A.5 `scaffold.py`: passos 5+6 + `--extra-profiles` flag
+  - [x] A.6 `.github/prompts/domain/devops-security.prompt.md` criado
+  - [x] A.7 Review em programming+infrastructure, Runbook em analysis (v1.0→1.1)
+  - [x] A.8 `.specify/memory/constitution.md` v1.0.0 ratificada
+
+#### 2026-03-01 (Sessão encerrada)
 - [x] Iniciar sessão MCP (2026-03-01)
 - [x] Recuperar dados da sessão anterior (2026-02-28)
 - [x] Carregar regras Copilot na memória (`.copilot-rules.md` ativo — único arquivo desde IMP-13)

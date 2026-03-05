@@ -248,6 +248,74 @@ Fontes disponíveis: [onde estão os dados?]
 
 ---
 
+---
+
+## 📟 Modo Runbook / SRE — Operação e Resposta a Incidentes
+
+> Ative com: `Modo: ANALYSIS + RUNBOOK. Serviço: [nome]. Ação: [criar|executar|atualizar].`
+
+### Estrutura Mínima de Runbook
+
+```markdown
+# Runbook — [Nome do Serviço / Cenário]
+
+**Serviço**: [nome]
+**Nível de criticidade**: P1 | P2 | P3
+**Owner**: [time responsável]
+**Última atualização**: YYYY-MM-DD
+
+## Pré-condições
+
+- Acesso a [sistema/cluster/console]
+- Variáveis de ambiente: [lista]
+
+## Diagnóstico Rápido (< 2 min)
+
+```bash
+# 1. Verificar estado atual
+# 2. Últimos logs relevantes
+# 3. Métricas chave
+```
+
+## Procedimentos
+
+### Cenário A — [nome]
+
+1. [passo]
+2. [passo]
+3. Verificar: `[comando de validação]`
+
+### Cenário B — [nome]
+[...]
+
+## Rollback
+
+```bash
+# Passo a passo de rollback completo
+```
+
+## Escalação
+
+Se nenhum procedimento resolver em [X min]: contatar [pessoa/canal].
+```
+
+### Quando Criar/Atualizar Runbooks
+- Após todo incidente P1/P2: atualizar ou criar runbook com os passos usados
+- Após mudança em serviço crítico: revisar runbook existente
+- Runbooks vivem em `docs/runbooks/[nome-servico].md`
+
+### SLO / Error Budget Reference
+
+| SLO alvo | Downtime mensal permitido | Window de error budget |
+|----------|--------------------------|------------------------|
+| 99.9%    | ~43 min                  | 30 dias |
+| 99.5%    | ~3h 36min                | 30 dias |
+| 99.0%    | ~7h 12min                | 30 dias |
+
+Quando error budget < 20%: congelar mudanças de feature; foco em reliability.
+
+---
+
 ## 🔗 Referências
 
 - [.copilot-rules.md](../../../.copilot-rules.md) — Regras base da Camada 1 (sempre prevalecem)
@@ -256,4 +324,4 @@ Fontes disponíveis: [onde estão os dados?]
 
 ---
 
-*Domain Profile v1.0 | Gerado em 2026-03-01 | IMP-07*
+*Domain Profile v1.1 | Atualizado em 2026-03-05 | IMP-07 + IMP-14 (A.7)*
