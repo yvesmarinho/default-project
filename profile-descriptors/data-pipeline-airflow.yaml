@@ -1,0 +1,59 @@
+schema_version: "1.0.0"
+
+name: data-pipeline-airflow
+layer: 3
+version: "1.0.0"
+last_tested: "2026-03-07"
+status: stable
+
+description: >
+  Perfil Layer 3 para pipelines de dados com Apache Airflow 2.x.
+  DAG template com PythonOperator, BranchPythonOperator, TaskGroup,
+  XCom, retries e callbacks de alerta. Custom operator example.
+  Local dev via Docker Compose com PostgreSQL metadata DB.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: python
+  framework: apache-airflow
+  tags:
+    - airflow
+    - data-pipeline
+    - etl
+    - elt
+    - data-engineering
+    - layer3
+
+stack:
+  tool: "Apache Airflow >= 2.9"
+  executor: LocalExecutor
+  metadata_db: PostgreSQL
+  local_dev: docker-compose
+
+combines_with:
+  - python-fastapi
+  - python-flask
+
+templates_path: ".github/templates/data-pipeline-airflow"
+
+templates:
+  - path: "airflow/dags/example_pipeline.py"
+    description: "DAG template com @dag decorator, TaskGroup, XCom, retries e callbacks"
+
+  - path: "airflow/dags/utils/callbacks.py"
+    description: "Callbacks reutilizáveis: on_failure_log, on_retry_log, on_sla_miss, on_failure_slack (opcional)"
+
+  - path: "airflow/plugins/custom_operator.py"
+    description: "Exemplo de custom BaseOperator com credentials via Connection (nunca hardcoded)"
+
+  - path: "airflow/requirements-airflow.txt"
+    description: "Airflow core + providers pinados para reprodutibilidade"
+
+  - path: "airflow/.env.airflow.example"
+    description: "Template de variáveis de ambiente — copiar para .secrets/.env.airflow"
+
+  - path: "airflow/docker-compose.airflow.yml"
+    description: "Stack local: webserver, scheduler, postgres. Senha via Docker Secrets"
+
+  - path: "Makefile.airflow"
+    description: "Targets: af-up, af-down, af-restart, af-logs, af-shell, af-trigger, af-status, af-test"

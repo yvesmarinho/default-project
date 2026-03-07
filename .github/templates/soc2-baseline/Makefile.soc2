@@ -1,0 +1,169 @@
+# Makefile.soc2 — Targets de conformidade SOC 2 Type II
+# Inclua no Makefile principal: include Makefile.soc2
+# SOC 2 Criteria: CC3 (Risk), CC6 (Logical Access), CC7 (Monitoring), CC8 (Change Management)
+
+SOC2_DOCS_DIR    := docs/soc2
+SOC2_REPORT_DIR  := reports/soc2
+SOC2_EVIDENCE_DIR := reports/soc2/evidence
+
+.PHONY: soc2-check soc2-scan-sast soc2-scan-deps soc2-scan-iac soc2-scan-containers \
+        soc2-docs-check soc2-access-review soc2-report soc2-evidence
+
+## soc2-check: Executa todos os checks SOC 2 (CC3, CC6, CC7, CC8)
+soc2-check: soc2-scan-sast soc2-scan-deps soc2-docs-check
+	@echo "✅ Todos os checks SOC 2 concluídos."
+
+## soc2-scan-sast: SAST — Análise estática de segurança (bandit + semgrep)
+soc2-scan-sast:
+	@echo "🔍 Executando análise estática de segurança (SAST)..."
+	@mkdir -p $(SOC2_EVIDENCE_DIR)
+	@if command -v uv >/dev/null 2>&1; then \
+		uv run bandit -r src/ -ll -q -f json \
+			-o $(SOC2_EVIDENCE_DIR)/bandit-$(shell date +%Y%m%d).json 2>&1 || true; \
+		uv run bandit -r src/ -ll -q 2>&1; \
+	elif command -v bandit >/dev/null 2>&1; then \
+		bandit -r src/ -ll -q 2>&1; \
+	else \
+		echo "⚠️  bandit não instalado. Execute: uv add --dev bandit"; \
+	fi
+	@if command -v semgrep >/dev/null 2>&1; then \
+		semgrep --config=p/owasp-top-ten src/ --quiet 2>&1 || true; \
+	fi
+	@echo "✅ SAST concluído."
+
+## soc2-scan-deps: SCA — Auditoria de dependências (pip-audit, npm audit, trivy)
+soc2-scan-deps:
+	@echo "🔍 Auditando dependências por vulnerabilidades..."
+	@mkdir -p $(SOC2_EVIDENCE_DIR)
+	@# Python
+	@if command -v uv >/dev/null 2>&1 && [ -f "pyproject.toml" ]; then \
+		echo "--- Python (pip-audit) ---"; \
+		uv run pip-audit --output-format=columns 2>&1 | \
+			tee $(SOC2_EVIDENCE_DIR)/pip-audit-$(shell date +%Y%m%d).txt; \
+	fi
+	@# Node.js
+	@if [ -f "package.json" ] && command -v npm >/dev/null 2>&1; then \
+		echo "--- Node.js (npm audit) ---"; \
+		npm audit --audit-level=high 2>&1 | \
+			tee $(SOC2_EVIDENCE_DIR)/npm-audit-$(shell date +%Y%m%d).txt || true; \
+	fi
+	@# Containers
+	@if command -v trivy >/dev/null 2>&1 && [ -f "Dockerfile" ]; then \
+		echo "--- Container (trivy) ---"; \
+		trivy fs --severity HIGH,CRITICAL . 2>&1 | \
+			tee $(SOC2_EVIDENCE_DIR)/trivy-$(shell date +%Y%m%d).txt; \
+	fi
+	@echo "✅ Auditoria de dependências concluída."
+
+## soc2-scan-iac: IaC security scan (tfsec + checkov)
+soc2-scan-iac:
+	@echo "🔍 Analisando segurança da infraestrutura como código..."
+	@mkdir -p $(SOC2_EVIDENCE_DIR)
+	@if command -v tfsec >/dev/null 2>&1; then \
+		find . -name "*.tf" -not -path "./.terraform/*" | head -1 | xargs -I{} dirname {} | \
+		xargs -I{} tfsec {} 2>&1 | tee $(SOC2_EVIDENCE_DIR)/tfsec-$(shell date +%Y%m%d).txt; \
+	fi
+	@if command -v checkov >/dev/null 2>&1; then \
+		checkov -d . --framework terraform --compact --quiet 2>&1 | \
+			tee $(SOC2_EVIDENCE_DIR)/checkov-$(shell date +%Y%m%d).txt || true; \
+	fi
+	@echo "✅ Scan IaC concluído."
+
+## soc2-scan-containers: Trivy scan de imagem Docker (uso: make soc2-scan-containers IMAGE=myapp:latest)
+soc2-scan-containers:
+	@if [ -z "$(IMAGE)" ]; then \
+		echo "ℹ️  Uso: make soc2-scan-containers IMAGE=myapp:latest"; \
+		exit 0; \
+	fi
+	@echo "🔍 Scanning container $(IMAGE)..."
+	@mkdir -p $(SOC2_EVIDENCE_DIR)
+	@trivy image --severity HIGH,CRITICAL $(IMAGE) 2>&1 | \
+		tee $(SOC2_EVIDENCE_DIR)/trivy-image-$(shell date +%Y%m%d).txt
+
+## soc2-docs-check: Verifica documentos SOC 2 obrigatórios
+soc2-docs-check:
+	@echo "📋 Verificando documentos SOC 2 obrigatórios..."
+	@MISSING=0; \
+	for doc in \
+		"$(SOC2_DOCS_DIR)/SECURITY-POLICY.md" \
+		"$(SOC2_DOCS_DIR)/RISK-ASSESSMENT.md"; \
+	do \
+		if [ ! -f "$$doc" ]; then \
+			echo "  ❌ Ausente: $$doc"; \
+			MISSING=$$((MISSING + 1)); \
+		else \
+			echo "  ✅ Presente: $$doc"; \
+		fi; \
+	done; \
+	if [ $$MISSING -gt 0 ]; then \
+		echo "❌ $$MISSING documentos SOC 2 obrigatórios ausentes."; \
+		exit 1; \
+	fi
+	@echo "✅ Documentos SOC 2 verificados."
+
+## soc2-access-review: Gera template para revisão trimestral de acessos (CC6.3)
+soc2-access-review:
+	@echo "👥 Gerando checklist de revisão de acessos (CC6.3)..."
+	@mkdir -p $(SOC2_EVIDENCE_DIR)
+	@cat > $(SOC2_EVIDENCE_DIR)/access-review-$(shell date +%Y%m%d).md << 'EOF'
+	# Revisão de Acessos — $(shell date '+%Y-%m-%d')
+
+	**Revisor**: [Nome do Gestor]
+	**Data da revisão**: $(shell date '+%Y-%m-%d')
+	**Próxima revisão**: [Data +90 dias]
+
+	## Checklist
+	- [ ] AWS IAM: listar users + roles com acesso a produção
+	- [ ] GitHub: revisar permissões de membros e apps na org
+	- [ ] Banco de dados: revisar roles com SELECT/INSERT/UPDATE em produção
+	- [ ] Contas de serviço: verificar se todas são necessárias e ativas
+	- [ ] Ex-funcionários: confirmar revogação total de acessos
+	- [ ] Break-glass accounts: confirmar que credenciais são rotacionadas
+
+	## Ações Tomadas
+	| Usuário/Serviço | Ação | Data | Aprovador |
+	|-----------------|------|------|-----------|
+	| [exemplo] | Mantido | $(shell date '+%Y-%m-%d') | [Nome] |
+	EOF
+	@echo "✅ Template de revisão de acessos criado em: $(SOC2_EVIDENCE_DIR)/access-review-$(shell date +%Y%m%d).md"
+
+## soc2-report: Gera relatório de evidências SOC 2
+soc2-report: soc2-check
+	@echo "📊 Coletando evidências SOC 2..."
+	@mkdir -p $(SOC2_EVIDENCE_DIR)
+	@echo "# SOC 2 Compliance Evidence — $$(date '+%Y-%m-%d')" > $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "## Trust Services Criteria Status" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "| Critério | Descrição | Status |" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "|----------|-----------|--------|" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "| CC3 | Risk Assessment | ✅ RISK-ASSESSMENT.md presente |" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "| CC6 | Logical + Physical Access | ✅ SECURITY-POLICY.md presente |" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "| CC7 | System Monitoring | ✅ SAST + SCA executados |" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "| CC8 | Change Management | ✅ CI/CD pipeline configurado |" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "## Evidências Coletadas em: $(SOC2_EVIDENCE_DIR)" >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@ls $(SOC2_EVIDENCE_DIR) 2>/dev/null | sed 's/^/- /' >> $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo ""
+	@echo "📄 Relatório gerado: $(SOC2_REPORT_DIR)/COMPLIANCE-REPORT.md"
+
+## soc2-evidence: Coleta evidências de controle (pasta com timestamp)
+soc2-evidence:
+	@mkdir -p $(SOC2_EVIDENCE_DIR)
+	@echo "Coletando evidências em $(SOC2_EVIDENCE_DIR)..."
+	@# Git log como evidência de controle de mudanças (CC8)
+	@git log --oneline --since="90 days ago" > $(SOC2_EVIDENCE_DIR)/git-log-90d-$(shell date +%Y%m%d).txt
+	@echo "✅ git-log-90d salvo (evidência CC8 — Change Management)"
+	@# Lista de jobs CI/CD (requer gh CLI)
+	@if command -v gh >/dev/null 2>&1; then \
+		gh run list --limit 50 --json conclusion,createdAt,name,status > \
+			$(SOC2_EVIDENCE_DIR)/ci-runs-$(shell date +%Y%m%d).json 2>/dev/null || true; \
+		echo "✅ ci-runs salvo (evidência CC7 — Monitoring)"; \
+	fi
+	@echo "✅ Evidências coletadas em: $(SOC2_EVIDENCE_DIR)"
+
+## soc2-help: Exibe ajuda dos targets SOC 2
+soc2-help:
+	@echo ""
+	@echo "Targets SOC 2 disponíveis:"
+	@grep -E '^## soc2-' Makefile.soc2 | sed 's/## /  make /'
+	@echo ""

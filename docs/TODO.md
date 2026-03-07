@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-05 — IMP-14 Fase A ✅ CONCLUÍDA — 8 sub-tarefas implementadas — zero erros de compilação
+**Last Updated**: 2026-03-07 — IMP-27 ✅ (lgpd-baseline + soc2-baseline, Layer 4), IMP-28 ✅ (scaffold --upgrade, 274 tests)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -11,6 +11,104 @@
 ### 🚀 Próximas Ações — Implementação Domain Profiles (Sessão seguinte)
 
 > Todas as 19 decisões de design estão resolvidas. Ver [`docs/copilot/DOMAIN-PROFILES-DECISIONS.md`](copilot/DOMAIN-PROFILES-DECISIONS.md)
+> **Roadmap atualizado em IMP-19 (2026-03-07)** — Debate: `docs/SESSIONS/2026-03-07/IMP-19-DEBATE.md`
+
+---
+
+### 🔴 P0 — BLOQUEADORES (executar antes de crescer em perfis)
+
+- [x] **[IMP-09]** ✅ **CONCLUÍDO 2026-03-07** — Enriquecer template `.copilot-rules-[projeto].md`
+- [x] **[IMP-16]** ✅ **CONCLUÍDO 2026-03-07** — Testes scaffold — 54 smoke tests (9 combos × 3 asserts × 2 funções) + 4 snapshot tests baseline + CI workflow
+  - [x] Setup de pytest em `tests/` com fixtures de config (`conftest.py`, `make_project_config`)
+  - [x] 9 combos domínio × linguagem — 54 testes PASSED
+  - [x] Snapshots baseline criados: `copilot_rules__programming__python.md`, `copilot_instructions__programming__python.md`, `copilot_rules__infrastructure__python.md`
+  - [x] CI: `.github/workflows/test-scaffold.yml` — dispara em PR/push em `scripts/**`
+- [x] **[IMP-19a]** ✅ **CONCLUÍDO 2026-03-07** — Profile-descriptor schema — contrato formal dos perfis
+  - [x] Schema YAML documentado em `docs/copilot/PROFILE-DESCRIPTOR-SCHEMA.md` (todos os campos anotados)
+  - [x] Campos: `name`, `description`, `requires`, `generates.files`, `generates.patches`, `excludes_with`, `combines_with`, `security.enforces`, `VERSION`, `LAST_TESTED_DATE`, `tags`, `layer`, `maintainer`
+  - [x] `profile-descriptors/README.md` — índice dos perfis disponíveis
+  - [x] `profile-descriptors/devops-programming.yaml` — perfil descriptor de referência completo
+
+---
+
+### 🟡 P1 — ALTO IMPACTO (próximo sprint)
+
+- [x] **[IMP-19b]** ✅ **CONCLUÍDO 2026-03-07** — DevEx/CLI — `--dry-run`, `--list-profiles`, `--json`, `--config` no `scaffold.py`
+  - [x] `scaffold.py --list-profiles`: tabela Rich com nome/layer/versão/data/descrição
+  - [x] `scaffold.py --list-profiles --json`: output JSON para CI/automação
+  - [x] `scaffold.py --dry-run --ci --name X --domain Y --language Z`: manifesto de 17 operações sem criar arquivos
+  - [x] `scaffold.py --dry-run --json`: manifesto JSON limpo (sem banner)
+  - [x] `scaffold.py --config FILE`: lê configuração de arquivo YAML (força `--ci`)
+- [x] **[IMP-20]** ✅ **CONCLUÍDO 2026-03-07** — Layer 2 — Perfil `python-fastapi` completo
+  - [x] Prompt domain: `.github/prompts/domain/layer2-python-fastapi.prompt.md`
+  - [x] Templates: `src/main.py`, `src/api/router.py`, `src/api/v1/health.py`, `src/core/config.py`, `tests/conftest.py`, `tests/test_health.py`
+  - [x] `pyproject.toml` com deps FastAPI + pytest-asyncio + ruff + bandit + pip-audit
+  - [x] `Dockerfile` multistage (`uv sync --frozen --no-dev` + usuário não-root)
+  - [x] `docker-compose.yml` (app + postgres:16 com healthcheck)
+  - [x] `Makefile` targets: `dev`, `test`, `lint`, `format`, `audit`, `security`, `ci`, `docker-*`
+  - [x] `.env.example` com variáveis documentadas sem valores reais
+  - [x] Profile descriptor: `profile-descriptors/python-fastapi.yaml`
+- [x] **[IMP-20b]** ✅ **CONCLUÍDO 2026-03-07** — Layer 2 — Perfil `python-flask` completo *(uso declarado pelo mantenedor)*
+  - [x] Prompt domain: `.github/prompts/domain/layer2-python-flask.prompt.md`
+  - [x] Templates: `src/app.py`, `src/blueprints/health/`, `src/core/config.py`, `src/extensions.py`, `tests/conftest.py`, `tests/test_health.py`
+  - [x] `pyproject.toml` com deps Flask + Flask-WTF + Flask-Talisman + ruff + bandit + pip-audit
+  - [x] `Dockerfile` multistage (`uv sync --frozen --no-dev` + usuário não-root, gunicorn)
+  - [x] `docker-compose.yml` (app + postgres:16 com healthcheck)
+  - [x] `Makefile` targets: `dev`, `test`, `lint`, `format`, `audit`, `security`, `ci`, `docker-*`
+  - [x] `.env.example` com `FLASK_APP`, `FLASK_ENV`, `SECRET_KEY` documentados
+  - [x] Profile descriptor: `profile-descriptors/python-flask.yaml`
+- [x] **[IMP-21]** Layer 2 — Perfil `typescript-next` completo
+  - [x] Prompt domain: `.github/prompts/domain/layer2-typescript-next.prompt.md`
+  - [x] Templates: estrutura Next.js com TypeScript strict
+  - [x] ESLint + Prettier + Jest configurados
+  - [x] Profile descriptor: `profile-descriptors/typescript-next.yaml`
+- [x] **[IMP-15]** Geração de `Dockerfile`, `docker-compose.yml`, workflows CI/CD pelo scaffold
+  - [x] CI skeleton: `.github/workflows/ci.yml` (lint + test + build)
+  - [x] `Dockerfile` multistage por linguagem (python, node, go)
+  - [x] `docker-compose.yml` com serviço app + dependências opcionais (postgres, redis)
+  - [x] Runbook template gerado em `docs/RUNBOOK.md`
+
+---
+
+### 🔵 P2 — IMPORTANTE (sprint +2)
+
+- [x] **[IMP-22]** ✅ **CONCLUÍDO 2026-03-07** — Layer 3 — Perfil `k8s-helm` (plataforma)
+  - [x] Prompt domain: `.github/prompts/domain/layer3-k8s-helm.prompt.md`
+  - [x] Templates: `helm/Chart.yaml`, `helm/values.yaml`, `helm/values-staging.yaml`, `helm/values-prod.yaml`, `helm/templates/` (8 arquivos), `.helmignore`, `Makefile.helm`
+  - [x] Compatível com: `python-fastapi`, `python-flask`, `typescript-next` (field `combines_with`)
+  - [x] Profile descriptor: `profile-descriptors/k8s-helm.yaml` (layer: 3, Schema A)
+  - [x] Testes: `tests/test_smoke_k8s_helm.py` — 13 testes (97 → 110 passed)
+- [x] **[IMP-23]** ✅ **CONCLUÍDO 2026-03-07** — Layer 3 — Perfil `terraform-aws` (plataforma)
+  - [x] Prompt domain: `.github/prompts/domain/layer3-terraform-aws.prompt.md`
+  - [x] Templates: módulos Terraform VPC, ECS Fargate e RDS PostgreSQL (16 arquivos)
+  - [x] Security: IAM least privilege (ARN específico), RDS sem public access, passwords via random_password + SSM
+  - [x] Profile descriptor: `profile-descriptors/terraform-aws.yaml` (layer: 3, Schema A)
+  - [x] Testes: `tests/test_smoke_terraform_aws.py` — 16 testes (110 → 126 passed)
+- [x] **[IMP-24]** Motor de Composição de Perfis
+  - [x] Resolver conflitos entre perfis (`excludes_with`)
+  - [x] Ordem de aplicação de patches
+  - [x] Rollback em caso de erro parcial
+  - [x] Teste de todas as combinações válidas
+- [x] **[IMP-25]** Governança — CHANGELOG, versionamento semântico, matriz de compatibilidade
+  - [x] `TEMPLATE-VERSIONS.md`: versionamento por perfil
+  - [x] `COMPATIBILITY-MATRIX.md`: perfis × perfis
+  - [x] `CHANGELOG.md` com histórico desde v0.1.0
+  - [x] Política de depreciação documentada
+- [x] **[IMP-10]** ✅ **CONCLUÍDO 2026-03-07** — Documentação humana dos domínios: `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
+
+---
+
+### ⚪ P3 — FUTURO (backlog)
+
+- [x] **[IMP-26]** Layer 3 — Data/Analytics: `data-pipeline-airflow`, `data-warehouse-dbt`
+- [x] **[IMP-27]** Layer 4 — Compliance: `lgpd-baseline`, `soc2-baseline`
+- [x] **[IMP-28]** Modo upgrade/re-apply: `scaffold.py upgrade` para projetos já gerados — **CONCLUÍDO 2026-03-07** — `--upgrade` lê `.scaffold-state.yaml`, re-aplica todos os passos de geração (idempotente), suporte a `--json` e `--force`. 30 testes.
+- [ ] **[IMP-29]** Documentação gerada por perfil ativo (guia específico por combinação)
+- [x] **[IMP-17]** ✅ **CONCLUÍDO** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
+
+---
+
+### 📜 Backlog Original (mantido para referência)
 
 - [x] **[IMP-01]** ✅ **CONCLUÍDO 2026-03-01** — Criar `scripts/scaffold.py` — Python interativo com fluxo condicional, absorvendo `init-new-project.sh`, `setup-project-links.sh`, `check-project-links.sh`
   - [x] Debate de funcionalidades gerado → `docs/SESSIONS/2026-02-28/IMP-01-DEBATE.md`
@@ -32,8 +130,19 @@
 - [x] **[IMP-06]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/domain/devops-infrastructure.prompt.md` — Domain Profile infra
 - [x] **[IMP-07]** ✅ **CONCLUÍDO 2026-03-01** — Criar `.github/prompts/domain/devops-analysis.prompt.md` — Domain Profile análise
 - [x] **[IMP-08]** ✅ **CONCLUÍDO 2026-03-01** — Redefinir `make init` no `Makefile` — de executor para **redirect** para `uv run scripts/scaffold.py` (sem duplicar lógica)
-- [ ] **[IMP-09]** Criar template `.copilot-rules-[projeto].md` gerado pelo `scaffold.py` — específico por projeto
-- [ ] **[IMP-10]** Criar documentação humana dos 3 domínios em `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
+- [x] **[IMP-18]** ✅ **CONCLUÍDO 2026-03-07** — Criar `.github/copilot-instructions.md` — auto-injeção de regras P0/P1 em toda conversa Copilot
+  - [x] `.github/copilot-instructions.md` criado para `a-default-project` (regras P0/P1 compactas, `applyTo: "**"`)
+  - [x] `scripts/lib/templates.py`: `generate_copilot_instructions()` adicionada (template com placeholders)
+  - [x] `scripts/scaffold.py`: passo 3 atualizado (wired `generate_copilot_instructions(cfg)`)
+  - [x] Zero erros de compilação verificados
+- [x] **[IMP-09]** ✅ **CONCLUÍDO 2026-03-07** — Enriquecer template `.copilot-rules-[projeto].md` gerado pelo `scaffold.py`
+  - [x] Regras P0/P1 pré-preenchidas por domínio (`programming`, `infrastructure`, `analysis`)
+  - [x] Convenções de linguagem com tabela detalhada (`python`, `typescript`, `go`, `other`)
+  - [x] Estrutura de pastas dinâmica por domínio + linguagem (8 combinações)
+  - [x] Tabela de perfis ativos (domínio + segurança transversal + extras)
+  - [x] Seção de decisões técnicas pré-populada
+  - [x] Smoke-test: 5 combos domain/language ✅ — zero erros
+- [x] **[IMP-10]** ✅ **CONCLUÍDO 2026-03-07** — Criar documentação humana dos 3 domínios em `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
 - [x] **[IMP-14]** ✅ **FASE A CONCLUÍDA 2026-03-05** — SpecKit instalado no projeto filho + Novos Domain Profiles + Perfis Profissionais
   - Debate: `docs/SESSIONS/2026-03-05/IMP-14-DEBATE.md`
   - Decisões: D-20..D-25 todas respondidas 🟢 (2026-03-05)
@@ -41,13 +150,20 @@
   - **Fase B (P1)** 🔵: `devops-cicd.prompt.md` + testes scaffold + docs de uso
   - **Fase C (P2)** 🔵: melhorias UX `ui.py`
 - [ ] **[IMP-15]** (futuro) Geração de `Dockerfile`, `docker-compose.yml`, workflows CI/CD pelo scaffold
-- [ ] **[IMP-16]** (futuro) Testes para `scaffold.py` e `scripts/lib/`
-- [ ] **[IMP-17]** 🔵 **Em debate (2026-03-05)** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
+- [x] **[IMP-16]** ✅ **CONCLUÍDO 2026-03-07** — Testes para `scaffold.py` e `scripts/lib/`
+  - 54 smoke tests PASSED (9 combos × 3 asserts × 2 funções)
+  - 4 snapshot tests PASSED (modo CI, comparação contra baseline)
+  - Trigger: `.github/workflows/test-scaffold.yml`
+- [x] **[IMP-17]** ✅ **CONCLUÍDO** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
   - Debate: `docs/SESSIONS/2026-03-05/IMP-17-DEBATE.md`
-  - Decisões abertas: D-26..D-34 (9 decisões)
-  - **Fase A (P0)**: A.1–A.4 Issue Templates • A.5 `generate_load_mcp()` • A.6 `generate_tasks()` • A.7–A.9 integrações
-  - **Fase B (P1)**: `launch.json` + `.code-workspace` enriquecido
-  - **Fase C (P2)**: `.code-profile` exportável
+  - Decisões: D-26=Markdown • D-27=3 templates+config • D-28=copy_speckit • D-29=Standard • D-30=scripts/+make mcp • D-31=dinâmico • D-32=Standard • D-33=por linguagem • D-34=skip
+  - ✅ `.github/ISSUE_TEMPLATE/` — bug_report.md + feature_request.md + improvement.md + config.yml
+  - ✅ `generate_load_mcp(cfg)` em `project.py` — scripts/load-mcp.sh dinâmico por domínio (chmod +x)
+  - ✅ `generate_tasks(cfg)` em `vscode.py` — .vscode/tasks.json com 7 targets Makefile
+  - ✅ `generate_launch(cfg)` em `vscode.py` — .vscode/launch.json por linguagem (Python/TS/Go/other)
+  - ✅ `copy_speckit()` atualizado para copiar ISSUE_TEMPLATE/*
+  - ✅ `scaffold.py` integrado (passos 4+7)
+  - ✅ 27 smoke tests PASSED → total: **153 tests**
 - [x] **[IMP-11]** ~~Criar `.copilot-strict-rules.md`~~ → **CONCLUÍDO em IMP-13**: arquivo consolidado em `.copilot-rules.md`
 - [x] **[IMP-12]** ~~Criar `.copilot-strict-enforcement.md`~~ → **CONCLUÍDO em IMP-13**: arquivo consolidado em `.copilot-rules.md`
 - [x] **[IMP-13]** Consolidar arquivos `.copilot-*` — **CONCLUÍDO 2026-02-28** — 5 arquivos (1910 linhas) → 1 arquivo (`.copilot-rules.md`, ~180 linhas, 7 seções). Ver debate: `docs/SESSIONS/2026-02-28/COPILOT-FILES-DEBATE.md`
@@ -62,7 +178,22 @@
 
 ### ✅ Completed Recently
 
-#### 2026-03-05 (Sessão atual)
+#### 2026-03-07 (Sessão atual)
+- [x] Carregar regras Copilot na memória (`.copilot-rules.md` — único arquivo ativo desde IMP-13)
+- [x] Iniciar sessão MCP — servidores `memory` + `sequential-thinking` ativos
+- [x] Recuperar dados da sessão anterior (2026-03-05)
+- [x] Scan de credenciais/arquivos sensíveis → 🟢 LIMPO
+- [x] Verificar `.secrets/` no `.gitignore` (confirmado)
+- [x] Verificar organização da raiz → LIMPA (root: 11 itens válidos)
+- [x] Renomear `docs/GitHub Copilot Recursos de Agents etc.md` → `GITHUB-COPILOT-AGENTS-RESOURCES.md` (convenção de nomenclatura)
+- [x] Criar `docs/SESSIONS/2026-03-07/SESSION_RECOVERY_2026-03-07.md`
+- [x] Criar `docs/SESSIONS/2026-03-07/DAILY_ACTIVITIES_2026-03-07.md`
+- [x] Atualizar `docs/TODO.md` e `docs/INDEX.md`
+- [x] **[IMP-18]** Criar `.github/copilot-instructions.md` + `generate_copilot_instructions()` em `templates.py` + wiring em `scaffold.py`
+- [x] **[IMP-09]** Enriquecer template `.copilot-rules-[projeto].md` — smoke-test: 5 combos ✅
+- [x] **[IMP-19 — Debate]** Analisar `Default Project Template Skills.md` → criar agente `template-architect.agent.md` + debate IMP-19 + roadmap P0→P3
+
+#### 2026-03-05 (Sessão encerrada)
 - [x] Iniciar sessão MCP (2026-03-05)
 - [x] Recuperar dados da sessão anterior (2026-03-01)
 - [x] Carregar regras Copilot na memória (`.copilot-rules.md` ativo — único arquivo desde IMP-13)

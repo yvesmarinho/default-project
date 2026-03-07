@@ -1,0 +1,43 @@
+# Makefile.airflow — Targets for Apache Airflow local development
+# Include in project Makefile: include Makefile.airflow
+# Or run directly: make -f Makefile.airflow <target>
+
+COMPOSE_FILE ?= airflow/docker-compose.airflow.yml
+AIRFLOW_DAG ?= example_pipeline
+
+.PHONY: af-init af-up af-down af-restart af-logs af-test af-trigger af-status af-shell
+
+## Inicia o stack Airflow (construção + init + webserver + scheduler)
+af-up:
+	@docker compose -f $(COMPOSE_FILE) up -d
+
+## Para o stack Airflow sem remover volumes
+af-down:
+	@docker compose -f $(COMPOSE_FILE) down
+
+## Reinicia todos os serviços
+af-restart:
+	@docker compose -f $(COMPOSE_FILE) restart
+
+## Exibe logs do scheduler e webserver (Ctrl+C para sair)
+af-logs:
+	@docker compose -f $(COMPOSE_FILE) logs -f airflow-scheduler airflow-webserver
+
+## Abre shell no container do scheduler para depuração
+af-shell:
+	@docker compose -f $(COMPOSE_FILE) exec airflow-scheduler bash
+
+## Dispara uma execução manual da DAG especificada por AIRFLOW_DAG
+af-trigger:
+	@docker compose -f $(COMPOSE_FILE) exec airflow-scheduler \
+		airflow dags trigger $(AIRFLOW_DAG)
+
+## Exibe o estado das DAGs registradas
+af-status:
+	@docker compose -f $(COMPOSE_FILE) exec airflow-scheduler \
+		airflow dags list
+
+## Executa testes unitários das DAGs (sem iniciar o Airflow)
+af-test:
+	@uv run pytest airflow/tests/ -v 2>/dev/null || \
+		python -m pytest airflow/tests/ -v

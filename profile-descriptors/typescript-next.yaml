@@ -1,0 +1,92 @@
+schema_version: "1.0.0"
+
+name: typescript-next
+layer: 2
+version: "1.0.0"
+last_tested: "2026-03-07"
+status: stable
+
+description: >
+  Perfil Layer 2 para aplicações web com Next.js 15 + TypeScript strict.
+  App Router, Server Components, API Routes, Jest + React Testing Library.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: typescript
+  framework: next.js
+  tags:
+    - web
+    - typescript
+    - next
+    - react
+    - ssr
+    - app-router
+
+stack:
+  runtime: "Node.js >= 20 LTS"
+  package_manager: pnpm
+  framework: "Next.js ^15"
+  language: "TypeScript ^5.5"
+  test: "Jest ^29 + React Testing Library ^16"
+  lint: "ESLint ^9 + eslint-config-next"
+  format: "Prettier ^3"
+  build: "next build (output: standalone)"
+  containerization: "Docker multistage (node:20-slim)"
+
+templates_path: ".github/templates/typescript-next"
+
+templates:
+  - path: "app/layout.tsx"
+    description: "Root layout — metadados e estrutura HTML base"
+  - path: "app/page.tsx"
+    description: "Home page — Server Component padrão"
+  - path: "app/api/health/route.ts"
+    description: "GET /api/health → { status: 'ok' }"
+  - path: "lib/env.ts"
+    description: "Validação de variáveis de ambiente com zod (fail fast)"
+  - path: "tests/unit/health.test.ts"
+    description: "Smoke test da rota de health"
+  - path: "tests/setup.ts"
+    description: "Setup global @testing-library/jest-dom"
+  - path: "package.json"
+    description: "Dependências e scripts npm"
+  - path: "tsconfig.json"
+    description: "TypeScript strict + paths alias @/*"
+  - path: "jest.config.ts"
+    description: "Jest com nextJest, jsdom, coverage 80%"
+  - path: "next.config.ts"
+    description: "Config Next.js com headers de segurança"
+  - path: ".eslintrc.json"
+    description: "ESLint next/core-web-vitals + no-explicit-any error"
+  - path: "prettier.config.json"
+    description: "Prettier com prettier-plugin-tailwindcss"
+  - path: ".env.example"
+    description: "Variáveis de ambiente obrigatórias e opcionais"
+  - path: "Dockerfile"
+    description: "Multistage build (deps → builder → runner), non-root user"
+  - path: "docker-compose.yml"
+    description: "App + PostgreSQL 16 com healthcheck"
+  - path: "Makefile"
+    description: "14 targets: dev, build, lint, format, test, audit, docker-*, ci, clean"
+
+security:
+  checklist:
+    - "TypeScript strict: sem any, sem ts-ignore sem justificativa"
+    - "Variáveis de ambiente validadas com zod no startup"
+    - "Headers de segurança em next.config.ts (X-Frame-Options, CSP, etc.)"
+    - "Sem NEXT_PUBLIC_* com segredos (expostos ao browser)"
+    - "pnpm audit no CI (--audit-level=high)"
+    - "non-root user no Dockerfile"
+    - "Imagem base node:20-slim (minimiza superfície de ataque)"
+
+ci_targets:
+  - lint
+  - format-check
+  - test-coverage
+  - audit
+
+notes: >
+  Para adicionar auth: NextAuth.js v5 (Auth.js) ou Clerk.
+  Para ORM: Prisma + PostgreSQL ou Drizzle ORM.
+  Para UI: Tailwind CSS (adicionar prettier-plugin-tailwindcss ao package.json).
+  Para testes E2E: Playwright (pnpm dlx playwright install).

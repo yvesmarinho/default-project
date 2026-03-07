@@ -1,0 +1,98 @@
+schema_version: "1.0.0"
+
+name: k8s-helm
+layer: 3
+version: "1.0.0"
+last_tested: "2026-03-07"
+status: stable
+
+description: >
+  Perfil Layer 3 para deploy de aplicações em Kubernetes via Helm.
+  Chart completo com Deployment, Service, Ingress, HPA, ConfigMap,
+  ServiceAccount e values por ambiente (staging, prod). Compatível
+  com qualquer perfil Layer 2 de programação.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: any
+  framework: kubernetes
+  tags:
+    - kubernetes
+    - helm
+    - k8s
+    - deployment
+    - infrastructure
+    - layer3
+
+stack:
+  orchestrator: "Kubernetes >= 1.25"
+  package_manager: helm
+  chart_api: "v2"
+  hpa_api: "autoscaling/v2"
+  ingress: "nginx-ingress | traefik | aws-alb"
+
+templates_path: ".github/templates/k8s-helm"
+
+templates:
+  - path: "helm/Chart.yaml"
+    description: "Chart metadata v2 (name, version, appVersion)"
+
+  - path: "helm/values.yaml"
+    description: "Default values: image, replicaCount, service, ingress, resources, HPA, env"
+
+  - path: "helm/values-staging.yaml"
+    description: "Overrides para staging: replicaCount=1, resources reduzidos, HPA desabilitado"
+
+  - path: "helm/values-prod.yaml"
+    description: "Overrides para produção: replicaCount=2, HPA habilitado, recursos maiores"
+
+  - path: "helm/templates/_helpers.tpl"
+    description: "Named templates: fullname, labels, selectorLabels, serviceAccountName"
+
+  - path: "helm/templates/deployment.yaml"
+    description: "Deployment com liveness/readiness probes, resources, envFrom configmap"
+
+  - path: "helm/templates/service.yaml"
+    description: "Service ClusterIP (ou LoadBalancer se ingress desabilitado)"
+
+  - path: "helm/templates/ingress.yaml"
+    description: "Ingress com TLS e anotações nginx.ingress.kubernetes.io (condicional)"
+
+  - path: "helm/templates/hpa.yaml"
+    description: "HorizontalPodAutoscaler autoscaling/v2 com target CPU 70% (condicional)"
+
+  - path: "helm/templates/configmap.yaml"
+    description: "ConfigMap para variáveis de ambiente não-sensíveis (.Values.env)"
+
+  - path: "helm/templates/serviceaccount.yaml"
+    description: "ServiceAccount com automountServiceAccountToken: false (condicional)"
+
+  - path: "helm/templates/NOTES.txt"
+    description: "Mensagem pós-instalação com URL de acesso"
+
+  - path: ".helmignore"
+    description: "Padrões de arquivo ignorados pelo helm package"
+
+  - path: "Makefile.helm"
+    description: "Targets: helm-lint, helm-dry-run, helm-install, helm-upgrade, helm-diff, helm-rollback, helm-uninstall"
+
+security:
+  checklist:
+    - "Sem .Values.env com segredos — usar ExternalSecrets ou sealed-secrets"
+    - "Sem imagePullPolicy: Always em produção (potencial instabilidade)"
+    - "Liveness e readiness probes obrigatórios no Deployment"
+    - "resources.requests e resources.limits definidos (evitar OOMKilled e scheduling sem baseline)"
+    - "ServiceAccount com automountServiceAccountToken: false por padrão"
+    - "Ingress com TLS habilitado por padrão (nginx.ingress.kubernetes.io/ssl-redirect: true)"
+    - "PodSecurityContext: runAsNonRoot=true, runAsUser=1000, fsGroup=2000"
+    - "securityContext: allowPrivilegeEscalation=false, readOnlyRootFilesystem=true, capabilities.drop=[ALL]"
+
+combines_with:
+  - python-fastapi
+  - python-flask
+  - typescript-next
+
+requires:
+  - "helm >= 3.12"
+  - "kubectl configured"
+  - "kubernetes cluster accessible"

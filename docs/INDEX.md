@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-05 🟢 Em andamento
+**Last Updated**: 2026-03-07 🟢 Em andamento
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-05 — IMP-14 Fase A ✅ concluída (A.1–A.8) — IMP-17 debate aberto (Issue Templates + load-mcp.sh + VS Code tasks/launch)
+**Last Session**: 2026-03-07 — Início sessão: regras carregadas, MCP iniciado, sessão anterior recuperada, scan segurança 🟢, raiz organizada
 
 ---
 
@@ -65,7 +65,8 @@ a-default-project/
 │       ├── 2026-02-27/          # Domain Profiles — 19 decisões de design (encerrada)
 │       ├── 2026-02-28/          # IMP-01 debate + IMP-13 consolidação copilot files (encerrada)
 │       ├── 2026-03-01/          # IMP-01..08 concluídos: scaffold.py, prompts, domain profiles (encerrada)
-│       └── 2026-03-05/          # IMP-14 debate: SpecKit no filho + novos profiles (em andamento)
+│       ├── 2026-03-05/          # IMP-14 Fase A ✅ + IMP-17 debate (encerrada)
+│       └── 2026-03-07/          # Início sessão: scan segurança, organização, recuperação (em andamento)
 ├── scripts/                        # Automation scripts
 │   ├── scaffold.py               # ✅ CRIADO 2026-03-01 — PEP 723, uv run, entry point
 │   ├── lib/                      # Módulos: config, ui, project, links, git, templates, vscode
@@ -178,6 +179,8 @@ a-default-project/
 | `.github/prompts/domain/devops-programming.prompt.md` | Domain Profile: Programação | ✅ Criado 2026-03-01 |
 | `.github/prompts/domain/devops-infrastructure.prompt.md` | Domain Profile: Infraestrutura | ✅ Criado 2026-03-01 |
 | `.github/prompts/domain/devops-analysis.prompt.md` | Domain Profile: Análise | ✅ Criado 2026-03-01 |
+| `.github/prompts/domain/devops-security.prompt.md` | Domain Profile: Segurança (transversal) | ✅ Criado 2026-03-05 |
+| `.github/copilot-instructions.md` | Auto-injeção de regras P0/P1 em todo chat | ✅ Criado 2026-03-07 |
 
 ### Automation
 | File | Purpose | Status |
@@ -444,10 +447,15 @@ make dev
 - ✅ Rituais de sessão (IMP-02/03/04) criados
 - 🔵 IMP-09 — melhorar template `.copilot-rules-[projeto].md` em `templates.py`
 - 🔵 IMP-10 — `docs/copilot/DOMAIN-*.md` (docs humanos dos domínios)
+- ✅ IMP-14 Fase A — SpecKit no projeto filho + novos Domain Profiles (2026-03-05)
+- 🟡 IMP-17 — Issue Templates + load-mcp.sh + VS Code tasks/launch (em debate D-26..D-34)
+- 📁 `docs/GITHUB-COPILOT-AGENTS-RESOURCES.md` — Renomeado de "GitHub Copilot Recursos de Agents etc.md" (2026-03-07)
 
 ### Next Actions
-1. IMP-09: Enriquecer `generate_copilot_rules()` em `scripts/lib/templates.py`
-2. IMP-10: Criar `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
+1. IMP-17: Confirmar D-26..D-34 e implementar Fase A
+2. IMP-14 Fase B: `devops-cicd.prompt.md` + docs de uso do scaffold
+3. IMP-09: Enriquecer `generate_copilot_rules()` em `scripts/lib/templates.py`
+4. IMP-10: Criar `docs/copilot/DOMAIN-PROGRAMMING.md`, `DOMAIN-INFRASTRUCTURE.md`, `DOMAIN-ANALYSIS.md`
 3. Testar `scaffold.py` em projeto real
 
 ---
