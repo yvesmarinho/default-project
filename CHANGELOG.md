@@ -9,6 +9,21 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+#### Documentação por Perfil (IMP-29)
+- `scripts/lib/templates.py` — `generate_profile_guide()` — gera `docs/PROFILE-GUIDE-{combo}.md` no projeto destino:
+  - Tabela de perfis ativos com camada e descrição
+  - Inventário de arquivos gerados por perfil (de `generates.files` / `templates`)
+  - Requisitos de segurança consolidados (de `security.enforces`)
+  - Quick Start com pré-requisitos e pré-requisitos agregados
+  - Referências por stack (baseadas nas `tags` dos perfis)
+  - Idempotente — não sobrescreve se já existe
+- `_compute_combo_slug()` — slug derivado dos perfis layer2+ (exclui core e transversais)
+- `_layer_order_int()` / `_layer_display_name()` — helpers de mapeamento de camada
+- `scripts/scaffold.py` — integração: guia gerado após composição e após `--upgrade`
+- `tests/test_smoke_imp29.py` — 33 testes (307 total)
+
 ---
 
 ## [1.3.0] — 2026-03-07
