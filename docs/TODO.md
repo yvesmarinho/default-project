@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-08 — IMP-32 ✅ (scaffold --validate, validação de profile-descriptors, 410 tests)
+**Last Updated**: 2026-03-08 — Plano de ação pós-homologação (IMP-33 a IMP-44 definidas)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -12,6 +12,163 @@
 
 > Todas as 19 decisões de design estão resolvidas. Ver [`docs/copilot/DOMAIN-PROFILES-DECISIONS.md`](copilot/DOMAIN-PROFILES-DECISIONS.md)
 > **Roadmap atualizado em IMP-19 (2026-03-07)** — Debate: `docs/SESSIONS/2026-03-07/IMP-19-DEBATE.md`
+
+---
+
+## 📋 Plano de Ação Pós-Homologação
+
+> **Origem**: Debate de homologação 2026-03-08 — 6 perspectivas profissionais analisaram IMPs 01–32.
+> **Documento completo**: [`docs/SESSIONS/2026-03-08/HOMOLOGATION-DEBATE-2026-03-08.md`](SESSIONS/2026-03-08/HOMOLOGATION-DEBATE-2026-03-08.md)
+
+---
+
+### 🔴 P0 — Quick wins (baixo esforço, alto impacto) — executar na próxima sessão
+
+- [ ] **[IMP-33]** Fechar o "perfil fantasma" `devops-security` + atualizar `TEMPLATE-VERSIONS.md`
+  - Criar `profile-descriptors/devops-security.yaml` (descriptor completo do perfil transversal)
+  - `--validate` deve sair de 9 warnings para 0 warnings
+  - Atualizar `TEMPLATE-VERSIONS.md`: adicionar k8s-helm, terraform-aws, data-pipeline-airflow, data-warehouse-dbt, lgpd-baseline, soc2-baseline (todos implementados mas ausentes da tabela)
+  - Atualizar `COMPATIBILITY-MATRIX.md` com `devops-security` como linha/coluna
+  - *Alerta resolvido*: Template Architect • AppSec • Release Maintainer
+
+- [ ] **[IMP-34]** QUICKSTART.md + exemplo de output de `generate_profile_guide()`
+  - `QUICKSTART.md` na raiz do projeto: 5 minutos para gerar o primeiro projeto
+    - Pré-requisitos (Python 3.10+, uv)
+    - `python scripts/scaffold.py --list-profiles`
+    - `python scripts/scaffold.py --ci --name meu-projeto --domain programming --language python`
+    - `python scripts/scaffold.py --compose python-fastapi --ci --name meu-projeto`
+  - Adicionar exemplo `docs/PROFILE-GUIDE-python-fastapi.md` no repositório (output real gerado pelo template)
+  - *Alerta resolvido*: Technical Writer
+
+---
+
+### 🟡 P1 — Governança e processo (1–2 sessões)
+
+- [ ] **[IMP-35]** Processo de release automático
+  - Target `make release VERSION=x.y.z` que:
+    1. Valida que VERSION segue semver
+    2. Fecha seção `[Unreleased]` no `CHANGELOG.md` com a data e versão
+    3. Bumpa `SCAFFOLD_VERSION` em `scripts/lib/config.py`
+    4. Cria git tag `vX.Y.Z` anotada com o conteúdo do CHANGELOG daquela versão
+    5. Executa `--publish` gerando o tarball de release
+  - `scripts/release.sh` ou `scripts/lib/release.py` com a lógica
+  - *Alerta resolvido*: Release Maintainer
+
+- [ ] **[IMP-36]** Staleness check no CI
+  - Adicionar regra no `ci-template.yml` (job `lint` ou job separado `staleness`):
+    - Lê todos os descriptors, extrai `last_tested`/`LAST_TESTED_DATE`
+    - Alerta (warning, não falha) se data > 90 dias
+  - Implementar `_check_staleness()` em `validate.py` como nova regra opcional
+  - Adicionar campo `stale_days_threshold` em `ValidationReport`
+  - *Alerta resolvido*: SRE / Infra
+
+- [ ] **[IMP-37]** `MIGRATION-GUIDE.md`
+  - Documento explicando como um projeto gerado com v1.0.0 atualiza para versões futuras
+  - Seções: "O que o `--upgrade` faz automaticamente" vs. "O que requer ação manual"
+  - Template de entrada por versão: `## Migrando de v1.0.0 para v1.1.0`
+  - *Alerta resolvido*: Release Maintainer
+
+---
+
+### 🔵 P2 — Qualidade técnica (2–3 sessões)
+
+- [ ] **[IMP-38]** Refatorar `scaffold.py` — extrair flows para `scripts/lib/flows/`
+  - `scaffold.py` está com ~900 linhas; cada novo perfil Layer 2 vai crescer `flow_compose_profiles`
+  - Extrair cada `flow_*()` para módulo dedicado:
+    - `scripts/lib/flows/new_project.py`
+    - `scripts/lib/flows/compose.py`
+    - `scripts/lib/flows/upgrade.py`
+    - `scripts/lib/flows/dry_run.py`
+    - `scripts/lib/flows/publish.py` (mover de lib/)
+    - `scripts/lib/flows/validate.py` (mover de lib/)
+  - `scaffold.py` vira só argparse + dispatch (≤3 linhas por flow)
+  - Zero mudança de comportamento — testes existentes devem continuar passando
+  - *Alerta resolvido*: Template Architect
+
+- [ ] **[IMP-39]** Ampliar snapshot tests
+  - `test_templates_snapshot.py` atualmente testa apenas 3 arquivos
+  - Adicionar snapshots para todos os 10 perfis: pelo menos 1 arquivo representativo por perfil
+  - Targets: `python-fastapi/src/main.py`, `typescript-next/app/layout.tsx`, `k8s-helm/helm/Chart.yaml`, `terraform-aws/infra/main.tf`, `lgpd-baseline/docs/lgpd/DATA-MAPPING.md`
+  - *Alerta resolvido*: Release Maintainer
+
+- [ ] **[IMP-40]** `RUNBOOK.md` parametrizado por perfil
+  - `infra.py:generate_runbook()` hoje gera template genérico
+  - Adicionar blocos condicionais por perfil Layer 2 e Layer 3:
+    - k8s-helm: comandos `helm status`, `helm rollback`, `kubectl rollout undo`
+    - terraform-aws: `terraform plan`, `terraform apply -target`, `aws ecs describe-services`
+    - python-fastapi: `uv run pytest`, checklist de health endpoint
+  - Integrar com `ProfileComposer`: saber quais perfis foram aplicados e injetar as seções corretas
+  - *Alerta resolvido*: SRE / Infra
+
+---
+
+### ⚪ P3 — Evolução de schema (futuro / próxima versão MAJOR)
+
+- [ ] **[IMP-41]** `security.enforces` estruturado para automação
+  - Hoje é lista de strings livres. Mudar para:
+    ```yaml
+    security:
+      enforces:
+        - control: "CC6.1"
+          description: "Acesso com menor privilégio"
+          tool: "trivy"
+          severity: "high"
+          automated: true
+    ```
+  - Atualizar schema (`PROFILE-DESCRIPTOR-SCHEMA.md`) + todos os 10 descritores
+  - Atualizar `validate.py` para validar a nova estrutura
+  - `generate_profile_guide()` passa a gerar tabela de controles em vez de lista de strings
+  - *Alerta resolvido*: AppSec
+
+- [ ] **[IMP-42]** SBOM nos perfis Layer 2
+  - Adicionar target `make sbom` em todos os perfis Python: `uv run cyclonedx-bom`
+  - Adicionar target `make sbom` no perfil TypeScript: `pnpm dlx @cyclonedx/cyclonedx-npm`
+  - Integrar SBOM no job `cli-smoke` do `ci-template.yml`
+  - Documentar no `soc2-baseline` como evidência do controle CC8
+  - *Alerta resolvido*: AppSec
+
+- [ ] **[IMP-43]** `scaffold.py --new-profile NOME` — scaffolder de perfis
+  - Gera `profile-descriptors/NOME.yaml` com todos os campos do schema preenchidos com defaults
+  - Cria `profile-descriptors/NOME.md` com instruções de preenchimento
+  - Executa `--validate` automaticamente após geração
+  - *Alerta resolvido*: Template Architect
+
+- [ ] **[IMP-44]** Subcomandos CLI (versão MAJOR — breaking change)
+  - Migrar de flags flat para subcomandos:
+    ```
+    scaffold new     (antigo --new)
+    scaffold compose (antigo --compose)
+    scaffold upgrade (antigo --upgrade)
+    scaffold publish (antigo --publish)
+    scaffold validate (antigo --validate)
+    scaffold list-profiles (antigo --list-profiles)
+    scaffold dry-run (antigo --dry-run)
+    scaffold new-profile (novo, IMP-43)
+    ```
+  - Manter flags legadas com aviso de deprecação por 1 versão MINOR
+  - Atualizar copilot-instructions, prompts e QUICKSTART após migração
+  - *Alerta resolvido*: DevEx / CLI
+
+---
+
+### Resumo do Plano
+
+| IMP | Título | Prioridade | Esforço | Origem |
+|---|---|---|---|---|
+| IMP-33 | devops-security.yaml + TEMPLATE-VERSIONS.md | P0 | Baixo | Template Arch • AppSec • Release |
+| IMP-34 | QUICKSTART.md + exemplo PROFILE-GUIDE | P0 | Baixo | Docs |
+| IMP-35 | `make release VERSION=x.y.z` | P1 | Médio | Release |
+| IMP-36 | Staleness check no CI | P1 | Médio | SRE |
+| IMP-37 | MIGRATION-GUIDE.md | P1 | Baixo | Release |
+| IMP-38 | Refactor scaffold.py → `lib/flows/` | P2 | Alto | Template Arch |
+| IMP-39 | Ampliar snapshot tests | P2 | Médio | Release |
+| IMP-40 | RUNBOOK.md parametrizado por perfil | P2 | Médio | SRE |
+| IMP-41 | `security.enforces` estruturado | P3 | Alto | AppSec |
+| IMP-42 | SBOM nos perfis Layer 2 | P3 | Médio | AppSec |
+| IMP-43 | `--new-profile` scaffolder | P3 | Alto | Template Arch |
+| IMP-44 | Subcomandos CLI (breaking change) | P3 | Alto | DevEx |
+
+---
 
 ---
 
