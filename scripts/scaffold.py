@@ -39,7 +39,7 @@ import json as _json
 
 from lib import composer as _composer_module
 from lib import config as _config_module
-from lib import git, infra, links, project, templates, vscode
+from lib import git, infra, links, project, publish as _publish_module, templates, vscode
 from lib.config import SCAFFOLD_VERSION
 from lib.project import config_from_state, read_scaffold_state, write_scaffold_state
 from lib.ui import (
@@ -416,6 +416,53 @@ def flow_check_links(args: argparse.Namespace) -> int:
     return 1 if broken_or_missing else 0
 
 
+def flow_publish(args: argparse.Namespace) -> int:
+    """Cria tarball de release do template em dist/ (ou --output-dir)."""
+    use_json: bool = getattr(args, "json_output", False)
+    output_dir_arg: str | None = getattr(args, "output_dir", None)
+
+    project_root = Path(__file__).parent.parent
+    output_dir = Path(output_dir_arg) if output_dir_arg else project_root / "dist"
+
+    if not use_json:
+        console.print(
+            f"\n  [bold cyan]📦 Publicando template v{SCAFFOLD_VERSION}...[/bold cyan]\n"
+            f"  [dim]Destino: {output_dir}[/dim]\n"
+        )
+
+    try:
+        result = _publish_module.publish_template(
+            output_dir=output_dir,
+            project_root=project_root,
+        )
+    except Exception as exc:
+        if use_json:
+            print(_json.dumps({"error": str(exc)}, ensure_ascii=False))
+        else:
+            console.print(f"  [bold red]\u274c Erro ao publicar: {exc}[/bold red]\n")
+        return 1
+
+    if use_json:
+        output = {
+            "success":    True,
+            "version":    result.version,
+            "tarball":    str(result.tarball_path),
+            "manifest":   str(result.manifest_path),
+            "file_count": result.file_count,
+            "size_bytes": result.size_bytes,
+            "created_at": result.created_at,
+        }
+        print(_json.dumps(output, indent=2, ensure_ascii=False))
+        return 0
+
+    size_kb = result.size_bytes / 1024
+    console.print("  [bold green]\u2705 Template publicado com sucesso![/bold green]")
+    console.print(f"  [dim]Tarball:   {result.tarball_path}[/dim]")
+    console.print(f"  [dim]Manifesto: {result.manifest_path}[/dim]")
+    console.print(f"  [dim]{result.file_count} arquivo(s) | {size_kb:.1f} KB[/dim]\n")
+    return 0
+
+
 def flow_generate_rules(args: argparse.Namespace) -> int:
     """Gera apenas o arquivo .copilot-rules-[projeto].md."""
     ci_mode = args.ci
@@ -696,6 +743,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="usar com --upgrade: sobrescreve arquivos existentes com divergência",
     )
     action_group.add_argument(
+        "--publish",
+        action="store_true",
+        help="gera tarball de release do template (dist/enterprise-template-v*.tar.gz)",
+    )
+    action_group.add_argument(
+        "--output-dir",
+        metavar="PATH",
+        dest="output_dir",
+        help="diretório de saída para --publish (default: dist/)",
+    )
+    action_group.add_argument(
         "--config",
         metavar="FILE",
         help="arquivo YAML com configuração do projeto (força modo não-interativo)",
@@ -770,6 +828,10 @@ def main() -> int:
         except Exception as exc:
             console.print(f"\n  [bold red]❌ Erro ao carregar --config:[/bold red] {exc}\n")
             return 1
+
+    # --publish: gera tarball de release e sai
+    if getattr(args, "publish", False):
+        return flow_publish(args)
 
     # --list-profiles: lista perfis e sai
     if getattr(args, "list_profiles", False):

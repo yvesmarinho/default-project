@@ -10,22 +10,31 @@
 
 ---
 
-### 🚀 IMP-29 — Documentação gerada por perfil ativo
+### IMP-29 — Documentação gerada por perfil ativo
 
-**Horário**: início de sessão
 **Status**: ✅ Concluído
 
 **O que foi feito:**
-- `scripts/lib/templates.py` — adicionados:
-  - `_LAYER_SORT_ORDER`, `_LAYER_DISPLAY`, `_TAG_REFERENCES` — constantes de mapeamento
-  - `_layer_order_int()`, `_layer_display_name()` — helpers de camada
-  - `_compute_combo_slug()` — gera slug a partir dos perfis layer2+ (exclui core/transversais)
-  - `_get_guide_file_entries()` — normaliza Schema A e Schema B para inventário de arquivos
-  - `generate_profile_guide()` — cria `docs/PROFILE-GUIDE-{combo_slug}.md` com 5 seções obrigatórias (idempotente)
-- `scripts/scaffold.py` — integração em `flow_compose_profiles()` e `flow_upgrade()`
-- `tests/test_smoke_imp29.py` — 33 testes criados
-- `docs/TODO.md` — IMP-29 marcado `✅ CONCLUÍDO 2026-03-08`
-- `CHANGELOG.md`, `docs/INDEX.md` — atualizados
+- `scripts/lib/templates.py` — `generate_profile_guide()`, `_compute_combo_slug()`, helpers de camada
+- `scripts/scaffold.py` — integrado em `flow_compose_profiles()` e `flow_upgrade()`
+- `tests/test_smoke_imp29.py` — 33 testes
+- `docs/TODO.md` — IMP-29 marcado como concluído
 
-**Resultado**: 307 testes passando (274 anteriores + 33 novos)
+**Resultado**: 307 testes passando
+
+---
+
+### IMP-30 — scaffold.py --publish (tarball de release)
+
+**O que foi feito:**
+- `scripts/lib/publish.py` — novo módulo:
+  - `_INCLUDE_PATTERNS` — 15 padrões glob para coleta de arquivos
+  - `_collect_files(project_root)` — coleta deduplica, sem `__pycache__`/`.venv`/`.git`/`.secrets`/`dist`/`*.pyc`
+  - `publish_template(output_dir, project_root)` — gera `enterprise-template-v{version}-{date}.tar.gz` + `release-manifest-v*.json`
+  - `PublishResult` dataclass com `tarball_path`, `manifest_path`, `file_count`, `size_bytes`, `version`, `created_at`, `included_files`
+- `scripts/scaffold.py` — `flow_publish()` + flags `--publish` e `--output-dir`
+- `tests/test_smoke_imp30.py` — 35 testes (3 classes: TestCollectFiles, TestPublishTemplate, TestPublishCLI)
+- `docs/TODO.md`, `CHANGELOG.md`, `docs/INDEX.md` — atualizados
+
+**Resultado**: 342 testes passando (307 anteriores + 35 novos)
 

@@ -11,6 +11,16 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+#### Release Publishing (IMP-30)
+- `scripts/lib/publish.py` — módulo de publicação de release:
+  - `publish_template(output_dir, project_root)` — gera `enterprise-template-v{version}-{YYYYMMDD}.tar.gz`
+  - `_collect_files(project_root)` — coleta arquivos por padrões de inclusão, excluindo `__pycache__`, `.venv`, `.git`, `.secrets`, `dist`, `*.pyc`
+  - Manifesto JSON (`release-manifest-v{version}-{YYYYMMDD}.json`) com `version`, `file_count`, `size_bytes`, `files`
+  - Idempotente por data: chamadas múltiplas no mesmo dia sobrescrevem o tarball anterior
+- `scripts/scaffold.py --publish` — flag CLI para gerar release tarball
+- `scripts/scaffold.py --output-dir PATH` — diretório de saída configurável (default: `dist/`)
+- `tests/test_smoke_imp30.py` — 35 testes (342 total)
+
 #### Documentação por Perfil (IMP-29)
 - `scripts/lib/templates.py` — `generate_profile_guide()` — gera `docs/PROFILE-GUIDE-{combo}.md` no projeto destino:
   - Tabela de perfis ativos com camada e descrição

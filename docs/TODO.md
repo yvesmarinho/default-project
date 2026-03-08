@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-08 — IMP-29 ✅ (documentação gerada por perfil ativo, 307 tests)
+**Last Updated**: 2026-03-08 — IMP-30 ✅ (scaffold --publish, tarball de release, 342 tests)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -110,6 +110,14 @@
   - [x] Integrado em `flow_compose_profiles()` e `flow_upgrade()` em `scaffold.py`
   - [x] Idempotente — skipa se `docs/PROFILE-GUIDE-{slug}.md` já existe
   - [x] 33 testes PASSED → total: **307 tests**
+- [x] **[IMP-30]** ✅ **CONCLUÍDO 2026-03-08** — `scaffold.py --publish` — tarball de release do template
+  - [x] `scripts/lib/publish.py` — `publish_template(output_dir, project_root)` gera `enterprise-template-v{version}-{date}.tar.gz`
+  - [x] Inclui: scripts/lib, profile-descriptors, .github/templates, .github/prompts, Makefile, README, CHANGELOG, testes
+  - [x] Exclui: __pycache__, .venv, .git, .secrets, dist, *.pyc
+  - [x] Manifesto JSON (`release-manifest-v*.json`) com versão, file_count, size_bytes, lista de arquivos
+  - [x] `--output-dir PATH` — diretório de saída configurável (default: `dist/`)
+  - [x] Suporte a `--json` para CI/automação
+  - [x] 35 testes PASSED → total: **342 tests**
 - [x] **[IMP-17]** ✅ **CONCLUÍDO** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
 
 ---
