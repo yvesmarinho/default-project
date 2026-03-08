@@ -38,3 +38,19 @@
 
 **Resultado**: 342 testes passando (307 anteriores + 35 novos)
 
+---
+
+### IMP-31 — CI/CD do template (GitHub Actions)
+
+**O que foi feito:**
+- `.github/workflows/ci-template.yml` — workflow completo com 3 jobs:
+  - **test** — matrix Python 3.10 / 3.11 / 3.12; `pip install pyyaml rich pytest`; `pytest tests/ --tb=short -q`
+  - **cli-smoke** — `needs: test`; executa `--list-profiles --json`, `--dry-run`, `--publish --json` contra código real
+  - **lint** — `py_compile` em `scripts/lib/*.py` + `yaml.safe_load` em `profile-descriptors/*.yaml`
+- Disparo: `pull_request` + `push` com filtro `paths: ["scripts/**", "tests/**", "profile-descriptors/**", ".github/workflows/**"]`
+- `concurrency: cancel-in-progress: true` para evitar runs duplicadas em PRs
+- `tests/test_smoke_imp31.py` — 26 testes (5 classes: TestWorkflowExists, TestWorkflowTriggers, TestJobTest, TestJobCliSmoke, TestJobLint)
+- `docs/TODO.md`, `CHANGELOG.md`, `docs/INDEX.md` — atualizados
+
+**Resultado**: 368 testes passando (342 anteriores + 26 novos)
+

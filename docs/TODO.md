@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-08 — IMP-30 ✅ (scaffold --publish, tarball de release, 342 tests)
+**Last Updated**: 2026-03-08 — IMP-31 ✅ (CI/CD GitHub Actions, pytest matrix 3.10/3.11/3.12, 368 tests)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -118,6 +118,12 @@
   - [x] `--output-dir PATH` — diretório de saída configurável (default: `dist/`)
   - [x] Suporte a `--json` para CI/automação
   - [x] 35 testes PASSED → total: **342 tests**
+- [x] **[IMP-31]** ✅ **CONCLUÍDO 2026-03-08** — CI/CD do template — GitHub Actions pytest matrix + cli-smoke + lint
+  - [x] `.github/workflows/ci-template.yml` — 3 jobs: **test** (matrix 3.10/3.11/3.12), **cli-smoke**, **lint**
+  - [x] Disparo em `pull_request` + `push` (paths: scripts/**, tests/**, profile-descriptors/**)
+  - [x] `concurrency` com `cancel-in-progress: true` para PRs
+  - [x] Job **lint**: `py_compile` em todos `scripts/lib/*.py` + `yaml.safe_load` em `profile-descriptors/*.yaml`
+  - [x] `tests/test_smoke_imp31.py` — 26 testes PASSED → total: **368 tests**
 - [x] **[IMP-17]** ✅ **CONCLUÍDO** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
 
 ---

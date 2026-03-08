@@ -1,0 +1,167 @@
+name: CI — Template Test Suite
+
+on:
+  pull_request:
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - "profile-descriptors/**"
+      - ".github/workflows/ci-template.yml"
+      - "pytest.ini"
+      - "pyproject.toml"
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - "profile-descriptors/**"
+      - ".github/workflows/ci-template.yml"
+      - "pytest.ini"
+      - "pyproject.toml"
+
+# Cancela runs anteriores do mesmo PR/branch para economizar minutos
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Suite completa de testes (pytest tests/)
+  # ---------------------------------------------------------------------------
+  test:
+    name: "pytest ${{ matrix.python-version }}"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'pytest.ini') }}
+          restore-keys: |
+            pip-${{ matrix.python-version }}-
+
+      - name: Install test dependencies
+        run: pip install pytest rich pyyaml
+
+      - name: Run full test suite
+        run: pytest tests/ --tb=short -q
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Smoke de integração CLI (scaffold.py sem dependências extras)
+  # ---------------------------------------------------------------------------
+  cli-smoke:
+    name: CLI smoke (--list-profiles + --dry-run + --publish)
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install CLI dependencies
+        run: pip install rich pyyaml
+
+      - name: scaffold --list-profiles --json
+        run: |
+          python scripts/scaffold.py --list-profiles --json | python -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          assert isinstance(data, list), f'Expected list, got {type(data)}'
+          assert len(data) > 0, 'Profile list is empty'
+          print(f'OK: {len(data)} profiles found')
+          "
+
+      - name: scaffold --dry-run (Python/programming)
+        run: |
+          python scripts/scaffold.py \
+            --dry-run --json --ci \
+            --name smoke-test \
+            --domain programming \
+            --language python | python -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          assert data.get('dry_run') is True, 'dry_run flag missing'
+          assert len(data.get('manifest', [])) > 0, 'empty manifest'
+          print(f'OK: dry-run manifest has {len(data[\"manifest\"])} ops')
+          "
+
+      - name: scaffold --publish --json
+        run: |
+          python scripts/scaffold.py --publish --json --output-dir /tmp/template-release | python -c "
+          import json, sys, os
+          data = json.load(sys.stdin)
+          assert data.get('success') is True, f'publish failed: {data}'
+          assert data.get('file_count', 0) > 0, 'file_count is 0'
+          assert os.path.exists(data['tarball']), f'tarball not found: {data[\"tarball\"]}'
+          print(f'OK: tarball with {data[\"file_count\"]} files ({data[\"size_bytes\"]} bytes)')
+          "
+
+  # ---------------------------------------------------------------------------
+  # Job 3: Lint — verifica que scaffold.py e lib/*.py são válidos sintaticamente
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Syntax check (py_compile)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check Python syntax
+        run: |
+          python -m py_compile scripts/scaffold.py
+          python -m py_compile scripts/lib/composer.py
+          python -m py_compile scripts/lib/config.py
+          python -m py_compile scripts/lib/git.py
+          python -m py_compile scripts/lib/infra.py
+          python -m py_compile scripts/lib/links.py
+          python -m py_compile scripts/lib/project.py
+          python -m py_compile scripts/lib/publish.py
+          python -m py_compile scripts/lib/templates.py
+          python -m py_compile scripts/lib/ui.py
+          python -m py_compile scripts/lib/vscode.py
+          echo "All Python files are syntactically valid."
+
+      - name: Check profile descriptors are valid YAML
+        run: |
+          python -c "
+          import yaml, sys
+          from pathlib import Path
+          errors = []
+          for f in sorted(Path('profile-descriptors').glob('*.yaml')):
+              try:
+                  yaml.safe_load(f.read_text(encoding='utf-8'))
+              except yaml.YAMLError as e:
+                  errors.append(f'{f.name}: {e}')
+          if errors:
+              print('YAML errors:')
+              for e in errors: print(' ', e)
+              sys.exit(1)
+          print(f'OK: {len(list(Path(\"profile-descriptors\").glob(\"*.yaml\")))} YAML files valid')
+          "

@@ -11,6 +11,15 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+#### CI/CD do Template (IMP-31)
+- `.github/workflows/ci-template.yml` — workflow GitHub Actions completo com 3 jobs:
+  - **test** — matrix Python 3.10 / 3.11 / 3.12 rodando `pytest tests/ --tb=short -q`
+  - **cli-smoke** — `--list-profiles --json`, `--dry-run`, `--publish --json` contra código real
+  - **lint** — `py_compile` em todos `scripts/lib/*.py` + `yaml.safe_load` em todos `profile-descriptors/*.yaml`
+- Disparo em `pull_request` e `push` com filtro de paths (`scripts/**`, `tests/**`, `profile-descriptors/**`)
+- `concurrency` com `cancel-in-progress: true` para PRs
+- `tests/test_smoke_imp31.py` — 26 testes (368 total)
+
 #### Release Publishing (IMP-30)
 - `scripts/lib/publish.py` — módulo de publicação de release:
   - `publish_template(output_dir, project_root)` — gera `enterprise-template-v{version}-{YYYYMMDD}.tar.gz`
