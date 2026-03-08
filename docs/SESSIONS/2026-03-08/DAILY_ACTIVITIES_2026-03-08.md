@@ -74,3 +74,38 @@
 
 **Resultado**: 410 testes passando (368 anteriores + 42 novos)
 
+---
+
+### Homologação do template — Debate por 6 perspectivas profissionais
+
+**O que foi feito:**
+- Revisão completa do projeto por 6 papéis: Template Architect, DevEx/CLI Engineer, SRE/Infra, AppSec, Tech Docs, Release Maintainer
+- Matriz de homologação gerada com scores por dimensão (estrutura, CLI, segurança, testes, docs, CI/CD)
+- Criado `docs/SESSIONS/2026-03-08/HOMOLOGATION-DEBATE-2026-03-08.md` com debate completo e alertas levantados
+- Debate commitado em `9b563e7`
+
+**Alertas identificados (por perspectiva):**
+- Template Architect: `devops-security.yaml` ausente (warnings em `--validate`), TEMPLATE-VERSIONS.md desatualizado
+- DevEx/CLI: `--export-json` ausente, `--info <perfil>` ausente, shell-completion não implementado
+- SRE/Infra: `docker-compose.yml` de dev não existe, integração com secrets managers (Vault/AWS SM) ausente
+- AppSec: `SECURITY.md` ausente, SBOM não gerado no publish, scan SAST/DAST não configurado
+- Tech Docs: `docs/ARCHITECTURE.md` ausente, `CONTRIBUTING.md` ausente, ADRs não existem
+- Release Maintainer: `CHANGELOG.md` manual (sem conventional commits), `docs/COMPATIBILITY-MATRIX.md` desatualizado
+
+**Resultado**: Debate documentado, roadmap criado — 12 novos itens no backlog
+
+---
+
+### Plano de Ação Pós-Homologação (IMP-33 a IMP-44)
+
+**O que foi feito:**
+- Criados 12 novos IMPs em `docs/TODO.md`, seção "Plano de Ação Pós-Homologação"
+- Distribuídos em 4 prioridades (P0 a P3):
+  - **P0** (crítico): IMP-33 (`devops-security.yaml`, atualização TEMPLATE-VERSIONS), IMP-34 (`SECURITY.md`, SBOM no publish)
+  - **P1** (alta): IMP-35 (`--info <perfil>` CLI), IMP-36 (`docker-compose.yml` de dev), IMP-37 (SAST básico no CI)
+  - **P2** (média): IMP-38 (`ARCHITECTURE.md`), IMP-39 (`CONTRIBUTING.md`), IMP-40 (ADRs), IMP-41 (`--export-json`)
+  - **P3** (baixa): IMP-42 (shell-completion), IMP-43 (integração secrets managers), IMP-44 (conventional commits + changelog automation)
+- Commitado em `9b563e7`
+
+**Resultado**: Roadmap completo para as próximas sessões
+

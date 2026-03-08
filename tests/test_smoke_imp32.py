@@ -55,8 +55,8 @@ from lib.validate import (  # noqa: E402
     ProfileResult,
     ValidationIssue,
     ValidationReport,
-    _validate_descriptor,
     _cross_validate,
+    _validate_descriptor,
     validate_descriptors,
 )
 
