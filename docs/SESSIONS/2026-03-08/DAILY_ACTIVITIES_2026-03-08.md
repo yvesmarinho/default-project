@@ -54,3 +54,23 @@
 
 **Resultado**: 368 testes passando (342 anteriores + 26 novos)
 
+---
+
+### IMP-32 — scaffold.py --validate (validação de profile-descriptors)
+
+**O que foi feito:**
+- `scripts/lib/validate.py` — novo módulo:
+  - `ValidationIssue(field, severity, message)` — issue individual
+  - `ProfileResult` — resultado por descriptor (status: ok/warning/error; filtra .errors e .warnings)
+  - `ValidationReport` — agregado: valid, profiles_checked, total_errors, total_warnings
+  - `_validate_descriptor(data, path)` — 6 regras: name, description, version (semver), last_tested, layer, YAML parse
+  - `_cross_validate(results, all_data)` — nomes duplicados + combines_with/excludes_with com refs inválidas
+  - `validate_descriptors(dir)` — entrada pública; carrega todos `*.yaml` via yaml.safe_load
+  - Aceita schema antigo (VERSION/LAST_TESTED_DATE) e novo (version/last_tested)
+  - combines_with: lista de strings OU lista de objetos {name, notes}
+- `scripts/scaffold.py` — `flow_validate()` + flag `--validate` + `--validate --json`
+- `tests/test_smoke_imp32.py` — 42 testes (7 classes: TestValidationIssue, TestProfileResult, TestValidationReport, TestValidateDescriptor, TestCrossValidate, TestValidateDescriptorsIntegration, TestValidateCLI)
+- `docs/TODO.md`, `CHANGELOG.md`, `docs/INDEX.md` — atualizados
+
+**Resultado**: 410 testes passando (368 anteriores + 42 novos)
+

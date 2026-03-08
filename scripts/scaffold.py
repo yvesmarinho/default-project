@@ -17,6 +17,8 @@ Uso:
   scaffold.py --check                 # verifica symlinks e sai
   scaffold.py --list-profiles         # lista perfis disponíveis e sai
   scaffold.py --list-profiles --json  # output JSON (para CI/automação)
+  scaffold.py --validate              # valida todos os profile-descriptors
+  scaffold.py --validate --json       # validação em JSON (para CI)
   scaffold.py --dry-run --ci --name X --domain Y --language Z  # simula sem criar
   scaffold.py --config config.yaml    # lê config de arquivo YAML (não-interativo)
   scaffold.py --ci --name X --domain Y --language Z  # modo não-interativo
@@ -39,7 +41,9 @@ import json as _json
 
 from lib import composer as _composer_module
 from lib import config as _config_module
-from lib import git, infra, links, project, publish as _publish_module, templates, vscode
+from lib import git, infra, links, project, templates, vscode
+from lib import publish as _publish_module
+from lib import validate as _validate_module
 from lib.config import SCAFFOLD_VERSION
 from lib.project import config_from_state, read_scaffold_state, write_scaffold_state
 from lib.ui import (
@@ -463,6 +467,83 @@ def flow_publish(args: argparse.Namespace) -> int:
     return 0
 
 
+def flow_validate(args: argparse.Namespace) -> int:
+    """Valida todos os profile-descriptors e reporta erros/avisos."""
+    use_json: bool = getattr(args, "json_output", False)
+
+    report = _validate_module.validate_descriptors(_PROFILE_DESCRIPTORS_DIR)
+
+    if use_json:
+        output = {
+            "valid":            report.valid,
+            "descriptor_dir":   str(report.descriptor_dir),
+            "profiles_checked": report.profiles_checked,
+            "errors":           report.total_errors,
+            "warnings":         report.total_warnings,
+            "results": [
+                {
+                    "name":   r.name,
+                    "file":   r.file,
+                    "status": r.status,
+                    "issues": [
+                        {"field": i.field, "severity": i.severity, "message": i.message}
+                        for i in r.issues
+                    ],
+                }
+                for r in report.results
+            ],
+        }
+        print(_json.dumps(output, indent=2, ensure_ascii=False))
+        return 0 if report.valid else 1
+
+    from rich.table import Table
+
+    table = Table(
+        title="[bold]Validação dos Profile Descriptors[/bold]",
+        show_lines=True,
+        expand=False,
+    )
+    table.add_column("Perfil",   style="cyan",   no_wrap=True)
+    table.add_column("Arquivo",  style="dim",    no_wrap=True)
+    table.add_column("Status",   no_wrap=True)
+    table.add_column("Issues")
+
+    for r in report.results:
+        if r.status == "ok":
+            status_cell = "[green]✅ OK[/green]"
+        elif r.status == "warning":
+            status_cell = "[yellow]⚠  aviso[/yellow]"
+        else:
+            status_cell = "[red]❌ erro[/red]"
+
+        issues_text = ""
+        if r.issues:
+            lines = []
+            for iss in r.issues:
+                color = "red" if iss.severity == "error" else "yellow"
+                lines.append(f"[{color}]{iss.field}:[/{color}] {iss.message}")
+            issues_text = "\n".join(lines)
+
+        table.add_row(r.name, r.file, status_cell, issues_text)
+
+    console.print()
+    console.print(table)
+    console.print(
+        f"\n  [dim]{report.profiles_checked} perfil(s) verificado(s) | "
+        f"[red]{report.total_errors} erro(s)[/red] | "
+        f"[yellow]{report.total_warnings} aviso(s)[/yellow][/dim]\n"
+    )
+
+    if report.valid:
+        console.print("  [bold green]✅ Todos os descriptors são válidos.[/bold green]\n")
+    else:
+        console.print(
+            f"  [bold red]❌ {report.total_errors} erro(s) encontrado(s). "
+            f"Corrija os campos acima.[/bold red]\n"
+        )
+    return 0 if report.valid else 1
+
+
 def flow_generate_rules(args: argparse.Namespace) -> int:
     """Gera apenas o arquivo .copilot-rules-[projeto].md."""
     ci_mode = args.ci
@@ -754,6 +835,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="diretório de saída para --publish (default: dist/)",
     )
     action_group.add_argument(
+        "--validate",
+        action="store_true",
+        help="valida todos os profile-descriptors (campos, semver, refs cruzadas)",
+    )
+    action_group.add_argument(
         "--config",
         metavar="FILE",
         help="arquivo YAML com configuração do projeto (força modo não-interativo)",
@@ -828,6 +914,10 @@ def main() -> int:
         except Exception as exc:
             console.print(f"\n  [bold red]❌ Erro ao carregar --config:[/bold red] {exc}\n")
             return 1
+
+    # --validate: valida profile-descriptors e sai
+    if getattr(args, "validate", False):
+        return flow_validate(args)
 
     # --publish: gera tarball de release e sai
     if getattr(args, "publish", False):

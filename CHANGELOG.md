@@ -11,6 +11,17 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+#### Validação de Profile Descriptors (IMP-32)
+- `scripts/lib/validate.py` — módulo de validação de profile-descriptors:
+  - `validate_descriptors(dir) → ValidationReport` — valida todos os `.yaml` em `profile-descriptors/`
+  - 6 regras por descriptor: `name`, `description`, `version` (semver X.Y.Z), `last_tested`, `layer`, sintaxe YAML
+  - Validação cruzada: nomes duplicados + `combines_with`/`excludes_with` com perfis inexistentes (warning)
+  - Compatível com schema antigo (`VERSION`/`LAST_TESTED_DATE`) e novo (`version`/`last_tested`)
+  - `combines_with` aceita lista de strings e lista de objetos `{name, notes}`
+  - Exit code 0 se `valid=True` (erros=0; avisos são permitidos); exit code 1 se há erros
+- `scripts/scaffold.py --validate` — flag CLI de validação; `--validate --json` para CI/automação
+- `tests/test_smoke_imp32.py` — 42 testes (410 total)
+
 #### CI/CD do Template (IMP-31)
 - `.github/workflows/ci-template.yml` — workflow GitHub Actions completo com 3 jobs:
   - **test** — matrix Python 3.10 / 3.11 / 3.12 rodando `pytest tests/ --tb=short -q`

@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-08 — IMP-31 ✅ (CI/CD GitHub Actions, pytest matrix 3.10/3.11/3.12, 368 tests)
+**Last Updated**: 2026-03-08 — IMP-32 ✅ (scaffold --validate, validação de profile-descriptors, 410 tests)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -124,6 +124,15 @@
   - [x] `concurrency` com `cancel-in-progress: true` para PRs
   - [x] Job **lint**: `py_compile` em todos `scripts/lib/*.py` + `yaml.safe_load` em `profile-descriptors/*.yaml`
   - [x] `tests/test_smoke_imp31.py` — 26 testes PASSED → total: **368 tests**
+- [x] **[IMP-32]** ✅ **CONCLUÍDO 2026-03-08** — `scaffold.py --validate` — validação de profile-descriptors
+  - [x] `scripts/lib/validate.py` — módulo de validação: `ValidationIssue`, `ProfileResult`, `ValidationReport`, `validate_descriptors()`
+  - [x] 6 regras por descriptor: name, description, version (semver), last_tested, layer, sintaxe YAML
+  - [x] Validação cruzada: nomes duplicados + `combines_with`/`excludes_with` referenciando perfis inexistentes
+  - [x] Aceita schema antigo (VERSION/LAST_TESTED_DATE) e novo (version/last_tested)
+  - [x] Aceita `combines_with` como lista de strings ou lista de objetos `{name, notes}`
+  - [x] `flow_validate()` + flag `--validate` em `scaffold.py`; suporte a `--json`
+  - [x] Exit code 0 se valid (apenas warnings ok); exit code 1 se erros
+  - [x] `tests/test_smoke_imp32.py` — 42 testes PASSED → total: **410 tests**
 - [x] **[IMP-17]** ✅ **CONCLUÍDO** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
 
 ---
