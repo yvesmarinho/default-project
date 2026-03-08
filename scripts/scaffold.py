@@ -200,6 +200,11 @@ def flow_compose_profiles(args: argparse.Namespace) -> int:
     # Persiste perfis aplicados no state file
     write_scaffold_state(cfg, profiles_applied=result.applied)
 
+    # IMP-29: Gera guia de documentação para a combinação de perfis
+    guide_item = templates.generate_profile_guide(cfg, result.applied, composer.descriptors)
+    if guide_item.status == "created":
+        console.print(f"  [dim]📖 Guia de perfis gerado: docs/{guide_item.path.name}[/dim]")
+
     from rich.table import Table
     table = Table(show_lines=False, expand=False, show_header=False)
     table.add_column(style="dim", no_wrap=True)
@@ -317,6 +322,9 @@ def flow_upgrade(args: argparse.Namespace) -> int:
         # Converte CompositionItem → CreatedItem para o resumo
         for item in getattr(compose_result, "items", []):
             results.append(item)
+        # IMP-29: Gera/verifica guia de combinação de perfis
+        guide_item = templates.generate_profile_guide(cfg, profiles_applied, composer.descriptors)
+        results.append(guide_item)
 
     # Atualiza state file com updated_at
     write_scaffold_state(cfg, profiles_applied=profiles_applied)

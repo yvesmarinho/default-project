@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-07 — IMP-27 ✅ (lgpd-baseline + soc2-baseline, Layer 4), IMP-28 ✅ (scaffold --upgrade, 274 tests)
+**Last Updated**: 2026-03-08 — IMP-29 ✅ (documentação gerada por perfil ativo, 307 tests)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -103,7 +103,13 @@
 - [x] **[IMP-26]** Layer 3 — Data/Analytics: `data-pipeline-airflow`, `data-warehouse-dbt`
 - [x] **[IMP-27]** Layer 4 — Compliance: `lgpd-baseline`, `soc2-baseline`
 - [x] **[IMP-28]** Modo upgrade/re-apply: `scaffold.py upgrade` para projetos já gerados — **CONCLUÍDO 2026-03-07** — `--upgrade` lê `.scaffold-state.yaml`, re-aplica todos os passos de geração (idempotente), suporte a `--json` e `--force`. 30 testes.
-- [ ] **[IMP-29]** Documentação gerada por perfil ativo (guia específico por combinação)
+- [x] **[IMP-29]** ✅ **CONCLUÍDO 2026-03-08** — Documentação gerada por perfil ativo (guia específico por combinação)
+  - [x] `generate_profile_guide(cfg, profiles_applied, descriptors)` em `scripts/lib/templates.py`
+  - [x] 5 seções: Combinação de Perfis, Arquivos Gerados, Segurança, Quick Start, Referências por Stack
+  - [x] Slug derivado dos perfis layer2+ (exclui core e transversal)
+  - [x] Integrado em `flow_compose_profiles()` e `flow_upgrade()` em `scaffold.py`
+  - [x] Idempotente — skipa se `docs/PROFILE-GUIDE-{slug}.md` já existe
+  - [x] 33 testes PASSED → total: **307 tests**
 - [x] **[IMP-17]** ✅ **CONCLUÍDO** — Issue Templates + Script `load-mcp.sh` + VS Code `tasks.json`/`launch.json`/perfil
 
 ---
