@@ -72,7 +72,7 @@
 
 ### 🔵 P2 — Qualidade técnica (2–3 sessões)
 
-- [ ] **[IMP-38]** Refatorar `scaffold.py` — extrair flows para `scripts/lib/flows/`
+- [x] **[IMP-38]** Refatorar `scaffold.py` — extrair flows para `scripts/lib/flows/`
   - `scaffold.py` está com ~900 linhas; cada novo perfil Layer 2 vai crescer `flow_compose_profiles`
   - Extrair cada `flow_*()` para módulo dedicado:
     - `scripts/lib/flows/new_project.py`
