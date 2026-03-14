@@ -167,3 +167,48 @@ def test_copilot_rules_snapshot_with_extra_profiles(
     # Sem snapshot em disco para este — apenas valida conteúdo inline
     assert "devops-infrastructure" in content, "extra profile 'infrastructure' ausente"
     assert "devops-analysis" in content, "extra profile 'analysis' ausente"
+
+
+# ---------------------------------------------------------------------------
+# IMP-39: Snapshots de arquivos representativos por perfil
+# ---------------------------------------------------------------------------
+
+_TEMPLATES_BASE = Path(__file__).parent.parent / ".github" / "templates"
+
+# (profile_name, rel_path_dentro_do_template) — 1 arquivo por perfil Layer 2/3
+_PROFILE_FILE_SNAPSHOTS: list[tuple[str, str]] = [
+    ("python-fastapi",        "src/main.py"),
+    ("python-flask",          "src/app.py"),
+    ("typescript-next",       "app/layout.tsx"),
+    ("k8s-helm",              "helm/Chart.yaml"),
+    ("terraform-aws",         "terraform/main.tf"),
+    ("lgpd-baseline",         "docs/lgpd/DATA-MAPPING.md"),
+    ("soc2-baseline",         "docs/soc2/SECURITY-POLICY.md"),
+    ("data-pipeline-airflow", "airflow/dags/example_pipeline.py"),
+    ("data-warehouse-dbt",    "dbt/dbt_project.yml"),
+]
+
+
+@pytest.mark.parametrize("profile_name,rel_path", _PROFILE_FILE_SNAPSHOTS)
+def test_profile_template_file_snapshot(
+    profile_name: str, rel_path: str, update_snapshots: bool
+) -> None:
+    """
+    Snapshot de arquivo representativo por perfil.
+
+    Detecta regressões acidentais em arquivos de template:
+    se o conteúdo de qualquer arquivo mudar, este teste falha e
+    exige decisão explícita (--update-snapshots) para aceitar a mudança.
+
+    Cobertura: 9 perfis Layer 2/3 × 1 arquivo cada.
+    """
+    src_file = _TEMPLATES_BASE / profile_name / rel_path
+    assert src_file.exists(), f"Template não encontrado: {src_file}"
+
+    content = src_file.read_text(encoding="utf-8")
+
+    safe_profile = profile_name.replace("-", "_")
+    safe_relpath = rel_path.replace("/", "__").replace(".", "_")
+    snap_name = f"template__{safe_profile}__{safe_relpath}"
+
+    _assert_or_update(content, snap_name, update=update_snapshots)

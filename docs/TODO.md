@@ -85,7 +85,7 @@
   - Zero mudança de comportamento — testes existentes devem continuar passando
   - *Alerta resolvido*: Template Architect
 
-- [ ] **[IMP-39]** Ampliar snapshot tests
+- [x] **[IMP-39]** Ampliar snapshot tests
   - `test_templates_snapshot.py` atualmente testa apenas 3 arquivos
   - Adicionar snapshots para todos os 10 perfis: pelo menos 1 arquivo representativo por perfil
   - Targets: `python-fastapi/src/main.py`, `typescript-next/app/layout.tsx`, `k8s-helm/helm/Chart.yaml`, `terraform-aws/infra/main.tf`, `lgpd-baseline/docs/lgpd/DATA-MAPPING.md`
