@@ -59,7 +59,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 # Re-import after path insert to get the module fresh
 import scaffold as _scaffold_mod  # noqa: E402
-
 from scaffold import (  # noqa: E402
     _SUBCOMMAND_MAP,
     _SUBCOMMAND_VALUE,
