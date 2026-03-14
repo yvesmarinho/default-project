@@ -24,14 +24,14 @@
 
 ### 🔴 P0 — Quick wins (baixo esforço, alto impacto) — executar na próxima sessão
 
-- [ ] **[IMP-33]** Fechar o "perfil fantasma" `devops-security` + atualizar `TEMPLATE-VERSIONS.md`
+- [x] **[IMP-33]** Fechar o "perfil fantasma" `devops-security` + atualizar `TEMPLATE-VERSIONS.md`
   - Criar `profile-descriptors/devops-security.yaml` (descriptor completo do perfil transversal)
   - `--validate` deve sair de 9 warnings para 0 warnings
   - Atualizar `TEMPLATE-VERSIONS.md`: adicionar k8s-helm, terraform-aws, data-pipeline-airflow, data-warehouse-dbt, lgpd-baseline, soc2-baseline (todos implementados mas ausentes da tabela)
   - Atualizar `COMPATIBILITY-MATRIX.md` com `devops-security` como linha/coluna
   - *Alerta resolvido*: Template Architect • AppSec • Release Maintainer
 
-- [ ] **[IMP-34]** QUICKSTART.md + exemplo de output de `generate_profile_guide()`
+- [x] **[IMP-34]** QUICKSTART.md + exemplo de output de `generate_profile_guide()`
   - `QUICKSTART.md` na raiz do projeto: 5 minutos para gerar o primeiro projeto
     - Pré-requisitos (Python 3.10+, uv)
     - `python scripts/scaffold.py --list-profiles`
@@ -44,14 +44,15 @@
 
 ### 🟡 P1 — Governança e processo (1–2 sessões)
 
-- [ ] **[IMP-35]** Processo de release automático
+- [x] **[IMP-35]** Processo de release automático
   - Target `make release VERSION=x.y.z` que:
     1. Valida que VERSION segue semver
     2. Fecha seção `[Unreleased]` no `CHANGELOG.md` com a data e versão
     3. Bumpa `SCAFFOLD_VERSION` em `scripts/lib/config.py`
     4. Cria git tag `vX.Y.Z` anotada com o conteúdo do CHANGELOG daquela versão
     5. Executa `--publish` gerando o tarball de release
-  - `scripts/release.sh` ou `scripts/lib/release.py` com a lógica
+  - `scripts/lib/release.py` com a lógica + `flow_release()` em `scaffold.py`
+  - 27 testes — `tests/test_smoke_imp35.py`
   - *Alerta resolvido*: Release Maintainer
 
 - [ ] **[IMP-36]** Staleness check no CI

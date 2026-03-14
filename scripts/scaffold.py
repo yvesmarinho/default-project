@@ -467,6 +467,81 @@ def flow_publish(args: argparse.Namespace) -> int:
     return 0
 
 
+def flow_release(args: argparse.Namespace) -> int:
+    """Executa o processo completo de release: CHANGELOG → bump → tarball → git tag."""
+    import sys as _sys
+
+    use_json: bool = getattr(args, "json_output", False)
+    version: str = getattr(args, "release_version", "") or ""
+    dry_run: bool = getattr(args, "dry_run", False)
+    output_dir_arg: str | None = getattr(args, "output_dir", None)
+
+    project_root = Path(__file__).parent.parent
+
+    if not version:
+        if use_json:
+            import json as _j
+            print(_j.dumps({"error": "VERSION obrigatório para --release"}, ensure_ascii=False))
+        else:
+            console.print("\n  [bold red]❌ --release requer VERSION (ex: --release 1.1.0)[/bold red]\n")
+        return 1
+
+    _sys.path.insert(0, str(project_root / "scripts"))
+    try:
+        from lib.release import run_release as _run_release  # type: ignore
+    except ImportError:
+        from scripts.lib.release import run_release as _run_release  # type: ignore
+
+    output_dir = Path(output_dir_arg) if output_dir_arg else project_root / "dist"
+
+    if not use_json:
+        mode_label = "[bold yellow]DRY-RUN[/bold yellow] " if dry_run else ""
+        console.print(
+            f"\n  [bold cyan]🚀 {mode_label}Iniciando release v{version}...[/bold cyan]\n"
+        )
+
+    result = _run_release(
+        version=version,
+        project_root=project_root,
+        output_dir=output_dir,
+        dry_run=dry_run,
+    )
+
+    if use_json:
+        import json as _j
+        print(_j.dumps({
+            "success":     result.success,
+            "version":     result.version,
+            "dry_run":     dry_run,
+            "steps_done":  result.steps_done,
+            "errors":      result.errors,
+            "tarball":     str(result.tarball) if result.tarball else None,
+            "tag_created": result.tag_created,
+        }, indent=2, ensure_ascii=False))
+        return 0 if result.success else 1
+
+    if result.success:
+        console.print("  [bold green]✅ Release concluída com sucesso![/bold green]")
+        for step in result.steps_done:
+            console.print(f"  [dim]  ✓ {step}[/dim]")
+        if result.tarball:
+            console.print(f"\n  [cyan]Tarball:[/cyan] {result.tarball}")
+        if result.tag_created:
+            console.print(f"  [cyan]Tag git:[/cyan] v{result.version}")
+        console.print("")
+        return 0
+    else:
+        console.print("  [bold red]❌ Release falhou:[/bold red]")
+        for err in result.errors:
+            console.print(f"  [red]  • {err}[/red]")
+        if result.steps_done:
+            console.print("\n  [dim]Passos concluídos antes do erro:[/dim]")
+            for step in result.steps_done:
+                console.print(f"  [dim]  ✓ {step}[/dim]")
+        console.print("")
+        return 1
+
+
 def flow_validate(args: argparse.Namespace) -> int:
     """Valida todos os profile-descriptors e reporta erros/avisos."""
     use_json: bool = getattr(args, "json_output", False)
@@ -829,6 +904,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="gera tarball de release do template (dist/enterprise-template-v*.tar.gz)",
     )
     action_group.add_argument(
+        "--release",
+        metavar="VERSION",
+        dest="release_version",
+        help=(
+            "processo completo de release: CHANGELOG → bump SCAFFOLD_VERSION"
+            " → tarball → git tag vX.Y.Z\n"
+            "  Ex: --release 1.1.0 | --release 1.1.0 --dry-run"
+        ),
+    )
+    action_group.add_argument(
         "--output-dir",
         metavar="PATH",
         dest="output_dir",
@@ -922,6 +1007,10 @@ def main() -> int:
     # --publish: gera tarball de release e sai
     if getattr(args, "publish", False):
         return flow_publish(args)
+
+    # --release: processo completo de release (CHANGELOG → bump → tarball → tag)
+    if getattr(args, "release_version", None):
+        return flow_release(args)
 
     # --list-profiles: lista perfis e sai
     if getattr(args, "list_profiles", False):

@@ -546,6 +546,23 @@ status:
 ## ═══════════════════════════════════════════════════════════════════════
 ##
 
+## release: Cria release versionada (semver obrigatório)
+##           Uso:     make release VERSION=1.1.0
+##           Dry-run: make release VERSION=1.1.0 DRY_RUN=1
+release:
+	@if [ -z "$(VERSION)" ]; then \
+		echo "$(RED)❌ VERSION obrigatório$(NC)"; \
+		echo ""; \
+		echo "  Uso:     make release VERSION=1.1.0"; \
+		echo "  Dry-run: make release VERSION=1.1.0 DRY_RUN=1"; \
+		exit 1; \
+	fi
+	@if [ -n "$(DRY_RUN)" ]; then \
+		python scripts/scaffold.py --release $(VERSION) --dry-run; \
+	else \
+		python scripts/scaffold.py --release $(VERSION); \
+	fi
+
 ## init-new-project: Initialize a new project from this template
 init-new-project:
 	@if [ -z "$(NAME)" ]; then \
