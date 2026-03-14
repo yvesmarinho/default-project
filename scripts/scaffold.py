@@ -9,19 +9,25 @@
 """
 scaffold.py — Enterprise Project Scaffold — Entry Point
 
-Uso:
-  uv run scripts/scaffold.py          # modo interativo (recomendado)
-  python scripts/scaffold.py          # alternativa (deps já instaladas)
+Subcomandos (v1.1+ — preferido):
+  scaffold.py new                           # Novo Projeto (interativo)
+  scaffold.py check                         # verifica symlinks e sai
+  scaffold.py list-profiles [--json]        # lista perfis disponíveis
+  scaffold.py validate [--json]             # valida profile-descriptors
+  scaffold.py dry-run --name X --domain Y --language Z [--json]
+  scaffold.py compose PROFILES [--json]     # aplica perfis (CSV)
+  scaffold.py upgrade [--force]             # re-aplica template
+  scaffold.py publish [--output-dir PATH]   # gera tarball de release
+  scaffold.py new-profile NAME [--profile-layer LAYER]
+  scaffold.py infra                         # gera ci.yml, Dockerfile, RUNBOOK
 
-  scaffold.py --new                   # pula menu, vai direto para Novo Projeto
-  scaffold.py --check                 # verifica symlinks e sai
-  scaffold.py --list-profiles         # lista perfis disponíveis e sai
-  scaffold.py --list-profiles --json  # output JSON (para CI/automação)
-  scaffold.py --validate              # valida todos os profile-descriptors
-  scaffold.py --validate --json       # validação em JSON (para CI)
-  scaffold.py --dry-run --ci --name X --domain Y --language Z  # simula sem criar
-  scaffold.py --config config.yaml    # lê config de arquivo YAML (não-interativo)
-  scaffold.py --ci --name X --domain Y --language Z  # modo não-interativo
+Flags legadas (v1.0 — mantidas por compatibilidade, deprecadas):
+  scaffold.py --new | --check | --list-profiles | --validate | --dry-run
+  scaffold.py --compose PROFILES | --upgrade | --publish | --new-profile NAME
+
+Modo não-interativo (qualquer forma):
+  scaffold.py new --ci --name X --domain Y --language Z
+  scaffold.py --ci --name X --domain Y --language Z   # legado
 
 Separação de domínios:
   scaffold.py → scaffolding de projetos (estrutura, links, regras, git)
@@ -32,7 +38,61 @@ from __future__ import annotations
 
 import argparse
 import sys
+import warnings
 from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Subcommand → flat-flag translation (IMP-44)
+# ---------------------------------------------------------------------------
+
+# Maps subcommand names to the flat flags they expand to.
+# The value is a list of strings that replace the subcommand word in sys.argv.
+_SUBCOMMAND_MAP: dict[str, list[str]] = {
+    "new":           ["--new"],
+    "check":         ["--check"],
+    "list-profiles": ["--list-profiles"],
+    "validate":      ["--validate"],
+    "dry-run":       ["--dry-run"],
+    "compose":       ["--compose"],      # next positional arg becomes the value
+    "upgrade":       ["--upgrade"],
+    "publish":       ["--publish"],
+    "new-profile":   ["--new-profile"],  # next positional arg becomes the value
+    "infra":         ["--infra"],
+    "release":       ["--release"],      # next positional arg becomes the value
+}
+
+# Subcommands that take a required value as the next positional argument
+_SUBCOMMAND_VALUE: frozenset[str] = frozenset({"compose", "new-profile", "release"})
+
+
+def _translate_subcommand(argv: list[str]) -> tuple[list[str], bool]:
+    """If argv[0] is a known subcommand, translate it to legacy flat flags.
+
+    Returns (translated_argv, was_subcommand).
+    """
+    if not argv:
+        return argv, False
+
+    cmd = argv[0]
+    if cmd not in _SUBCOMMAND_MAP:
+        return argv, False
+
+    replacement = _SUBCOMMAND_MAP[cmd]
+    rest = argv[1:]
+
+    if cmd in _SUBCOMMAND_VALUE:
+        # The next positional (non-flag) argument is the value for this flag
+        new_rest: list[str] = []
+        value_consumed = False
+        for i, token in enumerate(rest):
+            if not token.startswith("-") and not value_consumed:
+                new_argv = replacement + [token] + rest[i + 1 :]
+                return new_argv, True
+            new_rest.append(token)
+        # No positional value found — pass as-is so argparse can error properly
+        return replacement + new_rest, True
+
+    return replacement + rest, True
 
 # Garante que scripts/ está no sys.path para encontrar lib/
 sys.path.insert(0, str(Path(__file__).parent))
@@ -227,7 +287,44 @@ def build_parser() -> argparse.ArgumentParser:
 # main
 # ---------------------------------------------------------------------------
 
+_LEGACY_FLAG_DEPRECATIONS: dict[str, str] = {
+    "--new":           "scaffold.py new",
+    "--check":         "scaffold.py check",
+    "--list-profiles": "scaffold.py list-profiles",
+    "--validate":      "scaffold.py validate",
+    "--dry-run":       "scaffold.py dry-run",
+    "--compose":       "scaffold.py compose PROFILES",
+    "--upgrade":       "scaffold.py upgrade",
+    "--publish":       "scaffold.py publish",
+    "--new-profile":   "scaffold.py new-profile NAME",
+    "--infra":         "scaffold.py infra",
+    "--release":       "scaffold.py release VERSION",
+}
+
+
+def _warn_legacy_flags(argv: list[str]) -> None:
+    """Emits a DeprecationWarning for each legacy flat flag found in argv."""
+    for flag, suggestion in _LEGACY_FLAG_DEPRECATIONS.items():
+        if flag in argv:
+            warnings.warn(
+                f"{flag} is deprecated. Use subcommand instead: '{suggestion}'",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+
+
 def main() -> int:
+    raw_argv = sys.argv[1:]
+
+    # Attempt subcommand translation BEFORE parsing
+    translated, was_subcommand = _translate_subcommand(raw_argv)
+    if was_subcommand:
+        # Replace argv so build_parser() sees the flat flags
+        sys.argv[1:] = translated
+    else:
+        # Legacy flat-flag invocation — emit deprecation hints
+        _warn_legacy_flags(raw_argv)
+
     parser = build_parser()
     args = parser.parse_args()
 

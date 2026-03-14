@@ -137,7 +137,7 @@
   - *Alerta resolvido*: Template Architect
   - ✅ Implementado: `scripts/lib/flows/new_profile.py` + `--new-profile`/`--profile-layer` em scaffold.py; suporta `--ci`, `--json`, `--force`; 30 novos testes (556 → 586)
 
-- [ ] **[IMP-44]** Subcomandos CLI (versão MAJOR — breaking change)
+- [x] **[IMP-44]** Subcomandos CLI (versão MAJOR — breaking change)
   - Migrar de flags flat para subcomandos:
     ```
     scaffold new     (antigo --new)
@@ -152,6 +152,7 @@
   - Manter flags legadas com aviso de deprecação por 1 versão MINOR
   - Atualizar copilot-instructions, prompts e QUICKSTART após migração
   - *Alerta resolvido*: DevEx / CLI
+  - ✅ Implementado: `_translate_subcommand()` + `_warn_legacy_flags()` em scaffold.py; 10 subcomandos mapeados; flags legadas emitem DeprecationWarning; backward-compatible; 42 novos testes (586 → 628)
 
 ---
 

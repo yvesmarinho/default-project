@@ -187,8 +187,8 @@ class TestFlowNewProfile:
         assert rc != 0
 
     def test_json_output_success(self):
-        import io
         import contextlib
+        import io
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             rc = flow_new_profile(_make_args(new_profile=_TEST_NAME, json_output=True))
@@ -198,8 +198,8 @@ class TestFlowNewProfile:
         assert data["name"] == _TEST_NAME
 
     def test_json_output_has_yaml_and_md_paths(self):
-        import io
         import contextlib
+        import io
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             flow_new_profile(_make_args(new_profile=_TEST_NAME, json_output=True))
