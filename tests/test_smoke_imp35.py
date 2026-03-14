@@ -51,10 +51,10 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from lib.release import (  # noqa: E402
-    validate_semver,
-    close_unreleased,
     bump_scaffold_version,
+    close_unreleased,
     run_release,
+    validate_semver,
 )
 
 _PROJECT_ROOT = Path(__file__).parent.parent

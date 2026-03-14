@@ -117,6 +117,16 @@ jobs:
           print(f'OK: tarball with {data[\"file_count\"]} files ({data[\"size_bytes\"]} bytes)')
           "
 
+      - name: Verify sbom target in Layer 2 Makefile templates
+        run: |
+          for template in python-fastapi python-flask; do
+            grep -q "^sbom:" .github/templates/${template}/Makefile \
+              || (echo "ERROR: sbom target missing in ${template}/Makefile" && exit 1)
+          done
+          grep -q "^sbom:" .github/templates/typescript-next/Makefile \
+            || (echo "ERROR: sbom target missing in typescript-next/Makefile" && exit 1)
+          echo "OK: sbom target present in all Layer 2 Makefile templates"
+
   # ---------------------------------------------------------------------------
   # Job 3: Lint — verifica que scaffold.py e lib/*.py são válidos sintaticamente
   # ---------------------------------------------------------------------------
@@ -174,7 +184,7 @@ jobs:
     name: Staleness check (profile-descriptors)
     runs-on: ubuntu-latest
     needs: lint
-    continue-on-error: true  # warning-only: nunca bloqueia o pipeline
+    continue-on-error: true # warning-only: nunca bloqueia o pipeline
 
     steps:
       - name: Checkout

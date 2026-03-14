@@ -2,7 +2,7 @@
 PROJECT_NAME := {project_name}
 
 .PHONY: help install dev build start lint lint-fix format format-check \
-        test test-watch test-coverage audit docker-build docker-up docker-down ci
+        test test-watch test-coverage audit sbom docker-build docker-up docker-down ci
 
 help: ## Mostra esta ajuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -44,6 +44,13 @@ test-coverage: ## Executa testes com relatório de cobertura
 audit: ## Auditoria de segurança das dependências
 	pnpm audit --audit-level=high
 
+sbom: ## Gera Software Bill of Materials (CycloneDX JSON) — evidência CC8 SOC 2
+	pnpm dlx @cyclonedx/cyclonedx-npm \
+		--output-format JSON \
+		--output-file sbom.json \
+		--flatten-components
+	@echo "✅ SBOM gerado em sbom.json"
+
 docker-build: ## Build da imagem Docker
 	docker compose build
 
@@ -53,7 +60,7 @@ docker-up: ## Sobe containers Docker
 docker-down: ## Para containers Docker
 	docker compose down
 
-ci: lint format-check test-coverage audit ## Pipeline CI completo (lint + format + test + audit)
+ci: lint format-check test-coverage audit sbom ## Pipeline CI completo (lint + format + test + audit + SBOM)
 
 clean: ## Remove artefatos de build
 	rm -rf .next out coverage

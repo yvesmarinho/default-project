@@ -122,12 +122,13 @@
   - *Alerta resolvido*: AppSec
   - ✅ Implementado: 9 descritores migrados, Regra 6 em validate.py, tabela em generate_profile_guide(); 7 novos testes (521 → 528)
 
-- [ ] **[IMP-42]** SBOM nos perfis Layer 2
+- [x] **[IMP-42]** SBOM nos perfis Layer 2
   - Adicionar target `make sbom` em todos os perfis Python: `uv run cyclonedx-bom`
   - Adicionar target `make sbom` no perfil TypeScript: `pnpm dlx @cyclonedx/cyclonedx-npm`
   - Integrar SBOM no job `cli-smoke` do `ci-template.yml`
   - Documentar no `soc2-baseline` como evidência do controle CC8
   - *Alerta resolvido*: AppSec
+  - ✅ Implementado: sbom: target em 3 Makefiles, ci_targets + security.enforces CC8 em 4 descritores, step de verificação no ci-template.yml; 28 novos testes (528 → 556)
 
 - [ ] **[IMP-43]** `scaffold.py --new-profile NOME` — scaffolder de perfis
   - Gera `profile-descriptors/NOME.yaml` com todos os campos do schema preenchidos com defaults

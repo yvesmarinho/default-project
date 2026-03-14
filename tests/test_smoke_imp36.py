@@ -42,11 +42,11 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from lib.validate import (  # noqa: E402
-    _check_staleness,
-    validate_descriptors,
     ProfileResult,
     ValidationIssue,
     ValidationReport,
+    _check_staleness,
+    validate_descriptors,
 )
 
 _PROJECT_ROOT = Path(__file__).parent.parent

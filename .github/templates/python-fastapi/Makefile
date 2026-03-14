@@ -5,7 +5,7 @@
 # Gerenciador: uv | Framework: FastAPI
 # ============================================================
 
-.PHONY: help install dev test lint format audit security docker-build docker-up docker-down clean
+.PHONY: help install dev test lint format audit security sbom docker-build docker-up docker-down clean
 
 # ------------------------------------------------------------
 # Ajuda
@@ -58,6 +58,17 @@ security: ## Análise estática de segurança (bandit)
 
 security-full: audit security ## Roda audit + bandit
 
+sbom: ## Gera Software Bill of Materials (CycloneDX JSON) — evidência CC8 SOC 2
+	uv run cyclonedx-py requirements \
+		--of JSON \
+		-o sbom.json \
+		<(uv pip freeze) 2>/dev/null || \
+	uv run python -m cyclonedx_py requirements \
+		--of JSON \
+		-o sbom.json \
+		<(uv pip freeze)
+	@echo "✅ SBOM gerado em sbom.json"
+
 # ------------------------------------------------------------
 # Docker
 # ------------------------------------------------------------
@@ -76,7 +87,7 @@ docker-logs: ## Exibe logs do container app
 # ------------------------------------------------------------
 # CI (roda tudo — usar em pre-push ou GitHub Actions)
 # ------------------------------------------------------------
-ci: format-check lint security-full test ## Checks completos de CI
+ci: format-check lint security-full test sbom ## Checks completos de CI (inclui SBOM)
 
 # ------------------------------------------------------------
 # Limpeza

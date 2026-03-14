@@ -67,7 +67,10 @@ templates:
   - path: "docker-compose.yml"
     description: "App + PostgreSQL 16 com healthcheck"
   - path: "Makefile"
-    description: "14 targets: dev, build, lint, format, test, audit, docker-*, ci, clean"
+    description: "15 targets: dev, build, lint, format, test, audit, sbom, docker-*, ci, clean"
+
+  - path: "sbom.json"
+    description: "Software Bill of Materials em CycloneDX JSON — evidência CC8 SOC 2 Change Management. Gerado via 'make sbom' (pnpm dlx @cyclonedx/cyclonedx-npm)."
 
 security:
   enforces:
@@ -106,12 +109,18 @@ security:
       tool: "docker"
       severity: "medium"
       automated: false
+    - control: "CC8"
+      description: "SBOM (CycloneDX JSON) gerado via 'make sbom' (pnpm dlx @cyclonedx/cyclonedx-npm) — rastreabilidade de componentes para Change Management"
+      tool: "@cyclonedx/cyclonedx-npm"
+      severity: "high"
+      automated: true
 
 ci_targets:
   - lint
   - format-check
   - test-coverage
   - audit
+  - sbom
 
 notes: >
   Para adicionar auth: NextAuth.js v5 (Auth.js) ou Clerk.

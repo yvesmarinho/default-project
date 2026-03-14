@@ -1,7 +1,7 @@
 # Migration Guide — Enterprise Default Project Template
 
-> **Versão do documento**: 1.0.0  
-> **Última actualização**: 2026-03-14  
+> **Versão do documento**: 1.0.0
+> **Última actualização**: 2026-03-14
 > **Versões cobertas**: v1.2.0 → v1.3.0 → próximas versões
 
 ---
@@ -47,7 +47,7 @@ profiles_applied:
   - devops-security
 ```
 
-> ⚠️ **Não remova este ficheiro.** Ele é necessário para o `--upgrade` funcionar.  
+> ⚠️ **Não remova este ficheiro.** Ele é necessário para o `--upgrade` funcionar.
 > ✅ **Commite-o** no repositório do projecto — é seguro e não contém segredos.
 
 ### Política de retrocompatibilidade

@@ -60,3 +60,16 @@ templates:
 
   - path: "Makefile.soc2"
     description: "Targets Makefile: soc2-check, soc2-scan-sast, soc2-scan-deps, soc2-scan-iac, soc2-scan-containers, soc2-docs-check, soc2-access-review, soc2-report, soc2-evidence"
+
+security:
+  enforces:
+    - control: "CC8"
+      description: "SBOM (Software Bill of Materials) em formato CycloneDX JSON gerado via 'make sbom' em todos os perfis Layer 2 Python (cyclonedx-bom) e TypeScript (pnpm dlx @cyclonedx/cyclonedx-npm). Evidência de rastreabilidade de componentes para Change Management."
+      tool: "cyclonedx-bom / @cyclonedx/cyclonedx-npm"
+      severity: "high"
+      automated: true
+    - control: "CC8"
+      description: "Dependências imutáveis em produção: uv sync --frozen (Python) bloqueia versões exatas. Toda mudança de dependência requer PR + revisão."
+      tool: "uv"
+      severity: "high"
+      automated: true

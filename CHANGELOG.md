@@ -9,6 +9,14 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [9.9.9] — 2026-03-14
+
+---
+
+## [9.9.9] — 2026-03-14
+
 ### Added
 
 #### Validação de Profile Descriptors (IMP-32)
