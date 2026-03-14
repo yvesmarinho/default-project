@@ -154,6 +154,17 @@
   - *Alerta resolvido*: DevEx / CLI
   - ✅ Implementado: `_translate_subcommand()` + `_warn_legacy_flags()` em scaffold.py; 10 subcomandos mapeados; flags legadas emitem DeprecationWarning; backward-compatible; 42 novos testes (586 → 628)
 
+- [ ] **[IMP-45]** Engram MCP — memória persistente por projeto (opt-in)
+  - Integrar [Gentleman-Programming/engram](https://github.com/Gentleman-Programming/engram) como MCP server FTS local
+  - `.engram/memory/*.md` — fonte de verdade commitável; `.engram/index/engram.db` — cache local (não commitado)
+  - Wrapper `.engram/scripts/engram_mcp.sh` + entrada no `.vscode/mcp.json`
+  - Makefile: `make engram-check` e `make engram-rebuild`
+  - `.engram/AGENT_MEMORY_POLICY.md` — política de uso para o agente
+  - **Bloqueador**: binário `engram` deve ser instalado e `engram mcp --help` / `engram import --help` validados antes de iniciar
+  - **Design opt-in**: não altera `make init` nem projetos gerados que não instalam `engram`
+  - Spec completa: [`docs/SESSIONS/2026-03-14/IMP-45-SPEC.md`](SESSIONS/2026-03-14/IMP-45-SPEC.md)
+  - *Origem*: análise de impacto `docs/GitHub Copilot - Engram how to.md` — 2026-03-14
+
 ---
 
 ### Resumo do Plano
@@ -172,6 +183,7 @@
 | IMP-42 | SBOM nos perfis Layer 2 | P3 | Médio | AppSec |
 | IMP-43 | `--new-profile` scaffolder | P3 | Alto | Template Arch |
 | IMP-44 | Subcomandos CLI (breaking change) | P3 | Alto | DevEx |
+| IMP-45 | Engram MCP — memória persistente (opt-in) | P3 | Médio | DevEx / Template Arch |
 
 ---
 
