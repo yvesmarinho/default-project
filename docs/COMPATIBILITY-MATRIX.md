@@ -23,12 +23,21 @@
 
 ## Matriz Completa (perfis implementados)
 
-|  | `devops-programming` | `python-fastapi` | `python-flask` | `typescript-next` |
-|--|:--:|:--:|:--:|:--:|
-| **`devops-programming`** | — | ✅ ➕ | ✅ ➕ | ✅ ➕ |
-| **`python-fastapi`** | ✅ ➕ | — | ❌ | ⚠️ (1) |
-| **`python-flask`** | ✅ ➕ | ❌ | — | ⚠️ (1) |
-| **`typescript-next`** | ✅ ➕ | ⚠️ (1) | ⚠️ (1) | — |
+|  | `devops-programming` | `devops-infrastructure` | `devops-analysis` | `devops-security` | `python-fastapi` | `python-flask` | `typescript-next` | `k8s-helm` | `terraform-aws` | `data-pipeline-airflow` | `data-warehouse-dbt` | `lgpd-baseline` | `soc2-baseline` |
+|--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| **`devops-programming`** | — | ❌ | ❌ | ✅ | ✅ ➕ | ✅ ➕ | ✅ ➕ | ✅ | ✅ | — | — | ✅ | ✅ |
+| **`devops-infrastructure`** | ❌ | — | ❌ | ✅ | — | — | — | ✅ | ✅ | — | — | ✅ | ✅ |
+| **`devops-analysis`** | ❌ | ❌ | — | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ | ✅ |
+| **`devops-security`** | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **`python-fastapi`** | ✅ ➕ | — | — | ✅ | — | ❌ | ⚠️ (1) | ✅ | ✅ | — | — | ✅ | ✅ |
+| **`python-flask`** | ✅ ➕ | — | — | ✅ | ❌ | — | ⚠️ (1) | ✅ | ✅ | — | — | ✅ | ✅ |
+| **`typescript-next`** | ✅ ➕ | — | — | ✅ | ⚠️ (1) | ⚠️ (1) | — | ✅ | ✅ | — | — | ✅ | ✅ |
+| **`k8s-helm`** | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | — | ⚠️ (2) | — | — | ✅ | ✅ |
+| **`terraform-aws`** | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ⚠️ (2) | — | — | — | ✅ | ✅ |
+| **`data-pipeline-airflow`** | — | — | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ | ✅ |
+| **`data-warehouse-dbt`** | — | — | ✅ | ✅ | — | — | — | — | — | ✅ | — | ✅ | ✅ |
+| **`lgpd-baseline`** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+| **`soc2-baseline`** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
 
 ### Notas
 
@@ -51,7 +60,7 @@ Projeto válido:
 - **layer2** requer o core correspondente (ex: `python-fastapi` exige `devops-programming`)
 - Dois perfis layer2 do **mesmo ecossistema** com `excludes_with` declarado são bloqueados (ex: fastapi ↔ flask)
 - **layer3** (k8s, terraform) são agnósticos de linguagem — combinam com qualquer layer2
-- **transversal** (`devops-security`) é aplicado silenciosamente em todos os projetos
+- **transversal** (`devops-security`) é aplicado silenciosamente em todos os projetos — sem `excludes_with`, combina com qualquer combinação de perfis
 
 ---
 
@@ -97,15 +106,13 @@ profiles:
 
 ## Matriz Futuro (perfis planejados)
 
-|  | `k8s-helm` 🔜 | `terraform-aws` 🔜 | `go-chi` 🔜 |
-|--|:--:|:--:|:--:|
-| **`devops-programming`** | ✅ | ✅ | ✅ ➕ |
-| **`python-fastapi`** | ✅ | ✅ | — |
-| **`python-flask`** | ✅ | ✅ | — |
-| **`typescript-next`** | ✅ | ✅ | — |
-| **`go-chi`** 🔜 | ✅ | ✅ | — |
-| **`k8s-helm`** 🔜 | — | ⚠️ (2) | ✅ |
-| **`terraform-aws`** 🔜 | ⚠️ (2) | — | ✅ |
+|  | `go-chi` 🔜 |
+|--|:--:|
+| **`devops-programming`** | ✅ ➕ |
+| **`devops-security`** | ✅ |
+| **`python-fastapi`** | — |
+| **`k8s-helm`** | ✅ |
+| **`terraform-aws`** | ✅ |
 
 **(2)** `k8s-helm` + `terraform-aws` são compatíveis (Terraform provisiona infra, Helm deploy app), mas requerem configuração adicional de state backend e providers. Sem `excludes_with` — decisão do desenvolvedor.
 

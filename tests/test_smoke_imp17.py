@@ -329,6 +329,66 @@ def test_generate_launch_is_idempotent(make_project_config) -> None:
     )
 
 
+# ---------------------------------------------------------------------------
+# B.2 — _CODE_WORKSPACE enriquecido com tasks e launch sections
+# ---------------------------------------------------------------------------
+
+
+def test_code_workspace_has_tasks_section(make_project_config) -> None:
+    """[nome].code-workspace gerado por create_structure() contém seção 'tasks'."""
+    cfg = make_project_config("programming", "python")
+    project.create_structure(cfg)
+    ws_path = cfg.target_dir / f"{cfg.project_name}.code-workspace"
+    assert ws_path.exists(), f"{ws_path.name} não foi gerado por create_structure()"
+    data = json.loads(ws_path.read_text(encoding="utf-8"))
+    assert "tasks" in data, "code-workspace deve ter seção 'tasks'"
+    assert data["tasks"]["version"] == "2.0.0", "tasks.version deve ser '2.0.0'"
+    assert len(data["tasks"]["tasks"]) == 7, (
+        f"Esperados 7 tasks padrão, encontrados: {len(data['tasks']['tasks'])}"
+    )
+
+
+def test_code_workspace_tasks_has_standard_labels(make_project_config) -> None:
+    """code-workspace.tasks contém os mesmos labels padrão do tasks.json."""
+    cfg = make_project_config("analysis", "python")
+    project.create_structure(cfg)
+    ws_path = cfg.target_dir / f"{cfg.project_name}.code-workspace"
+    data = json.loads(ws_path.read_text(encoding="utf-8"))
+    labels = {t["label"] for t in data["tasks"]["tasks"]}
+    expected = {
+        "make: install-deps", "make: dev", "make: build",
+        "make: test", "make: lint", "make: format", "make: clean",
+    }
+    assert expected == labels, f"Labels no workspace diferem do esperado. Encontrados: {labels}"
+
+
+def test_code_workspace_has_launch_section(make_project_config) -> None:
+    """[nome].code-workspace gerado contém seção 'launch' com version 0.2.0."""
+    cfg = make_project_config("infrastructure", "go")
+    project.create_structure(cfg)
+    ws_path = cfg.target_dir / f"{cfg.project_name}.code-workspace"
+    data = json.loads(ws_path.read_text(encoding="utf-8"))
+    assert "launch" in data, "code-workspace deve ter seção 'launch'"
+    assert data["launch"]["version"] == "0.2.0", "launch.version deve ser '0.2.0'"
+    assert "configurations" in data["launch"], "launch deve ter chave 'configurations'"
+
+
+def test_code_workspace_has_enriched_settings(make_project_config) -> None:
+    """code-workspace.settings contém rulers, trimTrailingWhitespace, insertFinalNewline."""
+    cfg = make_project_config("programming", "typescript")
+    project.create_structure(cfg)
+    ws_path = cfg.target_dir / f"{cfg.project_name}.code-workspace"
+    data = json.loads(ws_path.read_text(encoding="utf-8"))
+    settings = data.get("settings", {})
+    assert "editor.rulers" in settings, "settings deve ter 'editor.rulers'"
+    assert "files.trimTrailingWhitespace" in settings, (
+        "settings deve ter 'files.trimTrailingWhitespace'"
+    )
+    assert "files.insertFinalNewline" in settings, (
+        "settings deve ter 'files.insertFinalNewline'"
+    )
+
+
 def test_generate_launch_version_is_correct(make_project_config) -> None:
     """launch.json deve ter versão '0.2.0'."""
     cfg = make_project_config("programming", "python")

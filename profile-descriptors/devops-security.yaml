@@ -1,0 +1,132 @@
+# ============================================================
+# Profile Descriptor — Enterprise Default Project Template
+# Schema versão 1.0.0
+# ============================================================
+
+# ------------------------------------------------------------------
+# Identificação
+# ------------------------------------------------------------------
+name: devops-security
+description: >
+  Perfil transversal de segurança — aplicado silenciosamente a todos os projetos,
+  independente do domínio (programming, infrastructure, analysis).
+  Ativa controles de segurança em 5 escopos: IaC, código, segredos, modelagem
+  de ameaças e pre-commit. Não conflita com nenhum outro perfil.
+
+VERSION: "1.0.0"
+LAST_TESTED_DATE: "2026-03-14"
+
+# ------------------------------------------------------------------
+# Dependências
+# ------------------------------------------------------------------
+requires:
+  - "git installed"
+  # Ferramentas recomendadas (não obrigatórias para o scaffold funcionar):
+  # - bandit >= 1.7  (Python: análise estática de segurança)
+  # - semgrep >= 1.0  (multi-linguagem: análise semântica)
+  # - gitleaks >= 8    (secrets scan no repositório)
+  # - detect-secrets >= 1.5  (pre-commit hook de segredos)
+  # - tfsec / checkov   (IaC: Terraform)
+  # - trivy             (containers: vulnerabilidades de imagem)
+
+# ------------------------------------------------------------------
+# Artefatos gerados
+# ------------------------------------------------------------------
+generates:
+  files:
+    - path: ".github/prompts/domain/devops-security.prompt.md"
+      source: ".copilot-shared/.github/prompts/domain/devops-security.prompt.md"
+      description: >
+        Domain profile transversal: comportamento do Copilot para revisões de segurança,
+        IaC hardening, gestão de segredos, threat modeling e pre-commit hooks.
+      required: true
+      when: null
+
+    - path: "scripts/load-mcp.sh"
+      source: "project.py:generate_load_mcp()"
+      description: >
+        Script de carregamento de variáveis de ambiente para servidores MCP.
+        Verifica .secrets/.env, valida tokens obrigatórios, orienta abertura do VS Code.
+        Nunca exibe o valor dos tokens (SPEC-11).
+      required: true
+      when: null
+
+  patches:
+    - file: ".copilot-rules.md"
+      description: >
+        Seção P0: scan de segurança obrigatório a cada sessão — padrões .env*, *.key,
+        *.pem, *secret*, *password*, *token*.
+      operation: "referenced"
+
+    - file: ".copilot-rules-{project_name}.md"
+      description: >
+        Bloco de segurança: regras P0 sobre credenciais, mcp.json sem tokens hardcoded,
+        .secrets/ no .gitignore.
+      operation: "embedded"
+
+# ------------------------------------------------------------------
+# Compatibilidade entre perfis
+# ------------------------------------------------------------------
+excludes_with: []
+
+combines_with:
+  - name: devops-programming
+    notes: "Transversal — sempre combinado com perfis core"
+  - name: python-fastapi
+    notes: "Ativa bandit + pip-audit no Makefile (já incluídos no perfil Layer 2)"
+  - name: python-flask
+    notes: "Ativa bandit + pip-audit no Makefile (já incluídos no perfil Layer 2)"
+  - name: typescript-next
+    notes: "Ativa npm audit + semgrep no CI"
+  - name: k8s-helm
+    notes: "Ativa trivy (image scan) + checkov (Helm chart) no pipeline"
+  - name: terraform-aws
+    notes: "Ativa tfsec + checkov no pipeline; bloqueia recursos sem tags de segurança"
+  - name: data-pipeline-airflow
+    notes: "Ativa secrets scan no DAG scan; valida conexões sem credenciais embutidas"
+  - name: data-warehouse-dbt
+    notes: "Ativa auditoria de modelos dbt: sem PII em campos não-mascarados"
+  - name: lgpd-baseline
+    notes: "Complementar — lgpd-baseline estende os controles de devops-security"
+  - name: soc2-baseline
+    notes: "Complementar — soc2-baseline estende os controles de devops-security"
+
+# ------------------------------------------------------------------
+# Segurança (controles ativos por escopo)
+# ------------------------------------------------------------------
+security:
+  enforces:
+    # Escopo 1 — IaC
+    - "tfsec: nenhum recurso Terraform com expose público não-intencional"
+    - "checkov: controles CKV_AWS_* aplicados em terraform-aws + checkov para k8s-helm"
+
+    # Escopo 2 — Código
+    - "bandit B201/B602 HIGH bloqueiam merge em Python"
+    - "semgrep ruleset p/owasp-top-ten para detecção de injection, XSS, SSRF"
+
+    # Escopo 3 — Segredos
+    - "gitleaks pré-commit: nenhum token/chave jamais entra no histórico git"
+    - "detect-secrets baseline: .secrets.baseline versionado no repositório"
+    - "mcp.json: tokens referenciados via ${env:VAR_NAME} — nunca hardcodados"
+    - ".secrets/ sempre no .gitignore"
+
+    # Escopo 4 — Modelagem de ameaças
+    - "THREAT-MODEL.md obrigatório em projetos com dados sensíveis (lgpd-baseline, soc2-baseline)"
+
+    # Escopo 5 — Pre-commit
+    - "pre-commit hook: detect-secrets + gitleaks + ruff (Python) / eslint (TS)"
+
+# ------------------------------------------------------------------
+# Metadados
+# ------------------------------------------------------------------
+tags:
+  - security
+  - transversal
+  - owasp
+  - secrets
+  - pre-commit
+  - devsecops
+  - compliance
+
+layer: transversal
+maintainer: "template-architect"

@@ -18,7 +18,7 @@ Cobertura:
   validate_descriptors (validação real):
     - retorna ValidationReport para diretório existente
     - retorna report vazio para diretório inexistente
-    - todos os 10 descritores reais são encontrados
+    - todos os 13 descritores reais são encontrados
     - nenhum descriptor real tem erros (valid == True)
     - fallback de parse em YAML inválido → issue "error" no resultado
     - descriptor sem 'name' gera issue de erro
@@ -34,9 +34,9 @@ Cobertura:
     - --validate retorna exit code 0 (todos os descritores reais são válidos)
     - --validate --json retorna JSON válido
     - --validate --json tem chave 'valid' == True
-    - --validate --json tem chave 'profiles_checked' == 10
+    - --validate --json tem chave 'profiles_checked' == 13
     - --validate --json tem chave 'errors' == 0
-    - --validate --json tem chave 'results' com 10 itens
+    - --validate --json tem chave 'results' com 13 itens
 """
 
 from __future__ import annotations
@@ -288,9 +288,9 @@ class TestValidateDescriptorsIntegration:
         report = validate_descriptors(tmp_path / "no-such-dir")
         assert report.profiles_checked == 0
 
-    def test_finds_all_10_real_descriptors(self):
+    def test_finds_all_13_real_descriptors(self):
         report = validate_descriptors(_DESCRIPTORS_DIR)
-        assert report.profiles_checked == 10
+        assert report.profiles_checked == 13
 
     def test_real_descriptors_have_no_errors(self):
         report = validate_descriptors(_DESCRIPTORS_DIR)
@@ -347,10 +347,10 @@ class TestValidateCLI:
         data = json.loads(proc.stdout)
         assert data["valid"] is True
 
-    def test_validate_json_profiles_checked_is_10(self):
+    def test_validate_json_profiles_checked_is_13(self):
         proc = self._run("--json")
         data = json.loads(proc.stdout)
-        assert data["profiles_checked"] == 10
+        assert data["profiles_checked"] == 13
 
     def test_validate_json_errors_is_zero(self):
         proc = self._run("--json")
@@ -361,7 +361,7 @@ class TestValidateCLI:
         proc = self._run("--json")
         data = json.loads(proc.stdout)
         assert isinstance(data["results"], list)
-        assert len(data["results"]) == 10
+        assert len(data["results"]) == 13
 
     def test_validate_json_each_result_has_name(self):
         proc = self._run("--json")
