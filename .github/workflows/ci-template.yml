@@ -143,8 +143,10 @@ jobs:
           python -m py_compile scripts/lib/links.py
           python -m py_compile scripts/lib/project.py
           python -m py_compile scripts/lib/publish.py
+          python -m py_compile scripts/lib/release.py
           python -m py_compile scripts/lib/templates.py
           python -m py_compile scripts/lib/ui.py
+          python -m py_compile scripts/lib/validate.py
           python -m py_compile scripts/lib/vscode.py
           echo "All Python files are syntactically valid."
 
@@ -165,3 +167,52 @@ jobs:
               sys.exit(1)
           print(f'OK: {len(list(Path(\"profile-descriptors\").glob(\"*.yaml\")))} YAML files valid')
           "
+  # ---------------------------------------------------------------------------
+  # Job 4: Staleness check — avisa (warning, não falha) se descriptors > 90 dias
+  # ---------------------------------------------------------------------------
+  staleness:
+    name: Staleness check (profile-descriptors)
+    runs-on: ubuntu-latest
+    needs: lint
+    continue-on-error: true  # warning-only: nunca bloqueia o pipeline
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Check descriptor staleness (>90 days warning)
+        run: |
+          python - <<'EOF'
+          import sys
+          sys.path.insert(0, 'scripts')
+          from lib.validate import validate_descriptors
+          from pathlib import Path
+
+          report = validate_descriptors(
+              Path('profile-descriptors'),
+              stale_days_threshold=90,
+          )
+
+          stale = report.stale_profiles
+          if stale:
+              for name in stale:
+                  # Emite annotation de warning no GitHub Actions
+                  print(f'::warning file=profile-descriptors/{name}.yaml::'
+                        f'Descriptor "{name}" está desatualizado (last_tested > 90 dias)')
+              print(f'\nSUMARIO: {len(stale)} descriptor(s) desatualizado(s):')
+              for name in stale:
+                  print(f'  - {name}')
+              # Exit 1 para marcar o step como failure visual (job não bloqueia por continue-on-error)
+              sys.exit(1)
+          else:
+              print(f'OK: todos os {report.profiles_checked} descriptors estão atualizados '
+                    f'(threshold: {report.stale_days_threshold} dias)')
+          EOF

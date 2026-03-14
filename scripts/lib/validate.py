@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -71,10 +72,21 @@ class ProfileResult:
 class ValidationReport:
     descriptor_dir: Path
     results: list[ProfileResult] = field(default_factory=list)
+    stale_days_threshold: int = 90
 
     @property
     def profiles_checked(self) -> int:
         return len(self.results)
+
+    @property
+    def stale_profiles(self) -> list[str]:
+        """Nomes dos perfis com aviso de staleness (last_tested > stale_days_threshold dias)."""
+        return [
+            r.name
+            for r in self.results
+            for i in r.warnings
+            if i.field == "last_tested" and "desatualizado" in i.message
+        ]
 
     @property
     def total_errors(self) -> int:
@@ -235,11 +247,61 @@ def _cross_validate(
 
 
 # ---------------------------------------------------------------------------
+# Staleness check
+# ---------------------------------------------------------------------------
+
+_DATE_RE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})$")
+
+
+def _check_staleness(
+    results: list[ProfileResult],
+    all_data: dict[str, dict],
+    threshold_days: int = 90,
+    reference_date: date | None = None,
+) -> None:
+    """
+    Acrescenta warning nos ProfileResults cujo last_tested/LAST_TESTED_DATE
+    é mais antigo que `threshold_days` dias.
+
+    Modifica `results` in-place.
+    Perfis sem data ou com data inválida são ignorados (já cobertos pela Regra 4).
+    """
+    today = reference_date or date.today()
+
+    for r in results:
+        data = all_data.get(r.file, {})
+        raw = _get_field(data, "last_tested", "LAST_TESTED_DATE")
+        if not raw:
+            continue  # ausência já reportada pela Regra 4
+        raw_str = str(raw).strip().strip('"')
+        m = _DATE_RE.match(raw_str)
+        if not m:
+            continue  # formato inválido — não adiciona staleness
+        try:
+            tested = date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            continue
+        delta = (today - tested).days
+        if delta > threshold_days:
+            r.issues.append(
+                ValidationIssue(
+                    "last_tested",
+                    "warning",
+                    f"Perfil desatualizado: last_tested '{raw_str}' é {delta} dias atrás "
+                    f"(limite: {threshold_days} dias)",
+                )
+            )
+
+
+# ---------------------------------------------------------------------------
 # Entrada pública
 # ---------------------------------------------------------------------------
 
 
-def validate_descriptors(descriptors_dir: Path) -> ValidationReport:
+def validate_descriptors(
+    descriptors_dir: Path,
+    stale_days_threshold: int = 90,
+) -> ValidationReport:
     """
     Valida todos os profile-descriptors em `descriptors_dir`.
 
@@ -248,7 +310,10 @@ def validate_descriptors(descriptors_dir: Path) -> ValidationReport:
     """
     import yaml
 
-    report = ValidationReport(descriptor_dir=descriptors_dir)
+    report = ValidationReport(
+        descriptor_dir=descriptors_dir,
+        stale_days_threshold=stale_days_threshold,
+    )
     all_data: dict[str, dict] = {}  # file → parsed dict
 
     if not descriptors_dir.exists():
@@ -274,5 +339,8 @@ def validate_descriptors(descriptors_dir: Path) -> ValidationReport:
     # Cross-profile checks (only over successfully parsed files)
     parsed_results = [r for r in report.results if r.file in all_data]
     _cross_validate(parsed_results, all_data)
+
+    # Staleness check (warning-only, non-blocking)
+    _check_staleness(parsed_results, all_data, threshold_days=stale_days_threshold)
 
     return report

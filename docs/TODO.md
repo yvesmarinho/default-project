@@ -55,12 +55,11 @@
   - 27 testes — `tests/test_smoke_imp35.py`
   - *Alerta resolvido*: Release Maintainer
 
-- [ ] **[IMP-36]** Staleness check no CI
-  - Adicionar regra no `ci-template.yml` (job `lint` ou job separado `staleness`):
-    - Lê todos os descriptors, extrai `last_tested`/`LAST_TESTED_DATE`
-    - Alerta (warning, não falha) se data > 90 dias
-  - Implementar `_check_staleness()` em `validate.py` como nova regra opcional
-  - Adicionar campo `stale_days_threshold` em `ValidationReport`
+- [x] **[IMP-36]** Staleness check no CI
+  - `_check_staleness()` em `validate.py` — warning se `last_tested` > 90 dias
+  - `stale_days_threshold` e `stale_profiles` adicionados ao `ValidationReport`
+  - Job 4 `staleness` no `ci-template.yml` — `continue-on-error: true`, emite `::warning::` annotations
+  - 23 testes — `tests/test_smoke_imp36.py`
   - *Alerta resolvido*: SRE / Infra
 
 - [ ] **[IMP-37]** `MIGRATION-GUIDE.md`
