@@ -29,10 +29,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install test dependencies
-        run: pip install pytest rich
+        run: pip install pytest rich pyyaml
 
-      - name: Run smoke tests
-        run: pytest tests/test_smoke.py -v
-
-      - name: Run snapshot tests
-        run: pytest tests/test_templates_snapshot.py -v
+      - name: Run full test suite
+        run: pytest tests/ --tb=short -q

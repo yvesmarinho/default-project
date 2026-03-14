@@ -158,6 +158,19 @@ jobs:
           python -m py_compile scripts/lib/ui.py
           python -m py_compile scripts/lib/validate.py
           python -m py_compile scripts/lib/vscode.py
+          python -m py_compile scripts/lib/flows/__init__.py
+          python -m py_compile scripts/lib/flows/check_links.py
+          python -m py_compile scripts/lib/flows/compose.py
+          python -m py_compile scripts/lib/flows/dry_run.py
+          python -m py_compile scripts/lib/flows/generate_infra.py
+          python -m py_compile scripts/lib/flows/generate_rules.py
+          python -m py_compile scripts/lib/flows/list_profiles.py
+          python -m py_compile scripts/lib/flows/new_profile.py
+          python -m py_compile scripts/lib/flows/new_project.py
+          python -m py_compile scripts/lib/flows/publish.py
+          python -m py_compile scripts/lib/flows/release.py
+          python -m py_compile scripts/lib/flows/upgrade.py
+          python -m py_compile scripts/lib/flows/validate.py
           echo "All Python files are syntactically valid."
 
       - name: Check profile descriptors are valid YAML
