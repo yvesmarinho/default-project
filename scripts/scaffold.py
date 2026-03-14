@@ -46,6 +46,7 @@ from lib.flows import (
     flow_generate_infra,
     flow_generate_rules,
     flow_list_profiles,
+    flow_new_profile,
     flow_new_project,
     flow_publish,
     flow_release,
@@ -154,6 +155,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="valida todos os profile-descriptors (campos, semver, refs cruzadas)",
     )
     action_group.add_argument(
+        "--new-profile",
+        metavar="NAME",
+        dest="new_profile",
+        help=(
+            "cria um novo profile-descriptor com campos default e abre --validate\n"
+            "  ex: --new-profile meu-framework\n"
+            "  ex: --new-profile meu-framework --profile-layer layer2 --ci"
+        ),
+    )
+    action_group.add_argument(
+        "--profile-layer",
+        metavar="LAYER",
+        dest="profile_layer",
+        choices=["1", "2", "3", "4", "layer2", "layer3", "layer4", "transversal", "core"],
+        default=None,
+        help="camada do novo perfil (usar com --new-profile): 1|2|3|4|layer2|layer3|layer4|transversal|core",
+    )
+    action_group.add_argument(
         "--config",
         metavar="FILE",
         help="arquivo YAML com configuração do projeto (força modo não-interativo)",
@@ -232,6 +251,10 @@ def main() -> int:
     # --validate: valida profile-descriptors e sai
     if getattr(args, "validate", False):
         return flow_validate(args)
+
+    # --new-profile: scaffolda descriptor de novo perfil e sai
+    if getattr(args, "new_profile", None):
+        return flow_new_profile(args)
 
     # --publish: gera tarball de release e sai
     if getattr(args, "publish", False):

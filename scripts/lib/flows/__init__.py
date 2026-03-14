@@ -6,6 +6,7 @@ from .dry_run import flow_dry_run
 from .generate_infra import flow_generate_infra
 from .generate_rules import flow_generate_rules
 from .list_profiles import _load_descriptor, flow_list_profiles
+from .new_profile import flow_new_profile
 from .new_project import flow_new_project
 from .publish import flow_publish
 from .release import flow_release
@@ -24,5 +25,6 @@ __all__ = [
     "flow_validate",
     "flow_generate_rules",
     "flow_list_profiles",
+    "flow_new_profile",
     "_load_descriptor",
 ]

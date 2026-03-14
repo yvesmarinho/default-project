@@ -130,11 +130,12 @@
   - *Alerta resolvido*: AppSec
   - ✅ Implementado: sbom: target em 3 Makefiles, ci_targets + security.enforces CC8 em 4 descritores, step de verificação no ci-template.yml; 28 novos testes (528 → 556)
 
-- [ ] **[IMP-43]** `scaffold.py --new-profile NOME` — scaffolder de perfis
+- [x] **[IMP-43]** `scaffold.py --new-profile NOME` — scaffolder de perfis
   - Gera `profile-descriptors/NOME.yaml` com todos os campos do schema preenchidos com defaults
   - Cria `profile-descriptors/NOME.md` com instruções de preenchimento
   - Executa `--validate` automaticamente após geração
   - *Alerta resolvido*: Template Architect
+  - ✅ Implementado: `scripts/lib/flows/new_profile.py` + `--new-profile`/`--profile-layer` em scaffold.py; suporta `--ci`, `--json`, `--force`; 30 novos testes (556 → 586)
 
 - [ ] **[IMP-44]** Subcomandos CLI (versão MAJOR — breaking change)
   - Migrar de flags flat para subcomandos:
