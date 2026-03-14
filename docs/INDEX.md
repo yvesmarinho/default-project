@@ -56,6 +56,7 @@ a-default-project/
 │   ├── TODO.md                   # Task list
 │   ├── TODAY_ACTIVITIES.md       # Daily activities
 │   ├── TEMPLATE_USAGE.md         # Template usage guide
+│   ├── MIGRATION-GUIDE.md        # ✅ IMP-37 — guia de migração entre versões do template
 │   ├── MAKEFILE.md               # Makefile documentation
 │   ├── PROJECT-KNOWLEDGE-MAP.md  # Mapa de conhecimento: funcionalidades, menus, estruturas
 │   ├── SHARED_CONFIGS_SOLUTION.md # Shared configs architecture

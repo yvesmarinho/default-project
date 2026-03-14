@@ -62,10 +62,10 @@
   - 23 testes — `tests/test_smoke_imp36.py`
   - *Alerta resolvido*: SRE / Infra
 
-- [ ] **[IMP-37]** `MIGRATION-GUIDE.md`
-  - Documento explicando como um projeto gerado com v1.0.0 atualiza para versões futuras
-  - Seções: "O que o `--upgrade` faz automaticamente" vs. "O que requer ação manual"
-  - Template de entrada por versão: `## Migrando de v1.0.0 para v1.1.0`
+- [x] **[IMP-37]** `MIGRATION-GUIDE.md`
+  - `docs/MIGRATION-GUIDE.md` — guia completo de migração entre versões
+  - Seções: conceitos, o que `--upgrade` faz, acções manuais, procedimento geral,
+    migração v1.2.0→v1.3.0, template para versões futuras, referência rápida, troubleshooting
   - *Alerta resolvido*: Release Maintainer
 
 ---
