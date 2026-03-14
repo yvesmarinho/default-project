@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-08 — Plano de ação pós-homologação (IMP-33 a IMP-44 definidas)
+**Last Updated**: 2026-03-14 — IMP-46 ✅ Concluído (testes de integração estrutura + AppSec, 628→746 testes)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -154,6 +154,19 @@
   - *Alerta resolvido*: DevEx / CLI
   - ✅ Implementado: `_translate_subcommand()` + `_warn_legacy_flags()` em scaffold.py; 10 subcomandos mapeados; flags legadas emitem DeprecationWarning; backward-compatible; 42 novos testes (586 → 628)
 
+- [x] **[IMP-46]** ✅ **CONCLUÍDO 2026-03-14** — Testes de integração (estrutura + AppSec) — IMP-46
+  - `tests/helpers/fake_project.py`: `expand_template()` + `FakeProject`; `_PLACEHOLDER_RE` limitado a nomes canônicos
+  - `tests/test_integration_structural.py`: 9 templates × asserções estruturais (~60 testes)
+  - `tests/test_integration_security.py`: AppSec baseline parametrizado (secrets, .gitignore, YAML válido)
+  - `.gitignore` adicionado a python-fastapi, python-flask, typescript-next (gap real corrigido)
+  - Job 4 `integration` no `ci-template.yml` (needs: lint)
+  - 628 → 746 testes (+118)
+
+- [ ] **[IMP-47]** Testes executáveis por template (L2 — `make lint` por toolchain em CI matrix)
+  - Executar `make lint` real por perfil em matrix do CI (Python: ruff+bandit, TS: eslint, Terraform: terraform validate)
+  - Requer toolchains instalados no runner (Python, Node, Terraform)
+  - *Origem*: debate IMP-46 — pirâmide L0/L1/L2
+
 - [ ] **[IMP-45]** Engram MCP — memória persistente por projeto (opt-in)
   - Integrar [Gentleman-Programming/engram](https://github.com/Gentleman-Programming/engram) como MCP server FTS local
   - `.engram/memory/*.md` — fonte de verdade commitável; `.engram/index/engram.db` — cache local (não commitado)
@@ -184,6 +197,8 @@
 | IMP-43 | `--new-profile` scaffolder | P3 | Alto | Template Arch |
 | IMP-44 | Subcomandos CLI (breaking change) | P3 | Alto | DevEx |
 | IMP-45 | Engram MCP — memória persistente (opt-in) | P3 | Médio | DevEx / Template Arch |
+| IMP-46 | Testes de integração estrutura + AppSec | P2 | Médio | Template Arch • AppSec | ✅ 2026-03-14 |
+| IMP-47 | Testes executáveis por template (`make lint` matrix) | P2 | Alto | AppSec • SRE |
 
 ---
 
