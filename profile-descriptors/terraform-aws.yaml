@@ -86,17 +86,57 @@ templates:
     description: "Targets: tf-init, tf-fmt, tf-validate, tf-plan, tf-apply, tf-destroy, tf-security-scan"
 
 security:
-  checklist:
-    - "IAM task role com Resource ARN específico — nunca Resource: '*' para S3/SSM/Secrets"
-    - "RDS: publicly_accessible=false obrigatório"
-    - "RDS: storage_encrypted=true obrigatório"
-    - "RDS: deletion_protection=true em produção"
-    - "Passwords gerados com random_password + armazenados em SSM SecureString"
-    - "Sem *.tfvars commitados — gitignored (.gitignore cobre *.tfvars)"
-    - "ECS tasks em subnets privadas (sem public IP)"
-    - "ALB SG permite 80/443; ECS SG permite apenas ingress do ALB"
-    - "ECS: containerInsights=enabled para observabilidade"
-    - "Backend S3 com encrypt=true e DynamoDB locking (stub presente no versions.tf)"
+  enforces:
+    - control: "OWASP-A01"
+      description: "IAM task role com Resource ARN específico — nunca Resource: '*'"
+      tool: "tfsec"
+      severity: "critical"
+      automated: true
+    - control: "CKV_AWS_17"
+      description: "RDS: publicly_accessible=false obrigatório"
+      tool: "checkov"
+      severity: "critical"
+      automated: true
+    - control: "CKV_AWS_17"
+      description: "RDS: storage_encrypted=true obrigatório"
+      tool: "checkov"
+      severity: "high"
+      automated: true
+    - control: "CKV_AWS_17"
+      description: "RDS: deletion_protection=true em produção"
+      tool: "checkov"
+      severity: "high"
+      automated: false
+    - control: "CWE-312"
+      description: "Passwords gerados com random_password + armazenados em SSM SecureString"
+      tool: "terraform"
+      severity: "critical"
+      automated: true
+    - control: "CWE-312"
+      description: "Sem *.tfvars commitados — gitignored (.gitignore cobre *.tfvars)"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A01"
+      description: "ECS tasks em subnets privadas (sem public IP)"
+      tool: "tfsec"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A05"
+      description: "ALB SG permite 80/443; ECS SG permite apenas ingress do ALB"
+      tool: "tfsec"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A09"
+      description: "ECS: containerInsights=enabled para observabilidade"
+      tool: "terraform"
+      severity: "medium"
+      automated: true
+    - control: "CKV_AWS"
+      description: "Backend S3 com encrypt=true e DynamoDB locking"
+      tool: "checkov"
+      severity: "high"
+      automated: true
 
 combines_with:
   - python-fastapi

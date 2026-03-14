@@ -825,10 +825,30 @@ def generate_profile_guide(
     for name in profiles_applied:
         desc = descriptors.get(name, {})
         security = desc.get("security") or {}
-        enforces: list[str] = security.get("enforces") or []
+        enforces: list = security.get("enforces") or []
         if enforces:
-            rules = "\n".join(f"- {r}" for r in enforces)
-            security_parts.append(f"### `{name}`\n\n{rules}")
+            if isinstance(enforces[0], dict):
+                # Structured objects → render as table
+                header = (
+                    "| Controle | Ferramenta | Severidade | Auto | Descrição |\n"
+                    "|----------|-----------|-----------|------|-----------|"
+                )
+                rows = []
+                for ctrl in enforces:
+                    c = ctrl.get("control", "")
+                    t = ctrl.get("tool", "")
+                    s = ctrl.get("severity", "")
+                    a = "✅" if ctrl.get("automated") else "❌"
+                    d = str(ctrl.get("description", "")).replace("\n", " ")
+                    if len(d) > 70:
+                        d = d[:67] + "..."
+                    rows.append(f"| `{c}` | `{t}` | {s} | {a} | {d} |")
+                table = header + "\n" + "\n".join(rows)
+                security_parts.append(f"### `{name}`\n\n{table}")
+            else:
+                # Legacy string list fallback
+                rules = "\n".join(f"- {r}" for r in enforces)
+                security_parts.append(f"### `{name}`\n\n{rules}")
     security_sections = (
         "\n\n".join(security_parts)
         if security_parts

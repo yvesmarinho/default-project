@@ -96,25 +96,56 @@ combines_with:
 # ------------------------------------------------------------------
 security:
   enforces:
-    # Escopo 1 — IaC
-    - "tfsec: nenhum recurso Terraform com expose público não-intencional"
-    - "checkov: controles CKV_AWS_* aplicados em terraform-aws + checkov para k8s-helm"
-
-    # Escopo 2 — Código
-    - "bandit B201/B602 HIGH bloqueiam merge em Python"
-    - "semgrep ruleset p/owasp-top-ten para detecção de injection, XSS, SSRF"
-
-    # Escopo 3 — Segredos
-    - "gitleaks pré-commit: nenhum token/chave jamais entra no histórico git"
-    - "detect-secrets baseline: .secrets.baseline versionado no repositório"
-    - "mcp.json: tokens referenciados via ${env:VAR_NAME} — nunca hardcodados"
-    - ".secrets/ sempre no .gitignore"
-
-    # Escopo 4 — Modelagem de ameaças
-    - "THREAT-MODEL.md obrigatório em projetos com dados sensíveis (lgpd-baseline, soc2-baseline)"
-
-    # Escopo 5 — Pre-commit
-    - "pre-commit hook: detect-secrets + gitleaks + ruff (Python) / eslint (TS)"
+    - control: "CKV_AWS"
+      description: "tfsec: nenhum recurso Terraform com expose público não-intencional"
+      tool: "tfsec"
+      severity: "high"
+      automated: true
+    - control: "CKV_K8S"
+      description: "checkov: controles CKV_AWS_* (terraform-aws) e CKV_K8S_* (k8s-helm)"
+      tool: "checkov"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A03"
+      description: "bandit B201/B602 HIGH bloqueiam merge em Python"
+      tool: "bandit"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A03"
+      description: "semgrep ruleset p/owasp-top-ten — injection, XSS, SSRF"
+      tool: "semgrep"
+      severity: "high"
+      automated: true
+    - control: "CWE-312"
+      description: "gitleaks pré-commit: nenhum token/chave jamais entra no histórico git"
+      tool: "gitleaks"
+      severity: "critical"
+      automated: true
+    - control: "CWE-312"
+      description: "detect-secrets baseline: .secrets.baseline versionado no repositório"
+      tool: "detect-secrets"
+      severity: "critical"
+      automated: true
+    - control: "CWE-798"
+      description: "mcp.json: tokens referenciados via ${env:VAR_NAME} — nunca hardcodados"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "CWE-312"
+      description: ".secrets/ sempre no .gitignore"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A05"
+      description: "THREAT-MODEL.md obrigatório em projetos com dados sensíveis"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "CWE-312"
+      description: "pre-commit hook: detect-secrets + gitleaks + ruff (Python) / eslint (TS)"
+      tool: "pre-commit"
+      severity: "high"
+      automated: true
 
 # ------------------------------------------------------------------
 # Metadados

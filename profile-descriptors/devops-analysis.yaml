@@ -70,11 +70,31 @@ combines_with:
 # ------------------------------------------------------------------
 security:
   enforces:
-    - "Sem credenciais hardcoded em notebooks ou DAGs — usar .secrets/.env"
-    - "PII mascarado em datasets de desenvolvimento e testes"
-    - "LGPD: dados pessoais em staging/prod exigem lgpd-baseline ativo"
-    - "Secrets scan em arquivos .ipynb (notebooks armazenam outputs com dados)"
-    - "mlflow tracking sem log de dados sensíveis ou tokens"
+    - control: "CWE-312"
+      description: "Sem credenciais hardcoded em notebooks ou DAGs — usar .secrets/.env"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "LGPD-Art46"
+      description: "PII mascarado em datasets de desenvolvimento e testes"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "LGPD-Art7"
+      description: "LGPD: dados pessoais em staging/prod exigem lgpd-baseline ativo"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "CWE-312"
+      description: "Secrets scan em arquivos .ipynb (notebooks armazenam outputs com dados)"
+      tool: "detect-secrets"
+      severity: "high"
+      automated: true
+    - control: "CWE-312"
+      description: "mlflow tracking sem log de dados sensíveis ou tokens"
+      tool: "manual"
+      severity: "high"
+      automated: false
 
 # ------------------------------------------------------------------
 # Metadados

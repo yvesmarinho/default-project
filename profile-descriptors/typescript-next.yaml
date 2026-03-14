@@ -70,14 +70,42 @@ templates:
     description: "14 targets: dev, build, lint, format, test, audit, docker-*, ci, clean"
 
 security:
-  checklist:
-    - "TypeScript strict: sem any, sem ts-ignore sem justificativa"
-    - "Variáveis de ambiente validadas com zod no startup"
-    - "Headers de segurança em next.config.ts (X-Frame-Options, CSP, etc.)"
-    - "Sem NEXT_PUBLIC_* com segredos (expostos ao browser)"
-    - "pnpm audit no CI (--audit-level=high)"
-    - "non-root user no Dockerfile"
-    - "Imagem base node:20-slim (minimiza superfície de ataque)"
+  enforces:
+    - control: "OWASP-A03"
+      description: "TypeScript strict: sem any, sem ts-ignore sem justificativa"
+      tool: "typescript"
+      severity: "medium"
+      automated: true
+    - control: "OWASP-A05"
+      description: "Variáveis de ambiente validadas com zod no startup"
+      tool: "zod"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A05"
+      description: "Headers de segurança em next.config.ts (X-Frame-Options, CSP, etc.)"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "CWE-312"
+      description: "Sem NEXT_PUBLIC_* com segredos (expostos ao browser)"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A06"
+      description: "pnpm audit no CI (--audit-level=high)"
+      tool: "pnpm-audit"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A01"
+      description: "non-root user no Dockerfile"
+      tool: "docker"
+      severity: "high"
+      automated: false
+    - control: "OWASP-A06"
+      description: "Imagem base node:20-slim (minimiza superfície de ataque)"
+      tool: "docker"
+      severity: "medium"
+      automated: false
 
 ci_targets:
   - lint

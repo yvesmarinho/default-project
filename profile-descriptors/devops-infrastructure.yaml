@@ -68,10 +68,26 @@ combines_with:
 # ------------------------------------------------------------------
 security:
   enforces:
-    - "tfsec: infraestrutura sem exposição pública não-intencional"
-    - "checkov: controles CKV_AWS_* para recursos Terraform"
-    - "Secrets nunca embutidos em manifests YAML/Terraform — usar Vault ou SSM"
-    - "RBAC mínimo para service accounts Kubernetes"
+    - control: "CKV_AWS"
+      description: "tfsec: infraestrutura sem exposição pública não-intencional"
+      tool: "tfsec"
+      severity: "high"
+      automated: true
+    - control: "CKV_AWS"
+      description: "checkov: controles CKV_AWS_* para recursos Terraform"
+      tool: "checkov"
+      severity: "high"
+      automated: true
+    - control: "CWE-312"
+      description: "Secrets nunca embutidos em manifests YAML/Terraform — usar Vault ou SSM"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A01"
+      description: "RBAC mínimo para service accounts Kubernetes"
+      tool: "kubectl"
+      severity: "high"
+      automated: false
 
 # ------------------------------------------------------------------
 # Metadados

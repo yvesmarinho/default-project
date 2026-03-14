@@ -1,7 +1,8 @@
 # Profile Descriptor Schema — Contrato Formal de Perfis
 
-> **Versão do schema**: 1.0.0
+> **Versão do schema**: 1.1.0
 > **Criado em**: 2026-03-07 (IMP-19a)
+> **Atualizado em**: 2026-03-14 (IMP-41 — `security.enforces` estruturado)
 > **Status**: Estável — perfis novos DEVEM seguir este contrato antes de serem integrados ao scaffold
 
 ---
@@ -88,11 +89,11 @@ combines_with:                 # Perfis testados e aprovados para uso conjunto
 # ------------------------------------------------------------------
 security:
   enforces:                    # Controles de segurança que este perfil exige/configura
-    - string                   # Exemplos:
-                               #   "bandit scan on every commit (pre-commit)"
-                               #   "pip-audit in CI (uv run pip-audit)"
-                               #   "secrets scan via .copilot-rules.md P0"
-                               #   "no hardcoded credentials (ruff rule S105)"
+    - control: string          # Identificador do controle. Ex: "OWASP-A06", "CWE-312", "CC6.1"
+      description: string      # Descrição do controle (1 frase). Ex: "bandit -r src/ via 'make security'"
+      tool: string             # Ferramenta que implementa o controle. Ex: "bandit", "gitleaks", "manual"
+      severity: string         # "critical" | "high" | "medium" | "low"
+      automated: bool          # true = executado automaticamente (CI/pre-commit); false = manual
 
 # ------------------------------------------------------------------
 # Metadados extras (opcionais)

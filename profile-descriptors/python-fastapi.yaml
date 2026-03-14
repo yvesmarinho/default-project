@@ -134,14 +134,46 @@ combines_with:
 
 security:
   enforces:
-    - "SECRET_KEY via pydantic-settings + .env (nunca hardcoded)"
-    - "CORSMiddleware com allow_origins explícito (nunca ['*'] em produção)"
-    - "bandit -r src/ disponível via 'make security'"
-    - "pip-audit disponível via 'make audit'"
-    - "Dockerfile executa como usuário não-root (adduser app)"
-    - "uv sync --frozen --no-dev na imagem de produção (sem deps dev)"
-    - "Swagger/ReDoc desabilitado quando ENV=production"
-    - "POSTGRES_PASSWORD via variável de ambiente obrigatória no docker-compose"
+    - control: "CWE-312"
+      description: "SECRET_KEY via pydantic-settings + .env (nunca hardcoded)"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A05"
+      description: "CORSMiddleware com allow_origins explícito (nunca ['*'] em produção)"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "OWASP-A06"
+      description: "bandit -r src/ disponível via 'make security'"
+      tool: "bandit"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A06"
+      description: "pip-audit disponível via 'make audit'"
+      tool: "pip-audit"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A01"
+      description: "Dockerfile executa como usuário não-root (adduser app)"
+      tool: "docker"
+      severity: "high"
+      automated: false
+    - control: "OWASP-A06"
+      description: "uv sync --frozen --no-dev na imagem de produção (sem deps dev)"
+      tool: "uv"
+      severity: "medium"
+      automated: true
+    - control: "OWASP-A05"
+      description: "Swagger/ReDoc desabilitado quando ENV=production"
+      tool: "manual"
+      severity: "medium"
+      automated: false
+    - control: "CWE-312"
+      description: "POSTGRES_PASSWORD via variável de ambiente obrigatória no docker-compose"
+      tool: "manual"
+      severity: "critical"
+      automated: false
 
 tags:
   - python

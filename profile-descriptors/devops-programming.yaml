@@ -152,11 +152,31 @@ combines_with:
 # ------------------------------------------------------------------
 security:
   enforces:
-    - "Secrets scan declarado em .copilot-rules.md seção P0 (varredura a cada sessão)"
-    - "Sem valores hardcoded — regra P0 injetada em .copilot-rules-{project_name}.md"
-    - "bandit scan recomendado para projetos Python (pre-commit ou CI)"
-    - "pip-audit recomendado para projetos Python (uv run pip-audit em Makefile)"
-    - "Sem credenciais em variáveis de ambiente inline — usar .secrets/.env"
+    - control: "OWASP-A09"
+      description: "Secrets scan a cada sessão — padrões .env*, *.key, *.pem, *secret*, *password*, *token*"
+      tool: "copilot-rules"
+      severity: "critical"
+      automated: false
+    - control: "CWE-798"
+      description: "Sem valores hardcoded — regra P0 injetada em .copilot-rules-{project_name}.md"
+      tool: "copilot-rules"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A06"
+      description: "bandit scan para projetos Python (pre-commit ou CI)"
+      tool: "bandit"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A06"
+      description: "pip-audit para projetos Python (uv run pip-audit em Makefile)"
+      tool: "pip-audit"
+      severity: "high"
+      automated: true
+    - control: "CWE-312"
+      description: "Sem credenciais em variáveis de ambiente inline — usar .secrets/.env"
+      tool: "manual"
+      severity: "critical"
+      automated: false
 
 # ------------------------------------------------------------------
 # Metadados

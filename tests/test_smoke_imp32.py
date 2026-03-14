@@ -29,6 +29,15 @@ Cobertura:
     - combines_with com perfil inexistente gera warning (não erro)
     - nomes duplicados geram erro no segundo descriptor
 
+  Regra 6 — security.enforces estruturado (IMP-41):
+    - enforces ausente não gera issue
+    - enforces vazio não gera issue
+    - enforces com string (legado) gera error
+    - enforces com objeto parcial (campos faltando) gera error
+    - enforces com severity inválida gera error
+    - enforces com objeto completo válido não gera issue
+    - todas as severidades aceitas: critical, high, medium, low
+
   CLI --validate:
     - --help menciona --validate
     - --validate retorna exit code 0 (todos os descritores reais são válidos)
@@ -234,6 +243,71 @@ class TestValidateDescriptor:
     def test_valid_descriptor_has_no_issues(self):
         r = _validate_descriptor(self._min_valid(), Path("test.yaml"))
         assert r.issues == []
+
+    # -- Regra 6: security.enforces estruturado (IMP-41) --
+
+    def _min_valid_with_enforces(self, enforces_val) -> dict:
+        data = self._min_valid()
+        data["security"] = {"enforces": enforces_val}
+        return data
+
+    def test_enforces_absent_no_issues(self):
+        """security.enforces ausente não gera nenhum issue."""
+        data = self._min_valid()
+        r = _validate_descriptor(data, Path("test.yaml"))
+        assert r.issues == []
+
+    def test_enforces_empty_list_no_issues(self):
+        """security.enforces vazio ([]) não gera issue."""
+        r = _validate_descriptor(self._min_valid_with_enforces([]), Path("test.yaml"))
+        assert r.issues == []
+
+    def test_enforces_string_item_gives_error(self):
+        """enforces com string (formato legado) gera error."""
+        data = self._min_valid_with_enforces(["controle legado como string"])
+        r = _validate_descriptor(data, Path("test.yaml"))
+        fields = [i.field for i in r.errors]
+        assert "security.enforces" in fields
+
+    def test_enforces_missing_required_fields_gives_error(self):
+        """enforces com objeto parcial (sem 'automated') gera error."""
+        data = self._min_valid_with_enforces([
+            {"control": "CWE-312", "description": "Desc", "tool": "manual", "severity": "high"},
+        ])
+        r = _validate_descriptor(data, Path("test.yaml"))
+        fields = [i.field for i in r.errors]
+        assert "security.enforces" in fields
+
+    def test_enforces_invalid_severity_gives_error(self):
+        """enforces com severity inválida gera error."""
+        data = self._min_valid_with_enforces([
+            {"control": "CWE-312", "description": "Desc", "tool": "manual",
+             "severity": "ultra-critical", "automated": False},
+        ])
+        r = _validate_descriptor(data, Path("test.yaml"))
+        msgs = [i.message for i in r.errors if i.field == "security.enforces"]
+        assert any("severity" in m for m in msgs)
+
+    def test_enforces_valid_item_no_issues(self):
+        """enforces com objeto completo e válido não gera issue."""
+        data = self._min_valid_with_enforces([
+            {"control": "OWASP-A06", "description": "bandit scan",
+             "tool": "bandit", "severity": "high", "automated": True},
+        ])
+        r = _validate_descriptor(data, Path("test.yaml"))
+        sec_issues = [i for i in r.issues if i.field == "security.enforces"]
+        assert sec_issues == []
+
+    def test_enforces_all_severities_accepted(self):
+        """Todas as severidades válidas são aceitas."""
+        for sev in ("critical", "high", "medium", "low"):
+            data = self._min_valid_with_enforces([
+                {"control": "CC6.1", "description": "desc", "tool": "trivy",
+                 "severity": sev, "automated": True},
+            ])
+            r = _validate_descriptor(data, Path(f"test-{sev}.yaml"))
+            sec_errors = [i for i in r.errors if i.field == "security.enforces"]
+            assert sec_errors == [], f"severity '{sev}' gerou erro inesperado"
 
 
 # ===========================================================================

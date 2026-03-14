@@ -77,15 +77,47 @@ templates:
     description: "Targets: helm-lint, helm-dry-run, helm-install, helm-upgrade, helm-diff, helm-rollback, helm-uninstall"
 
 security:
-  checklist:
-    - "Sem .Values.env com segredos — usar ExternalSecrets ou sealed-secrets"
-    - "Sem imagePullPolicy: Always em produção (potencial instabilidade)"
-    - "Liveness e readiness probes obrigatórios no Deployment"
-    - "resources.requests e resources.limits definidos (evitar OOMKilled e scheduling sem baseline)"
-    - "ServiceAccount com automountServiceAccountToken: false por padrão"
-    - "Ingress com TLS habilitado por padrão (nginx.ingress.kubernetes.io/ssl-redirect: true)"
-    - "PodSecurityContext: runAsNonRoot=true, runAsUser=1000, fsGroup=2000"
-    - "securityContext: allowPrivilegeEscalation=false, readOnlyRootFilesystem=true, capabilities.drop=[ALL]"
+  enforces:
+    - control: "CWE-312"
+      description: "Sem .Values.env com segredos — usar ExternalSecrets ou sealed-secrets"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A06"
+      description: "Sem imagePullPolicy: Always em produção (potencial instabilidade)"
+      tool: "manual"
+      severity: "medium"
+      automated: false
+    - control: "OWASP-A05"
+      description: "Liveness e readiness probes obrigatórios no Deployment"
+      tool: "manual"
+      severity: "medium"
+      automated: false
+    - control: "OWASP-A05"
+      description: "resources.requests e resources.limits definidos (evitar OOMKilled)"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "OWASP-A01"
+      description: "ServiceAccount com automountServiceAccountToken: false por padrão"
+      tool: "kubectl"
+      severity: "high"
+      automated: false
+    - control: "OWASP-A05"
+      description: "Ingress com TLS habilitado por padrão (ssl-redirect: true)"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "OWASP-A01"
+      description: "PodSecurityContext: runAsNonRoot=true, runAsUser=1000, fsGroup=2000"
+      tool: "kubectl"
+      severity: "high"
+      automated: false
+    - control: "OWASP-A01"
+      description: "securityContext: allowPrivilegeEscalation=false, readOnlyRootFilesystem=true"
+      tool: "kubectl"
+      severity: "high"
+      automated: false
 
 combines_with:
   - python-fastapi

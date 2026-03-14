@@ -8,11 +8,13 @@ Verifica por descriptor:
   4. Versão (version / VERSION) presente e em formato semver X.Y.Z
   5. Data de último teste (last_tested / LAST_TESTED_DATE) presente
   6. Campo `layer` presente e com valor reconhecido
+  7. `security.enforces` — se presente, cada item deve ser objeto estruturado com
+     `control`, `description`, `tool`, `severity` (critical|high|medium|low), `automated`
 
 Verifica entre descritores (cross-profile):
-  7. Nomes duplicados
-  8. `combines_with` → todos os nomes referenciados existem
-  9. `excludes_with` → todos os nomes referenciados existem
+  8. Nomes duplicados
+  9. `combines_with` → todos os nomes referenciados existem
+  10. `excludes_with` → todos os nomes referenciados existem
 """
 
 from __future__ import annotations
@@ -199,6 +201,43 @@ def _validate_descriptor(data: dict, yaml_path: Path) -> ProfileResult:
                     f"Aceitos: {', '.join(sorted(_VALID_LAYERS))}"
                 )
             )
+
+    # Regra 6 — security.enforces (se presente, deve ser lista de objetos estruturados)
+    _REQUIRED_CONTROL_FIELDS = frozenset({"control", "description", "tool", "severity", "automated"})
+    _VALID_SEVERITIES = frozenset({"critical", "high", "medium", "low"})
+    security_data = data.get("security") or {}
+    enforces = security_data.get("enforces")
+    if enforces is not None:
+        for i, item in enumerate(enforces):
+            if not isinstance(item, dict):
+                result.issues.append(
+                    ValidationIssue(
+                        "security.enforces",
+                        "error",
+                        f"enforces[{i}] deve ser objeto estruturado com campos "
+                        f"{sorted(_REQUIRED_CONTROL_FIELDS)}, encontrado: {type(item).__name__}",
+                    )
+                )
+            else:
+                missing = _REQUIRED_CONTROL_FIELDS - set(item.keys())
+                if missing:
+                    result.issues.append(
+                        ValidationIssue(
+                            "security.enforces",
+                            "error",
+                            f"enforces[{i}]: campos obrigatórios ausentes: {sorted(missing)}",
+                        )
+                    )
+                severity_val = item.get("severity")
+                if severity_val not in _VALID_SEVERITIES:
+                    result.issues.append(
+                        ValidationIssue(
+                            "security.enforces",
+                            "error",
+                            f"enforces[{i}].severity='{severity_val}' inválido. "
+                            f"Aceitos: {sorted(_VALID_SEVERITIES)}",
+                        )
+                    )
 
     return result
 

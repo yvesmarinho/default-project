@@ -105,7 +105,7 @@
 
 ### ⚪ P3 — Evolução de schema (futuro / próxima versão MAJOR)
 
-- [ ] **[IMP-41]** `security.enforces` estruturado para automação
+- [x] **[IMP-41]** `security.enforces` estruturado para automação
   - Hoje é lista de strings livres. Mudar para:
     ```yaml
     security:
@@ -120,6 +120,7 @@
   - Atualizar `validate.py` para validar a nova estrutura
   - `generate_profile_guide()` passa a gerar tabela de controles em vez de lista de strings
   - *Alerta resolvido*: AppSec
+  - ✅ Implementado: 9 descritores migrados, Regra 6 em validate.py, tabela em generate_profile_guide(); 7 novos testes (521 → 528)
 
 - [ ] **[IMP-42]** SBOM nos perfis Layer 2
   - Adicionar target `make sbom` em todos os perfis Python: `uv run cyclonedx-bom`
@@ -164,7 +165,7 @@
 | IMP-38 | Refactor scaffold.py → `lib/flows/` | P2 | Alto | Template Arch |
 | IMP-39 | Ampliar snapshot tests | P2 | Médio | Release |
 | IMP-40 | RUNBOOK.md parametrizado por perfil | P2 | Médio | SRE | ✅ |
-| IMP-41 | `security.enforces` estruturado | P3 | Alto | AppSec |
+| IMP-41 | `security.enforces` estruturado | P3 | Alto | AppSec | ✅ |
 | IMP-42 | SBOM nos perfis Layer 2 | P3 | Médio | AppSec |
 | IMP-43 | `--new-profile` scaffolder | P3 | Alto | Template Arch |
 | IMP-44 | Subcomandos CLI (breaking change) | P3 | Alto | DevEx |
