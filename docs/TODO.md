@@ -91,7 +91,7 @@
   - Targets: `python-fastapi/src/main.py`, `typescript-next/app/layout.tsx`, `k8s-helm/helm/Chart.yaml`, `terraform-aws/infra/main.tf`, `lgpd-baseline/docs/lgpd/DATA-MAPPING.md`
   - *Alerta resolvido*: Release Maintainer
 
-- [ ] **[IMP-40]** `RUNBOOK.md` parametrizado por perfil
+- [x] **[IMP-40]** `RUNBOOK.md` parametrizado por perfil
   - `infra.py:generate_runbook()` hoje gera template genérico
   - Adicionar blocos condicionais por perfil Layer 2 e Layer 3:
     - k8s-helm: comandos `helm status`, `helm rollback`, `kubectl rollout undo`
@@ -99,6 +99,7 @@
     - python-fastapi: `uv run pytest`, checklist de health endpoint
   - Integrar com `ProfileComposer`: saber quais perfis foram aplicados e injetar as seções corretas
   - *Alerta resolvido*: SRE / Infra
+  - ✅ Implementado: 3 constantes `_RUNBOOK_SECTION_*` + injeção via `cfg.extra_profiles`; 7 novos testes (514 → 521)
 
 ---
 
@@ -162,7 +163,7 @@
 | IMP-37 | MIGRATION-GUIDE.md | P1 | Baixo | Release |
 | IMP-38 | Refactor scaffold.py → `lib/flows/` | P2 | Alto | Template Arch |
 | IMP-39 | Ampliar snapshot tests | P2 | Médio | Release |
-| IMP-40 | RUNBOOK.md parametrizado por perfil | P2 | Médio | SRE |
+| IMP-40 | RUNBOOK.md parametrizado por perfil | P2 | Médio | SRE | ✅ |
 | IMP-41 | `security.enforces` estruturado | P3 | Alto | AppSec |
 | IMP-42 | SBOM nos perfis Layer 2 | P3 | Médio | AppSec |
 | IMP-43 | `--new-profile` scaffolder | P3 | Alto | Template Arch |
