@@ -611,11 +611,11 @@ def flow_list_profiles(args: argparse.Namespace) -> int:
                 data = _load_descriptor(yaml_file)
                 desc = (data.get("description") or "").strip().replace("\n", " ")
                 profiles.append({
-                    "name":        data.get("name", yaml_file.stem),
+                    "name":        str(data.get("name", yaml_file.stem)),
                     "description": desc,
-                    "layer":       data.get("layer", "—"),
-                    "version":     data.get("VERSION", "—"),
-                    "last_tested": data.get("LAST_TESTED_DATE", "—"),
+                    "layer":       str(data.get("layer", "—")),
+                    "version":     str(data.get("VERSION") or data.get("version") or "—"),
+                    "last_tested": str(data.get("LAST_TESTED_DATE") or data.get("last_tested") or "—"),
                     "tags":        data.get("tags") or [],
                 })
             except Exception as exc:
