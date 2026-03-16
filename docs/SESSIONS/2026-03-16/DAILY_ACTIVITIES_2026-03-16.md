@@ -68,3 +68,37 @@ python scripts/scaffold.py new --ci --name enterprise-infra-docker \
 | `~/VyaJobs/enterprise-infra-docker/.github/prompts/session-start-first.prompt.md` | Idem — projeto gerado atualizado |
 
 **Decisão D-47a**: A verificação do agente é sobre *configuração* (arquivo); a verificação de *runtime* (processos em execução) permanece como ação manual do usuário via Command Palette.
+
+---
+
+### ✅ fix(security): resolver vulnerabilidades Dependabot — commit `c6f137e`
+
+**Vulnerabilidades abordadas**: 6 alertas (3 HIGH, 3 MODERATE) em 3 ecossistemas (npm, pip, github-actions)
+
+**npm/typescript-next** — overrides para deps transitivas:
+| CVE | Pacote | Severidade | Versão segura |
+|-----|--------|------------|---------------|
+| CVE-2024-21538 (GHSA-3xgq-45jj-v275) | cross-spawn | HIGH | >=7.0.5 |
+| CVE-2021-3803 (GHSA-rp65-9cf3-cjxr) | nth-check | HIGH | >=2.0.1 |
+| CVE-2024-4067 (GHSA-952p-6rrq-rcjv) | micromatch | MODERATE | >=4.0.8 |
+
+**pip/airflow** — provider atualizado:
+- `apache-airflow-providers-http`: `5.6.4` → `6.0.0`
+
+**github-actions** — tags mutáveis pinnadas:
+| Action | Antes | Depois |
+|--------|-------|--------|
+| gitleaks/gitleaks-action | @v2 | @v2.3.9 |
+| trufflesecurity/trufflehog | @main | @v3.93.8 |
+| aquasecurity/trivy-action | @master | @0.35.0 |
+| bridgecrewio/checkov-action | @master | @v12.3088.0 |
+
+**Artefatos modificados**:
+| Arquivo | O que mudou |
+|---------|-------------|
+| `.github/templates/typescript-next/package.json` | `overrides` + `pnpm.overrides` adicionados |
+| `.github/templates/data-pipeline-airflow/airflow/requirements-airflow.txt` | providers-http 5.6.4 → 6.0.0 |
+| `.github/templates/lgpd-baseline/.github/workflows/secret-scan.yml` | gitleaks @v2.3.9, trufflehog @v3.93.8 |
+| `.github/templates/soc2-baseline/.github/workflows/static-analysis.yml` | trivy @0.35.0, checkov @v12.3088.0 |
+
+**Observação**: Alertas npm ainda aparecem no Dependabot UI pois são deps transitivas — os `overrides` mitigam o risco real. Fechamento completo ocorrerá quando o Dependabot criar PRs para as deps diretas (schedule: monthly).

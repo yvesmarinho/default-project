@@ -3,7 +3,7 @@
 **Last Updated**: 2026-03-16 🏁 Encerrada
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-16 — fix(session-start): verificação MCP executável pelo agente + projeto teste enterprise-infra-docker
+**Last Session**: 2026-03-16 — fix(security): Dependabot (npm overrides, pip update, actions pinning) + fix(session-start) + projeto teste enterprise-infra-docker
 
 ---
 
@@ -153,6 +153,11 @@ a-default-project/
   - [DAILY_ACTIVITIES](SESSIONS/2026-02-27/DAILY_ACTIVITIES_2026-02-27.md) — Log detalhado completo
   - [SESSION_REPORT](SESSIONS/2026-02-27/SESSION_REPORT_2026-02-27.md) — Relatório e artefatos
   - [FINAL_STATUS](SESSIONS/2026-02-27/FINAL_STATUS_2026-02-27.md) — Status final 🏁
+
+- **[docs/SESSIONS/2026-03-16/](SESSIONS/2026-03-16/)** - Sessão: fix(security) Dependabot + fix(session-start) MCP (encerrada)
+  - [SESSION_RECOVERY](SESSIONS/2026-03-16/SESSION_RECOVERY_2026-03-16.md) — Contexto recuperado de 2026-03-14
+  - [DAILY_ACTIVITIES](SESSIONS/2026-03-16/DAILY_ACTIVITIES_2026-03-16.md) — Log detalhado completo
+  - [FINAL_STATUS](SESSIONS/2026-03-16/FINAL_STATUS_2026-03-16.md) — Status final 🏁
 
 ---
 
