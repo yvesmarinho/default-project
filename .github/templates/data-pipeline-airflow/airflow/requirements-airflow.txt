@@ -6,7 +6,7 @@
 # Run `pip list --outdated` or `uv pip compile` periodically to update.
 
 # ---- Core ----
-apache-airflow==2.10.5
+apache-airflow==3.1.8
 apache-airflow-providers-amazon==9.23.0
 apache-airflow-providers-common-sql==1.33.0
 apache-airflow-providers-http==6.0.0
