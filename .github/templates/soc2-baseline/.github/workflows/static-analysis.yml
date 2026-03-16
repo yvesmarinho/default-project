@@ -110,7 +110,7 @@ jobs:
 
       # Trivy — scan de containers e filesystem
       - name: Trivy — Container & Filesystem Scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: "fs"
           scan-ref: "."
@@ -145,7 +145,7 @@ jobs:
           soft_fail: true # Mude para false em produção quando todos os issues forem resolvidos
 
       - name: checkov — Misconfigurations em IaC
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12.3088.0
         with:
           directory: .
           framework: terraform
