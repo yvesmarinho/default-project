@@ -31,15 +31,17 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ---
 
-### Passo 2 — Iniciar MCP
+### Passo 2 — Verificar Configuração MCP
+
+**Ação do agente**: ler `.vscode/mcp.json` e confirmar que os servidores `memory` e `sequential-thinking` estão configurados e **não comentados**.
 
 ```
-Command Palette → "MCP: List Servers"
+✅ MCP Config OK — memory ✅ | sequential-thinking ✅
 ```
 
-Se `.vscode/mcp.json` ainda não existir (projeto zerado), será criado pelo `scaffold.py` no Passo 4.
+Se o `.vscode/mcp.json` ainda não existir (projeto zerado), será criado pelo `scaffold.py` no Passo 4.
 
-Se já existir, verificar servidores: `memory` e `sequential-thinking` presentes.
+> Para verificar se os servidores estão *em execução*: `Command Palette → "MCP: List Servers"` (ação manual do usuário). Se não aparecerem: `Command Palette → "MCP: Refresh Servers"`.
 
 ---
 

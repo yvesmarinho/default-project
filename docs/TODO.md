@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-14 — IMP-46 ✅ Concluído (testes de integração estrutura + AppSec, 628→746 testes)
+**Last Updated**: 2026-03-16 — fix(session-start): verificação MCP agora executável pelo agente
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -166,6 +166,11 @@
   - Executar `make lint` real por perfil em matrix do CI (Python: ruff+bandit, TS: eslint, Terraform: terraform validate)
   - Requer toolchains instalados no runner (Python, Node, Terraform)
   - *Origem*: debate IMP-46 — pirâmide L0/L1/L2
+
+- [x] **[fix-session-start-mcp]** ✅ **CONCLUÍDO 2026-03-16** — Corrigir verificação MCP no ritual de início
+  - Passo 1 reescrito: agente lê `.vscode/mcp.json` diretamente (verificável) em vez de depender do Command Palette
+  - Arquivos: `session-start.prompt.md`, `session-start-first.prompt.md` (template + projeto enterprise-infra-docker)
+  - Decisão D-47a: verificação de *configuração* (agente) × verificação de *runtime* (usuário manual)
 
 - [ ] **[IMP-45]** Engram MCP — memória persistente por projeto (opt-in)
   - Integrar [Gentleman-Programming/engram](https://github.com/Gentleman-Programming/engram) como MCP server FTS local

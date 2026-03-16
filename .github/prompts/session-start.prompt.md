@@ -15,19 +15,23 @@ Execute os passos abaixo em ordem. Confirme cada etapa antes de avançar.
 
 ---
 
-### Passo 1 — Iniciar MCP
+### Passo 1 — Verificar Configuração MCP
 
-Verificar se os servidores MCP estão disponíveis:
+**Ação do agente**: ler `.vscode/mcp.json` e confirmar que os servidores abaixo estão configurados e **não comentados**:
 
+| Servidor | Propósito |
+|----------|-----------|
+| `memory` | Memória persistente entre sessões |
+| `sequential-thinking` | Raciocínio estruturado |
+
+Resultado esperado:
 ```
-Command Palette → "MCP: List Servers"
+✅ MCP Config OK — memory ✅ | sequential-thinking ✅
 ```
 
-Servidores esperados (de `.vscode/mcp.json`):
-- `memory` — memória persistente entre sessões
-- `sequential-thinking` — raciocínio estruturado
+Se algum servidor estiver ausente ou comentado no arquivo → reportar e instruir o usuário a descomentar e executar `Command Palette → "MCP: Refresh Servers"`.
 
-Se os servidores não aparecerem: `Command Palette → "MCP: Refresh Servers"`
+> **Nota**: verificar se os servidores estão *em execução* no VS Code requer ação manual do usuário: `Command Palette → "MCP: List Servers"`. O agente verifica apenas a configuração em arquivo.
 
 ---
 
@@ -158,7 +162,7 @@ Atualizar `docs/TODO.md`:
 
 Antes de começar o trabalho efetivo, confirmar:
 
-- [ ] MCP iniciado (memory + sequential-thinking)
+- [ ] MCP configurado em `.vscode/mcp.json` (memory ✅ + sequential-thinking ✅)
 - [ ] Contexto da sessão anterior recuperado e declarado
 - [ ] `.copilot-rules.md` lido e regras P0 ativas
 - [ ] Scan de segurança: 🟢 LIMPO

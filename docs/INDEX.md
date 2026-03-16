@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-14 🏁 Encerrada
+**Last Updated**: 2026-03-16 🏁 Encerrada
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-14 — IMP-46 ✅ (testes integração estrutura+AppSec, 628→746 testes) + security/CI fixes
+**Last Session**: 2026-03-16 — fix(session-start): verificação MCP executável pelo agente + projeto teste enterprise-infra-docker
 
 ---
 
@@ -69,7 +69,8 @@ a-default-project/
 │       ├── 2026-03-05/          # IMP-14 Fase A ✅ + IMP-17 debate (encerrada)
         ├── 2026-03-07/          # IMP-27 lgpd+soc2 (Layer4) + IMP-28 scaffold --upgrade (encerrada)
         ├── 2026-03-08/          # IMP-29..32 ✅ + Homologação + Plano IMP-33..44 (encerrada)
-        └── 2026-03-14/          # IMP-46 ✅ (testes integração estrutura+AppSec) + security/CI fixes (encerrada)
+        ├── 2026-03-14/          # IMP-46 ✅ (testes integração estrutura+AppSec) + security/CI fixes (encerrada)
+        └── 2026-03-16/          # fix(session-start): MCP check via arquivo + projeto teste enterprise-infra-docker (encerrada)
 ├── scripts/                        # Automation scripts
 │   ├── scaffold.py               # ✅ CRIADO 2026-03-01 — PEP 723, uv run, entry point
 │   ├── lib/                      # Módulos: config, ui, project, links, git, templates, vscode
