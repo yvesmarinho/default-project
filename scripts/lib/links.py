@@ -32,7 +32,7 @@ def setup_symlinks(config: ProjectConfig) -> list[CreatedItem]:
     - não existe                      → cria symlink relativo
     """
     results: list[CreatedItem] = []
-    target = config.target_dir
+    target = config.project_path
     shared = config.shared_dir
 
     if not shared.exists():

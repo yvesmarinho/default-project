@@ -35,7 +35,7 @@ def init_repository(config: ProjectConfig) -> CreatedItem:
     - Não falha se git não está no PATH — aviso e retorna 'skipped'.
     - Usa subprocess com check=True e timeout=30s.
     """
-    target = config.target_dir
+    target = config.project_path
 
     if not shutil.which("git"):
         console.print("  [yellow]⚠️  git não encontrado no PATH — etapa Git ignorada.[/yellow]")

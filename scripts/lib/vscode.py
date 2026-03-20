@@ -194,7 +194,7 @@ def generate_settings(config: ProjectConfig) -> CreatedItem:
     Gera `.vscode/settings.json` personalizado pela linguagem e domínio.
     Não sobrescreve se já existe.
     """
-    dest = config.target_dir / ".vscode" / "settings.json"
+    dest = config.project_path / ".vscode" / "settings.json"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
@@ -212,7 +212,7 @@ def generate_mcp(config: ProjectConfig) -> CreatedItem:
     Gera `.vscode/mcp.json` com servidores pré-selecionados pelo domínio.
     Não sobrescreve se já existe.
     """
-    dest = config.target_dir / ".vscode" / "mcp.json"
+    dest = config.project_path / ".vscode" / "mcp.json"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
@@ -233,7 +233,7 @@ def generate_extensions(config: ProjectConfig) -> CreatedItem:
 
     Lista final deduplicada e ordenada. Não sobrescreve se já existe.
     """
-    dest = config.target_dir / ".vscode" / "extensions.json"
+    dest = config.project_path / ".vscode" / "extensions.json"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
@@ -264,7 +264,7 @@ def generate_tasks(config: ProjectConfig) -> CreatedItem:
     Tasks: install-deps, dev, build, test (isDefault), lint, format, clean.
     Não sobrescreve se já existe.
     """
-    dest = config.target_dir / ".vscode" / "tasks.json"
+    dest = config.project_path / ".vscode" / "tasks.json"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
@@ -334,7 +334,7 @@ def generate_launch(config: ProjectConfig) -> CreatedItem:
 
     Não sobrescreve se já existe.
     """
-    dest = config.target_dir / ".vscode" / "launch.json"
+    dest = config.project_path / ".vscode" / "launch.json"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 

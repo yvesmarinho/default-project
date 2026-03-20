@@ -21,9 +21,9 @@
 - name: Deploy Application with Zero Downtime
   hosts: app_servers
   become: true
-  serial: 1  # Deploy one server at a time for zero downtime
+  serial: 1 # Deploy one server at a time for zero downtime
   gather_facts: true
-  
+
   vars:
     # Application configuration
     app_name: "myapp"
@@ -32,19 +32,19 @@
     app_group: "appgroup"
     app_path: "/opt/{{ app_name }}"
     app_port: 8080
-    
+
     # Health check configuration
     health_check_url: "http://localhost:{{ app_port }}/health"
     health_check_retries: 10
     health_check_delay: 5
     skip_health_check: false
-    
+
     # Load balancer configuration
     lb_api_url: "http://loadbalancer.internal:9000/api"
-    
+
     # Artifact repository
     artifact_url: "https://artifacts.company.com/{{ app_name }}/{{ app_version }}/{{ app_name }}.jar"
-  
+
   pre_tasks:
     - name: Validate required variables
       ansible.builtin.assert:
@@ -53,14 +53,14 @@
           - app_version != ""
           - app_version != "latest" or allow_latest | default(false)
         fail_msg: "app_version must be specified (use -e 'app_version=1.2.3')"
-    
+
     - name: Display deployment information
       ansible.builtin.debug:
         msg:
           - "Deploying {{ app_name }} version {{ app_version }}"
           - "Target: {{ inventory_hostname }}"
           - "Time: {{ ansible_date_time.iso8601 }}"
-  
+
   tasks:
     - name: Deployment process
       block:
@@ -68,29 +68,29 @@
           ansible.builtin.uri:
             url: "{{ lb_api_url }}/servers/{{ inventory_hostname }}/disable"
             method: POST
-            status_code: [200, 404]  # 404 if server not in LB
+            status_code: [200, 404] # 404 if server not in LB
             timeout: 10
           delegate_to: localhost
           register: lb_remove
           ignore_errors: true
-        
+
         - name: Wait for active connections to drain
           ansible.builtin.pause:
             seconds: 30
             prompt: "Waiting for connections to drain..."
-        
+
         - name: Stop application service
           ansible.builtin.systemd:
             name: "{{ app_name }}"
             state: stopped
           register: app_stopped
-        
+
         - name: Verify application stopped
           ansible.builtin.wait_for:
             port: "{{ app_port }}"
             state: stopped
             timeout: 60
-        
+
         - name: Backup current version
           ansible.builtin.copy:
             src: "{{ app_path }}/{{ app_name }}.jar"
@@ -98,34 +98,34 @@
             remote_src: true
             owner: "{{ app_user }}"
             group: "{{ app_group }}"
-            mode: '0644'
+            mode: "0644"
           when: app_stopped.changed
           ignore_errors: true
-        
+
         - name: Download new version
           ansible.builtin.get_url:
             url: "{{ artifact_url }}"
             dest: "{{ app_path }}/{{ app_name }}.jar"
             owner: "{{ app_user }}"
             group: "{{ app_group }}"
-            mode: '0644'
+            mode: "0644"
             timeout: 300
           register: download_result
-        
+
         - name: Start application service
           ansible.builtin.systemd:
             name: "{{ app_name }}"
             state: started
             enabled: true
           register: app_started
-        
+
         - name: Wait for application port to be available
           ansible.builtin.wait_for:
             port: "{{ app_port }}"
             state: started
             delay: 5
             timeout: 120
-        
+
         - name: Health check - verify application is healthy
           ansible.builtin.uri:
             url: "{{ health_check_url }}"
@@ -136,14 +136,14 @@
           retries: "{{ health_check_retries }}"
           delay: "{{ health_check_delay }}"
           when: not skip_health_check
-        
+
         - name: Get deployed version info
           ansible.builtin.uri:
             url: "{{ health_check_url }}"
             return_content: true
           register: version_info
           when: not skip_health_check
-        
+
         - name: Add server back to load balancer
           ansible.builtin.uri:
             url: "{{ lb_api_url }}/servers/{{ inventory_hostname }}/enable"
@@ -152,7 +152,7 @@
             timeout: 10
           delegate_to: localhost
           ignore_errors: true
-        
+
         - name: Deployment success
           ansible.builtin.debug:
             msg:
@@ -160,25 +160,25 @@
               - "Version: {{ app_version }}"
               - "Server: {{ inventory_hostname }}"
               - "Health Status: {{ health_check.status | default('skipped') }}"
-      
+
       rescue:
         - name: Deployment failed - initiating rollback
           ansible.builtin.debug:
             msg: "❌ Deployment failed, rolling back to previous version"
-        
+
         - name: Stop failed deployment
           ansible.builtin.systemd:
             name: "{{ app_name }}"
             state: stopped
           ignore_errors: true
-        
+
         - name: Find latest backup
           ansible.builtin.find:
             paths: "{{ app_path }}"
             patterns: "{{ app_name }}.jar.backup-*"
             age: -1h
           register: backup_files
-        
+
         - name: Restore previous version
           ansible.builtin.copy:
             src: "{{ backup_files.files | sort(attribute='mtime') | last | default({}) | json_query('path') }}"
@@ -187,12 +187,12 @@
             owner: "{{ app_user }}"
             group: "{{ app_group }}"
           when: backup_files.matched > 0
-        
+
         - name: Restart with previous version
           ansible.builtin.systemd:
             name: "{{ app_name }}"
             state: started
-        
+
         - name: Ensure server is back in load balancer after failure
           ansible.builtin.uri:
             url: "{{ lb_api_url }}/servers/{{ inventory_hostname }}/enable"
@@ -200,11 +200,11 @@
             status_code: [200, 404]
           delegate_to: localhost
           ignore_errors: true
-        
+
         - name: Fail deployment
           ansible.builtin.fail:
             msg: "Deployment failed and rolled back to previous version"
-      
+
       always:
         - name: Cleanup old backups (keep last 5)
           ansible.builtin.shell: |
@@ -213,9 +213,9 @@
           args:
             warn: false
           changed_when: false
-  
+
   post_tasks:
     - name: Wait before next server deployment
       ansible.builtin.pause:
         seconds: 10
-      when: inventory_hostname != ansible_play_hosts[-1]  # Not last server
+      when: inventory_hostname != ansible_play_hosts[-1] # Not last server

@@ -108,7 +108,7 @@ See [link reference][ref].
 - name: Example playbook
   hosts: all
   become: true
-  
+
   tasks:
     - name: Install package
       ansible.builtin.apt:
@@ -204,15 +204,15 @@ def process_file(
 ) -> Dict[str, Any]:
     """
     Process file and return results.
-    
+
     Args:
         file_path: Path to input file
         encoding: File encoding (default: utf-8)
         max_size: Maximum file size in bytes
-    
+
     Returns:
         Dictionary with processing results
-    
+
     Raises:
         FileNotFoundError: If file doesn't exist
         ValueError: If file exceeds max_size
@@ -230,25 +230,25 @@ Use **Google Style** docstrings:
 def function(arg1: str, arg2: int = 0) -> bool:
     """
     Short description (one line).
-    
+
     Longer description with more details about what
     the function does and any important behavior.
-    
+
     Args:
         arg1: Description of arg1
         arg2: Description of arg2 (default: 0)
-    
+
     Returns:
         Description of return value
-    
+
     Raises:
         ValueError: When arg1 is empty
         TypeError: When arg2 is not integer
-    
+
     Examples:
         >>> function("test", 5)
         True
-        
+
         >>> function("", 0)
         Traceback (most recent call last):
         ValueError: arg1 cannot be empty
@@ -349,26 +349,26 @@ from unittest.mock import Mock, patch
 # Test class per component
 class TestUserService:
     """Tests for UserService class."""
-    
+
     # Arrange-Act-Assert pattern
     def test_create_user_success(self):
         """Test successful user creation."""
         # Arrange
         service = UserService()
         user_data = {"name": "John", "email": "john@example.com"}
-        
+
         # Act
         result = service.create_user(user_data)
-        
+
         # Assert
         assert result.name == "John"
         assert result.email == "john@example.com"
         assert result.is_active is True
-    
+
     def test_create_user_invalid_email_raises_error(self):
         """Test that invalid email raises ValueError."""
         service = UserService()
-        
+
         with pytest.raises(ValueError, match="Invalid email"):
             service.create_user({"name": "John", "email": "invalid"})
 ```
@@ -629,13 +629,13 @@ def process_user_input(user_input: str) -> str:
     # Validate input
     if not user_input:
         raise ValueError("Input cannot be empty")
-    
+
     if len(user_input) > 1000:
         raise ValueError("Input too long")
-    
+
     # Sanitize
     sanitized = user_input.strip()
-    
+
     # Escape for SQL/shell if needed
     return sanitized
 

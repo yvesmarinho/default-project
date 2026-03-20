@@ -19,7 +19,6 @@ from rich.text import Text
 
 from .config import (
     ALL_SELECTABLE_PROFILES,
-    DEFAULT_SHARED_DIR,
     DOMAIN_DEFAULT_PROFILES,
     SCAFFOLD_VERSION,
     SPECKIT_TRANSVERSAL_PROFILES,
@@ -104,10 +103,10 @@ def collect_project_info(ci_mode: bool = False, **overrides) -> ProjectConfig:
     # Carregar defaults do JSON e mesclar com overrides
     user_config = load_user_config()
     json_defaults = user_config.get("defaults", {})
-    
+
     # Mesclar: overrides (CLI) têm prioridade sobre JSON
     merged_defaults = {**json_defaults, **overrides}
-    
+
     if ci_mode:
         return _collect_ci(merged_defaults)
     return _collect_interactive(merged_defaults)
@@ -321,6 +320,7 @@ def confirm_summary(config: ProjectConfig) -> bool:
     table.add_row("Repositório", config.github_repo or "[dim](não informado)[/dim]")
     table.add_row("Shared dir", str(config.shared_dir))
     table.add_row("Target dir", str(config.target_dir))
+    table.add_row("Project path", str(config.project_path))
 
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(config.domain, f"devops-{config.domain}")
     extras = config.extra_profiles or []

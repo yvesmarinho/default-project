@@ -1142,17 +1142,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Check for broken links
         uses: gaurav-nelson/github-action-markdown-link-check@v1
-      
+
       - name: Check for placeholders
         run: |
           if grep -E '\{\{.*\}\}' README.md; then
             echo "ERROR: Unresolved placeholders found"
             exit 1
           fi
-      
+
       - name: Check formatting
         uses: DavidAnson/markdownlint-cli2-action@v9
 ```
@@ -1164,8 +1164,8 @@ When updating README significantly:
 ```markdown
 ---
 
-**Last Updated**: 2024-03-20  
-**Version**: 1.2.0  
+**Last Updated**: 2024-03-20
+**Version**: 1.2.0
 **Changelog**: See [CHANGELOG.md](CHANGELOG.md) for document history
 ```
 
@@ -1434,6 +1434,6 @@ A great README:
 
 ---
 
-**Document Version**: 1.0.0  
-**Last Updated**: 2026-03-20  
+**Document Version**: 1.0.0
+**Last Updated**: 2026-03-20
 **Maintained By**: Enterprise Template Team

@@ -133,12 +133,12 @@ import pytest
 
 class TestFeature:
     """Test suite for a specific feature."""
-    
+
     def test_success_case(self):
         """Test the happy path."""
         result = function_to_test()
         assert result == expected_value
-    
+
     def test_error_case(self):
         """Test error handling."""
         with pytest.raises(ValueError):
@@ -505,7 +505,7 @@ def test_mock_function():
     """Mock a function call."""
     mock_func = Mock(return_value=42)
     result = mock_func("arg1", kwarg="value")
-    
+
     assert result == 42
     mock_func.assert_called_once_with("arg1", kwarg="value")
 
@@ -539,7 +539,7 @@ def test_patch_decorator():
     def inner(mock):
         result = module.function()
         assert result == 42
-    
+
     inner()
 
 def test_patch_object_method():
@@ -618,10 +618,10 @@ def test_create_user():
     # Arrange: Set up test data
     username = "testuser"
     email = "test@example.com"
-    
+
     # Act: Perform the action
     user = create_user(username, email)
-    
+
     # Assert: Verify the result
     assert user.username == username
     assert user.email == email
@@ -697,12 +697,12 @@ class TestUserValidation:
         """Test successful case."""
         user = create_user("valid")
         assert user is not None
-    
+
     def test_empty_username_raises_error(self):
         """Test error case."""
         with pytest.raises(ValueError, match="Username cannot be empty"):
             create_user("")
-    
+
     def test_invalid_email_raises_error(self):
         """Test validation error."""
         with pytest.raises(ValueError, match="Invalid email"):
@@ -724,20 +724,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           pip install -e ".[dev]"
-      
+
       - name: Run tests with coverage
         run: |
           pytest --cov --cov-report=xml
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:

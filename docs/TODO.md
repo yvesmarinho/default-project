@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-16 — fix(session-start): verificação MCP agora executável pelo agente
+**Last Updated**: 2026-03-20 — fix(scaffold): corrigir bugs críticos e adicionar configuração JSON
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -19,6 +19,35 @@
 
 > **Origem**: Debate de homologação 2026-03-08 — 6 perspectivas profissionais analisaram IMPs 01–32.
 > **Documento completo**: [`docs/SESSIONS/2026-03-08/HOMOLOGATION-DEBATE-2026-03-08.md`](SESSIONS/2026-03-08/HOMOLOGATION-DEBATE-2026-03-08.md)
+
+---
+
+## 🔧 Correções e Melhorias (Sessão 2026-03-20)
+
+### ✅ Concluído nesta sessão
+
+- [x] **Reorganização estrutural**: `setup/` movido para raiz do projeto
+  - Separação clara entre scripts ativos (`scripts/`) e legados (`setup/`)
+  - Makefile e documentação atualizados
+  - Commit: `6a1bfbc`
+
+- [x] **Sistema de configuração JSON**: .scaffold-config.json
+  - Defaults customizáveis sem modificar código
+  - Seções: defaults, paths, features, prompts
+  - Documentação completa em .scaffold-config.README.md
+  - Commit: `2ee005f`
+
+- [x] **Bug fix**: JSON defaults não carregavam em prompts interativos
+  - `collect_project_info()` agora faz merge correto: CLI > JSON > hardcoded
+  - Teste de validação criado (tmp/test-json-defaults.py)
+  - Commit: `01a25f3`
+
+- [x] **Bug fix CRÍTICO**: Projeto criado em diretório incorreto
+  - Adicionada propriedade `project_path` ao ProjectConfig
+  - 18 arquivos corrigidos: `target_dir` → `project_path`
+  - Script de limpeza criado: `scripts/cleanup-wrong-scaffold.py`
+  - Validação completa: projeto enterprise-update-lab-n8n criado corretamente
+  - Commit: (pendente)
 
 ---
 

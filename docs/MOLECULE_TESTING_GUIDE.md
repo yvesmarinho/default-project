@@ -165,7 +165,7 @@ platforms:
     tmpfs:
       - /run
       - /tmp
-  
+
   - name: debian11
     image: geerlingguy/docker-debian11-ansible:latest
     pre_build_image: true
@@ -233,7 +233,7 @@ Playbook that runs your role:
 - name: Converge
   hosts: all
   become: true
-  
+
   roles:
     - role: my_role
       vars:
@@ -250,20 +250,20 @@ Setup prerequisites before running the role:
 - name: Prepare
   hosts: all
   become: true
-  
+
   tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
       when: ansible_os_family == "Debian"
-    
+
     - name: Install dependencies
       ansible.builtin.package:
         name:
           - curl
           - ca-certificates
         state: present
-    
+
     - name: Create test user
       ansible.builtin.user:
         name: testuser
@@ -280,7 +280,7 @@ Ansible-based verification (alternative to Testinfra):
   hosts: all
   become: true
   gather_facts: true
-  
+
   tasks:
     - name: Check if service is running
       ansible.builtin.service:
@@ -288,13 +288,13 @@ Ansible-based verification (alternative to Testinfra):
         state: started
       check_mode: true
       register: service_status
-    
+
     - name: Verify service is running
       ansible.builtin.assert:
         that:
           - service_status.status.ActiveState == "active"
         fail_msg: "Service is not running"
-    
+
     - name: Check if port is listening
       ansible.builtin.wait_for:
         port: 8080
@@ -382,7 +382,7 @@ def test_firewall_rule(host):
 
 ### Platform Configuration
 
-#### Ubuntu  
+#### Ubuntu
 
 ```yaml
 platforms:
@@ -426,19 +426,19 @@ platforms:
   - name: ubuntu2004
     image: geerlingguy/docker-ubuntu2004-ansible:latest
     pre_build_image: true
-  
+
   - name: ubuntu2204
     image: geerlingguy/docker-ubuntu2204-ansible:latest
     pre_build_image: true
-  
+
   - name: debian11
     image: geerlingguy/docker-debian11-ansible:latest
     pre_build_image: true
-  
+
   - name: centos8
     image: geerlingguy/docker-centos8-ansible:latest
     pre_build_image: true
-  
+
   - name: rockylinux8
     image: geerlingguy/docker-rockylinux8-ansible:latest
     pre_build_image: true
@@ -568,20 +568,20 @@ molecule verify --platform-name ubuntu2004
 def test_nginx_config(host):
     """Test nginx configuration."""
     config = host.file("/etc/nginx/nginx.conf")
-    
+
     # File exists
     assert config.exists
     assert config.is_file
-    
+
     # Permissions
     assert config.user == "root"
     assert config.group == "root"
     assert config.mode == 0o644
-    
+
     # Content
     assert config.contains("worker_processes")
     assert not config.contains("error_log /tmp")
-    
+
     # Size
     assert config.size > 100
 
@@ -593,7 +593,7 @@ def test_directory_structure(host):
         "/etc/nginx/sites-enabled",
         "/var/log/nginx",
     ]
-    
+
     for directory in dirs:
         d = host.file(directory)
         assert d.exists
@@ -607,7 +607,7 @@ def test_directory_structure(host):
 def test_packages_installed(host):
     """Test required packages are installed."""
     packages = ["nginx", "openssl", "ca-certificates"]
-    
+
     for package in packages:
         pkg = host.package(package)
         assert pkg.is_installed
@@ -626,11 +626,11 @@ def test_package_version(host):
 def test_nginx_service(host):
     """Test nginx service status."""
     nginx = host.service("nginx")
-    
+
     # Running and enabled
     assert nginx.is_running
     assert nginx.is_enabled
-    
+
     # Systemd specific
     if host.system_info.distribution in ['ubuntu', 'debian']:
         assert nginx.is_masked is False
@@ -640,17 +640,17 @@ def test_service_restart(host):
     """Test service can be restarted."""
     # Get PID before restart
     before = host.process.get(comm="nginx")[0]
-    
+
     # Restart service
     host.run("systemctl restart nginx")
-    
+
     # Wait a moment
     import time
     time.sleep(2)
-    
+
     # Get PID after restart
     after = host.process.get(comm="nginx")[0]
-    
+
     # PID should be different
     assert before.pid != after.pid
 ```
@@ -667,7 +667,7 @@ def test_nginx_listening(host):
 def test_multiple_ports(host):
     """Test service listening on multiple ports."""
     ports = [80, 443, 8080]
-    
+
     for port in ports:
         socket = host.socket(f"tcp://0.0.0.0:{port}")
         assert socket.is_listening
@@ -680,7 +680,7 @@ def test_nginx_process(host):
     """Test nginx process is running."""
     processes = host.process.filter(comm="nginx")
     assert len(processes) >= 1
-    
+
     # Master process
     master = [p for p in processes if p.user == "root"]
     assert len(master) == 1
@@ -716,7 +716,7 @@ def test_command_output(host):
 def test_nginx_user(host):
     """Test nginx user exists."""
     user = host.user("www-data")
-    
+
     assert user.exists
     assert user.shell == "/usr/sbin/nologin"
     assert "www-data" in user.groups
@@ -772,38 +772,38 @@ Alternative to Testinfra - use Ansible assertions:
   hosts: all
   become: true
   gather_facts: true
-  
+
   tasks:
     - name: Get nginx version
       ansible.builtin.command: nginx -v
       register: nginx_version
       changed_when: false
-    
+
     - name: Verify nginx version
       ansible.builtin.assert:
         that:
           - "'nginx/1.18' in nginx_version.stderr"
         fail_msg: "Wrong nginx version installed"
-    
+
     - name: Check nginx service
       ansible.builtin.service:
         name: nginx
         state: started
       check_mode: true
       register: nginx_service
-    
+
     - name: Verify service is running
       ansible.builtin.assert:
         that:
           - nginx_service.status.ActiveState == "active"
           - nginx_service.status.SubState == "running"
-    
+
     - name: Test HTTP response
       ansible.builtin.uri:
         url: http://localhost/
         status_code: 200
       register: http_response
-    
+
     - name: Verify HTTP response
       ansible.builtin.assert:
         that:
@@ -995,7 +995,7 @@ verifier:
 - name: Converge with SSL
   hosts: all
   become: true
-  
+
   pre_tasks:
     - name: Generate self-signed certificate
       ansible.builtin.command:
@@ -1006,7 +1006,7 @@ verifier:
           -subj "/CN=localhost"
       args:
         creates: /etc/ssl/certs/nginx.crt
-  
+
   roles:
     - role: nginx
 ```
@@ -1069,20 +1069,20 @@ jobs:
           - ubuntu2004
           - ubuntu2204
           - debian11
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      
+
       - name: Install dependencies
         run: |
           pip install molecule molecule-docker ansible-lint yamllint pytest testinfra
-      
+
       - name: Run Molecule
         run: |
           molecule test --scenario-name ${{ matrix.scenario }}
@@ -1346,6 +1346,6 @@ molecule test  # Full sequence
 
 ---
 
-**Document Version**: 1.0.0  
-**Last Updated**: 2026-03-20  
+**Document Version**: 1.0.0
+**Last Updated**: 2026-03-20
 **Maintained By**: Enterprise Template Team

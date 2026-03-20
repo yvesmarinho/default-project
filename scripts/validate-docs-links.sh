@@ -69,7 +69,7 @@ log() {
     local message="$*"
     local timestamp
     timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-    
+
     case "$level" in
         INFO)
             echo -e "${BLUE}[${timestamp}]${NC} ${message}"
@@ -95,7 +95,7 @@ log() {
 #######################################
 extract_links() {
     local file="$1"
-    
+
     # Extract markdown links: [text](url)
     # Also extract reference-style links: [text][ref] and [ref]: url
     grep -oP '\[([^\]]+)\]\(([^\)]+)\)|\[([^\]]+)\]:\s*(\S+)' "$file" 2>/dev/null | \
@@ -116,21 +116,21 @@ check_link() {
     local source_file="$2"
     local source_dir
     source_dir="$(dirname "$source_file")"
-    
+
     # Skip external URLs (http, https, ftp, mailto)
     if [[ "$link" =~ ^(https?|ftp|mailto): ]]; then
         return 0
     fi
-    
+
     # Skip anchors without file reference
     if [[ "$link" =~ ^# ]]; then
         # TODO: Validate anchor exists in current file
         return 0
     fi
-    
+
     # Remove anchor from link
     local file_path="${link%%#*}"
-    
+
     # Resolve relative path
     local full_path
     if [[ "$file_path" = /* ]]; then
@@ -140,10 +140,10 @@ check_link() {
         # Relative path from source file
         full_path="${source_dir}/${file_path}"
     fi
-    
+
     # Normalize path
     full_path="$(cd "$(dirname "$full_path")" 2>/dev/null && pwd)/$(basename "$full_path")" || return 1
-    
+
     # Check if file/directory exists
     if [[ -e "$full_path" ]]; then
         return 0
@@ -165,11 +165,11 @@ suggest_fix() {
     local source_file="$2"
     local filename
     filename="$(basename "${link%%#*}")"
-    
+
     # Search for file with same name in project
     local found_files
     found_files="$(find "${PROJECT_ROOT}" -type f -name "$filename" 2>/dev/null | head -5)"
-    
+
     if [[ -n "$found_files" ]]; then
         log INFO "  Possible matches for '$filename':"
         while IFS= read -r found_file; do
@@ -189,35 +189,35 @@ process_file() {
     local file="$1"
     local rel_path
     rel_path="$(realpath --relative-to="$PROJECT_ROOT" "$file")"
-    
+
     log INFO "Checking ${BLUE}$rel_path${NC}"
-    
+
     ((TOTAL_FILES++))
-    
+
     local links
     links="$(extract_links "$file")"
-    
+
     if [[ -z "$links" ]]; then
         return 0
     fi
-    
+
     local file_broken=0
-    
+
     while IFS= read -r link; do
         ((TOTAL_LINKS++))
-        
+
         if ! check_link "$link" "$file"; then
             ((BROKEN_LINKS++))
             ((file_broken++))
-            
+
             log ERROR "  Broken link: ${RED}$link${NC}"
-            
+
             if [[ "$FIX_MODE" = true ]]; then
                 suggest_fix "$link" "$file"
             fi
         fi
     done <<< "$links"
-    
+
     if [[ $file_broken -eq 0 ]]; then
         log SUCCESS "  All links valid"
     else
@@ -232,7 +232,7 @@ validate_all_docs() {
     log INFO "Starting documentation link validation"
     log INFO "Project root: $PROJECT_ROOT"
     echo ""
-    
+
     # Find all markdown files in project
     local md_files
     md_files="$(find "$PROJECT_ROOT" -type f -name "*.md" \
@@ -241,35 +241,35 @@ validate_all_docs() {
         -not -path "*/.venv/*" \
         -not -path "*/venv/*" \
         2>/dev/null)"
-    
+
     if [[ -z "$md_files" ]]; then
         log WARN "No markdown files found"
         return 0
     fi
-    
+
     # Process each file
     while IFS= read -r file; do
         process_file "$file"
         echo ""
     done <<< "$md_files"
-    
+
     # Summary
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     log INFO "Validation Summary:"
     echo "  Files checked:   $TOTAL_FILES"
     echo "  Links checked:   $TOTAL_LINKS"
-    
+
     if [[ $BROKEN_LINKS -eq 0 ]]; then
         log SUCCESS "All links valid! ✨"
         return 0
     else
         log ERROR "Found $BROKEN_LINKS broken link(s) ⚠️"
-        
+
         if [[ "$FIX_MODE" = false ]]; then
             echo ""
             log INFO "Run with ${BLUE}--fix${NC} to see suggestions for fixing broken links"
         fi
-        
+
         return 1
     fi
 }
@@ -306,12 +306,12 @@ parse_args() {
 #######################################
 main() {
     parse_args "$@"
-    
+
     cd "$PROJECT_ROOT" || {
         log ERROR "Failed to change to project root: $PROJECT_ROOT"
         exit 1
     }
-    
+
     validate_all_docs
 }
 

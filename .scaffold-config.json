@@ -2,33 +2,28 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Configuração padrão para scaffold.py - Enterprise Project Template",
   "version": "1.0.0",
-  
   "defaults": {
-    "target_dir": "~/Documentos/DevOps/Projects",
+    "target_dir": "~/Documentos/DevOps/Vya-Jobs",
     "shared_dir": "~/Documentos/DevOps/.copilot-shared",
-    "domain": "programming",
+    "domain": "infrastructure",
     "language": "python",
     "github_org": "Vya-Digital"
   },
-  
   "paths": {
     "profile_descriptors": "profile-descriptors",
     "templates": ".github/templates"
   },
-  
   "features": {
     "auto_git_init": true,
     "create_venv": true,
     "setup_symlinks": true,
     "validate_on_create": true
   },
-  
   "prompts": {
     "show_emoji": true,
     "verbose": false,
     "color_output": true
   },
-  
   "metadata": {
     "config_version": "1.0.0",
     "last_updated": "2026-03-20",

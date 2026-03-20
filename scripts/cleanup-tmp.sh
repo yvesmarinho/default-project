@@ -124,13 +124,13 @@ fi
 if [[ "$DRY_RUN" == "false" ]]; then
     # Remove all files except README.md
     find "$TMP_DIR" -mindepth 1 -type f ! -name "README.md" -delete 2>/dev/null || true
-    
+
     # Remove all directories
     find "$TMP_DIR" -mindepth 1 -type d -exec rm -rf {} + 2>/dev/null || true
-    
+
     # Verify cleanup
     remaining_count=$(find "$TMP_DIR" -type f ! -name "README.md" | wc -l)
-    
+
     if [[ "$remaining_count" -eq 0 ]]; then
         log_success "Cleaned $file_count file(s) and $dir_count directory(ies) from tmp/"
         log_info "tmp/README.md preserved ✓"

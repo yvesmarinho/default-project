@@ -453,14 +453,14 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
 
 def create_structure(config: ProjectConfig) -> list[CreatedItem]:
     """
-    Cria a estrutura de pastas e arquivos base do projeto em config.target_dir.
+    Cria a estrutura de pastas e arquivos base do projeto em config.project_path.
 
     - Pastas já existentes → skipped (sem erro)
     - Arquivos já existentes → skipped (não sobrescreve)
     - Retorna lista de CreatedItem com status de cada operação
     """
     results: list[CreatedItem] = []
-    base = config.target_dir
+    base = config.project_path
     base.mkdir(parents=True, exist_ok=True)
 
     # 1. Pastas
@@ -668,7 +668,7 @@ def generate_constitution(config: ProjectConfig) -> CreatedItem:
     Se o arquivo já existir no destino, salta (idempotente).
     """
     src = _TEMPLATE_ROOT / ".specify" / "templates" / "constitution-template.md"
-    dst = config.target_dir / ".specify" / "memory" / "constitution.md"
+    dst = config.project_path / ".specify" / "memory" / "constitution.md"
 
     if dst.exists():
         log.info("⏭️  skipped (já existe): %s", dst)
@@ -730,7 +730,7 @@ def generate_load_mcp(config: ProjectConfig) -> CreatedItem:
     - Imprime instrução para abrir o VS Code
     - Idempotente — skip se scripts/load-mcp.sh já existe
     """
-    dest = config.target_dir / "scripts" / "load-mcp.sh"
+    dest = config.project_path / "scripts" / "load-mcp.sh"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
@@ -832,7 +832,7 @@ def write_scaffold_state(
     """
     from datetime import datetime, timezone
 
-    state_path = config.target_dir / _STATE_FILENAME
+    state_path = config.project_path / _STATE_FILENAME
 
     # Carrega estado anterior (se existir) para preservar created_at e profiles
     existing_profiles: list[str] = []

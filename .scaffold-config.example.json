@@ -2,7 +2,6 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "EXEMPLO: Configuração customizada para scaffold.py",
   "version": "1.0.0",
-  
   "defaults": {
     "target_dir": "/mnt/projects",
     "shared_dir": "~/.config/copilot-shared",
@@ -10,25 +9,21 @@
     "language": "typescript",
     "github_org": "MyCompany"
   },
-  
   "paths": {
     "profile_descriptors": "profile-descriptors",
     "templates": ".github/templates"
   },
-  
   "features": {
     "auto_git_init": true,
     "create_venv": false,
     "setup_symlinks": true,
     "validate_on_create": false
   },
-  
   "prompts": {
     "show_emoji": false,
     "verbose": true,
     "color_output": true
   },
-  
   "metadata": {
     "config_version": "1.0.0",
     "last_updated": "2026-03-20",

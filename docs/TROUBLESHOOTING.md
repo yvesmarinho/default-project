@@ -272,12 +272,12 @@ ModuleNotFoundError: No module named 'src'
 3. Check line length consistency:
    - Black: 88 (default)
    - Ruff: Should match Black
-   
+
    ```toml
    # pyproject.toml
    [tool.black]
    line-length = 88
-   
+
    [tool.ruff]
    line-length = 88
    ```
@@ -445,7 +445,7 @@ FAIL Required coverage of 80% not reached. Total coverage: 65%
    # Use git-filter-repo (recommended)
    pip install git-filter-repo
    git filter-repo --path .secrets --invert-paths
-   
+
    # Or use BFG Repo-Cleaner
    java -jar bfg.jar --delete-files .env .
    git reflog expire --expire=now --all
@@ -549,7 +549,7 @@ ERROR! Attempting to decrypt but no vault secrets found
    ```markdown
    # Wrong
    [link](file.md)
-   
+
    # Correct
    [link](../path/to/file.md)
    ```
@@ -680,10 +680,10 @@ Permission denied
    # Install direnv
    brew install direnv  # macOS
    apt install direnv   # Ubuntu
-   
+
    # Add to shell rc file
    eval "$(direnv hook bash)"
-   
+
    # Allow directory
    direnv allow .
    ```

@@ -68,11 +68,11 @@ git commit -F "$COMMIT_FILE"
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Commit successful${NC}"
-    
+
     # Show last commit
     echo -e "\n${GREEN}📊 Last commit:${NC}"
     git log -1 --oneline
-    
+
     # Cleanup commit file
     rm -f "$COMMIT_FILE"
     echo -e "${GREEN}🗑️  Commit message file cleaned up${NC}"

@@ -89,7 +89,7 @@ def make_project_config(tmp_path: Path):
 def temp_file(tmp_path: Path):
     """
     Factory fixture to create temporary files for testing.
-    
+
     Usage:
         def test_foo(temp_file):
             test_file = temp_file("test.txt", "content")
@@ -106,7 +106,7 @@ def temp_file(tmp_path: Path):
 def mock_env(monkeypatch):
     """
     Factory fixture to set environment variables.
-    
+
     Usage:
         def test_foo(mock_env):
             mock_env({"KEY": "value", "DEBUG": "true"})
@@ -121,7 +121,7 @@ def mock_env(monkeypatch):
 def capture_logs(caplog):
     """
     Fixture to capture and assert on log messages.
-    
+
     Usage:
         def test_foo(capture_logs):
             with capture_logs("INFO") as logs:
@@ -130,12 +130,12 @@ def capture_logs(caplog):
     """
     import logging
     from contextlib import contextmanager
-    
+
     @contextmanager
     def _capture(level: str = "INFO"):
         caplog.set_level(getattr(logging, level))
         yield caplog.text
-    
+
     return _capture
 
 
@@ -143,24 +143,24 @@ def capture_logs(caplog):
 def mock_subprocess(monkeypatch):
     """
     Mock subprocess.run calls for testing.
-    
+
     Usage:
         def test_foo(mock_subprocess):
             mock_subprocess(stdout="output", stderr="", returncode=0)
     """
     from unittest.mock import Mock
     import subprocess
-    
+
     def _factory(stdout: str = "", stderr: str = "", returncode: int = 0):
         mock_result = Mock()
         mock_result.stdout = stdout
         mock_result.stderr = stderr
         mock_result.returncode = returncode
-        
+
         mock_run = Mock(return_value=mock_result)
         monkeypatch.setattr(subprocess, "run", mock_run)
         return mock_run
-    
+
     return _factory
 
 
@@ -168,7 +168,7 @@ def mock_subprocess(monkeypatch):
 def sample_config_file(temp_file):
     """
     Create a sample configuration file for testing.
-    
+
     Returns:
         Path to the config file
     """
@@ -176,7 +176,7 @@ def sample_config_file(temp_file):
     [project]
     name = "test-project"
     version = "1.0.0"
-    
+
     [settings]
     debug = true
     """
@@ -187,7 +187,7 @@ def sample_config_file(temp_file):
 def isolate_tests(tmp_path, monkeypatch):
     """
     Auto-use fixture to isolate tests from system environment.
-    
+
     - Sets temporary HOME/TMPDIR
     - Prevents accidental modifications to real files
     """
@@ -206,7 +206,7 @@ def isolate_tests(tmp_path, monkeypatch):
 def benchmark_timer():
     """
     Simple benchmark timer for performance tests.
-    
+
     Usage:
         def test_performance(benchmark_timer):
             with benchmark_timer() as timer:
@@ -215,25 +215,25 @@ def benchmark_timer():
     """
     import time
     from contextlib import contextmanager
-    
+
     class Timer:
         def __init__(self):
             self.start_time = None
             self.end_time = None
             self.elapsed = None
-        
+
         def __enter__(self):
             self.start_time = time.perf_counter()
             return self
-        
+
         def __exit__(self, *args):
             self.end_time = time.perf_counter()
             self.elapsed = self.end_time - self.start_time
-    
+
     @contextmanager
     def _timer():
         timer = Timer()
         with timer:
             yield timer
-    
+
     return _timer

@@ -462,7 +462,7 @@ def generate_copilot_instructions(config: ProjectConfig) -> CreatedItem:
 
     Não sobrescreve se já existe — retorna status 'skipped'.
     """
-    dest = config.target_dir / ".github" / "copilot-instructions.md"
+    dest = config.project_path / ".github" / "copilot-instructions.md"
     dest.parent.mkdir(parents=True, exist_ok=True)
 
     if dest.exists():
@@ -515,7 +515,7 @@ def generate_copilot_rules(config: ProjectConfig) -> CreatedItem:
     Não sobrescreve se já existe — retorna status 'skipped'.
     """
     filename = f".copilot-rules-{config.project_name}.md"
-    dest = config.target_dir / filename
+    dest = config.project_path / filename
 
     if dest.exists():
         return CreatedItem(
@@ -767,14 +767,14 @@ def generate_profile_guide(
     """
     if not profiles_applied:
         return CreatedItem(
-            path=config.target_dir / "docs" / "PROFILE-GUIDE-core.md",
+            path=config.project_path / "docs" / "PROFILE-GUIDE-core.md",
             kind="file",
             status="skipped",
             message="sem perfis aplicados — guia não gerado",
         )
 
     combo_slug = _compute_combo_slug(profiles_applied, descriptors)
-    dest = config.target_dir / "docs" / f"PROFILE-GUIDE-{combo_slug}.md"
+    dest = config.project_path / "docs" / f"PROFILE-GUIDE-{combo_slug}.md"
     dest.parent.mkdir(parents=True, exist_ok=True)
 
     if dest.exists():

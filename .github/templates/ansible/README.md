@@ -136,5 +136,5 @@ tasks:
 
 ---
 
-**Template Version**: 1.0.0  
+**Template Version**: 1.0.0
 **Maintained By**: Enterprise Template Team

@@ -228,7 +228,7 @@ all:
       vars:
         ansible_user: ubuntu
         ansible_python_interpreter: /usr/bin/python3
-    
+
     databases:
       hosts:
         db01.example.com:
@@ -285,35 +285,35 @@ ansible-playbook -i inventory/aws_ec2.yml playbooks/site.yml
   hosts: webservers
   become: true
   gather_facts: true
-  
+
   vars:
     app_version: "1.2.3"
     app_port: 8080
-  
+
   pre_tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 3600
-  
+
   roles:
     - common
     - nginx
     - application
-  
+
   tasks:
     - name: Ensure application is running
       ansible.builtin.service:
         name: myapp
         state: started
         enabled: true
-  
+
   post_tasks:
     - name: Verify application health
       ansible.builtin.uri:
         url: "http://localhost:{{ app_port }}/health"
         status_code: 200
-  
+
   handlers:
     - name: restart nginx
       ansible.builtin.service:
@@ -346,27 +346,27 @@ ansible-playbook -i inventory/aws_ec2.yml playbooks/site.yml
       ansible.builtin.apt:
         name: postgresql
         state: present
-    
+
     - name: Start PostgreSQL service
       ansible.builtin.service:
         name: postgresql
         state: started
-    
+
     - name: Create database
       community.postgresql.postgresql_db:
         name: myapp
         state: present
-  
+
   rescue:
     - name: Log error
       ansible.builtin.debug:
         msg: "PostgreSQL setup failed, cleaning up..."
-    
+
     - name: Remove failed installation
       ansible.builtin.apt:
         name: postgresql
         state: absent
-  
+
   always:
     - name: Cleanup temp files
       ansible.builtin.file:
@@ -694,7 +694,7 @@ galaxy_info:
   company: Your Company
   license: MIT
   min_ansible_version: "2.10"
-  
+
   platforms:
     - name: Ubuntu
       versions:
@@ -703,7 +703,7 @@ galaxy_info:
     - name: Debian
       versions:
         - bullseye
-  
+
   galaxy_tags:
     - web
     - nginx
@@ -1222,33 +1222,33 @@ forks = 20  # Increase from default 5
       ansible.builtin.service:
         name: myapp
         state: stopped
-    
+
     - name: Deploy new version
       ansible.builtin.copy:
         src: app-v2.jar
         dest: /opt/app/app.jar
-    
+
     - name: Start application
       ansible.builtin.service:
         name: myapp
         state: started
-  
+
   rescue:
     - name: Rollback to previous version
       ansible.builtin.copy:
         src: /opt/app/app.jar.backup
         dest: /opt/app/app.jar
-    
+
     - name: Restart with old version
       ansible.builtin.service:
         name: myapp
         state: started
-    
+
     - name: Send alert
       ansible.builtin.mail:
         to: ops@example.com
         subject: "Deployment failed, rolled back"
-  
+
   always:
     - name: Cleanup temp files
       ansible.builtin.file:
@@ -1367,33 +1367,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      
+
       - name: Install dependencies
         run: |
           pip install ansible ansible-lint yamllint
-      
+
       - name: Run ansible-lint
         run: ansible-lint playbooks/*.yml roles/*/
-      
+
       - name: Run yamllint
         run: yamllint .
-  
+
   syntax-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Syntax check playbooks
         run: |
           for playbook in playbooks/*.yml; do
             ansible-playbook "$playbook" --syntax-check
           done
-  
+
   molecule:
     runs-on: ubuntu-latest
     strategy:
@@ -1401,15 +1401,15 @@ jobs:
         role: [nginx, docker, common]
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      
+
       - name: Install Molecule
         run: pip install molecule molecule-docker ansible-lint
-      
+
       - name: Run Molecule tests
         run: |
           cd roles/${{ matrix.role }}
@@ -1548,6 +1548,6 @@ deploy-production:
 
 ---
 
-**Document Version**: 1.0.0  
-**Last Updated**: 2026-03-20  
+**Document Version**: 1.0.0
+**Last Updated**: 2026-03-20
 **Maintained By**: Enterprise Template Team

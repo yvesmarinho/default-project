@@ -89,5 +89,5 @@ def flow_new_project(args: argparse.Namespace) -> int:
     write_scaffold_state(cfg, profiles_applied=[])
 
     console.print(f"  [bold green]✅ Projeto '{cfg.project_name}' criado com sucesso![/bold green]\n")
-    console.print(f"  [dim]Diretório: {cfg.target_dir}[/dim]\n")
+    console.print(f"  [dim]Diretório: {cfg.project_path}[/dim]\n")
     return 0

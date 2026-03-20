@@ -22,27 +22,27 @@
   hosts: all
   become: true
   gather_facts: true
-  
+
   vars:
     # Threshold configuration
     disk_warning_threshold: "{{ disk_warning | default(80) }}"
     disk_critical_threshold: "{{ disk_critical | default(90) }}"
     memory_warning_threshold: "{{ memory_warning | default(80) }}"
     cpu_warning_threshold: "{{ cpu_warning | default(70) }}"
-    
+
     # Fail on critical thresholds
     fail_on_critical: true
-    
+
     # Services to check
     required_services:
       - docker
       - nginx
-    
+
     # Network endpoints to test
     network_test_urls:
       - https://google.com
       - https://github.com
-  
+
   tasks:
     - name: System resource checks
       block:
@@ -50,33 +50,33 @@
           ansible.builtin.shell: df -h / | awk 'NR==2 {print $5}' | sed 's/%//'
           register: disk_usage
           changed_when: false
-        
+
         - name: Check memory usage percentage
           ansible.builtin.shell: free | awk '/Mem:/ {printf "%.0f", $3/$2 * 100}'
           register: memory_usage
           changed_when: false
-        
+
         - name: Check swap usage percentage
           ansible.builtin.shell: free | awk '/Swap:/ {if ($2 > 0) printf "%.0f", $3/$2 * 100; else print "0"}'
           register: swap_usage
           changed_when: false
-        
+
         - name: Check CPU load average
           ansible.builtin.shell: uptime | awk '{print $(NF-2)}' | sed 's/,//'
           register: cpu_load
           changed_when: false
-        
+
         - name: Get system uptime
           ansible.builtin.shell: uptime -p
           register: system_uptime
           changed_when: false
-        
+
         - name: Check disk I/O wait
           ansible.builtin.shell: iostat -c 1 2 | awk '/^avg/ {print $4}'
           register: io_wait
           changed_when: false
           failed_when: false
-    
+
     - name: Service checks
       block:
         - name: Check required services status
@@ -86,7 +86,7 @@
           loop: "{{ required_services }}"
           register: service_check
           ignore_errors: true
-        
+
         - name: Get failed services count
           ansible.builtin.set_fact:
             failed_services: >-
@@ -95,12 +95,12 @@
                  selectattr('status.ActiveState', '!=', 'active') |
                  map(attribute='item') |
                  list }}
-        
+
         - name: Report failed services
           ansible.builtin.debug:
             msg: "⚠️ SERVICE DOWN: {{ failed_services | join(', ') }}"
           when: failed_services | length > 0
-    
+
     - name: Docker health checks
       block:
         - name: Check Docker daemon
@@ -108,13 +108,13 @@
           register: docker_info
           changed_when: false
           failed_when: false
-        
+
         - name: Get running containers
           ansible.builtin.shell: docker ps --format '{{.Names}}'
           register: running_containers
           changed_when: false
           when: docker_info.rc == 0
-        
+
         - name: Check container health status
           ansible.builtin.shell: |
             docker ps --format '{{.Names}}' | while read container; do
@@ -125,7 +125,7 @@
           register: container_health
           changed_when: false
           when: docker_info.rc == 0 and running_containers.stdout_lines | length > 0
-        
+
         - name: Parse container health
           ansible.builtin.set_fact:
             unhealthy_containers: >-
@@ -136,7 +136,7 @@
                  map(attribute='0') |
                  list }}
           when: docker_info.rc == 0 and container_health.stdout is defined
-        
+
         - name: Report unhealthy containers
           ansible.builtin.debug:
             msg: "⚠️ UNHEALTHY CONTAINERS: {{ unhealthy_containers | join(', ') }}"
@@ -144,14 +144,14 @@
             - docker_info.rc == 0
             - unhealthy_containers is defined
             - unhealthy_containers | length > 0
-        
+
         - name: Get Docker disk usage
           ansible.builtin.command: docker system df --format '{{.Type}}\t{{.Size}}'
           register: docker_disk_usage
           changed_when: false
           when: docker_info.rc == 0
       when: "'docker' in required_services"
-    
+
     - name: Network connectivity checks
       block:
         - name: Test network endpoints
@@ -162,7 +162,7 @@
           loop: "{{ network_test_urls }}"
           register: network_check
           ignore_errors: true
-        
+
         - name: Get failed network tests
           ansible.builtin.set_fact:
             network_failures: >-
@@ -170,12 +170,12 @@
                  selectattr('failed', 'equalto', true) |
                  map(attribute='item') |
                  list }}
-        
+
         - name: Report network failures
           ansible.builtin.debug:
             msg: "⚠️ NETWORK UNREACHABLE: {{ network_failures | join(', ') }}"
           when: network_failures | length > 0
-    
+
     - name: SSL certificate checks
       block:
         - name: Check SSL certificate expiry
@@ -185,7 +185,7 @@
           register: ssl_expiry
           changed_when: false
           failed_when: false
-        
+
         - name: Calculate days until SSL expiry
           ansible.builtin.shell: |
             expiry="{{ ssl_expiry.stdout }}"
@@ -200,7 +200,7 @@
           register: ssl_days_remaining
           changed_when: false
           when: ssl_expiry.stdout != ""
-    
+
     - name: Generate health report
       block:
         - name: Create health report
@@ -241,17 +241,17 @@
               ssl:
                 expiry_date: "{{ ssl_expiry.stdout | default('N/A') }}"
                 days_remaining: "{{ ssl_days_remaining.stdout | default('N/A') }}"
-        
+
         - name: Display health report
           ansible.builtin.debug:
             var: health_report
-        
+
         - name: Save health report to file
           ansible.builtin.copy:
             content: "{{ health_report | to_nice_yaml }}"
             dest: "/var/log/health-check-{{ ansible_date_time.epoch }}.yml"
-            mode: '0644'
-    
+            mode: "0644"
+
     - name: Alert on critical conditions
       block:
         - name: Alert - Critical disk usage
@@ -260,14 +260,14 @@
           when:
             - fail_on_critical
             - disk_usage.stdout | int >= disk_critical_threshold | int
-        
+
         - name: Alert - Failed services
           ansible.builtin.fail:
             msg: "🚨 CRITICAL: Services are down: {{ failed_services | join(', ') }}"
           when:
             - fail_on_critical
             - failed_services | length > 0
-        
+
         - name: Alert - Unhealthy containers
           ansible.builtin.fail:
             msg: "🚨 CRITICAL: Unhealthy Docker containers: {{ unhealthy_containers | join(', ') }}"
@@ -275,7 +275,7 @@
             - fail_on_critical
             - unhealthy_containers is defined
             - unhealthy_containers | length > 0
-    
+
     - name: Warnings
       block:
         - name: Warn - High disk usage
@@ -284,12 +284,12 @@
           when:
             - disk_usage.stdout | int >= disk_warning_threshold | int
             - disk_usage.stdout | int < disk_critical_threshold | int
-        
+
         - name: Warn - High memory usage
           ansible.builtin.debug:
             msg: "⚠️ WARNING: Memory usage is {{ memory_usage.stdout }}% (threshold: {{ memory_warning_threshold }}%)"
           when: memory_usage.stdout | int >= memory_warning_threshold | int
-        
+
         - name: Warn - SSL certificate expiring soon
           ansible.builtin.debug:
             msg: "⚠️ WARNING: SSL certificate expires in {{ ssl_days_remaining.stdout }} days"
@@ -297,7 +297,7 @@
             - ssl_days_remaining.stdout is defined
             - ssl_days_remaining.stdout != "N/A"
             - ssl_days_remaining.stdout | int < 30
-  
+
   post_tasks:
     - name: Health check summary
       ansible.builtin.debug:
