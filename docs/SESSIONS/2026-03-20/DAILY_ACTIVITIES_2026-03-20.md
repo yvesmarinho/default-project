@@ -295,7 +295,7 @@ def collect_project_info(ci_mode: bool = False, **overrides):
     user_config = load_user_config()
     json_defaults = user_config.get("defaults", {})
     merged_defaults = {**json_defaults, **overrides}  # CLI > JSON
-    
+
     if ci_mode:
         return _collect_ci(merged_defaults)
     return _collect_interactive(merged_defaults)
@@ -336,7 +336,7 @@ def collect_project_info(ci_mode: bool = False, **overrides):
 @dataclass
 class ProjectConfig:
     target_dir: Path  # diretório PAI onde criar a pasta do projeto
-    
+
     @property
     def project_path(self) -> Path:
         """Retorna o caminho completo: target_dir / project_name."""
