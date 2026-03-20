@@ -28,9 +28,11 @@ Quick start:
 # Clone and initialize
 git clone <template-url> my-new-project
 cd my-new-project
-./scripts/init-new-project.sh my-new-project
 
-# Or use Makefile
+# Usar scaffold.py (recomendado)
+uv run scripts/scaffold.py new --name my-new-project
+
+# Ou usar Makefile com script legado
 make init-new-project NAME=my-new-project
 ```
 
@@ -75,13 +77,17 @@ a-default-project/
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão
-├── scripts/                        # Automation scripts
-│   ├── scaffold.py               # ✅ CRIADO 2026-03-01 — PEP 723, uv run, entry point
-│   ├── lib/                      # Módulos: config, ui, project, links, git, templates, vscode
-│   ├── init-new-project.sh       # ⚠ Legado (absorvido pelo scaffold.py)
-│   ├── setup-project-links.sh    # ⚠ Legado
-│   ├── check-project-links.sh    # ⚠ Legado
-│   └── manage.py                 # TUI Python (mantido temporariamente)
+├── setup/                          # Setup & installation (legacy)
+│   ├── README.md                 # Setup scripts documentation
+│   ├── init-new-project.sh       # ⚠ DEPRECATED - Use scaffold.py
+│   ├── setup-project-links.sh    # ⚠ DEPRECATED - Use scaffold.py
+│   └── check-project-links.sh    # ⚠ DEPRECATED - Use scaffold.py
+├── scripts/                        # Active automation scripts
+│   ├── scaffold.py               # ✅ Main scaffolding tool (replaces legacy)
+│   ├── manage.py                 # Project management TUI
+│   ├── lib/                      # Python modules: config, ui, project, links, git, templates, vscode
+│   ├── cleanup-tmp.sh            # Temporary files cleanup
+│   └── validate-docs-links.sh    # Markdown links validation
 ├── src/                            # Source code
 ├── tests/                          # Test suites
 ├── Makefile                        # Build automation (40+ commands)
@@ -306,9 +312,9 @@ a-default-project/
 | `scripts/lib/vscode.py` | Gera `mcp.json`, `settings.json`, `extensions.json` | ✅ Criado |
 | `scripts/validate-docs-links.sh` | ✅ **CRIADO** — Validate markdown links, suggest fixes | ✅ Sprint 3 |
 | `scripts/manage.py` | TUI Python | 🟡 Legado |
-| `scripts/init-new-project.sh` | Initialize new project | ⚠ Legado (absorvido) |
-| `scripts/setup-project-links.sh` | Setup symlinks | ⚠ Legado (absorvido) |
-| `scripts/check-project-links.sh` | Verify symlink integrity | ⚠ Legado (absorvido) |
+| `setup/init-new-project.sh` | Initialize new project | ⚠ DEPRECATED (use scaffold.py) |
+| `setup/setup-project-links.sh` | Setup symlinks | ⚠ DEPRECATED (use scaffold.py) |
+| `setup/check-project-links.sh` | Verify symlink integrity | ⚠ DEPRECATED (use scaffold.py) |
 
 ### Prompt Files (GitHub Copilot)
 | File | Purpose | Status |

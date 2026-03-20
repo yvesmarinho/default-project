@@ -82,10 +82,15 @@ default-project/                 # Template repository
 │   ├── TODAY_ACTIVITIES.md
 │   ├── TEMPLATE_USAGE.md
 │   └── MAKEFILE.md
-├── scripts/                    # Template scripts
-│   ├── init-new-project.sh    # Main initialization script
-│   ├── setup-project-links.sh
-│   └── check-project-links.sh
+├── setup/                      # Setup & installation scripts (legacy)
+│   ├── README.md               # Setup scripts documentation
+│   ├── init-new-project.sh     # [DEPRECATED] Use scaffold.py
+│   ├── setup-project-links.sh  # [DEPRECATED] Use scaffold.py
+│   └── check-project-links.sh  # [DEPRECATED] Use scaffold.py
+├── scripts/                    # Active scripts
+│   ├── scaffold.py             # ✨ Main scaffolding tool
+│   ├── manage.py               # Project management
+│   └── lib/                    # Python libraries
 ├── Makefile                    # 40+ automation commands
 ├── README.md                   # This file
 └── default-project.code-workspace

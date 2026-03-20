@@ -663,7 +663,7 @@ init-new-project:
 		exit 1; \
 	fi
 	@echo "$(BLUE)🚀 Initializing new project: $(NAME)$(NC)"
-	@./scripts/init-new-project.sh $(NAME)
+	@./setup/init-new-project.sh $(NAME)
 
 ## setup-shared-configs: Setup shared configuration repository
 setup-shared-configs:
@@ -688,8 +688,8 @@ setup-shared-configs:
 	@echo "$(GREEN)✅ Configuration files copied$(NC)"
 	@echo ""
 	@echo "$(BLUE)Copying scripts...$(NC)"
-	@cp scripts/setup-project-links.sh "$$HOME/Documentos/DevOps/.copilot-shared/scripts/" 2>/dev/null || true
-	@cp scripts/check-project-links.sh "$$HOME/Documentos/DevOps/.copilot-shared/scripts/" 2>/dev/null || true
+	@cp setup/setup-project-links.sh "$$HOME/Documentos/DevOps/.copilot-shared/scripts/" 2>/dev/null || true
+	@cp setup/check-project-links.sh "$$HOME/Documentos/DevOps/.copilot-shared/scripts/" 2>/dev/null || true
 	@chmod +x "$$HOME/Documentos/DevOps/.copilot-shared/scripts"/*.sh
 	@echo "$(GREEN)✅ Scripts copied and made executable$(NC)"
 	@echo ""

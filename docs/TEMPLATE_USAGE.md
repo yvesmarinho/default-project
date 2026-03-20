@@ -72,9 +72,19 @@ cd my-new-project
 
 ### Passo 2: Execute o Script de Inicialização
 
+**Método Recomendado (scaffold.py):**
 ```bash
-# Execute o script passando o nome do seu projeto
-./scripts/init-new-project.sh my-awesome-app
+# Modo interativo
+uv run scripts/scaffold.py new
+
+# Ou modo não-interativo
+uv run scripts/scaffold.py new --name my-awesome-app --domain devops --language python
+```
+
+**Método Legado (DEPRECATED):**
+```bash
+# Execute o script legado (será removido em versões futuras)
+./setup/init-new-project.sh my-awesome-app
 ```
 
 O script irá:
