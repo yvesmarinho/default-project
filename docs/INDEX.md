@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-16 🏁 Encerrada
+**Last Updated**: 2026-03-20 🏁 Encerrada
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-16 — fix(security): Dependabot (npm overrides, pip update, actions pinning) + fix(session-start) + projeto teste enterprise-infra-docker
+**Last Session**: 2026-03-20 — Session Manager Agent v1.0.0 criado — automação de workflow de sessão
 
 ---
 
@@ -70,7 +70,11 @@ a-default-project/
         ├── 2026-03-07/          # IMP-27 lgpd+soc2 (Layer4) + IMP-28 scaffold --upgrade (encerrada)
         ├── 2026-03-08/          # IMP-29..32 ✅ + Homologação + Plano IMP-33..44 (encerrada)
         ├── 2026-03-14/          # IMP-46 ✅ (testes integração estrutura+AppSec) + security/CI fixes (encerrada)
-        └── 2026-03-16/          # fix(session-start): MCP check via arquivo + projeto teste enterprise-infra-docker (encerrada)
+        ├── 2026-03-16/          # fix(session-start): MCP check via arquivo + projeto teste enterprise-infra-docker (encerrada)
+        └── 2026-03-20/          # Session Manager Agent v1.0.0 criado — automação de workflow de sessão (encerrada)
+├── .github/
+│   └── agents/                   # Custom Copilot agents
+│       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão
 ├── scripts/                        # Automation scripts
 │   ├── scaffold.py               # ✅ CRIADO 2026-03-01 — PEP 723, uv run, entry point
 │   ├── lib/                      # Módulos: config, ui, project, links, git, templates, vscode
@@ -158,6 +162,32 @@ a-default-project/
   - [SESSION_RECOVERY](SESSIONS/2026-03-16/SESSION_RECOVERY_2026-03-16.md) — Contexto recuperado de 2026-03-14
   - [DAILY_ACTIVITIES](SESSIONS/2026-03-16/DAILY_ACTIVITIES_2026-03-16.md) — Log detalhado completo
   - [FINAL_STATUS](SESSIONS/2026-03-16/FINAL_STATUS_2026-03-16.md) — Status final 🏁
+
+- **[docs/SESSIONS/2026-03-20/](SESSIONS/2026-03-20/)** - Sessão: Session Manager Agent v1.0.0 (encerrada)
+  - [SESSION_RECOVERY](SESSIONS/2026-03-20/SESSION_RECOVERY_2026-03-20.md) — Contexto recuperado de 2026-03-16
+  - [DAILY_ACTIVITIES](SESSIONS/2026-03-20/DAILY_ACTIVITIES_2026-03-20.md) — Log detalhado completo
+  - [SESSION_REPORT](SESSIONS/2026-03-20/SESSION_REPORT_2026-03-20.md) — Relatório técnico
+  - [FINAL_STATUS](SESSIONS/2026-03-20/FINAL_STATUS_2026-03-20.md) — Status final 🏁
+
+---
+
+## 🤖 Copilot Agents
+
+### Custom Agents
+- **[.github/agents/session-manager.agent.md](../.github/agents/session-manager.agent.md)** - ⭐ Session initialization & organization
+  - **Version**: 1.0.0 (created 2026-03-20)
+  - **Purpose**: Automate session start/end workflows
+  - **Features**:
+    - MCP validation (memory, sequential-thinking)
+    - Context recovery from previous sessions
+    - Security scanning (credentials, sensitive files)
+    - Project organization (file placement, structure validation)
+    - Documentation generation (session files)
+  - **Usage**: `/session-start`, `/first-time-setup`, `/recover-context`
+  - **Tool Preferences**: Pylance tools (priority), native VS Code tools
+  - **Workflows**:
+    - Recurring session start (7 steps)
+    - First-time setup (7 steps)
 
 ---
 
