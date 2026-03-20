@@ -525,6 +525,35 @@ npm run build               # or language equivalent
 npm run docs:generate       # or language equivalent
 ```
 
+### Temporary Files Management
+
+The project includes a dedicated `tmp/` directory for temporary files:
+
+**Purpose**:
+- Store temporary files during script execution
+- Avoid cluttering system `/tmp/` with project-specific files
+- Automatic cleanup on session end
+
+**Usage in scripts**:
+```bash
+# Instead of
+temp_file="/tmp/myfile.txt"
+
+# Use
+temp_file="./tmp/myfile.txt"
+```
+
+**Cleanup**:
+```bash
+# Manual cleanup (with dry run)
+./scripts/cleanup-tmp.sh --dry-run
+
+# Clean all temporary files
+./scripts/cleanup-tmp.sh --verbose
+```
+
+**Note**: The `tmp/` directory is automatically cleaned at session end. Files are ignored by git (except `tmp/README.md`).
+
 ## 🧪 Testing Strategy
 
 ### Test Pyramid

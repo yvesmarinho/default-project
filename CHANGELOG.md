@@ -11,6 +11,44 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+#### Sprint 5: Estrutura P2 (ACTION_PLAN_TO_10 — Mar 2026)
+- `tmp/` directory structure — project-local temporary files:
+  - Created `tmp/README.md` with usage guidelines
+  - Purpose: Store temporary files during script execution, safer alternative to /tmp/
+  - Automatic cleanup on session end via cleanup script
+  - All files git-ignored except README.md
+
+- `scripts/cleanup-tmp.sh` — automated temporary files cleanup (~145 lines):
+  - Options: --dry-run (preview), --verbose (detailed output), --help
+  - Removes all files in tmp/ except README.md
+  - Removes all subdirectories in tmp/
+  - Reports: file count, directory count, total size before/after cleanup
+  - Exit codes: 0 (success), 1 (errors)
+  - Safe: preserves tmp/README.md documentation
+
+- `.gitignore` — updated temporary files section:
+  - Changed from `tmp/` to `tmp/*` with exception `!tmp/README.md`
+  - Ensures tmp/README.md is tracked while all other tmp/ contents are ignored
+
+- `.github/prompts/session-end.prompt.md` — added cleanup step:
+  - New Passo 10: "Limpar Diretório Temporário"
+  - Commands to verify (dry-run) and execute cleanup
+  - Checklist updated with cleanup verification
+  - Guidance on when NOT to clean (active session files)
+
+- `README.md` — documented tmp/ usage:
+  - New subsection "Temporary Files Management" in Development Workflow
+  - Purpose and benefits explained
+  - Usage examples for scripts (./tmp/ instead of /tmp/)
+  - Cleanup commands reference
+  - Note about automatic session-end cleanup
+
+Impact:
+- Eliminates need for system /tmp/ directory access (better security)
+- Prevents accidental inclusion of temporary files in git
+- Automatic cleanup ensures clean state between sessions
+- Improved developer experience with clear guidelines
+
 #### Sprint 4: Ansible P1 (ACTION_PLAN_TO_10 — Mar 2026)
 - `docs/ANSIBLE_BEST_PRACTICES.md` — comprehensive Ansible best practices guide (~1000 lines):
   - 12 major sections covering all Ansible aspects
@@ -26,7 +64,7 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
   - Error Handling: failed_when conditions (multi-condition example), ignore_errors usage, block/rescue/always pattern (complete deployment example), assertions (prerequisite validation)
   - Documentation: Playbook documentation template (header with purpose/author/requirements/usage/variables), role README.md template (11 sections)
   - CI/CD Integration: GitHub Actions workflow (3 jobs: lint/syntax-check/molecule with matrix strategy), GitLab CI (.gitlab-ci.yml with 3 stages: lint/test/deploy)
-  
+
 - `docs/MOLECULE_TESTING_GUIDE.md` — complete Molecule testing framework guide (~1000 lines):
   - 12 comprehensive sections covering Molecule framework
   - What is Molecule: Definition (testing framework for Ansible roles), features (automate testing, multiple platforms, multiple drivers, lint integration, verification, CI/CD ready), benefits comparison table (without vs with Molecule: 5 comparisons)
@@ -41,7 +79,7 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
   - CI/CD Integration: GitHub Actions (complete workflow with matrix strategy for scenarios/platforms), GitLab CI (parallel matrix example with docker:dind)
   - Best Practices: 7 guidelines (use pre-built images with good/bad examples, test idempotence, organize tests by component, use fixtures example, keep scenarios focused, document scenarios, use markers for long tests)
   - Troubleshooting: 5 common issues with solutions (Docker daemon not running, Testinfra import failed, platform already exists, idempotence test failed with fix example, tests pass locally but fail in CI with retry logic)
-  
+
 - `docs/ANSIBLE_PLAYBOOK_TEMPLATES.md` — ready-to-use playbook templates (~800 lines):
   - 8 categories of production-ready playbooks
   - Docker Management: Docker installation (Ubuntu/Debian with GPG keys, repository setup, engine installation, user groups), Docker Compose deployment (project directory setup, environment templating, health checks, rollback), Docker cleanup (containers/images/networks/volumes pruning with disk usage reporting), Docker health check (service status, container health, disk usage verification)

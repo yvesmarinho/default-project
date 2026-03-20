@@ -213,6 +213,28 @@ Se novos arquivos importantes foram criados nesta sessão, atualizar `docs/INDEX
 
 ---
 
+### Passo 10 — Limpar Diretório Temporário
+
+Remover arquivos temporários gerados durante a sessão:
+
+```bash
+# Verificar o que será removido (dry run)
+./scripts/cleanup-tmp.sh --dry-run
+
+# Limpar tmp/ (preserva tmp/README.md)
+./scripts/cleanup-tmp.sh --verbose
+```
+
+**O script remove**:
+- Todos os arquivos em `tmp/` exceto `README.md`
+- Todos os subdiretórios em `tmp/`
+
+**Quando NÃO limpar**:
+- Se há arquivos temporários que serão usados na próxima sessão imediata
+- Nesse caso, documente em `FINAL_STATUS` quais arquivos e por quê
+
+---
+
 ## ✅ Checklist de Encerramento
 
 ### Documentação
@@ -220,6 +242,9 @@ Se novos arquivos importantes foram criados nesta sessão, atualizar `docs/INDEX
 - [ ] `docs/TODO.md` atualizado (concluídos marcados, novos adicionados)
 - [ ] `FINAL_STATUS_[data].md` criado (se encerramento de fase)
 - [ ] `docs/INDEX.md` atualizado (se novos arquivos criados)
+
+### Limpeza
+- [ ] `./scripts/cleanup-tmp.sh` executado (ou motivo documentado para não executar)
 
 ### Qualidade
 - [ ] Testes passando (se código foi modificado)

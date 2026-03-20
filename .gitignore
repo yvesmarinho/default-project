@@ -105,7 +105,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Temporary files
-tmp/
+tmp/*
+!tmp/README.md
 temp/
 *.tmp
 *.bak
