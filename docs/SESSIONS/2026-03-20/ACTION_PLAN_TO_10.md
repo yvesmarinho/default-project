@@ -1827,39 +1827,39 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
 3. Criar `tmp/README.md`:
    ```markdown
    # Diretório de Arquivos Temporários
-   
+
    Este diretório é usado para armazenar arquivos temporários do projeto.
-   
+
    ## Estrutura
-   
+
    - `logs/` - Logs temporários de execução
    - `cache/` - Cache de operações
    - `downloads/` - Downloads temporários
    - `commits/` - Mensagens de commit temporárias
-   
+
    ## Limpeza
-   
+
    Arquivos neste diretório são **automaticamente limpos** ao final de cada sessão.
-   
+
    ## Uso
-   
+
    Em scripts Python:
    ```python
    from pathlib import Path
-   
+
    TMP_DIR = Path(__file__).parent / "tmp"
    TMP_DIR.mkdir(exist_ok=True)
-   
+
    # Usar tmp/ local em vez de /tmp/
    temp_file = TMP_DIR / "commits" / "commit_message.txt"
    temp_file.write_text("feat: nova feature")
    ```
-   
+
    Em scripts Bash:
    ```bash
    PROJECT_ROOT=$(git rev-parse --show-toplevel)
    TMP_DIR="${PROJECT_ROOT}/tmp"
-   
+
    # Usar tmp/ local em vez de /tmp/
    echo "feat: nova feature" > "${TMP_DIR}/commits/commit_message.txt"
    ```
@@ -1880,37 +1880,37 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
    ```bash
    #!/usr/bin/env bash
    # cleanup-tmp.sh - Limpa arquivos temporários do projeto
-   
+
    set -euo pipefail
-   
+
    PROJECT_ROOT=$(git rev-parse --show-toplevel)
    TMP_DIR="${PROJECT_ROOT}/tmp"
-   
+
    echo "🧹 Limpando diretório tmp/..."
-   
+
    if [[ ! -d "$TMP_DIR" ]]; then
        echo "⚠️  Diretório tmp/ não existe, criando..."
        mkdir -p "${TMP_DIR}"/{logs,cache,downloads,commits}
        touch "${TMP_DIR}/.gitkeep"
        exit 0
    fi
-   
+
    # Contar arquivos antes
    FILES_BEFORE=$(find "$TMP_DIR" -type f ! -name '.gitkeep' | wc -l)
-   
+
    # Limpar todos arquivos exceto .gitkeep
    find "$TMP_DIR" -type f ! -name '.gitkeep' -delete
-   
+
    # Limpar diretórios vazios
    find "$TMP_DIR" -type d -empty -not -path "$TMP_DIR" -delete
-   
+
    # Recriar estrutura
    mkdir -p "${TMP_DIR}"/{logs,cache,downloads,commits}
-   
+
    # Contar arquivos depois
    FILES_AFTER=$(find "$TMP_DIR" -type f ! -name '.gitkeep' | wc -l)
    FILES_REMOVED=$((FILES_BEFORE - FILES_AFTER))
-   
+
    echo "✅ Limpeza concluída: ${FILES_REMOVED} arquivos removidos"
    echo "📊 Total de arquivos temporários: ${FILES_AFTER}"
    ```
@@ -1945,13 +1945,13 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
    ```
 
 2. Atualizar cada script encontrado:
-   
+
    **Antes**:
    ```bash
    echo "feat: nova feature" > /tmp/commit.txt
    git commit -F /tmp/commit.txt
    ```
-   
+
    **Depois**:
    ```bash
    PROJECT_ROOT=$(git rev-parse --show-toplevel)
@@ -1964,10 +1964,10 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
    ```python
    # scripts/lib/paths.py
    from pathlib import Path
-   
+
    PROJECT_ROOT = Path(__file__).parent.parent.parent
    TMP_DIR = PROJECT_ROOT / "tmp"
-   
+
    def get_tmp_file(subdir: str, filename: str) -> Path:
        """Retorna caminho para arquivo temporário."""
        tmp_path = TMP_DIR / subdir
@@ -1979,11 +1979,11 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
    - Adicionar seção em `docs/CONVENTIONS.md`:
      ```markdown
      ## Arquivos Temporários
-     
+
      **SEMPRE** usar `./tmp/` em vez de `/tmp/`:
      - ✅ `./tmp/commits/message.txt`
      - ❌ `/tmp/commit.txt`
-     
+
      **Motivos**:
      - Sem necessidade de permissões de sistema
      - Organização por propósito (logs, cache, downloads)
@@ -2006,23 +2006,23 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
    ```bash
    #!/usr/bin/env bash
    # validate-tmp.sh - Valida estrutura de tmp/
-   
+
    set -euo pipefail
-   
+
    PROJECT_ROOT=$(git rev-parse --show-toplevel)
    TMP_DIR="${PROJECT_ROOT}/tmp"
-   
+
    echo "🔍 Validando estrutura tmp/..."
-   
+
    # Verificar se existe
    if [[ ! -d "$TMP_DIR" ]]; then
        echo "❌ Diretório tmp/ não existe"
        exit 1
    fi
-   
+
    # Verificar subdiretorios
    REQUIRED_DIRS=("logs" "cache" "downloads" "commits")
-   
+
    for dir in "${REQUIRED_DIRS[@]}"; do
        if [[ ! -d "${TMP_DIR}/${dir}" ]]; then
            echo "⚠️  Faltando: tmp/${dir}"
@@ -2030,17 +2030,17 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
            echo "✅ Criado: tmp/${dir}"
        fi
    done
-   
+
    # Verificar .gitkeep
    if [[ ! -f "${TMP_DIR}/.gitkeep" ]]; then
        echo "⚠️  Faltando: tmp/.gitkeep"
        touch "${TMP_DIR}/.gitkeep"
        echo "✅ Criado: tmp/.gitkeep"
    fi
-   
+
    # Contar arquivos
    FILE_COUNT=$(find "$TMP_DIR" -type f ! -name '.gitkeep' | wc -l)
-   
+
    echo "✅ Estrutura tmp/ válida"
    echo "📊 Total de arquivos temporários: ${FILE_COUNT}"
    ```

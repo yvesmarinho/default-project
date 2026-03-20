@@ -140,6 +140,24 @@ a-default-project/
   - Automation scripts
   - Benefits and metrics
 
+### Security Documentation
+- **[docs/ANSIBLE_VAULT_GUIDE.md](ANSIBLE_VAULT_GUIDE.md)** - ⭐ Complete Ansible Vault reference
+  - Why use Ansible Vault (security benefits, compliance)
+  - Initial configuration (.vault_pass setup, ansible.cfg)
+  - Recommended structure (vault.yml + vars.yml pattern)
+  - All essential commands (create, edit, view, encrypt, decrypt, rekey)
+  - Playbook integration and best practices
+  - Troubleshooting and CI/CD integration
+  - Security checklist and compliance (SOC2, ISO27001, LGPD)
+
+- **[docs/CREDENTIAL_ROTATION.md](CREDENTIAL_ROTATION.md)** - ⭐ Credential rotation procedures
+  - Rotation policy (7 credential types with defined frequencies)
+  - Immediate rotation triggers
+  - Complete rotation procedures with bash scripts
+  - Audit system and logging
+  - Tool recommendations (1Password, HashiCorp Vault, AWS Secrets Manager)
+  - Compliance mapping (SOC2, ISO27001, LGPD)
+
 ### Session Documentation
 - **[docs/SESSIONS/2026-01-27/](SESSIONS/2026-01-27/)** - Phase 1: Foundation
   - SESSION_RECOVERY - Complete session details
