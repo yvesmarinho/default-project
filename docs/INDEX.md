@@ -158,6 +158,52 @@ a-default-project/
   - Tool recommendations (1Password, HashiCorp Vault, AWS Secrets Manager)
   - Compliance mapping (SOC2, ISO27001, LGPD)
 
+### Automation & Configuration Management
+- **[docs/ANSIBLE_BEST_PRACTICES.md](ANSIBLE_BEST_PRACTICES.md)** - ⭐ Comprehensive Ansible guide
+  - Core principles (idempotency, declarative design, module hierarchy, DRY)
+  - Project structure (recommended directory layout, file naming conventions)
+  - Inventory management (static, dynamic, best practices)
+  - Playbook design (basic structure, conditionals, loops, tags)
+  - Role development (structure, defaults, tasks, handlers, templates, meta)
+  - Variable management (precedence hierarchy, naming, organization, vault)
+  - Security best practices (Ansible Vault, privilege escalation, input validation)
+  - Testing and validation (syntax check, ansible-lint, dry run, Molecule)
+  - Performance optimization (facts, pipelining, caching, parallelism)
+  - Error handling (failed_when, ignore_errors, block/rescue/always)
+  - Documentation standards (playbook headers, role README)
+  - CI/CD integration (GitHub Actions, GitLab CI examples)
+
+- **[docs/MOLECULE_TESTING_GUIDE.md](MOLECULE_TESTING_GUIDE.md)** - ⭐ Testing Ansible roles with Molecule
+  - What is Molecule (features, benefits, use cases)
+  - Installation requirements (Python 3.8+, Docker, Ansible)
+  - Quick start (initialize role, directory structure, run tests)
+  - Project structure (molecule.yml, converge.yml, prepare.yml, verify.yml, tests/)
+  - Configuration (platform configs, multiple platforms matrix, custom Dockerfile)
+  - Testing workflow (complete test sequence, manual steps, development workflow)
+  - Writing tests (Testinfra examples: file/package/service/socket/process tests)
+  - Drivers comparison (Docker, Podman, Vagrant, EC2, GCE)
+  - Scenarios (multiple scenarios, examples for default/SSL/cluster)
+  - CI/CD integration (GitHub Actions matrix, GitLab CI parallel)
+  - Best practices (pre-built images, idempotence testing, test organization)
+  - Troubleshooting (Docker issues, Testinfra imports, idempotence failures)
+
+- **[docs/ANSIBLE_PLAYBOOK_TEMPLATES.md](ANSIBLE_PLAYBOOK_TEMPLATES.md)** - ⭐ Ready-to-use playbook patterns
+  - Docker management (installation, compose deployment, cleanup, health check)
+  - Database operations (PostgreSQL backup/restore, MySQL management)
+  - Application deployment (zero-downtime deployment, blue-green deployment)
+  - Backup and restore (comprehensive system backup)
+  - Monitoring and health checks (comprehensive health check)
+  - Maintenance operations (system update and reboot)
+  - Security operations (security hardening)
+  - Network configuration
+
+- **[.github/templates/ansible/](../.github/templates/ansible/)** - ⭐ Production-ready playbook examples
+  - `README.md` - Template usage guide and customization tips
+  - `deploy-app.yml` - Zero-downtime application deployment
+  - `docker-deploy.yml` - Docker Compose stack deployment
+  - `health-check-system.yml` - Comprehensive system health check
+  - `backup-database.yml` - PostgreSQL database backup with rotation
+
 ### Testing Documentation
 - **[docs/TESTING_GUIDE.md](TESTING_GUIDE.md)** - ⭐ Complete testing guide
   - Overview of testing infrastructure (pytest, coverage, mocking)

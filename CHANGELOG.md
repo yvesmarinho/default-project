@@ -11,6 +11,55 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+#### Sprint 4: Ansible P1 (ACTION_PLAN_TO_10 — Mar 2026)
+- `docs/ANSIBLE_BEST_PRACTICES.md` — comprehensive Ansible best practices guide (~1000 lines):
+  - 12 major sections covering all Ansible aspects
+  - Core Principles: Idempotency with examples, declarative over imperative comparison, module hierarchy (5 levels), keep playbooks simple guidelines, DRY principle with implementation patterns
+  - Project Structure: Complete recommended layout (ansible/ directory with 7 subdirectories: inventory/group_vars/host_vars/playbooks/roles/plugins/scripts/docs), file naming conventions table (7 types), directory structure diagram
+  - Inventory Management: Static inventory (INI and YAML formats with examples), dynamic inventory (AWS EC2 plugin example), 6 best practices
+  - Playbook Design: Basic structure template, task organization (descriptive names with good/bad examples), conditionals (simple/multiple/OR/complex examples), loops (simple/dictionary/dict2items/until-retry patterns), tags (usage with 3 examples)
+  - Role Development: Complete role structure (14 components explained), defaults/main.yml example (12 variables), tasks/main.yml with import patterns, templates with Jinja2, handlers with conditional execution, meta/main.yml with galaxy_info, README.md template for roles
+  - Variable Management: Variable precedence (complete 21-level hierarchy documented), naming conventions (good/bad examples), organizing variables (group_vars structure), vault integration examples
+  - Security Best Practices: Ansible Vault (create/encrypt/edit/view commands), .gitignore patterns (9 entries), environment-specific vaults structure, privilege escalation limits, SSH keys configuration, input validation examples, no_log usage
+  - Testing and Validation: Syntax check commands, ansible-lint configuration (.ansible-lint with skip_list/warn_list/exclude_paths), dry run (--check --diff), Molecule testing reference, unit testing with Python/pytest/testinfra
+  - Performance Optimization: Gather facts selectively (gather_subset example), pipelining configuration, fact caching (jsonfile backend), parallel execution (forks=20), loop optimization (good/bad comparison), async for long-running tasks (5-minute example)
+  - Error Handling: failed_when conditions (multi-condition example), ignore_errors usage, block/rescue/always pattern (complete deployment example), assertions (prerequisite validation)
+  - Documentation: Playbook documentation template (header with purpose/author/requirements/usage/variables), role README.md template (11 sections)
+  - CI/CD Integration: GitHub Actions workflow (3 jobs: lint/syntax-check/molecule with matrix strategy), GitLab CI (.gitlab-ci.yml with 3 stages: lint/test/deploy)
+  
+- `docs/MOLECULE_TESTING_GUIDE.md` — complete Molecule testing framework guide (~1000 lines):
+  - 12 comprehensive sections covering Molecule framework
+  - What is Molecule: Definition (testing framework for Ansible roles), features (automate testing, multiple platforms, multiple drivers, lint integration, verification, CI/CD ready), benefits comparison table (without vs with Molecule: 5 comparisons)
+  - Installation: Requirements (Python 3.8+, Docker, Ansible 2.10+), pip install commands (5 variations: basic/docker/vagrant/all), verify installation (molecule --version, molecule drivers)
+  - Quick Start: Initialize new role (molecule init role, molecule init scenario), directory structure created (14 files explained), run tests (molecule test, molecule create/converge/verify/destroy)
+  - Project Structure: Complete file-by-file breakdown (molecule.yml: 140+ lines example with dependency/driver/platforms/provisioner/verifier/lint/scenario sections fully configured, converge.yml: role execution playbook with vars, prepare.yml: prerequisites setup, verify.yml: Ansible assertions, tests/test_default.py: Testinfra tests skeleton)
+  - Configuration: Platform-specific configs (Ubuntu/CentOS/Alpine with full YAML), multiple platform matrix (5 platforms: ubuntu2004/ubuntu2204/debian11/centos8/rockylinux8), custom Dockerfile.j2 (multi-distro support)
+  - Testing Workflow: Complete test sequence (14 steps explained), manual step-by-step workflow, development workflow (keep instance running), specific platform testing
+  - Writing Tests: Extensive Testinfra examples (File Tests: 6 functions, Package Tests: 2 functions, Service Tests: 3 functions, Socket Tests: 2 functions, Process Tests: 2 functions, Command Tests: 2 functions, User Tests: 1 function, System Info Tests: 2 functions, Parameterized Tests: 2 examples, Ansible Verify Playbook alternative)
+  - Drivers: Comparison of 4 drivers (Docker: fast <5s recommended, Podman: similar, Vagrant: full VM slow minutes, Cloud: EC2/GCE with configuration examples)
+  - Scenarios: Multiple scenarios concept (default/with-ssl/cluster), directory structure (4 scenarios), create scenario command, run specific scenario, 3 detailed examples (default/SSL with certificate/cluster with 3 nodes)
+  - CI/CD Integration: GitHub Actions (complete workflow with matrix strategy for scenarios/platforms), GitLab CI (parallel matrix example with docker:dind)
+  - Best Practices: 7 guidelines (use pre-built images with good/bad examples, test idempotence, organize tests by component, use fixtures example, keep scenarios focused, document scenarios, use markers for long tests)
+  - Troubleshooting: 5 common issues with solutions (Docker daemon not running, Testinfra import failed, platform already exists, idempotence test failed with fix example, tests pass locally but fail in CI with retry logic)
+  
+- `docs/ANSIBLE_PLAYBOOK_TEMPLATES.md` — ready-to-use playbook templates (~800 lines):
+  - 8 categories of production-ready playbooks
+  - Docker Management: Docker installation (Ubuntu/Debian with GPG keys, repository setup, engine installation, user groups), Docker Compose deployment (project directory setup, environment templating, health checks, rollback), Docker cleanup (containers/images/networks/volumes pruning with disk usage reporting), Docker health check (service status, container health, disk usage verification)
+  - Database Operations: PostgreSQL backup (compressed dumps with custom format, backup rotation, size reporting, verification), PostgreSQL restore (backup file verification, connection termination, database recreation, restore execution, table count validation), MySQL database management (database creation with encoding/collation, user management with privileges, MySQL tuning configuration)
+  - Application Deployment: Zero-downtime deployment (load balancer removal, graceful shutdown, version deployment, health checks, rollback on failure), Blue-green deployment (deploy to inactive environment, health check, smoke tests, load balancer switch, environment management)
+  - Backup and Restore: Comprehensive system backup (filesystem archive with exclusions, package list, crontabs, systemd services, backup manifest generation)
+  - Monitoring and Health Checks: Comprehensive health check (disk/memory/CPU monitoring, service status, Docker health, network connectivity, SSL certificate expiry, health report generation)
+  - Maintenance Operations: System update and reboot (package upgrade, reboot detection, graceful server removal from load balancer, service verification after reboot)
+  - Security Operations: Security hardening (package updates, firewall configuration, fail2ban setup, SSH hardening, file permissions, package cleanup)
+  - Usage: Copy templates, customize variables, test with --check, run in production
+
+- `.github/templates/ansible/` — production-ready playbook examples (5 files):
+  - `README.md` — template usage guide (~120 lines): Available templates description (8 templates), Quick start (3 steps: copy/customize/run), Usage guidelines (before running: review/test/limit/backup, security: vault/credentials/environment-specific, best practices: tags/error handlers/descriptive names/blocks/verbose), Customization (vault support, notifications, error handling), Further reading links, Important notes
+  - `deploy-app.yml` — zero-downtime application deployment (~250 lines): Serial deployment (1 server at a time), Load balancer integration (remove/add server), Graceful shutdown and version download, Health checks with retry logic, Automatic rollback on failure (restore backup, restart service), Cleanup old backups (keep last 5)
+  - `docker-deploy.yml` — Docker Compose stack deployment (~200 lines): Project directory setup with subdirectories, Compose files deployment, Environment file templating (with secrets protection), Image pulling and stack deployment, Health checks for multiple services (port verification), Rollback on failure (stop failed deployment, restore environment file)
+  - `health-check-system.yml` — comprehensive system health check (~340 lines): Resource checks (disk/memory/swap/CPU/IO wait), Service status verification, Docker health checks (daemon, containers, health status, disk usage), Network connectivity tests, SSL certificate expiry checks, Health report generation (structured YAML with all metrics), Critical alerting (disk/services/containers), Warning thresholds (disk/memory/SSL expiry), Report summary with color-coded status
+  - `backup-database.yml` — PostgreSQL database backup (~230 lines): Compressed custom format dumps, Database size reporting before backup, Backup file verification, Backup manifest generation, Automatic rotation (configurable retention days), Optional remote upload (S3), Notification webhooks (Slack), Rollback on failure (cleanup partial backups), Backup logging
+
 #### Sprint 3: Documentation P1 (ACTION_PLAN_TO_10 — Mar 2026)
 - `docs/TROUBLESHOOTING.md` — comprehensive troubleshooting guide:
   - 8 major sections covering all common issues
