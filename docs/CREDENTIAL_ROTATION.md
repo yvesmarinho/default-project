@@ -121,7 +121,7 @@ done
 # 2. Atualizar senhas nos servidores
 for host in "${!NEW_PASSWORDS[@]}"; do
     echo "  - Atualizando: $host"
-    
+
     ansible -i "ansible/inventory/${ENVIRONMENT}/hosts.yml" "$host" \
         -m user \
         -a "name=ansible password={{ '${NEW_PASSWORDS[$host]}' | password_hash('sha512') }}" \
@@ -425,7 +425,7 @@ while IFS='|' read -r date type env user next_rotation; do
     # Calcular dias até próxima rotação
     next_rotation_clean=$(echo "$next_rotation" | tr -d ' ')
     days_until=$(( ($(date -d "$next_rotation_clean" +%s) - $(date -d "$TODAY" +%s)) / 86400 ))
-    
+
     status="✅ OK"
     if [ $days_until -le 0 ]; then
         status="🔴 VENCIDO"
@@ -434,7 +434,7 @@ while IFS='|' read -r date type env user next_rotation; do
     elif [ $days_until -le 30 ]; then
         status="🟡 ATENÇÃO"
     fi
-    
+
     echo "$status | Tipo: $type | Env: $env | Próxima: $next_rotation_clean (${days_until}d)"
 done < "$AUDIT_LOG"
 

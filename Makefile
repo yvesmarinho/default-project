@@ -469,14 +469,95 @@ build:
 	fi
 	@echo "$(GREEN)✅ Build complete$(NC)"
 
-## test: Run all tests
+# =============================================================================
+# Testing Commands
+# =============================================================================
+
+## test: Run all tests with coverage
 test:
-	@echo "$(BLUE)🧪 Running tests...$(NC)"
+	@echo "$(BLUE)🧪 Running all tests...$(NC)"
 	@if [ -f package.json ]; then \
 		npm test; \
-	elif [ -f requirements.txt ]; then \
+	elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then \
+		pytest --cov --cov-report=term-missing; \
+	else \
+		echo "$(YELLOW)⚠️  No test configuration found$(NC)"; \
+	fi
+
+## test-unit: Run only unit tests (fast)
+test-unit:
+	@echo "$(BLUE)⚡ Running unit tests...$(NC)"
+	@pytest -m unit -v
+
+## test-integration: Run integration tests
+test-integration:
+	@echo "$(BLUE)🔗 Running integration tests...$(NC)"
+	@pytest -m integration -v
+
+## test-smoke: Run smoke tests (quick validation)
+test-smoke:
+	@echo "$(BLUE)💨 Running smoke tests...$(NC)"
+	@pytest -m smoke -v
+
+## test-security: Run security tests
+test-security:
+	@echo "$(BLUE)🔒 Running security tests...$(NC)"
+	@pytest -m security -v
+
+## test-watch: Run tests in watch mode
+test-watch:
+	@echo "$(BLUE)👀 Running tests in watch mode...$(NC)"
+	@if command -v ptw >/dev/null 2>&1; then \
+		ptw -- --testmon; \
+	else \
+		echo "$(YELLOW)⚠️  Install pytest-watch: pip install pytest-watch$(NC)"; \
+		echo "$(YELLOW)Falling back to pytest-testmon...$(NC)"; \
+		pytest --testmon; \
+	fi
+
+## test-coverage: Generate detailed coverage report
+test-coverage:
+	@echo "$(BLUE)📊 Generating coverage report...$(NC)"
+	@pytest --cov --cov-report=html --cov-report=term-missing
+	@echo "$(GREEN)✅ Coverage report: htmlcov/index.html$(NC)"
+
+## test-coverage-xml: Generate XML coverage (for CI)
+test-coverage-xml:
+	@echo "$(BLUE)📄 Generating XML coverage...$(NC)"
+	@pytest --cov --cov-report=xml
+	@echo "$(GREEN)✅ Coverage report: coverage.xml$(NC)"
+
+## test-failed: Run only failed tests from last run
+test-failed:
+	@echo "$(BLUE)🔄 Re-running failed tests...$(NC)"
+	@pytest --lf -v
+
+## test-verbose: Run tests with verbose output
+test-verbose:
+	@echo "$(BLUE)🔊 Running tests (verbose)...$(NC)"
+	@pytest -vv
+
+## test-parallel: Run tests in parallel
+test-parallel:
+	@echo "$(BLUE)⚡ Running tests in parallel...$(NC)"
+	@if command -v pytest-xdist >/dev/null 2>&1; then \
+		pytest -n auto; \
+	else \
+		echo "$(YELLOW)⚠️  Install pytest-xdist: pip install pytest-xdist$(NC)"; \
 		pytest; \
 	fi
+
+## test-profile: Profile test execution time
+test-profile:
+	@echo "$(BLUE)⏱️  Profiling test execution...$(NC)"
+	@pytest --durations=10
+
+## test-clean: Clean test cache and coverage files
+test-clean:
+	@echo "$(BLUE)🧹 Cleaning test artifacts...$(NC)"
+	@rm -rf .pytest_cache htmlcov .coverage coverage.xml
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@echo "$(GREEN)✅ Test artifacts cleaned$(NC)"
 
 ## lint: Run linting
 lint:

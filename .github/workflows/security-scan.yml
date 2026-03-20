@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main, master, develop]
   schedule:
-    - cron: '0 2 * * 1'  # Toda segunda-feira às 2h
+    - cron: "0 2 * * 1" # Toda segunda-feira às 2h
   workflow_dispatch:
 
 jobs:
@@ -52,7 +52,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install Bandit
         run: pip install bandit[toml]
@@ -83,7 +83,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install Safety
         run: pip install safety
@@ -107,7 +107,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install ansible-lint
         run: pip install ansible-lint
@@ -129,16 +129,16 @@ jobs:
       - name: Run Trivy on Docker Compose Templates
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'config'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          scan-type: "config"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
 
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
 
   checkov:
     name: Checkov IaC Scanner

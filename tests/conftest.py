@@ -78,3 +78,162 @@ def make_project_config(tmp_path: Path):
         )
 
     return _factory
+
+
+# ---------------------------------------------------------------------------
+# Common Test Fixtures
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def temp_file(tmp_path: Path):
+    """
+    Factory fixture to create temporary files for testing.
+    
+    Usage:
+        def test_foo(temp_file):
+            test_file = temp_file("test.txt", "content")
+    """
+    def _factory(filename: str, content: str = "") -> Path:
+        file_path = tmp_path / filename
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.write_text(content)
+        return file_path
+    return _factory
+
+
+@pytest.fixture
+def mock_env(monkeypatch):
+    """
+    Factory fixture to set environment variables.
+    
+    Usage:
+        def test_foo(mock_env):
+            mock_env({"KEY": "value", "DEBUG": "true"})
+    """
+    def _factory(env_vars: dict[str, str]):
+        for key, value in env_vars.items():
+            monkeypatch.setenv(key, value)
+    return _factory
+
+
+@pytest.fixture
+def capture_logs(caplog):
+    """
+    Fixture to capture and assert on log messages.
+    
+    Usage:
+        def test_foo(capture_logs):
+            with capture_logs("INFO") as logs:
+                logger.info("test message")
+            assert "test message" in logs
+    """
+    import logging
+    from contextlib import contextmanager
+    
+    @contextmanager
+    def _capture(level: str = "INFO"):
+        caplog.set_level(getattr(logging, level))
+        yield caplog.text
+    
+    return _capture
+
+
+@pytest.fixture
+def mock_subprocess(monkeypatch):
+    """
+    Mock subprocess.run calls for testing.
+    
+    Usage:
+        def test_foo(mock_subprocess):
+            mock_subprocess(stdout="output", stderr="", returncode=0)
+    """
+    from unittest.mock import Mock
+    import subprocess
+    
+    def _factory(stdout: str = "", stderr: str = "", returncode: int = 0):
+        mock_result = Mock()
+        mock_result.stdout = stdout
+        mock_result.stderr = stderr
+        mock_result.returncode = returncode
+        
+        mock_run = Mock(return_value=mock_result)
+        monkeypatch.setattr(subprocess, "run", mock_run)
+        return mock_run
+    
+    return _factory
+
+
+@pytest.fixture
+def sample_config_file(temp_file):
+    """
+    Create a sample configuration file for testing.
+    
+    Returns:
+        Path to the config file
+    """
+    config_content = """
+    [project]
+    name = "test-project"
+    version = "1.0.0"
+    
+    [settings]
+    debug = true
+    """
+    return temp_file("config.ini", config_content)
+
+
+@pytest.fixture(autouse=True)
+def isolate_tests(tmp_path, monkeypatch):
+    """
+    Auto-use fixture to isolate tests from system environment.
+    
+    - Sets temporary HOME/TMPDIR
+    - Prevents accidental modifications to real files
+    """
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("TMPDIR", str(tmp_path / "tmp"))
+    (tmp_path / "home").mkdir(exist_ok=True)
+    (tmp_path / "tmp").mkdir(exist_ok=True)
+
+
+# ---------------------------------------------------------------------------
+# Performance Fixtures
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def benchmark_timer():
+    """
+    Simple benchmark timer for performance tests.
+    
+    Usage:
+        def test_performance(benchmark_timer):
+            with benchmark_timer() as timer:
+                # code to benchmark
+            assert timer.elapsed < 1.0  # seconds
+    """
+    import time
+    from contextlib import contextmanager
+    
+    class Timer:
+        def __init__(self):
+            self.start_time = None
+            self.end_time = None
+            self.elapsed = None
+        
+        def __enter__(self):
+            self.start_time = time.perf_counter()
+            return self
+        
+        def __exit__(self, *args):
+            self.end_time = time.perf_counter()
+            self.elapsed = self.end_time - self.start_time
+    
+    @contextmanager
+    def _timer():
+        timer = Timer()
+        with timer:
+            yield timer
+    
+    return _timer

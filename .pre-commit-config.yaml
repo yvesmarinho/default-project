@@ -18,7 +18,7 @@ repos:
         name: Check JSON Syntax
       - id: check-added-large-files
         name: Check Large Files
-        args: ['--maxkb=1000']
+        args: ["--maxkb=1000"]
       - id: detect-private-key
         name: Detect Private Keys
         exclude: ^\.secrets/
@@ -56,6 +56,6 @@ repos:
     hooks:
       - id: bandit
         name: Bandit Security Linter
-        args: ['-c', 'pyproject.toml']
-        additional_dependencies: ['bandit[toml]']
+        args: ["-c", "pyproject.toml"]
+        additional_dependencies: ["bandit[toml]"]
         exclude: ^tests/

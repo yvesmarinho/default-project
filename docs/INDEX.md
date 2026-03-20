@@ -158,6 +158,42 @@ a-default-project/
   - Tool recommendations (1Password, HashiCorp Vault, AWS Secrets Manager)
   - Compliance mapping (SOC2, ISO27001, LGPD)
 
+### Testing Documentation
+- **[docs/TESTING_GUIDE.md](TESTING_GUIDE.md)** - ⭐ Complete testing guide
+  - Overview of testing infrastructure (pytest, coverage, mocking)
+  - Quick start and basic commands
+  - Test organization and directory structure
+  - Writing tests (patterns, assertions, fixtures)
+  - Running tests (selection, parallel execution, markers)
+  - Code coverage configuration and targets (≥80%)
+  - Test markers (unit, integration, smoke, security, slow)
+  - Built-in and custom fixtures from conftest.py
+  - Mocking strategies (unittest.mock, pytest-mock)
+  - Best practices (isolation, descriptive names, AAA pattern)
+  - CI/CD integration with GitHub Actions
+  - Troubleshooting common issues
+
+- **[tests/test_example.py](../tests/test_example.py)** - Example test patterns
+  - Unit test examples with proper structure
+  - Fixture usage demonstrations
+  - Mocking and patching patterns
+  - Parametrized tests
+  - Integration test examples
+  - Performance testing with benchmarks
+  - Security test patterns
+
+- **[tests/conftest.py](../tests/conftest.py)** - Shared test fixtures
+  - Common fixtures (temp_file, mock_env, mock_subprocess)
+  - Benchmark timer for performance tests
+  - Test isolation fixtures
+  - Logging capture utilities
+
+- **[pytest.ini](../pytest.ini)** - Pytest configuration
+  - Test discovery settings
+  - Coverage configuration (≥80% target)
+  - Test markers definition
+  - Output formatting
+
 ### Session Documentation
 - **[docs/SESSIONS/2026-01-27/](SESSIONS/2026-01-27/)** - Phase 1: Foundation
   - SESSION_RECOVERY - Complete session details
