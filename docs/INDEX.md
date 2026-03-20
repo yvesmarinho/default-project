@@ -258,6 +258,7 @@ a-default-project/
 | `scripts/lib/git.py` | git init + remote add | ✅ Criado |
 | `scripts/lib/templates.py` | Gera `.copilot-rules-[projeto].md` | ✅ Criado |
 | `scripts/lib/vscode.py` | Gera `mcp.json`, `settings.json`, `extensions.json` | ✅ Criado |
+| `scripts/validate-docs-links.sh` | ✅ **CRIADO** — Validate markdown links, suggest fixes | ✅ Sprint 3 |
 | `scripts/manage.py` | TUI Python | 🟡 Legado |
 | `scripts/init-new-project.sh` | Initialize new project | ⚠ Legado (absorvido) |
 | `scripts/setup-project-links.sh` | Setup symlinks | ⚠ Legado (absorvido) |
@@ -520,6 +521,11 @@ make dev
 - [Main README](../README.md)
 - [Makefile Guide](MAKEFILE.md)
 - [Session Reports](SESSIONS/2026-01-27/)
+- [README Best Practices](README_BEST_PRACTICES.md) - Comprehensive guide to writing excellent READMEs
+- [Troubleshooting Guide](TROUBLESHOOTING.md) - Solutions to common issues across 8 categories
+- [Conventions](CONVENTIONS.md) - Technical standards for code, testing, git, security, automation
+- [Security Documentation](#security-documentation) - See Security Documentation section below
+- [Testing Documentation](#testing-documentation) - See Testing Documentation section below
 
 ### Key Commands
 - `make help` - View all commands

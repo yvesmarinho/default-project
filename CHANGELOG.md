@@ -9,6 +9,134 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+#### Sprint 3: Documentation P1 (ACTION_PLAN_TO_10 — Mar 2026)
+- `docs/TROUBLESHOOTING.md` — comprehensive troubleshooting guide:
+  - 8 major sections covering all common issues
+  - 24 specific problems with symptoms and multiple solutions each
+  - Categories: Setup & Initialization (symlinks, project init), Git & Version Control (pre-commit, Gitleaks, large files), Python Environment (pytest imports, Black/Ruff conflicts, MyPy errors), Testing (fixtures, coverage, performance), Security & Pre-commit (secrets committed, Bandit warnings, Ansible Vault), Documentation & Links (broken links, rendering), Scripts & Automation (Makefile, permissions, environment variables), VS Code Integration (settings, interpreter)
+  - Additional resources: useful commands reference, log locations, documentation index
+- `docs/CONVENTIONS.md` — technical standards and conventions guide:
+  - 10 comprehensive sections defining project standards
+  - Code Structure: Python (PEP 8, Black 88 chars, Python 3.12+), Markdown (ATX headers, line 80), YAML (2 spaces), Shell (bash, shellcheck)
+  - Naming Conventions: comprehensive table with 15+ patterns (snake_case, PascalCase, kebab-case)
+  - Python Standards: Type hints (required for public APIs), Docstrings (Google style), Imports (3 groups), Error handling (specific exceptions), Logging (module logger, 5 levels)
+  - Testing Standards: Organization (AAA pattern), Coverage (≥80% target), Markers (9 markers: unit/integration/slow/smoke/security/skip_ci/requires_docker/requires_ssh/requires_network), Fixtures (shared conftest, 4 scopes)
+  - Git Conventions: Conventional Commits (9 types with scopes), Branch naming (NNN-description, fix-, security-), PR templates
+  - Documentation Standards: README structure (11 sections), Inline docs (explain WHY), Session docs (4 files per session)
+  - Security Standards: Credentials (.secrets/ directory), Input validation, File permissions (600 secrets, 700 scripts)
+  - File Organization: Root directory structure, .gitignore patterns
+  - Automation Standards: Makefile (self-documenting help), Script headers (comprehensive template)
+  - Enforcement Tools: Black, Ruff, MyPy, Bandit, pytest, pre-commit, Gitleaks, shellcheck
+- `scripts/validate-docs-links.sh` — automated markdown link validation:
+  - Extract markdown links: [text](url) and [ref]: url patterns
+  - Validate relative/absolute links (skip external URLs: http/https/ftp/mailto)
+  - Check file/directory existence with path normalization
+  - Suggest fixes: find similar filenames, show relative paths
+  - Summary: counters for files/links/broken with color-coded output (RED/GREEN/YELLOW/BLUE)
+  - Options: --fix (suggestions), --help, --verbose
+  - Exclusions: .git, node_modules, .venv, venv
+  - Exit codes: 0 (valid), 1 (broken), 2 (invalid usage)
+
+#### Sprint 2: Testing P0 (ACTION_PLAN_TO_10 — Mar 2026)
+- `pytest.ini` — comprehensive pytest configuration:
+  - 70 lines with markers, verbose output, coverage settings
+  - 9 custom markers: unit, integration, slow, smoke, security, skip_ci, requires_docker, requires_ssh, requires_network
+  - Coverage configuration: ≥80% threshold, term-missing, --cov-report=html
+  - Discovery patterns: test_*.py and *_test.py
+  - Python warnings and doctest integration
+- `tests/conftest.py` — expanded shared fixtures (150+ lines):
+  - 7 new fixtures: temp_file, temp_dir, mock_env, monkeypatch_dict, capture_logs, benchmark_timer, project_root
+  - Each fixture with docstring and practical examples
+  - Scopes: function (default), module, session
+  - Integration with existing fixtures
+- `tests/test_example.py` — comprehensive test examples (320+ lines):
+  - Demonstrates all testing patterns and best practices
+  - Sections: Fixtures usage, Parametrization (pytest.mark.parametrize with 3+ cases), Mocking (unittest.mock, pytest-mock), Exception testing (pytest.raises with match), Markers (all 9 custom markers with examples), AAA pattern (Arrange-Act-Assert), Coverage edge cases, Integration tests, Performance/Benchmark tests
+  - Real-world scenarios for each pattern
+  - Comments explaining best practices
+- `docs/TESTING_GUIDE.md` — complete testing guide (650+ lines):
+  - 12 comprehensive sections
+  - Quick Start: installation, basic commands, first test
+  - Testing Philosophy: AAA pattern, test isolation, coverage goals
+  - Test Organization: directory structure, naming conventions, test classes
+  - Fixtures Deep Dive: built-in fixtures, custom fixtures, scopes, parametrization
+  - Markers Explained: all 9 markers with usage examples and CLI commands
+  - Mocking Strategies: unittest.mock vs pytest-mock, patching, side effects
+  - Coverage Requirements: targets (≥80% overall, ≥90% critical, ≥95% utils), measurement, reports
+  - Running Tests: 13 Makefile commands, pytest CLI, filtering, parallel execution
+  - CI/CD Integration: GitHub Actions examples, status badges
+  - Debugging Tests: pytest options (-vv, --pdb, --lf, --sw), logging
+  - Best Practices: 12 guidelines (one assert per test, descriptive names, test data builders, avoid test interdependence)
+  - Troubleshooting: 8 common issues with solutions
+- `Makefile` — 13 new testing commands (90+ lines):
+  - test: run all tests with coverage
+  - test-unit / test-integration / test-smoke / test-security: filtered by marker
+  - test-slow: only slow tests
+  - test-fast: exclude slow tests
+  - test-watch: continuous testing with pytest-watch
+  - test-parallel: run tests in parallel with pytest-xdist
+  - test-failed: rerun only failed tests (--lf)
+  - coverage: detailed coverage report
+  - coverage-html: generate HTML report and open in browser
+  - benchmark: run performance tests
+  - test-debug: run with --pdb for debugging
+  - Each command with colored output, emojis, helpful messages
+- `docs/INDEX.md` — added Testing Documentation section with 4 references
+
+#### Sprint 1: Security P0 (ACTION_PLAN_TO_10 — Mar 2026)
+- `.gitleaks.toml` — secret scanning configuration (60 lines):
+  - 6 rule categories: generic-api-key, aws-access-key, private-key, password-in-url, vault-token, github-token
+  - Entropy threshold: 3.5 for base64/hex detection
+  - Path allowlist: tests/, docs/, .example files
+  - Comprehensive regex patterns for secret detection
+- `.pre-commit-config.yaml` — pre-commit hooks (70 lines):
+  - 7 repos with multiple hooks: pre-commit-hooks (8 hooks: trailing-whitespace, end-of-file-fixer, check-yaml, check-added-large-files 500KB, check-merge-conflict, check-case-conflict, mixed-line-ending, detect-private-key), gitleaks (secret scanning), shellcheck (shell script linting), black (Python formatting 88 chars), ruff (Python linting with security rules: S, flake8-bandit), mypy (type checking strict mode), bandit (Python security scanning)
+  - Security focus: secret detection, large file prevention, security linting
+  - Python 3.12+ compatibility
+- `.github/workflows/security-scan.yml` — GitHub Actions security workflow (180 lines):
+  - 7 security scanning jobs running in parallel
+  - gitleaks-scan: Secret detection with gitleaks/gitleaks-action@v2, scans full history
+  - dependency-check: Python Safety (pip-audit), Node.js audit (npm audit)
+  - bandit-scan: Python security issues with bandit, SARIF output
+  - checkov-scan: IaC security (Terraform, Docker, K8s) with bridgecrewio/checkov-action
+  - trivy-scan: Container vulnerabilities with aquasecurity/trivy-action, CRITICAL/HIGH only
+  - sast-codeql: Static analysis with github/codeql-action for Python/JavaScript
+  - All jobs upload results to GitHub Security tab (SARIF format)
+  - Triggers: push to main/develop, pull_request, schedule (weekly on Sundays 2 AM UTC)
+- `docs/ANSIBLE_VAULT_GUIDE.md` — comprehensive Ansible Vault guide (600+ lines):
+  - 8 major sections: What is Ansible Vault, When to Use, Quick Start, Encryption/Decryption, Editing Encrypted Files, Viewing Encrypted Files, Ansible Playbook Integration, Security Best Practices
+  - 15 command examples with detailed explanations
+  - Vault password management: file-based (.secrets/.vault_pass), environment variable, prompt
+  - File permissions: chmod 600 for vault password files
+  - Vault ID system: production, staging, development vaults
+  - Rekeying procedures: rotating vault passwords
+  - CI/CD integration: GitHub Actions secrets, GitLab CI variables
+  - Security best practices: 12 guidelines (never commit unencrypted secrets, use .gitignore, rotate passwords quarterly, use vault IDs per environment, audit access logs)
+  - Troubleshooting: 6 common issues with solutions
+  - Real-world examples: encrypting group_vars, playbook execution with vault
+- `docs/CREDENTIAL_ROTATION.md` — credential rotation procedures (500+ lines):
+  - 6 major sections: Overview, Why Rotate, Rotation Schedule, Rotation Procedures, Automation, Compliance & Audit
+  - Rotation schedules: Critical (quarterly), High (semi-annually), Medium (annually), Low (bi-annually)
+  - 8 detailed rotation procedures: SSH keys, API tokens, Database passwords, Ansible Vault passwords, Cloud provider credentials (AWS/GCP/Azure), SSL/TLS certificates, Service account credentials, GitHub tokens
+  - Each procedure: identification, generation, update, testing, revocation, verification (6 steps)
+  - Automation section: scripts, tools (ansible-vault rekey, aws-vault, 1Password CLI), CI/CD integration
+  - Compliance tracking: rotation log template, audit checklist, violation response
+  - Emergency rotation: breach response, incident detection, forensics
+- `pyproject.toml` — complete Python tooling configuration (140 lines):
+  - Black: line-length=88, Python 3.12+, exclude patterns
+  - Ruff: line-length=88, Python 3.12, 12 rule categories (E/F/I/N/D/UP/S/B/A/C4/SIM/RUF), ignore=["D203", "D213"], per-file-ignores for tests
+  - MyPy: strict mode, Python 3.12, ignore missing imports, no implicit optionals
+  - Bandit: exclude tests/docs, skips=["B101", "B601"]
+  - isort: Black-compatible profile, known_first_party
+  - pytest: markers, testpaths, python_files, addopts
+  - coverage: source paths, omit patterns (tests, .venv, migrations), reporting
+- `docs/INDEX.md` — added Security Documentation section with 5 references
+
+### Changed
+- `docs/INDEX.md` — restructured with 3 new sections: Security Documentation (5 items), Testing Documentation (4 items), Documentation Standards (3 items)
+
 ---
 
 ## [9.9.9] — 2026-03-14
