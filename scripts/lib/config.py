@@ -6,9 +6,14 @@ Parte do scripts/scaffold.py — Enterprise Default Project Template.
 
 from __future__ import annotations
 
+import json
+import logging
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Versão do scaffold e data de sincronização do SpecKit
@@ -23,6 +28,61 @@ SPECKIT_SYNC_DATE = "2026-03-05"
 # Caminhos padrão
 # ---------------------------------------------------------------------------
 DEFAULT_SHARED_DIR = Path.home() / "Documentos" / "DevOps" / ".copilot-shared"
+DEFAULT_TARGET_DIR = Path.home()
+
+# ---------------------------------------------------------------------------
+# Arquivo de configuração customizável
+# ---------------------------------------------------------------------------
+CONFIG_FILE = Path(__file__).parent.parent.parent / ".scaffold-config.json"
+
+
+def load_user_config() -> dict[str, Any]:
+    """
+    Carrega configurações customizadas do arquivo .scaffold-config.json.
+    
+    Retorna dict vazio se arquivo não existir ou houver erro de parse.
+    Os valores do JSON sobrescrevem os defaults hardcoded.
+    """
+    if not CONFIG_FILE.exists():
+        logger.debug("Config file not found: %s", CONFIG_FILE)
+        return {}
+    
+    try:
+        with open(CONFIG_FILE, encoding="utf-8") as f:
+            config_data = json.load(f)
+            logger.debug("Loaded config from: %s", CONFIG_FILE)
+            return config_data
+    except json.JSONDecodeError as exc:
+        logger.warning("Invalid JSON in config file %s: %s", CONFIG_FILE, exc)
+        return {}
+    except Exception as exc:
+        logger.warning("Error reading config file %s: %s", CONFIG_FILE, exc)
+        return {}
+
+
+def get_default_target_dir() -> Path:
+    """Retorna o diretório padrão onde novos projetos serão criados."""
+    config = load_user_config()
+    target_dir_str = config.get("defaults", {}).get("target_dir")
+    
+    if target_dir_str:
+        # Expandir ~ para home directory
+        expanded = os.path.expanduser(target_dir_str)
+        return Path(expanded)
+    
+    return DEFAULT_TARGET_DIR
+
+
+def get_default_shared_dir() -> Path:
+    """Retorna o diretório de arquivos compartilhados (.copilot-shared)."""
+    config = load_user_config()
+    shared_dir_str = config.get("defaults", {}).get("shared_dir")
+    
+    if shared_dir_str:
+        expanded = os.path.expanduser(shared_dir_str)
+        return Path(expanded)
+    
+    return DEFAULT_SHARED_DIR
 
 # Pós-IMP-13: apenas um arquivo copilot ativo (consolidado de 5 → 1)
 SHARED_COPILOT_FILES: list[str] = [

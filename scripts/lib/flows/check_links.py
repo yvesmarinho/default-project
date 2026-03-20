@@ -6,14 +6,14 @@ import argparse
 from pathlib import Path
 
 from .. import links
-from ..config import DEFAULT_SHARED_DIR
+from ..config import get_default_shared_dir
 from ..ui import print_final_summary
 
 
 def flow_check_links(args: argparse.Namespace) -> int:
     """Verifica status dos symlinks .copilot-* no diretório atual."""
     target = Path(args.target_dir) if args.target_dir else Path.cwd()
-    shared = Path(args.shared_dir) if args.shared_dir else DEFAULT_SHARED_DIR
+    shared = Path(args.shared_dir) if args.shared_dir else get_default_shared_dir()
 
     statuses = links.check_symlinks(target, shared)
     print_final_summary(statuses)

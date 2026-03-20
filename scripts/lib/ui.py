@@ -28,6 +28,8 @@ from .config import (
     CreatedItem,
     LinkStatus,
     ProjectConfig,
+    get_default_shared_dir,
+    get_default_target_dir,
 )
 
 console = Console()
@@ -132,8 +134,8 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         domain=domain,
         language=language,
         github_repo=overrides.get("repo") or None,
-        shared_dir=Path(overrides["shared_dir"]) if overrides.get("shared_dir") else DEFAULT_SHARED_DIR,
-        target_dir=Path(overrides["target_dir"]) if overrides.get("target_dir") else Path.home(),
+        shared_dir=Path(overrides["shared_dir"]) if overrides.get("shared_dir") else get_default_shared_dir(),
+        target_dir=Path(overrides["target_dir"]) if overrides.get("target_dir") else get_default_target_dir(),
         created_at=_iso_now(),
         extra_profiles=_parse_extra_profiles(overrides.get("extra_profiles") or "domain-only", domain),
     )
@@ -190,12 +192,12 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
 
     shared_dir_str = Prompt.ask(
         "  [cyan]Diretório compartilhado[/cyan]",
-        default=str(defaults.get("shared_dir") or DEFAULT_SHARED_DIR),
+        default=str(defaults.get("shared_dir") or get_default_shared_dir()),
     ).strip()
 
     target_dir_str = Prompt.ask(
         "  [cyan]Diretório alvo[/cyan] [dim](onde criar o projeto)[/dim]",
-        default=str(defaults.get("target_dir") or Path.home()),
+        default=str(defaults.get("target_dir") or get_default_target_dir()),
     ).strip()
 
     return ProjectConfig(
