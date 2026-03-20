@@ -2172,13 +2172,16 @@ Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode ge
 
 ## 📋 Checklist Geral de Progresso
 
-### Segurança (8/10 → 10/10)
-- [ ] Gitleaks configurado
-- [ ] Pre-commit hooks instalados
-- [ ] GitHub Action de security scan
-- [ ] Ansible Vault implementado
-- [ ] Rotação de credenciais documentada
-- [ ] SAST integrado (Bandit/Safety/Checkov)
+### Segurança (8/10 → 10/10) ✅ CONCLUÍDO - 2026-03-20
+- [x] Gitleaks configurado (.gitleaks.toml com regras abrangentes)
+- [x] Pre-commit hooks instalados (.pre-commit-config.yaml com 7 repos)
+- [x] GitHub Action de security scan (security-scan.yml com 7 jobs)
+- [x] Ansible Vault implementado (docs/ANSIBLE_VAULT_GUIDE.md)
+- [x] Rotação de credenciais documentada (docs/CREDENTIAL_ROTATION.md)
+- [x] SAST integrado (Bandit/Safety/Checkov em pyproject.toml + GHA)
+
+**Sprint 1 (Security P0) Completado**: 6/6 tarefas | 8 arquivos modificados | 1526 linhas adicionadas
+**Commit**: 9a13f51 - feat(security): Complete Sprint 1 (Security P0) - Template hardening
 
 ### Código Python (9/10 → 10/10)
 - [ ] pytest.ini configurado
