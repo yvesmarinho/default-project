@@ -1,7 +1,7 @@
 ---
 agentName: session-manager
 description: Session initialization and project organization specialist
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Session Manager Agent
@@ -24,6 +24,7 @@ Invoke this agent when:
 - `/init-session` or `/begin-work`
 - `/recover-context`
 - `/first-time-setup`
+- `/session-end` or `/end-session`
 
 ## Core Responsibilities
 
@@ -50,6 +51,14 @@ Invoke this agent when:
 - Create session directories: `docs/SESSIONS/YYYY-MM-DD/`
 - Generate session files: `DAILY_ACTIVITIES_*.md`, `SESSION_REPORT_*.md`, `FINAL_STATUS_*.md`
 - Create GitHub branch for current work
+
+### 5. Session End & Closure
+- Update all session documentation with final state
+- Validate and update project rules if needed
+- Perform final security scan
+- Organize loose files into proper directories
+- Create session end commit with detailed summary
+- Update git repository
 
 ## Tool Preferences
 
@@ -170,6 +179,106 @@ Invoke this agent when:
 
 7. **Create Initial Session Docs** (same as recurring)
 
+### Session End Workflow
+
+1. **Use Pylance Tools**
+   - Prefer `mcp_pylance_mcp_s_pylanceRunCodeSnippet` for file operations
+   - Use `mcp_pylance_mcp_s_pylanceWorkspaceUserFiles` for file discovery
+   - Use native tools for reading/searching
+
+2. **Update Session Documentation**
+   - Finalize `docs/SESSIONS/[YYYY-MM-DD]/DAILY_ACTIVITIES_[date].md`
+     - Add activity summary section
+     - Complete all incomplete activity entries
+     - Add final status indicators (✅/🔵/❌)
+   - Complete `docs/SESSIONS/[YYYY-MM-DD]/SESSION_REPORT_[date].md`
+     - Update summary with final achievements
+     - Add technical details of all work completed
+     - Document decisions made during session
+     - Update file change list (created/modified/deleted)
+   - Finalize `docs/SESSIONS/[YYYY-MM-DD]/FINAL_STATUS_[date].md`
+     - Update header with final git commit hash
+     - Complete activity list with all tasks
+     - Update artifacts table with all files
+     - Add context for next session recovery
+
+3. **Update Project Rules (if needed)**
+   - Review if any new P0/P1 rules emerged from session work
+   - Update `.copilot-rules.md` incrementally (append, never overwrite)
+   - Update `.copilot-strict-rules.md` if strict rules changed
+   - Update `.copilot-strict-enforcement.md` if enforcement patterns changed
+   - All updates are incremental (preserve existing content)
+
+4. **Update Core Documentation**
+   - Update `README.md` incrementally:
+     - Add new features/capabilities to appropriate sections
+     - Update version numbers if applicable
+     - Add new usage examples if relevant
+   - Update `docs/INDEX.md` incrementally:
+     - Update "Last Updated" date and session reference
+     - Add new files/directories to structure
+     - Add new session to session list with summary
+     - Update core files table with new scripts/tools
+   - Update `docs/TODO.md` incrementally:
+     - Mark completed tasks with `[x]`
+     - Add new tasks discovered during session
+     - Update task priorities based on session findings
+     - Never remove completed tasks (keep history)
+
+5. **Final Security Scan**
+   - Scan for credential patterns (same as session start)
+   - Move any sensitive files discovered to `.secrets/`
+   - Verify `.secrets/` in `.gitignore`
+   - Report final security status: `🟢 LIMPO` or `🔴 ATENÇÃO`
+
+6. **Project Organization**
+   - Scan root directory for misplaced files
+   - Move files to correct locations:
+     - Python scripts → `scripts/`
+     - Documentation → `docs/`
+     - Source code → `src/`
+     - Tests → `tests/`
+   - Use Python stdlib (shutil, pathlib) with logging
+   - Execute via `mcp_pylance_mcp_s_pylanceRunCodeSnippet`
+
+7. **Git Repository Update**
+   - Stage all documentation updates: `git add docs/`
+   - Create commit message file with detailed session summary:
+     ```
+     docs(sessão): encerramento YYYY-MM-DD
+
+     Session YYYY-MM-DD - Complete
+     - [List key achievements]
+     - [List files created/modified]
+     - [List decisions made]
+
+     Documentation Status:
+     ✅ All activities completed
+     ✅ All tasks updated in TODO
+     ✅ Security scan clean
+     ✅ Project organized
+     ✅ Ready for next session
+     ```
+   - Commit using file: `git commit -F /tmp/commit-session-end-[date].txt`
+   - Optionally push if requested: `git push`
+
+8. **Session Closure Report**
+   - Display summary:
+     ```
+     🏁 Session YYYY-MM-DD Closed
+
+     ✅ Documentation updated:
+        - DAILY_ACTIVITIES: [N] activities logged
+        - SESSION_REPORT: [N] decisions documented
+        - FINAL_STATUS: Ready for recovery
+        - README/INDEX/TODO: Updated
+
+     ✅ Security: 🟢 LIMPO
+     ✅ Organization: [N] files organized
+     ✅ Git: [N] commits created
+     ✅ Ready for next session
+     ```
+
 ## File Organization Rules
 
 ### Directory Structure
@@ -280,6 +389,15 @@ A session is properly initialized when:
 - ✅ Project structure organized
 - ✅ Ready to receive work assignments
 
+A session is properly closed when:
+- ✅ All session documentation finalized (DAILY_ACTIVITIES, SESSION_REPORT, FINAL_STATUS)
+- ✅ Core documentation updated (README, INDEX, TODO)
+- ✅ Project rules updated if needed (incremental)
+- ✅ Final security scan completed
+- ✅ Project structure organized (no loose files)
+- ✅ Git commit created with session summary
+- ✅ Context preserved for next session recovery
+
 ## Related Agents
 
 This agent works well with:
@@ -300,8 +418,12 @@ Agent: [Loads previous session state and reports pending tasks]
 
 User: /security-scan
 Agent: [Performs credential and sensitive file scan only]
+
+User: /session-end
+Agent: [Executes full session closure workflow with documentation updates]
 ```
 
 ## Version History
 
+- **1.1.0** (2026-03-20): Added session end workflow with documentation updates, security scan, and git commit automation
 - **1.0.0** (2026-03-20): Initial agent creation with full session management workflow
