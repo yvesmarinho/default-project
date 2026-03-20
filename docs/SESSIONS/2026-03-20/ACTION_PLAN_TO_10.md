@@ -20,8 +20,9 @@
 | 6. Ansible | 9/10 | 10/10 | -1 | P1 |
 | 7. Docker Templates | 10/10 | 10/10 | 0 | N/A |
 | 8. Segurança | 8/10 | 10/10 | -2 | P0 |
+| 9. Melhorias de Estrutura | N/A | ⭐ Bônus | 0 | P2 |
 
-**Total de Ações**: 23 ações distribuídas em 4 categorias
+**Total de Ações**: 27 ações distribuídas em 5 categorias (23 principais + 4 melhorias estruturais)
 
 ---
 
@@ -1787,6 +1788,292 @@
 
 ---
 
+## 🟢 CATEGORIA 9: Melhorias de Estrutura (P2)
+
+**Prioridade**: P2 (Média) | **Esforço Estimado**: 1-2h
+
+### Contexto
+
+Atualmente, scripts e processos utilizam `/tmp/` do sistema Linux, o que pode gerar:
+- ❌ Necessidade de permissões de sistema
+- ❌ Conflitos com outros processos
+- ❌ Arquivos temporários não organizados
+- ❌ Dificuldade de limpeza e auditoria
+
+**Solução**: Criar pasta `tmp/` local no projeto.
+
+---
+
+### Ações Necessárias
+
+#### 9.1 Criar Estrutura de tmp/ Local (P2)
+**Descrição**: Implementar pasta tmp/ no projeto para arquivos temporários
+
+**Tarefas**:
+
+1. Criar estrutura de diretórios:
+   ```bash
+   mkdir -p tmp/{logs,cache,downloads,commits}
+   touch tmp/.gitkeep
+   ```
+
+2. Atualizar `.gitignore`:
+   ```gitignore
+   # Temporary files (local)
+   tmp/*
+   !tmp/.gitkeep
+   ```
+
+3. Criar `tmp/README.md`:
+   ```markdown
+   # Diretório de Arquivos Temporários
+   
+   Este diretório é usado para armazenar arquivos temporários do projeto.
+   
+   ## Estrutura
+   
+   - `logs/` - Logs temporários de execução
+   - `cache/` - Cache de operações
+   - `downloads/` - Downloads temporários
+   - `commits/` - Mensagens de commit temporárias
+   
+   ## Limpeza
+   
+   Arquivos neste diretório são **automaticamente limpos** ao final de cada sessão.
+   
+   ## Uso
+   
+   Em scripts Python:
+   ```python
+   from pathlib import Path
+   
+   TMP_DIR = Path(__file__).parent / "tmp"
+   TMP_DIR.mkdir(exist_ok=True)
+   
+   # Usar tmp/ local em vez de /tmp/
+   temp_file = TMP_DIR / "commits" / "commit_message.txt"
+   temp_file.write_text("feat: nova feature")
+   ```
+   
+   Em scripts Bash:
+   ```bash
+   PROJECT_ROOT=$(git rev-parse --show-toplevel)
+   TMP_DIR="${PROJECT_ROOT}/tmp"
+   
+   # Usar tmp/ local em vez de /tmp/
+   echo "feat: nova feature" > "${TMP_DIR}/commits/commit_message.txt"
+   ```
+   ```
+
+**Critério de Sucesso**: ✅ Estrutura tmp/ criada e documentada
+
+**Tempo estimado**: 15 min
+
+---
+
+#### 9.2 Implementar Script de Limpeza Automática (P2)
+**Descrição**: Criar script para limpar tmp/ no encerramento de sessão
+
+**Tarefas**:
+
+1. Criar `scripts/cleanup-tmp.sh`:
+   ```bash
+   #!/usr/bin/env bash
+   # cleanup-tmp.sh - Limpa arquivos temporários do projeto
+   
+   set -euo pipefail
+   
+   PROJECT_ROOT=$(git rev-parse --show-toplevel)
+   TMP_DIR="${PROJECT_ROOT}/tmp"
+   
+   echo "🧹 Limpando diretório tmp/..."
+   
+   if [[ ! -d "$TMP_DIR" ]]; then
+       echo "⚠️  Diretório tmp/ não existe, criando..."
+       mkdir -p "${TMP_DIR}"/{logs,cache,downloads,commits}
+       touch "${TMP_DIR}/.gitkeep"
+       exit 0
+   fi
+   
+   # Contar arquivos antes
+   FILES_BEFORE=$(find "$TMP_DIR" -type f ! -name '.gitkeep' | wc -l)
+   
+   # Limpar todos arquivos exceto .gitkeep
+   find "$TMP_DIR" -type f ! -name '.gitkeep' -delete
+   
+   # Limpar diretórios vazios
+   find "$TMP_DIR" -type d -empty -not -path "$TMP_DIR" -delete
+   
+   # Recriar estrutura
+   mkdir -p "${TMP_DIR}"/{logs,cache,downloads,commits}
+   
+   # Contar arquivos depois
+   FILES_AFTER=$(find "$TMP_DIR" -type f ! -name '.gitkeep' | wc -l)
+   FILES_REMOVED=$((FILES_BEFORE - FILES_AFTER))
+   
+   echo "✅ Limpeza concluída: ${FILES_REMOVED} arquivos removidos"
+   echo "📊 Total de arquivos temporários: ${FILES_AFTER}"
+   ```
+
+2. Tornar executável:
+   ```bash
+   chmod +x scripts/cleanup-tmp.sh
+   ```
+
+3. Adicionar ao Session Manager Agent (`.github/agents/session-manager.agent.md`):
+   ```markdown
+   **Step 7: Cleanup Temporary Files**
+   - Execute: `./scripts/cleanup-tmp.sh`
+   - Verify: `tmp/` directory is clean
+   - Log: Files removed count
+   ```
+
+**Critério de Sucesso**: ✅ Script de limpeza funcional e integrado ao Session Manager
+
+**Tempo estimado**: 30 min
+
+---
+
+#### 9.3 Atualizar Scripts Existentes (P2)
+**Descrição**: Migrar scripts que usam `/tmp/` para usar `./tmp/`
+
+**Tarefas**:
+
+1. Identificar scripts que usam `/tmp/`:
+   ```bash
+   grep -r "/tmp/" scripts/ ansible/ --include="*.sh" --include="*.py"
+   ```
+
+2. Atualizar cada script encontrado:
+   
+   **Antes**:
+   ```bash
+   echo "feat: nova feature" > /tmp/commit.txt
+   git commit -F /tmp/commit.txt
+   ```
+   
+   **Depois**:
+   ```bash
+   PROJECT_ROOT=$(git rev-parse --show-toplevel)
+   TMP_DIR="${PROJECT_ROOT}/tmp"
+   echo "feat: nova feature" > "${TMP_DIR}/commits/commit.txt"
+   git commit -F "${TMP_DIR}/commits/commit.txt"
+   ```
+
+3. Atualizar `scripts/lib/` (se houver funções auxiliares):
+   ```python
+   # scripts/lib/paths.py
+   from pathlib import Path
+   
+   PROJECT_ROOT = Path(__file__).parent.parent.parent
+   TMP_DIR = PROJECT_ROOT / "tmp"
+   
+   def get_tmp_file(subdir: str, filename: str) -> Path:
+       """Retorna caminho para arquivo temporário."""
+       tmp_path = TMP_DIR / subdir
+       tmp_path.mkdir(parents=True, exist_ok=True)
+       return tmp_path / filename
+   ```
+
+4. Atualizar documentação:
+   - Adicionar seção em `docs/CONVENTIONS.md`:
+     ```markdown
+     ## Arquivos Temporários
+     
+     **SEMPRE** usar `./tmp/` em vez de `/tmp/`:
+     - ✅ `./tmp/commits/message.txt`
+     - ❌ `/tmp/commit.txt`
+     
+     **Motivos**:
+     - Sem necessidade de permissões de sistema
+     - Organização por propósito (logs, cache, downloads)
+     - Limpeza automática no encerramento de sessão
+     - Auditoria facilitada
+     ```
+
+**Critério de Sucesso**: ✅ Todos scripts migrados para usar `./tmp/`
+
+**Tempo estimado**: 30 min
+
+---
+
+#### 9.4 Adicionar Validação de tmp/ (P2)
+**Descrição**: Garantir que tmp/ está sempre disponível e limpo
+
+**Tarefas**:
+
+1. Criar `scripts/validate-tmp.sh`:
+   ```bash
+   #!/usr/bin/env bash
+   # validate-tmp.sh - Valida estrutura de tmp/
+   
+   set -euo pipefail
+   
+   PROJECT_ROOT=$(git rev-parse --show-toplevel)
+   TMP_DIR="${PROJECT_ROOT}/tmp"
+   
+   echo "🔍 Validando estrutura tmp/..."
+   
+   # Verificar se existe
+   if [[ ! -d "$TMP_DIR" ]]; then
+       echo "❌ Diretório tmp/ não existe"
+       exit 1
+   fi
+   
+   # Verificar subdiretorios
+   REQUIRED_DIRS=("logs" "cache" "downloads" "commits")
+   
+   for dir in "${REQUIRED_DIRS[@]}"; do
+       if [[ ! -d "${TMP_DIR}/${dir}" ]]; then
+           echo "⚠️  Faltando: tmp/${dir}"
+           mkdir -p "${TMP_DIR}/${dir}"
+           echo "✅ Criado: tmp/${dir}"
+       fi
+   done
+   
+   # Verificar .gitkeep
+   if [[ ! -f "${TMP_DIR}/.gitkeep" ]]; then
+       echo "⚠️  Faltando: tmp/.gitkeep"
+       touch "${TMP_DIR}/.gitkeep"
+       echo "✅ Criado: tmp/.gitkeep"
+   fi
+   
+   # Contar arquivos
+   FILE_COUNT=$(find "$TMP_DIR" -type f ! -name '.gitkeep' | wc -l)
+   
+   echo "✅ Estrutura tmp/ válida"
+   echo "📊 Total de arquivos temporários: ${FILE_COUNT}"
+   ```
+
+2. Adicionar validação ao Session Manager Agent (step de inicialização):
+   ```markdown
+   **Step 2: Validate Project Structure**
+   - Execute: `./scripts/validate-tmp.sh`
+   - Ensure: tmp/ structure is valid
+   ```
+
+**Critério de Sucesso**: ✅ Validação automática de tmp/ no início de cada sessão
+
+**Tempo estimado**: 15 min
+
+---
+
+### ✅ Checklist de Conclusão: Melhorias de Estrutura
+
+- [ ] Estrutura tmp/ criada (logs, cache, downloads, commits)
+- [ ] tmp/ adicionado ao .gitignore (exceto .gitkeep)
+- [ ] tmp/README.md criado com documentação
+- [ ] Script cleanup-tmp.sh implementado
+- [ ] Script validate-tmp.sh implementado
+- [ ] Scripts migrados de /tmp/ para ./tmp/
+- [ ] docs/CONVENTIONS.md atualizado com regras de tmp/
+- [ ] Session Manager Agent atualizado (cleanup + validation)
+- [ ] Testes de limpeza automática executados
+
+**Resultado Esperado**: Estrutura mais organizada, segura e sem dependência de permissões de sistema
+
+---
+
 ## 🎯 Resumo Executivo
 
 ### Priorização de Ações
@@ -1795,7 +2082,7 @@
 |-----------|-------|---------|---------|
 | **P0 (Crítico)** | Testes Python + Segurança | 14-20h | +2 pontos |
 | **P1 (Alta)** | Documentação + Ansible | 10-14h | +2 pontos |
-| **P2 (Média)** | Melhorias opcionais | 8-12h | Qualidade geral |
+| **P2 (Média)** | Melhorias opcionais + Estrutura | 9-13h | Qualidade geral |
 
 ### Roadmap Sugerido
 
@@ -1842,6 +2129,16 @@
 
 ---
 
+#### Sprint 5: Melhorias de Estrutura (P2)
+**Duração**: 1-2 dias
+- 9.1 Configurar pasta `tmp/` no projeto
+- 9.2 Adicionar limpeza automática no encerramento de sessão
+- 9.3 Atualizar scripts para usar `./tmp/` em vez de `/tmp/`
+
+**Resultado**: Estrutura mais segura e sem necessidade de permissões de sistema ✅
+
+---
+
 ### Estimativa Total
 
 | Categoria | Esforço | Dependências |
@@ -1850,9 +2147,10 @@
 | Python | 8-12h | Nenhuma |
 | Documentação | 4-6h | Nenhuma |
 | Ansible | 6-8h | Nenhuma |
-| **TOTAL** | **24-34h** | Ações independentes |
+| Estrutura (Melhorias) | 1-2h | Nenhuma |
+| **TOTAL** | **25-36h** | Ações independentes |
 
-**Tempo médio**: ~30 horas (~4 semanas em part-time, ~1 semana full-time)
+**Tempo médio**: ~31 horas (~4 semanas em part-time, ~1 semana full-time)
 
 ---
 
@@ -1905,6 +2203,13 @@
 - [ ] Validação de playbooks existentes
 - [ ] Role docker_management criada
 - [ ] Testes Molecule (opcional)
+
+### Melhorias de Estrutura (P2)
+- [ ] Pasta tmp/ criada no projeto
+- [ ] Script de limpeza automática implementado
+- [ ] Scripts atualizados para usar ./tmp/
+- [ ] Documentação sobre uso de tmp/ local
+- [ ] .gitignore atualizado para incluir tmp/
 
 ---
 
