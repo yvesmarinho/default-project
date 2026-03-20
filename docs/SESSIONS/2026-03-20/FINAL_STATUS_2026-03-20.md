@@ -79,7 +79,7 @@
 ## Contexto para Recuperação
 
 - **Agente criado**: Session Manager v1.1.0 pronto para uso via `/session-start` e `/session-end`
-- **Workflows documentados**: 
+- **Workflows documentados**:
   - Recurring start (7 passos)
   - First-time setup (7 passos)
   - Session end (8 passos)
