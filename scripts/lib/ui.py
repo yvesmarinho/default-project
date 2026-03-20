@@ -30,6 +30,7 @@ from .config import (
     ProjectConfig,
     get_default_shared_dir,
     get_default_target_dir,
+    load_user_config,
 )
 
 console = Console()
@@ -100,9 +101,16 @@ def collect_project_info(ci_mode: bool = False, **overrides) -> ProjectConfig:
     - Campos obrigatórios ausentes levantam ValueError
     - Campos opcionais usam defaults se ausentes
     """
+    # Carregar defaults do JSON e mesclar com overrides
+    user_config = load_user_config()
+    json_defaults = user_config.get("defaults", {})
+    
+    # Mesclar: overrides (CLI) têm prioridade sobre JSON
+    merged_defaults = {**json_defaults, **overrides}
+    
     if ci_mode:
-        return _collect_ci(overrides)
-    return _collect_interactive(overrides)
+        return _collect_ci(merged_defaults)
+    return _collect_interactive(merged_defaults)
 
 
 def _collect_ci(overrides: dict) -> ProjectConfig:
