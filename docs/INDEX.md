@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-20 🏁 Encerrada
+**Last Updated**: 2026-03-21 ▶️ Em andamento
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-20 — Session Manager Agent v1.0.0 criado — automação de workflow de sessão
+**Last Session**: 2026-03-21 — Session Manager Agent tested in production — first automated session
 
 ---
 
@@ -73,7 +73,8 @@ a-default-project/
         ├── 2026-03-08/          # IMP-29..32 ✅ + Homologação + Plano IMP-33..44 (encerrada)
         ├── 2026-03-14/          # IMP-46 ✅ (testes integração estrutura+AppSec) + security/CI fixes (encerrada)
         ├── 2026-03-16/          # fix(session-start): MCP check via arquivo + projeto teste enterprise-infra-docker (encerrada)
-        └── 2026-03-20/          # Session Manager Agent v1.0.0 criado — automação de workflow de sessão (encerrada)
+        ├── 2026-03-20/          # Session Manager Agent v1.0.0 criado — automação de workflow de sessão (encerrada)
+        └── 2026-03-21/          # Session Manager Agent tested in production — first automated session (em andamento)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão

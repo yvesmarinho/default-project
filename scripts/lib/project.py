@@ -555,7 +555,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
 
     # --- Padrões glob de arquivos SpecKit a copiar ---
     speckit_globs = [
-        (".github/agents",                "speckit.*.agent.md"),
+        (".github/agents",                "*.agent.md"),
         (".github/prompts",               "speckit.*.prompt.md"),
         (".github/prompts",               "session-*.prompt.md"),
         (".github/ISSUE_TEMPLATE",        "*.md"),

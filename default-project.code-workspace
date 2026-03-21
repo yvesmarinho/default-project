@@ -3,6 +3,9 @@
     {
       "name": "Enterprise Default Project Template",
       "path": "."
+    },
+    {
+      "path": "../enterprise-update-lab-n8n"
     }
   ],
   "settings": {
