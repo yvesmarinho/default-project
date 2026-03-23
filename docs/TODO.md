@@ -46,7 +46,6 @@
   - Adicionada propriedade `project_path` ao ProjectConfig
   - 18 arquivos corrigidos: `target_dir` → `project_path`
   - Script de limpeza criado: `scripts/cleanup-wrong-scaffold.py`
-  - Validação completa: projeto enterprise-update-lab-n8n criado corretamente
   - Commit: `9767677`
 
 ### ✅ Concluído na sessão 2026-03-21
@@ -56,8 +55,7 @@
   - Agentes não-SpecKit (`session-manager`, `template-architect`) não eram copiados
   - Corrigido para `"*.agent.md"` em `scripts/lib/project.py:558`
   - Impacto: P1 (projetos novos ficavam sem session-manager)
-  - Solução: agentes faltantes copiados manualmente para enterprise-update-lab-n8n
-  - Commit: (pendente)
+  - Commit: `f93afb8`
 
 ---
 

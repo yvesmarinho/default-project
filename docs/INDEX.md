@@ -74,6 +74,7 @@ a-default-project/
         ├── 2026-03-14/          # IMP-46 ✅ (testes integração estrutura+AppSec) + security/CI fixes (encerrada)
         ├── 2026-03-16/          # fix(session-start): MCP check via arquivo + projeto teste enterprise-infra-docker (encerrada)
         ├── 2026-03-20/          # Session Manager Agent v1.0.0 criado — automação de workflow de sessão (encerrada)
+        └── 2026-03-21/          # Bug fix agentes + documentação scaffold upgrade (em andamento)
         └── 2026-03-21/          # Session Manager Agent tested in production — first automated session (em andamento)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
@@ -276,19 +277,42 @@ a-default-project/
   - [SESSION_REPORT](SESSIONS/2026-03-20/SESSION_REPORT_2026-03-20.md) — Relatório técnico
   - [FINAL_STATUS](SESSIONS/2026-03-20/FINAL_STATUS_2026-03-20.md) — Status final 🏁
 
+- **[docs/SESSIONS/2026-03-21/](SESSIONS/2026-03-21/)** - Sessão: Bug Fix + Documentação (encerrada)
+  - [SESSION_RECOVERY](SESSIONS/2026-03-21/SESSION_RECOVERY_2026-03-21.md) — Contexto recuperado de 2026-03-20
+  - [DAILY_ACTIVITIES](SESSIONS/2026-03-21/DAILY_ACTIVITIES_2026-03-21.md) — Log detalhado (3 atividades)
+  - [SCAFFOLD_UPGRADE_PROCESS](SESSIONS/2026-03-21/SCAFFOLD_UPGRADE_PROCESS.md) — ⭐ Documentação completa do processo de upgrade
+  - **Destaques**:
+    - 🐛 Bug fix crítico: padrão glob de agentes corrigido (`speckit.*` → `*`)
+    - 📝 Documentação: processo completo de `scaffold.py upgrade` (270+ linhas)
+
+- **[docs/SESSIONS/2026-03-23/](SESSIONS/2026-03-23/)** - Sessão: Upgrade Example + Documentation (em andamento)
+  - [SESSION_RECOVERY](SESSIONS/2026-03-23/SESSION_RECOVERY_2026-03-23.md) — Contexto recuperado de 2026-03-21
+  - [DAILY_ACTIVITIES](SESSIONS/2026-03-23/DAILY_ACTIVITIES_2026-03-23.md) — Log detalhado (3 atividades)
+  - [SESSION_REPORT](SESSIONS/2026-03-23/SESSION_REPORT_2026-03-23.md) — Relatório técnico
+  - [UPGRADE_EXAMPLE_ENTERPRISE_PYTHON_ANALYSIS](SESSIONS/2026-03-23/UPGRADE_EXAMPLE_ENTERPRISE_PYTHON_ANALYSIS.md) — ⭐ Exemplo prático de upgrade de projeto legacy
+  - [BUG_ANALYSIS_UPGRADE_NESTED_FOLDER](SESSIONS/2026-03-23/BUG_ANALYSIS_UPGRADE_NESTED_FOLDER.md) — 🐛 Análise de bug crítico no upgrade
+  - **Destaques**:
+    - 📚 Documentação: exemplo completo de upgrade com projeto real (450+ linhas)
+    - 🔍 Análise: comparação session manager v0.x → v1.1.0
+    - 🐛 Bug crítico identificado: upgrade cria pasta aninhada do projeto
+    - 🔧 Análise técnica: causa raiz + 4 soluções propostas (600+ linhas)
+    - ✅ Workaround aplicado: pasta aninhada removida com sucesso
+    - ✅ Criado: `.scaffold-state.yaml` para enterprise-python-analysis
+
 ---
 
 ## 🤖 Copilot Agents
 
 ### Custom Agents
 - **[.github/agents/session-manager.agent.md](../.github/agents/session-manager.agent.md)** - ⭐ Session initialization & organization
-  - **Version**: 1.0.0 (created 2026-03-20)
+  - **Version**: 1.2.0 (updated 2026-03-23)
   - **Purpose**: Automate session start/end workflows
   - **Features**:
     - MCP validation (memory, sequential-thinking)
     - Context recovery from previous sessions
     - Security scanning (credentials, sensitive files)
     - Project organization (file placement, structure validation)
+    - **NEW**: Git push mandatory on session end (D-17)
     - Documentation generation (session files)
   - **Usage**: `/session-start`, `/first-time-setup`, `/recover-context`
   - **Tool Preferences**: Pylance tools (priority), native VS Code tools

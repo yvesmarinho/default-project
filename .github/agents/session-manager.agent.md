@@ -1,7 +1,7 @@
 ---
 agentName: session-manager
 description: Session initialization and project organization specialist
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Session Manager Agent
@@ -260,7 +260,8 @@ Invoke this agent when:
      ✅ Ready for next session
      ```
    - Commit using file: `git commit -F /tmp/commit-session-end-[date].txt`
-   - Optionally push if requested: `git push`
+   - Push to remote (D-17: mandatory): `git push origin [branch]`
+   - If push fails, rebase and retry: `git pull --rebase origin [branch]` then `git push`
 
 8. **Session Closure Report**
    - Display summary:
@@ -275,7 +276,7 @@ Invoke this agent when:
 
      ✅ Security: 🟢 LIMPO
      ✅ Organization: [N] files organized
-     ✅ Git: [N] commits created
+     ✅ Git: [N] commits created and pushed
      ✅ Ready for next session
      ```
 

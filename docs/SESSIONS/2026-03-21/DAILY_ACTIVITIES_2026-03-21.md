@@ -61,4 +61,35 @@
 
 ---
 
+## Atividade 3 — Documentação: Processo de `scaffold.py upgrade`
+
+**Início**: 2026-03-21
+**Objetivo**: Documentar de forma completa o processo de upgrade do scaffold
+
+**Contexto**:
+- Usuário solicitou explicação sobre `scaffold.py upgrade`
+- Comando permite re-aplicar template em projetos existentes sem perder customizações
+- Implementado em IMP-28 (2026-03-08)
+
+**Documentação Gerada**:
+- ✅ Arquivo: `docs/SESSIONS/2026-03-21/SCAFFOLD_UPGRADE_PROCESS.md` (270+ linhas)
+- ✅ Seções cobertas:
+  - Visão geral e objetivo
+  - Pré-requisitos (`.scaffold-state.yaml`)
+  - Fluxo de execução (7 etapas detalhadas)
+  - Flags `--force` e `--json`
+  - Casos de uso práticos
+  - Limitações e cuidados
+  - Arquivos relacionados
+
+**Destaques da Documentação**:
+1. **Idempotência**: todas as operações são seguras para executar múltiplas vezes
+2. **Preservação**: arquivos customizados são preservados por padrão
+3. **Correção do bug de hoje**: documentado que agentes não-SpecKit agora são copiados
+4. **3 casos de uso práticos**: atualizar agentes, forçar reset, auditoria CI/CD
+
+**Status**: ✅ Completo
+
+---
+
 <!-- Adicionar novas atividades abaixo com separador --- -->

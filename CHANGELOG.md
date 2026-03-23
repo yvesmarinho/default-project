@@ -9,6 +9,19 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+#### Session Manager Agent v1.2.0 (Mar 2026)
+- **Session End Workflow (D-17)**: `git push` agora é obrigatório no encerramento de sessão
+  - Modificado: `.github/agents/session-manager.agent.md` — passo 7 "Git Repository Update"
+  - Comportamento anterior: push era opcional ("Optionally push if requested")
+  - Comportamento novo: push é mandatório com retry automático em caso de falha
+  - Se push falhar: executa `git pull --rebase` automaticamente e tenta novamente
+  - Session Closure Report atualizado: "Git: [N] commits created and pushed"
+  - Alinhamento com `.github/prompts/session-end.prompt.md` que já documentava push obrigatório
+  - Impacto: garante que repositório remoto esteja sempre sincronizado ao final da sessão
+  - Benefício: elimina risco de perda de trabalho; melhora rastreabilidade; facilita colaboração
+
 ### Added
 
 #### Sprint 5: Estrutura P2 (ACTION_PLAN_TO_10 — Mar 2026)
