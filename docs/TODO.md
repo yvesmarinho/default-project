@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-20 — fix(scaffold): corrigir bugs críticos e adicionar configuração JSON
+**Last Updated**: 2026-03-29 — Session 2026-03-29 closed (IMP-47 + IMP-48 completed)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -8,10 +8,15 @@
 
 ## 🎯 Current Sprint
 
-### 🚀 Próximas Ações — Implementação Domain Profiles (Sessão seguinte)
+### 🚀 Próximas Ações — Sistema de Documentação Incremental (Sessões consecutivas 2026-03-30 a 2026-04-02)
 
-> Todas as 19 decisões de design estão resolvidas. Ver [`docs/copilot/DOMAIN-PROFILES-DECISIONS.md`](copilot/DOMAIN-PROFILES-DECISIONS.md)
-> **Roadmap atualizado em IMP-19 (2026-03-07)** — Debate: `docs/SESSIONS/2026-03-07/IMP-19-DEBATE.md`
+> **IMP-48 ✅ CONCLUÍDO** (2026-03-29) — Fundação (lib + templates + style guide + 36 tests)
+> 
+> **Next: IMP-49** (P0, 6h) — Integração com prompts, CI, gitleaks
+> **Then: IMP-50** (P0, 4h) — Documentação e migração de projetos existentes
+> **Then: IMP-51** (P1, 4h) — Busca/indexação MCP (objetivo B: memória aprimorada)
+>
+> **Origem**: Debate 2026-03-29 — [`DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md`](SESSIONS/2026-03-29/DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md)
 
 ---
 

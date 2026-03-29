@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-21 ▶️ Em andamento
+**Last Updated**: 2026-03-29 — Session 2026-03-29 closed (IMP-47 + IMP-48)
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-21 — Session Manager Agent tested in production — first automated session
+**Last Session**: 2026-03-29 — IMP-47 Bug Fix + IMP-48 Session Documentation Foundation
 
 ---
 
@@ -74,8 +74,9 @@ a-default-project/
         ├── 2026-03-14/          # IMP-46 ✅ (testes integração estrutura+AppSec) + security/CI fixes (encerrada)
         ├── 2026-03-16/          # fix(session-start): MCP check via arquivo + projeto teste enterprise-infra-docker (encerrada)
         ├── 2026-03-20/          # Session Manager Agent v1.0.0 criado — automação de workflow de sessão (encerrada)
-        └── 2026-03-21/          # Bug fix agentes + documentação scaffold upgrade (em andamento)
-        └── 2026-03-21/          # Session Manager Agent tested in production — first automated session (em andamento)
+        ├── 2026-03-21/          # Bug fix agentes + documentação scaffold upgrade (encerrada)
+        ├── 2026-03-23/          # Upgrade docs + bug analysis + session-manager v1.2.0 (encerrada)
+        └── 2026-03-29/          # IMP-47 Bug Fix + IMP-48 Session Documentation Foundation (encerrada)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão
@@ -293,6 +294,18 @@ a-default-project/
   - [BUG_ANALYSIS_UPGRADE_NESTED_FOLDER](SESSIONS/2026-03-23/BUG_ANALYSIS_UPGRADE_NESTED_FOLDER.md) — 🐛 Análise de bug crítico no upgrade
   - **Destaques**:
     - 📚 Documentação: exemplo completo de upgrade com projeto real (450+ linhas)
+
+- **[docs/SESSIONS/2026-03-29/](SESSIONS/2026-03-29/)** - Sessão: IMP-47 + IMP-48 Implementation (encerrada)
+  - [SESSION_RECOVERY](SESSIONS/2026-03-29/SESSION_RECOVERY_2026-03-29.md) — Contexto recuperado de 2026-03-23
+  - [DAILY_ACTIVITIES](SESSIONS/2026-03-29/DAILY_ACTIVITIES_2026-03-29.md) — Log detalhado (10+ atividades)
+  - [SESSION_REPORT](SESSIONS/2026-03-29/SESSION_REPORT_2026-03-29.md) — Relatório técnico completo
+  - [FINAL_STATUS](SESSIONS/2026-03-29/FINAL_STATUS_2026-03-29.md) — Status final 🏁
+  - [DEBATE_INCREMENTAL_DOCUMENTATION](SESSIONS/2026-03-29/DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md) — ⭐ Debate arquitetural multi-perspectiva (1,050+ linhas)
+  - **Destaques**:
+    - ✅ IMP-47: Fixed nested folder bug in scaffold upgrade (7/7 tests passed)
+    - ✅ IMP-48: Session documentation foundation (500+ lines lib, 36/36 tests passed)
+    - 📊 ROI 3.5x: 280h/year saved vs 80h maintenance
+    - 🎯 IMPs 49-51 created (22h roadmap defined)
     - 🔍 Análise: comparação session manager v0.x → v1.1.0
     - 🐛 Bug crítico identificado: upgrade cria pasta aninhada do projeto
     - 🔧 Análise técnica: causa raiz + 4 soluções propostas (600+ linhas)
