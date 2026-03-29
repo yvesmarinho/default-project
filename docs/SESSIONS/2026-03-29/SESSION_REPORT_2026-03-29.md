@@ -98,6 +98,88 @@ Both servers configured and active. No manual intervention required.
 
 ---
 
+## 6. Work Completed
+
+### Git State Cleanup
+
+**Status**: ✅ COMPLETED
+
+**Actions Taken**:
+1. Reverted local changes to `default-project.code-workspace` (workspace-specific config)
+2. Removed 12 `__pycache__/*.pyc` files from git tracking (already in .gitignore but were committed)
+3. Organized YAML templates:
+   - Moved `mcp-questions_v5.yaml` → `docs/templates/mcp-questions-template.yaml`
+   - Moved `objetivo_v3.yaml` → `docs/templates/objetivo-manifest-template.yaml`
+4. Created session initialization documents
+
+**Commits**:
+- `3eeab46` — chore(git): remover arquivos __pycache__ do rastreamento
+- `1fd37c6` — docs: iniciar sessão 2026-03-29 + adicionar templates SpecKit
+
+---
+
+### IMP-47: Bug Fix - Nested Folder in Upgrade
+
+**Status**: ✅ IMPLEMENTED + TESTED
+
+**Problem**:
+- `scaffold.py upgrade --target-dir /path/to/project` created nested folder structure
+- Example: `/home/user/my-api/my-api/` (incorrect duplication)
+- Root cause: `config_from_state()` didn't detect that `override_target` was the project itself
+
+**Solution Implemented**:
+- File: `scripts/lib/project.py:config_from_state()`
+- Logic: Detect if `override_target.name == project_name`
+- If match: extract parent directory as `target_dir`
+- Result: `project_path = parent / name` (no duplication)
+
+**Code Changes**:
+```python
+if override_target:
+    # Correção IMP-47: detectar se override_target é o próprio projeto
+    if override_target.name == project_name:
+        target = override_target.parent
+    else:
+        target = override_target
+else:
+    target = Path(paths.get("target_dir", "."))
+```
+
+**Test Coverage**:
+- Created: `tests/test_smoke_imp47.py` (291 lines)
+- Test cases: 7 scenarios
+  * Mode new: original behavior preserved ✅
+  * Mode upgrade (override = project): extracts parent correctly ✅
+  * Mode upgrade (override = parent): works as before ✅
+  * Real bug scenario: validated ✅
+  * Edge cases: special chars, deep paths ✅
+
+**Test Results**: 7/7 passed ✅
+
+**Commit**:
+- `448e034` — fix(scaffold): corrigir bug IMP-47 - pasta aninhada em upgrade
+
+**Impact**:
+- Fixes critical upgrade workflow bug
+- Maintains backward compatibility
+- No breaking changes to existing behavior
+
+---
+
+## 7. Current Git State
+
+**Branch**: master
+**Commits ahead of origin**: 3
+
+**Pending Commits**:
+1. `3eeab46` — chore(git): remover arquivos __pycache__ do rastreamento
+2. `1fd37c6` — docs: iniciar sessão 2026-03-29 + adicionar templates SpecKit
+3. `448e034` — fix(scaffold): corrigir bug IMP-47 - pasta aninhada em upgrade
+
+**Working Tree**: Clean ✅
+
+---
+
 ## Decisions Made
 
 *No decisions made yet this session. Awaiting user direction.*
