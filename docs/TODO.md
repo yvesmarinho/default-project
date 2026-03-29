@@ -11,7 +11,7 @@
 ### 🚀 Próximas Ações — Sistema de Documentação Incremental (Sessões consecutivas 2026-03-30 a 2026-04-02)
 
 > **IMP-48 ✅ CONCLUÍDO** (2026-03-29) — Fundação (lib + templates + style guide + 36 tests)
-> 
+>
 > **Next: IMP-49** (P0, 6h) — Integração com prompts, CI, gitleaks
 > **Then: IMP-50** (P0, 4h) — Documentação e migração de projetos existentes
 > **Then: IMP-51** (P1, 4h) — Busca/indexação MCP (objetivo B: memória aprimorada)
