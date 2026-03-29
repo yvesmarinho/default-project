@@ -204,6 +204,54 @@
   - Requer toolchains instalados no runner (Python, Node, Terraform)
   - *Origem*: debate IMP-46 — pirâmide L0/L1/L2
 
+- [ ] **[IMP-48]** Sistema de documentação incremental — Fundação
+  - Criar `scripts/lib/session.py` — módulo de manipulação de session docs
+    - `ActivityBlock` dataclass
+    - `generate_activity_block()` — factory
+    - `sanitize_block()` — apply redact patterns
+    - `append_to_daily_activities()` — append idempotent
+    - `validate_daily_activities_format()` — schema validation
+  - Criar `docs/templates/DAILY_ACTIVITIES.template.md` — template canônico
+  - Criar `docs/SESSION_DOCS_STYLE_GUIDE.md` — guia de estilo
+  - Adicionar regra P1 em `.copilot-rules.md`: "Documentar atividades ao completar TODOs"
+  - Testes: `tests/test_session_lib.py` (30 testes)
+  - **Prioridade**: P0 | **Estimativa**: 8h
+  - **Objetivo**: Legibilidade do chat + documentação/memória aprimorada
+  - *Origem*: debate 2026-03-29 — DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md
+
+- [ ] **[IMP-49]** Sistema de documentação incremental — Integração
+  - Atualizar `session-start.prompt.md` — seção "Protocolo de Documentação"
+  - Atualizar `session-end.prompt.md` — seção "Session Security Review" + checklist
+  - Criar `.gitleaks-session-docs.toml` — config de scan para docs/SESSIONS/
+  - Adicionar job `session-docs-scan` em `.github/workflows/ci-template.yml`
+  - Criar `scripts/session-validate.py` — CLI para validação de formato
+  - Adicionar targets no Makefile: `session-log`, `session-validate`, `session-sanitize`
+  - Configuração em `.scaffold-config.json`: seção `features.session_docs`
+  - Testes: `tests/test_session_integration.py` (20 testes)
+  - **Prioridade**: P0 | **Estimativa**: 6h
+  - *Origem*: debate 2026-03-29
+
+- [ ] **[IMP-50]** Sistema de documentação incremental — Docs + Migração
+  - Criar `docs/SESSION_DOCS_ADOPTION.md` — guia de adoção para projetos existentes
+  - Criar `docs/SECURITY_SESSION_DOCS.md` — exemplos de do/don't
+  - Criar `scripts/migrate-daily-activities.py` — freeform → structured
+  - Exemplo prático: `docs/SESSIONS/2026-03-30-example/DAILY_ACTIVITIES_2026-03-30.md` (5 blocos)
+  - Atualizar `docs/COMPATIBILITY-MATRIX.md` — adicionar coluna "Session Docs"
+  - Atualizar `CHANGELOG.md` — feature de session docs
+  - Testes: `tests/test_session_migration.py` (15 testes)
+  - **Prioridade**: P0 | **Estimativa**: 4h
+  - *Origem*: debate 2026-03-29
+
+- [ ] **[IMP-51]** Busca e indexação de histórico de sessões (MCP integration)
+  - `scripts/session-search.py --query "texto"` — busca em DAILY_ACTIVITIES
+  - Integração com `mcp_memory` para query de sessões passadas
+  - Criar entidades "Session" com observações = blocos de DAILY_ACTIVITIES
+  - Interface de query: "Quando implementamos X?" → busca em histórico
+  - Testes: `tests/test_session_search.py` (10 testes)
+  - **Prioridade**: P1 (crítico para objetivo B: memória aprimorada) | **Estimativa**: 4h
+  - **Rationale**: Objetivo do usuário B: "Documentação/memória aprimorada nos projetos"
+  - *Origem*: debate 2026-03-29 — melhoria identificada pelo Template Architect
+
 - [x] **[fix-session-start-mcp]** ✅ **CONCLUÍDO 2026-03-16** — Corrigir verificação MCP no ritual de início
   - Passo 1 reescrito: agente lê `.vscode/mcp.json` diretamente (verificável) em vez de depender do Command Palette
   - Arquivos: `session-start.prompt.md`, `session-start-first.prompt.md` (template + projeto enterprise-infra-docker)
@@ -241,6 +289,10 @@
 | IMP-45 | Engram MCP — memória persistente (opt-in) | P3 | Médio | DevEx / Template Arch |
 | IMP-46 | Testes de integração estrutura + AppSec | P2 | Médio | Template Arch • AppSec | ✅ 2026-03-14 |
 | IMP-47 | Testes executáveis por template (`make lint` matrix) | P2 | Alto | AppSec • SRE |
+| IMP-48 | Session Docs — Fundação (lib + templates) | P0 | 8h | DevEx / Template Arch | 🔵 2026-03-29 |
+| IMP-49 | Session Docs — Integração (prompts + CI) | P0 | 6h | DevEx / AppSec | 🔵 2026-03-29 |
+| IMP-50 | Session Docs — Docs + Migração | P0 | 4h | Release / Docs | 🔵 2026-03-29 |
+| IMP-51 | Session Docs — Busca/indexação (MCP) | P1 | 4h | DevEx / Template Arch | 🔵 2026-03-29 |
 
 ---
 
