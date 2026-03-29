@@ -910,19 +910,33 @@ def config_from_state(state: dict, override_target: Path | None = None) -> Proje
     Args:
         state:           dict retornado por read_scaffold_state()
         override_target: se fornecido, sobrescreve paths.target_dir do state
+                        No modo upgrade, override_target é o próprio projeto.
     """
     from datetime import datetime, timezone
 
     proj = state.get("project", {})
     paths = state.get("paths", {})
+    project_name = proj.get("name", "unknown")
 
-    target = override_target or Path(paths.get("target_dir", "."))
+    # Correção IMP-47: detectar se override_target é o próprio projeto
+    if override_target:
+        # Se override_target termina com o nome do projeto,
+        # então está apontando para o projeto, não para o diretório pai
+        if override_target.name == project_name:
+            target = override_target.parent
+        else:
+            # Fallback: assume que override_target é o diretório pai
+            target = override_target
+    else:
+        # Modo normal: usa target_dir do state
+        target = Path(paths.get("target_dir", "."))
+
     shared = Path(paths.get("shared_dir", str(
         Path.home() / "Documentos" / "DevOps" / ".copilot-shared"
     )))
 
     return ProjectConfig(
-        project_name=proj.get("name", "unknown"),
+        project_name=project_name,
         project_title=proj.get("title", proj.get("name", "Unknown")),
         description=proj.get("description", ""),
         domain=proj.get("domain", "programming"),
