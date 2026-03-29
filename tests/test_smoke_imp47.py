@@ -63,7 +63,7 @@ def test_config_from_state_mode_new_no_override():
 def test_config_from_state_upgrade_override_is_project():
     """
     Modo upgrade (IMP-47): override_target É O PRÓPRIO PROJETO.
-    
+
     Comportamento esperado:
       - override_target = /home/user/projects/my-api
       - project_name = my-api
@@ -101,7 +101,7 @@ def test_config_from_state_upgrade_override_is_project():
 def test_config_from_state_upgrade_override_is_parent():
     """
     Modo upgrade: override_target aponta para o diretório pai (uso raro).
-    
+
     Comportamento esperado:
       - override_target = /home/user/projects
       - project_name = my-api
@@ -136,18 +136,18 @@ def test_config_from_state_upgrade_override_is_parent():
 def test_config_from_state_nested_folder_bug_scenario():
     """
     Cenário real do bug IMP-47 (enterprise-python-analysis).
-    
+
     Setup:
       - Projeto: enterprise-python-analysis
       - State: target_dir = /home/user/Vya-Jobs (diretório pai)
       - Comando: cd enterprise-python-analysis && scaffold.py upgrade
       - override_target = /home/user/Vya-Jobs/enterprise-python-analysis
-    
+
     Bug original:
       - target_dir ficava = /home/user/Vya-Jobs/enterprise-python-analysis
       - project_path = target_dir / name
                       = /home/user/Vya-Jobs/enterprise-python-analysis/enterprise-python-analysis ❌
-    
+
     Após correção:
       - Detecta override_target.name == "enterprise-python-analysis"
       - Extrai pai: target_dir = /home/user/Vya-Jobs

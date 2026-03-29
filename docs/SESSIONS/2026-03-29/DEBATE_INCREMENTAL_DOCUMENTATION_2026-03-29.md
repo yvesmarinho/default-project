@@ -957,7 +957,7 @@ session_docs:
 
 ## 🎯 Decisão do Usuário — 2026-03-29
 
-**Data**: 2026-03-29  
+**Data**: 2026-03-29
 **Contexto**: Feedback após análise multi-perspectiva
 
 ### Respostas às Questões
@@ -983,9 +983,9 @@ session_docs:
 
 ### Plano de Ação Aprovado
 
-**Sessão 1 (2026-03-30)**: IMP-48 (Fundação Session Docs) — 8h  
-**Sessão 2 (2026-03-31)**: IMP-49 (Integração workflow) — 6h  
-**Sessão 3 (2026-04-01)**: IMP-50 (Docs + migração) — 4h  
+**Sessão 1 (2026-03-30)**: IMP-48 (Fundação Session Docs) — 8h
+**Sessão 2 (2026-03-31)**: IMP-49 (Integração workflow) — 6h
+**Sessão 3 (2026-04-01)**: IMP-50 (Docs + migração) — 4h
 **Sessão 4 (2026-04-02)**: IMP-51 (Busca/indexação MCP) — 4h (priorizado por objetivo B)
 
 **Total**: 22h (4 sessões)
@@ -994,5 +994,5 @@ session_docs:
 
 ---
 
-*Debate gerado por Template Architect Agent v1.2.0 — 2026-03-29*  
+*Debate gerado por Template Architect Agent v1.2.0 — 2026-03-29*
 *Decisões do usuário registradas em 2026-03-29*
