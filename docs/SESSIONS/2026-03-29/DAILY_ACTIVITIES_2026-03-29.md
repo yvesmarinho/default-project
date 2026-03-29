@@ -92,4 +92,43 @@
 
 ---
 
+### Template Architect Debate — Incremental Documentation
+
+**~10:30 — ✅ Multi-perspective analysis completed** — incremental documentation system design
+- **Agent**: Template Architect (6 perspectives)
+- **Document**: `DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md` (1050+ lines)
+- **Alternatives analyzed**: 3 approaches evaluated
+- **Scores**: Architecture (9/10), DevEx (9/10), Security (8/10), Governance (9/10)
+- **Recommendation**: Unanimous approval of Alternativa 1 (hybrid approach)
+- **ROI**: 3.5x return (280h saved/year vs 80h maintenance)
+
+**Context**: User expressed degradation in documentation visibility (session 2026-03-23 rich vs 2026-03-29 sparse)
+
+---
+
+### User Decisions — Documentation System
+
+**~11:00 — ✅ User approval registered** — all 4 questions answered
+- **Q1 (Abordagem)**: "concordo" → Alternativa 1 (híbrida) aprovada
+- **Q2 (Segurança)**: "está completo, sem alterações" → controles validados
+- **Q3 (Cronograma)**: "concordo" → 3 sessões consecutivas aprovadas
+- **Q4 (Objetivo)**: "A - legibilidade do chat, B - Documentação/memória aprimorada"
+
+**Action**: Decisions documented in debate document + TODO.md updated with 4 new IMPs
+
+---
+
+### IMPs 48-51 Creation
+
+**~11:15 — ✅ Implementation roadmap defined** — 22h total estimado
+- **IMP-48** (P0): Fundação (lib + templates) — 8h, 30 tests
+- **IMP-49** (P0): Integração (prompts + CI) — 6h, 20 tests
+- **IMP-50** (P0): Docs + Migração — 4h, 15 tests
+- **IMP-51** (P1): Busca/indexação (MCP) — 4h, 10 tests (priorizado para objetivo B)
+
+**Commit**: `ac975b3` — docs(session): registrar decisões do usuário sobre sistema de documentação incremental
+**Status**: Ready for implementation starting session 2026-03-30
+
+---
+
 <!-- Add new activities below this line with separator --- -->
