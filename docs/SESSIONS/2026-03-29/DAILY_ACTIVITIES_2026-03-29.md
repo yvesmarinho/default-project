@@ -132,3 +132,44 @@
 ---
 
 <!-- Add new activities below this line with separator --- -->
+
+---
+
+### IMP-48: Fundação do sistema de documentação incremental — CONCLUÍDO
+
+**13:45 — ✅ Completo**
+
+**Objetivo**: Implementar sistema completo de documentação incremental com sanitização, testes e validação
+
+**Contexto**: Sessão 2026-03-29 — prossiga imp-48 após debate arquitetural de sistema híbrido (auto + manual)
+
+**Passos executados**:
+1. 1. Criado scripts/lib/session.py (500+ linhas): ActivityBlock, sanitize_text, append_to_daily_activities, validate_daily_activities_format
+2. 2. Criado docs/templates/DAILY_ACTIVITIES.template.md: template canônico com exemplos
+3. 3. Criado docs/SESSION_DOCS_STYLE_GUIDE.md (400+ linhas): guia completo com comparativos, anti-patterns, checklists
+4. 4. Atualizado .copilot-rules.md: adicionada Seção 7 (Session Documentation P1)
+5. 5. Criado tests/test_session_lib.py: 36 testes (11 sanitization, 6 ActivityBlock, 6 factory, 5 append, 4 validation, 4 utility)
+6. 6. Debugado padrões regex: tokens GitHub requerem contexto específico (GITHUB_TOKEN=ghp_...) e negative lookahead (?!\[) para valores redacted
+7. 7. Executado pytest: 36/36 testes passando (100% pass rate)
+8. 8. Commit de8b329: feat(docs): IMP-48 - Fundação do sistema de documentação incremental (1941 insertions)
+9. 9. Atualizado docs/TODO.md: IMP-48 marcado como ✅ completo
+
+**Resultado**: ✅ Sistema funcional com sanitização two-stage (case-sensitive → case-insensitive), 15+ redact patterns, append idempotente, validação de schema. Pronto para uso em IMP-49 (Integração), IMP-50 (Docs), IMP-51 (Busca/MCP).
+
+**Decisões técnicas**: - Sanitização two-stage vs single-stage: escolhido two-stage para prioridade de padrões específicos antes de genéricos
+- Padrões com contexto (GITHUB_TOKEN=ghp_...) adicionados para evitar false matches
+- Negative lookahead (?!\[) previne re-captura de valores já redacted
+- 36 testes (não 30) para cobrir todos os edge cases descobertos durante debug
+
+**Arquivos modificados/criados**:
+- scripts/lib/session.py
+- docs/templates/DAILY_ACTIVITIES.template.md
+- docs/SESSION_DOCS_STYLE_GUIDE.md
+- .copilot-rules.md
+- tests/test_session_lib.py
+- docs/TODO.md
+
+**Commits**:
+- `de8b329 — feat(docs): IMP-48 - Fundação do sistema de documentação incremental`
+
+**Status**: ✅ Completo

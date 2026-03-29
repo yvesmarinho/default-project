@@ -204,7 +204,7 @@
   - Requer toolchains instalados no runner (Python, Node, Terraform)
   - *Origem*: debate IMP-46 — pirâmide L0/L1/L2
 
-- [ ] **[IMP-48]** Sistema de documentação incremental — Fundação
+- [x] **[IMP-48]** Sistema de documentação incremental — Fundação ✅ 2026-03-29
   - Criar `scripts/lib/session.py` — módulo de manipulação de session docs
     - `ActivityBlock` dataclass
     - `generate_activity_block()` — factory
@@ -214,9 +214,10 @@
   - Criar `docs/templates/DAILY_ACTIVITIES.template.md` — template canônico
   - Criar `docs/SESSION_DOCS_STYLE_GUIDE.md` — guia de estilo
   - Adicionar regra P1 em `.copilot-rules.md`: "Documentar atividades ao completar TODOs"
-  - Testes: `tests/test_session_lib.py` (30 testes)
-  - **Prioridade**: P0 | **Estimativa**: 8h
+  - Testes: `tests/test_session_lib.py` (36 testes, 100% pass rate)
+  - **Prioridade**: P0 | **Estimativa**: 8h | **Realizado**: 8h 15min
   - **Objetivo**: Legibilidade do chat + documentação/memória aprimorada
+  - **Commit**: `de8b329` — feat(docs): IMP-48 - Fundação do sistema de documentação incremental
   - *Origem*: debate 2026-03-29 — DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md
 
 - [ ] **[IMP-49]** Sistema de documentação incremental — Integração
@@ -289,7 +290,7 @@
 | IMP-45 | Engram MCP — memória persistente (opt-in) | P3 | Médio | DevEx / Template Arch |
 | IMP-46 | Testes de integração estrutura + AppSec | P2 | Médio | Template Arch • AppSec | ✅ 2026-03-14 |
 | IMP-47 | Testes executáveis por template (`make lint` matrix) | P2 | Alto | AppSec • SRE |
-| IMP-48 | Session Docs — Fundação (lib + templates) | P0 | 8h | DevEx / Template Arch | 🔵 2026-03-29 |
+| IMP-48 | Session Docs — Fundação (lib + templates) | P0 | 8h | DevEx / Template Arch | ✅ 2026-03-29 |
 | IMP-49 | Session Docs — Integração (prompts + CI) | P0 | 6h | DevEx / AppSec | 🔵 2026-03-29 |
 | IMP-50 | Session Docs — Docs + Migração | P0 | 4h | Release / Docs | 🔵 2026-03-29 |
 | IMP-51 | Session Docs — Busca/indexação (MCP) | P1 | 4h | DevEx / Template Arch | 🔵 2026-03-29 |

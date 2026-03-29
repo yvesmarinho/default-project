@@ -22,6 +22,7 @@
 - ✅ **Template Architect debate** — incremental documentation system design (1050+ lines)
 - ✅ **User decisions registered** — approved hybrid approach, security controls, 3-session plan
 - ✅ **IMPs 48-51 created** — 22h implementation roadmap defined
+- ✅ **IMP-48 implemented** — session documentation foundation (5 components, 36 tests, 100% pass)
 
 ---
 
@@ -36,7 +37,7 @@
 | IMP-45 | Engram MCP | 🔴 Bloqueado |
 | IMP-46 | Security/CI fixes | ✅ Concluído |
 | IMP-47 | Bug pasta aninhada | ✅ **CONCLUÍDO** (fixed + tested) |
-| IMP-48 | Session Docs — Fundação | 🔵 **CRIADO** (8h, P0) |
+| IMP-48 | Session Docs — Fundação | ✅ **CONCLUÍDO** (8h, commit de8b329, 36/36 tests) |
 | IMP-49 | Session Docs — Integração | 🔵 **CRIADO** (6h, P0) |
 | IMP-50 | Session Docs — Docs + Migração | 🔵 **CRIADO** (4h, P0) |
 | IMP-51 | Session Docs — Busca MCP | 🔵 **CRIADO** (4h, P1) |
@@ -54,9 +55,14 @@
 | `docs/SESSIONS/2026-03-29/DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md` | **CREATED** — Debate multi-perspectiva sistema doc incremental (1050+ linhas) |
 | `docs/templates/mcp-questions-template.yaml` | Template de perguntas MCP (380 linhas) |
 | `docs/templates/objetivo-manifest-template.yaml` | Template de manifesto de objetivos (316 linhas) |
-| `docs/TODO.md` | **MODIFIED** — Adicionados IMPs 48-51 na tabela e detalhes |
+| `docs/TODO.md` | **MODIFIED** — Adicionados IMPs 48-51 na tabela e detalhes; IMP-48 marcado completo |
 | `scripts/lib/project.py` | **MODIFIED** — Correção IMP-47 em config_from_state() |
 | `tests/test_smoke_imp47.py` | **CREATED** — 7 test cases para IMP-47 (291 linhas) |
+| `scripts/lib/session.py` | **CREATED** — IMP-48: módulo core de documentação (500+ linhas, ActivityBlock + sanitize + append + validate) |
+| `docs/templates/DAILY_ACTIVITIES.template.md` | **CREATED** — IMP-48: template canônico com exemplos |
+| `docs/SESSION_DOCS_STYLE_GUIDE.md` | **CREATED** — IMP-48: guia de estilo completo (400+ linhas) |
+| `.copilot-rules.md` | **MODIFIED** — IMP-48: adicionada Seção 7 (Session Documentation P1) |
+| `tests/test_session_lib.py` | **CREATED** — IMP-48: 36 testes (700+ linhas, 100% pass rate) |
 
 ---
 
