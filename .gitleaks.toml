@@ -11,12 +11,19 @@ paths = [
     '''README.md''',
     '''**/test_*.py''',
     '''**/conftest.py''',
+    '''tests/**''',
+    '''**/*_test.py''',
+    '''.github/templates/**''',
+    '''docs/templates/**''',
+    '''CHANGELOG.md''',
 ]
 
 regexes = [
     '''(example|sample|test|mock|dummy)_?(key|token|password|secret)''',
     '''YOUR_.*_(KEY|TOKEN|PASSWORD)''',
     '''REPLACE_WITH_YOUR''',
+    '''ghp_1234567890abcdefghijklmnopqrstuv1234''',
+    '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9''',
 ]
 
 [[rules]]
