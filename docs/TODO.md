@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-29 — Session 2026-03-29 closed (IMP-47 + IMP-48 completed)
+**Last Updated**: 2026-03-30 — Session 2026-03-30 closed (Security scanner configuration)
 **Project**: Enterprise Default Project Template
 **Status**: Active Development
 
@@ -61,6 +61,15 @@
   - Corrigido para `"*.agent.md"` em `scripts/lib/project.py:558`
   - Impacto: P1 (projetos novos ficavam sem session-manager)
   - Commit: `f93afb8`
+
+### ✅ Concluído na sessão 2026-03-30
+
+- [x] **Security scanner configuration**: GitGuardian + Gitleaks exceptions for test files
+  - Criado `.gitguardian.yaml` com path exclusions para `tests/test_session_lib.py`
+  - Atualizado `.gitleaks.toml` com allowlist expandida (patterns + paths)
+  - Testes de sanitização agora podem usar valores realistas sem falsos positivos
+  - Proteção mantida para código de produção (`src/`, `scripts/`)
+  - Commit: `ca1e58e`
 
 ---
 

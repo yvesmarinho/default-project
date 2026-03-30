@@ -24,18 +24,18 @@ matches-ignore:
   # Test tokens with specific patterns
   - name: Test GitHub Token
     match: ghp_1234567890abcdefghijklmnopqrstuv1234
-  
+
   # JWT tokens in test files
   - name: Test JWT Token
     match: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-  
+
   # Generic test/example patterns
   - name: Example credentials
     match: (example|sample|test|mock|dummy|placeholder)_(key|token|password|secret|api)
-  
+
   - name: YOUR_ placeholders
     match: YOUR_[A-Z_]+(KEY|TOKEN|PASSWORD|SECRET)
-  
+
   - name: REPLACE_WITH placeholders
     match: REPLACE_WITH_YOUR_[A-Z_]+
 

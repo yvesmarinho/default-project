@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-29 — Session 2026-03-29 closed (IMP-47 + IMP-48)
+**Last Updated**: 2026-03-30 — Session 2026-03-30 closed (Security scanner configuration)
 **Project Status**: ✅ Production Ready Template
 **Version**: 1.3.0
-**Last Session**: 2026-03-29 — IMP-47 Bug Fix + IMP-48 Session Documentation Foundation
+**Last Session**: 2026-03-30 — Security scanner exceptions for test files
 
 ---
 
@@ -76,7 +76,8 @@ a-default-project/
         ├── 2026-03-20/          # Session Manager Agent v1.0.0 criado — automação de workflow de sessão (encerrada)
         ├── 2026-03-21/          # Bug fix agentes + documentação scaffold upgrade (encerrada)
         ├── 2026-03-23/          # Upgrade docs + bug analysis + session-manager v1.2.0 (encerrada)
-        └── 2026-03-29/          # IMP-47 Bug Fix + IMP-48 Session Documentation Foundation (encerrada)
+        ├── 2026-03-29/          # IMP-47 Bug Fix + IMP-48 Session Documentation Foundation (encerrada)
+        └── 2026-03-30/          # Security scanner exceptions for test files (encerrada)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão
