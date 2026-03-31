@@ -32,4 +32,4 @@ jobs:
         run: pip install pytest pytest-cov rich pyyaml
 
       - name: Run full test suite
-        run: pytest tests/ --tb=short -q
+        run: pytest tests/ --tb=short -q --no-header

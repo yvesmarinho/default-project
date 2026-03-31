@@ -2,7 +2,7 @@
 # This Makefile automates the creation of the complete project structure
 # and provides common development tasks
 
-.PHONY: help init structure dirs docs github specify src tests scripts config docker clean install-deps
+.PHONY: help init structure dirs docs github specify src tests scripts config docker clean install-deps test test-cov test-quick lint format
 
 # Colors for output
 BLUE := \033[0;34m
@@ -35,6 +35,42 @@ init:
 	@echo "  O scaffold.py é o dono exclusivo da lógica de scaffolding."
 	@echo "  O Makefile é responsável por: build, test, lint, CI/CD."
 	@echo ""
+
+## test-quick: Run tests without coverage (fast)
+test-quick:
+	@echo "$(BLUE)🧪 Running tests (no coverage)...$(NC)"
+	@pytest tests/ --tb=short -q
+
+## test: Run tests with coverage (default CI behavior)
+test:
+	@echo "$(BLUE)🧪 Running tests with coverage...$(NC)"
+	@pytest tests/ \
+		--cov=src \
+		--cov=scripts/lib \
+		--cov-report=html:htmlcov \
+		--cov-report=term-missing:skip-covered \
+		--cov-report=xml:coverage.xml \
+		--cov-fail-under=80
+
+## test-cov: Alias for test (with coverage)
+test-cov: test
+
+## lint: Run code linting
+lint:
+	@echo "$(BLUE)🔍 Running code linting...$(NC)"
+	@echo "$(YELLOW)Checking Python files...$(NC)"
+	@python -m py_compile scripts/scaffold.py scripts/lib/*.py scripts/lib/flows/*.py
+	@echo "$(GREEN)✅ Python syntax valid$(NC)"
+
+## format: Format code (Python)
+format:
+	@echo "$(BLUE)✨ Formatting Python code...$(NC)"
+	@if command -v black >/dev/null 2>&1; then \
+		black scripts/ tests/ src/ --line-length 88; \
+		echo "$(GREEN)✅ Code formatted$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠ black not installed. Install with: pip install black$(NC)"; \
+	fi
 
 ## structure: Create complete directory structure
 structure: dirs github specify docs src tests scripts config docker
