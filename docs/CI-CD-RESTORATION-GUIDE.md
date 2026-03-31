@@ -1,8 +1,8 @@
 # Guia de Restauração CI/CD
 
-**Status:** 🔴 Workflows temporariamente removidos  
-**Data de remoção:** 2026-03-31  
-**Motivo:** Foco em desenvolvimento core durante fase inicial do template  
+**Status:** 🔴 Workflows temporariamente removidos
+**Data de remoção:** 2026-03-31
+**Motivo:** Foco em desenvolvimento core durante fase inicial do template
 **Previsão de retorno:** Após conclusão do desenvolvimento base (IMPs 49-51)
 
 ---
@@ -289,6 +289,6 @@ Quando for restaurar os workflows, siga esta checklist:
 
 ---
 
-**Última atualização:** 2026-03-31  
-**Status:** 🔴 WORKFLOWS REMOVIDOS - Aguardando desenvolvimento core  
+**Última atualização:** 2026-03-31
+**Status:** 🔴 WORKFLOWS REMOVIDOS - Aguardando desenvolvimento core
 **Próxima revisão:** Após conclusão de IMPs 49-51

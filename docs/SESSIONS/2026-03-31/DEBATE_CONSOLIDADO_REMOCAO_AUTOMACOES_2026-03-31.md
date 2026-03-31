@@ -101,7 +101,7 @@ git commit -m "feat(ci): restaurar workflows corrigidos"
 
 #### Pontuação Pragmática
 
-**Manter workflows:** 6✅ / 2❌ = Positivo  
+**Manter workflows:** 6✅ / 2❌ = Positivo
 **Remover workflows:** 4✅ / 2❌ = Neutro
 
 **Benefícios da remoção:**
@@ -132,7 +132,7 @@ git commit -m "feat(ci): restaurar workflows corrigidos"
 
 ### Opção A: **Consolidação + Otimização** ✅ RECOMENDADA
 
-**Esforço:** 30-45 minutos  
+**Esforço:** 30-45 minutos
 **Aprovação:** Template Architect (FORTE)
 
 ```yaml
@@ -149,7 +149,7 @@ on:
     paths: [scripts/**, tests/**]  # full suite apenas em mudanças relevantes
   push:
     branches: [main, master]       # proteção rigorosa em branches principais
-    
+
 # 4. Security scan otimizado
 - Gitleaks/TruffleHog: todo commit (leve, <1min)
 - Bandit/Safety: PRs + schedule semanal
@@ -168,7 +168,7 @@ on:
 
 ### Opção B: **Branch Protection Only** 🟡 ACEITÁVEL
 
-**Esforço:** 10-15 minutos  
+**Esforço:** 10-15 minutos
 **Aprovação:** Nenhum agente recomendou diretamente
 
 ```yaml
@@ -193,7 +193,7 @@ on:
 
 ### Opção C: **Remoção Total** 🔴 NÃO RECOMENDADA
 
-**Esforço:** 5 minutos  
+**Esforço:** 5 minutos
 **Aprovação:** Template Architect (REPROVAR), Session Manager (CONDICIONAL)
 
 ```bash
@@ -283,11 +283,11 @@ on:
 jobs:
   gitleaks:
     # Leve, roda sempre
-    
+
   trivy:
     # Apenas em PRs + schedule
     if: github.event_name == 'pull_request' || github.event_name == 'schedule'
-    
+
   checkov:
     # Apenas schedule (semanal)
     if: github.event_name == 'schedule'

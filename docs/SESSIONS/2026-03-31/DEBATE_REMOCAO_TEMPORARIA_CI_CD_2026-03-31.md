@@ -83,7 +83,7 @@ Resposta: SIM — mas como validar se CI/CD não roda testes?
 ```
 COM CI/CD:
   commit → push → CI valida em 3min → feedback automático
-  
+
 SEM CI/CD:
   commit → push → ??? → descobrir problema semanas depois em produção
 ```
@@ -111,7 +111,7 @@ $ ls .github/workflows/
 
 #### ⚠️ Benefícios Questionáveis
 
-**"Acelera desenvolvimento"**: 
+**"Acelera desenvolvimento"**:
 ```bash
 # Tempo economizado por não esperar CI:
 # - CI roda em PARALELO (não bloqueia trabalho local)
@@ -175,7 +175,7 @@ Vulnerabilidade descoberta → Dependabot cria PR → PR aprovado sem CI → mer
                               ↑                                            ↓
                               |                                            |
                               └─────── SEM VALIDAÇÃO AUTOMÁTICA ───────────┘
-                              
+
 Tempo médio de exploração: 7-14 dias (sem CI/CD para detectar)
 ```
 
@@ -283,7 +283,7 @@ Commits durante o período: ~40-60 commits
 
 Custo de re-ativação:
 1. Corrigir falhas acumuladas: 2-4 horas
-2. Investigar regressões: 1-3 horas  
+2. Investigar regressões: 1-3 horas
 3. Re-estabelecer baselines: 1 hora
 4. Rebuild de confiança na suite: ∞ (impossível quantificar)
 
@@ -351,10 +351,10 @@ main:
     - "pytest 3.12"         # Obrigatório
     - "CLI smoke"           # Obrigatório
     - "Gitleaks"            # Obrigatório
-  
+
 develop:
   required_checks: []       # Opcional (advisory)
-  
+
 feature/*:
   required_checks: []       # Opcional (advisory)
 ```
@@ -402,7 +402,7 @@ Core (sempre gerado, independente de perfil):
 - [ ] Runbook template em docs/RUNBOOK.md ✅
 ```
 
-**Pergunta SRE fundamental**: 
+**Pergunta SRE fundamental**:
 > "Se deployássemos este template hoje em produção, ele atende os requisitos de confiabilidade?"
 
 **Resposta atual**: SIM (com CI/CD)
@@ -509,7 +509,7 @@ branches:
           - "Gitleaks"
       required_pull_request_reviews:
         required_approving_review_count: 1
-  
+
   - name: develop
     protection:
       required_status_checks:
@@ -552,7 +552,7 @@ branches:
    ```bash
    # Adicionar em docs/TODO.md:
    # - [ ] IMP-XX: CI/CD workflow optimization (debate 2026-03-31)
-   
+
    # Criar docs/SESSIONS/2026-03-31/IMP-XX-CI-CD-OPTIMIZATION.md
    ```
 
@@ -570,12 +570,12 @@ branches:
 4. **[TEMPLATE]** Adicionar documentação sobre estratégia de CI/CD
    ```markdown
    # docs/CI-CD-STRATEGY.md (novo arquivo)
-   
+
    ## Filosofia
    - CI/CD não é opcional em projetos enterprise
    - Feedback rápido > zero feedback
    - Segurança contínua > scan pontual
-   
+
    ## Configuração por tipo de projeto
    - Backend APIs: full suite + security scan
    - CLIs/tooling: smoke tests + security scan

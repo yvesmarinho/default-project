@@ -1,7 +1,7 @@
 # ⚠️ Workflows CI/CD Temporariamente Desabilitados
 
-**Data:** 2026-03-31  
-**Status:** 🔴 Workflows removidos durante desenvolvimento ativo  
+**Data:** 2026-03-31
+**Status:** 🔴 Workflows removidos durante desenvolvimento ativo
 **Previsão de retorno:** Após conclusão do core (Q2 2026)
 
 ---
@@ -20,7 +20,7 @@ Durante a fase inicial de desenvolvimento do template, decidiu-se **temporariame
 
 ### Para desenvolvedores do template:
 - ❌ Testes **não** executam automaticamente em commits
-- ❌ Security scans **não** rodam automaticamente  
+- ❌ Security scans **não** rodam automaticamente
 - ❌ Coverage **não** é medido no CI
 - ✅ Testes **podem** ser executados localmente: `make test-cov`
 - ✅ Security scan manual disponível: `make security-scan` (quando implementado)
