@@ -1,16 +1,18 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-31 — Workflows CI/CD temporariamente removidos
+**Last Updated**: 2026-03-31 — Session-end: Workflows temporarily removed
 **Project Status**: 🟡 Em Desenvolvimento Ativo (CI/CD desabilitado temporariamente)
 **Version**: 1.3.0
-**Last Session**: 2026-03-31 — CI/CD corrections + Dependabot triage + workflows removal
+**Last Session**: 2026-03-31 — CI/CD corrections, Dependabot triage, workflows removal (strategic decision)
 
 ---
 
-> **⚠️ AVISO IMPORTANTE: CI/CD Temporariamente Desabilitado**  
-> Os workflows GitHub Actions foram removidos em 2026-03-31 para foco no desenvolvimento core.  
-> **Guia de restauração:** [CI-CD-RESTORATION-GUIDE.md](CI-CD-RESTORATION-GUIDE.md)  
+> **⚠️ AVISO IMPORTANTE: CI/CD Temporariamente Desabilitado**
+> Os workflows GitHub Actions foram removidos em 2026-03-31 para foco no desenvolvimento core.
+> **Workflows preservados:** commit `dce227b` (TOTALMENTE FUNCIONAIS)
+> **Guia de restauração:** [CI-CD-RESTORATION-GUIDE.md](CI-CD-RESTORATION-GUIDE.md) (15 minutos)
 > **Aviso público:** [WORKFLOWS_REMOVED_TEMPORARILY.md](../WORKFLOWS_REMOVED_TEMPORARILY.md)
+> **Rationale:** Decisão estratégica pós-debate multi-agent (Template Architect vs Session Manager)
 
 ---
 
@@ -334,6 +336,37 @@ a-default-project/
     - 🔧 Análise técnica: causa raiz + 4 soluções propostas (600+ linhas)
     - ✅ Workaround aplicado: pasta aninhada removida com sucesso
     - ✅ Criado: `.scaffold-state.yaml` para enterprise-python-analysis
+
+- **[docs/SESSIONS/2026-03-30/](SESSIONS/2026-03-30/)** - Sessão: Security Scanner Configuration (encerrada)
+  - [SESSION_RECOVERY](SESSIONS/2026-03-30/SESSION_RECOVERY_2026-03-30.md) — Contexto recuperado de 2026-03-29
+  - [DAILY_ACTIVITIES](SESSIONS/2026-03-30/DAILY_ACTIVITIES_2026-03-30.md) — Log detalhado
+  - [FINAL_STATUS](SESSIONS/2026-03-30/FINAL_STATUS_2026-03-30.md) — Status final 🏁
+  - **Destaques**:
+    - ✅ Configuração GitGuardian: path exclusions para test files
+    - ✅ Atualização Gitleaks: allowlist expandida (patterns + paths)
+    - ✅ Testes de sanitização: valores realistas sem falsos positivos
+    - ✅ Proteção mantida: código de produção (`src/`, `scripts/`)
+
+- **[docs/SESSIONS/2026-03-31/](SESSIONS/2026-03-31/)** - Sessão: CI/CD Emergency Fixes + Strategic Removal (encerrada)
+  - [SESSION_RECOVERY](SESSIONS/2026-03-31/SESSION_RECOVERY_2026-03-31.md) — Contexto recuperado de 2026-03-30
+  - [DAILY_ACTIVITIES](SESSIONS/2026-03-31/DAILY_ACTIVITIES_2026-03-31.md) — Log detalhado completo (6 atividades)
+  - [SESSION_REPORT](SESSIONS/2026-03-31/SESSION_REPORT_2026-03-31.md) — Relatório técnico e decisão estratégica
+  - [FINAL_STATUS](SESSIONS/2026-03-31/FINAL_STATUS_2026-03-31.md) — Status final 🏁
+  - [ERROR_REPORT](SESSIONS/2026-03-31/ERROR_REPORT_2026-03-31.md) — Análise de 58+ workflow failures
+  - [DEPENDABOT_PRS_ANALYSIS](SESSIONS/2026-03-31/DEPENDABOT_PRS_ANALYSIS_2026-03-31.md) — Análise de 13 PRs pendentes
+  - [DEBATE_REMOCAO_TEMPORARIA_CI_CD](SESSIONS/2026-03-31/DEBATE_REMOCAO_TEMPORARIA_CI_CD_2026-03-31.md) — ⭐ Debate multi-agent (Template Architect vs Session Manager)
+  - [DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES](SESSIONS/2026-03-31/DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES_2026-03-31.md) — Consolidação de posições
+  - **Destaques**:
+    - ✅ P0 fixes: pytest-cov + pyyaml (3 correções críticas)
+    - ✅ P1 fixes: security action pinning (supply chain hardening)
+    - ✅ P2 improvements: pytest refactor + workflow consolidation
+    - ✅ Dependabot: 13 PRs analyzed, 4 actioned (1 closed, 2 merged, 1 blocked)
+    - ✅ Issue #14 created: Airflow 3.x Migration Plan (Q2 2026)
+    - ⚠️ **Decisão estratégica**: workflows removidos temporariamente (commit 33e40a3)
+    - 📚 **Documentação completa**: CI-CD-RESTORATION-GUIDE.md (15 min restoration)
+    - 🔄 **Workflows preservados**: commit dce227b (TOTALMENTE FUNCIONAIS)
+    - 🎯 **Foco mudado**: IMPs 49-51 (documentação incremental)
+    - 📊 **Métricas**: 7 commits, 20+ files, ~2,400+ LOC
 
 ---
 

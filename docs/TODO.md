@@ -1,8 +1,16 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-30 — Session 2026-03-30 closed (Security scanner configuration)
+**Last Updated**: 2026-03-31 — Session 2026-03-31 closed (CI/CD workflows temporarily removed)
 **Project**: Enterprise Default Project Template
-**Status**: Active Development
+**Status**: 🟡 Active Development (CI/CD disabled temporarily)
+
+---
+
+> **⚠️ SESSION 2026-03-31 UPDATE:**
+> - CI/CD workflows temporariamente removidos (commit 33e40a3)
+> - Workflows preservados em commit dce227b (TOTALMENTE FUNCIONAIS)
+> - Guia de restauração: `docs/CI-CD-RESTORATION-GUIDE.md`
+> - Foco imediato: IMPs 49-51 (documentação incremental)
 
 ---
 

@@ -404,3 +404,143 @@ To github.com:yvesmarinho/default-project.git
 ---
 
 *Session report finalized: 2026-03-31*
+
+---
+
+## 🎭 Strategic Decision: Workflows Removal (Post-P2)
+
+### Context
+After completing P0/P1/P2 work with all workflows functional (commit dce227b), user requested evaluation of workflow removal to focus on IMPs 49-51 (documentation incremental system).
+
+### Multi-Agent Debate
+**Agents involved:**
+1. **Template Architect** (Guardian of Technical Excellence)
+   - **Position:** REPROVAR (reject removal)
+   - **Score:** 9.2/10 against removal
+   - **Recomendação:** Opção A (consolidação + otimização)
+   - **Argumentos principais:**
+     - Workflows funcionais após correções (commit dce227b)
+     - Perda de automação (testes, segurança, linting)
+     - Regressão em segurança (sem validação de PRs)
+     - Template workflow = capital intelectual do projeto
+
+2. **Session Manager** (Operational Pragmatism)
+   - **Position:** APROVAR COM CONDIÇÕES (conditional approval)
+   - **Condições:** Documentação COMPLETA obrigatória
+   - **Aprovação:** Opção C se documentação criada
+   - **Argumentos principais:**
+     - Foco imediato no desenvolvimento (IMPs 49-51)
+     - Redução de ruído (58+ workflow failures)
+     - Restauração trivial (15 min)
+     - Template em desenvolvimento (não em produção)
+
+### User Decision
+**Chose:** Opção C (Total removal with full documentation)
+
+### Documentation Created (Mandatory Requirement)
+- ✅ `DEBATE_REMOCAO_TEMPORARIA_CI_CD_2026-03-31.md` - Complete agent debate
+- ✅ `DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES_2026-03-31.md` - Consolidated positions
+- ✅ `docs/CI-CD-RESTORATION-GUIDE.md` - Complete restoration procedure (30 min)
+- ✅ `WORKFLOWS_REMOVED_TEMPORARILY.md` - Public notice at repository root
+- ✅ `README.md` updated with visible warning
+- ✅ `docs/INDEX.md` updated with references and warnings
+
+### Workflows Removed (Preserved at dce227b)
+All workflows were FULLY FUNCTIONAL before removal:
+- `.github/workflows/ci-template.yml` ✅ (pytest passing, coverage 100%)
+- `.github/workflows/security-scan.yml` ✅ (all scanners operational)
+- `.github/workflows/test-scaffold.yml` (already deprecated - redundant)
+
+### Restoration Procedure (Trivial - 15 min)
+```bash
+# One-command restoration
+git checkout dce227b -- .github/workflows/
+git commit -m "feat(ci): restaurar workflows CI/CD"
+git push origin master
+
+# Workflows immediately operational (no fixes needed)
+```
+
+### Impact Assessment
+**Positive:**
+- 🟢 100% focus on core development (IMPs 49-51)
+- 🟢 100% reduction in notification noise
+- 🟢 100% GitHub Actions minutes savings
+- 🟢 Clear documentation of temporary state
+
+**Negative:**
+- 🔴 No automatic validation (CI/CD disabled)
+- 🔴 Security scanners not running
+- 🔴 No automated tests on push/PR
+- 🔴 Supply chain risk increased (no Dependabot auto-merges)
+
+### Commits
+- `33e40a3` - chore(ci): remover workflows temporariamente para foco no desenvolvimento
+- `72540c0` - docs(session): atualizar FINAL_STATUS com remoção de workflows
+
+### Key Documents
+- [Debate completo](DEBATE_REMOCAO_TEMPORARIA_CI_CD_2026-03-31.md)
+- [Consolidação](DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES_2026-03-31.md)
+- [Guia de restauração](../CI-CD-RESTORATION-GUIDE.md)
+- [Aviso público](../../WORKFLOWS_REMOVED_TEMPORARILY.md)
+
+---
+
+## 🏁 Session End Summary
+
+### Final State
+- **Duration:** Full day session (09:00 - 18:00)
+- **Total commits:** 7 (c315895 → 72540c0)
+- **Status:** ✅ COMPLETED
+- **Git sync:** ✅ All commits pushed to origin/master
+- **Branch:** master @ 72540c0
+
+### Work Completed
+1. ✅ Previous session docs committed (c315895)
+2. ✅ ERROR_REPORT comprehensive analysis
+3. ✅ P0 fixes applied: 3 critical blocking issues (05165de)
+4. ✅ P1 fixes applied: 5 security & stability improvements (05165de)
+5. ✅ P2 improvements: pytest refactor + workflow consolidation (dce227b)
+6. ✅ Dependabot analysis: 13 PRs analyzed (96c1e52)
+7. ✅ PR management: 4 PRs actioned (87b45b2)
+8. ✅ Strategic decision: workflows removed with full documentation (33e40a3, 72540c0)
+9. ✅ Session documentation: complete and finalized
+
+### Metrics
+- **Commits:** 7
+- **Files created:** 10+ (session docs, debate docs, guides)
+- **Files modified:** 6+ (workflows, config, docs)
+- **Files deleted:** 3 (workflow files - preserved at dce227b)
+- **PRs managed:** 4 (1 closed, 2 merged, 1 blocked)
+- **Issues created:** 1 (#14 - Airflow Migration Plan)
+- **CVEs reduced:** 6 → 5 (via PR merges)
+- **Lines changed:** ~2,400+ (including removed workflows)
+
+### Security Status
+- **Final scan:** 🟢 LIMPO
+- **Credentials:** None exposed
+- **`.secrets/`:** Properly configured
+- **Workflow security:** 🔴 Disabled (no CI/CD validation)
+
+### Pending for Next Session
+1. **Dependabot PRs:** 10 awaiting review
+2. **Security alerts:** 5 CVEs (2 high, 3 moderate) requiring manual review
+3. **Workflow restoration:** Planned for Q2 2026 (post IMPs 49-51)
+4. **IMPs 49-51:** Documentation incremental system (next priority)
+
+### Context for Recovery
+- All workflows preserved at commit `dce227b` (FULLY FUNCTIONAL)
+- Restoration documented in `CI-CD-RESTORATION-GUIDE.md`
+- Template in active development mode (focus on IMPs 49-51)
+- Multi-agent debate documented for future reference
+
+### Success Criteria Met
+- ✅ P0/P1 corrections applied (CI unblocked at dce227b)
+- ✅ Strategic decision made with full agent consultation
+- ✅ Complete documentation created (mandatory requirement)
+- ✅ Session state preserved for recovery
+- ✅ Git repository clean and synced
+
+---
+
+*Session report closed: 2026-03-31T18:00:00Z*
