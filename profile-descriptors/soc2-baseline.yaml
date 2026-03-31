@@ -42,7 +42,6 @@ combines_with:
   - typescript-next
   - k8s-helm
   - terraform-aws
-  - data-pipeline-airflow
   - data-warehouse-dbt
   - lgpd-baseline
 

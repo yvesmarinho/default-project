@@ -82,8 +82,6 @@ combines_with:
     notes: "Ativa trivy (image scan) + checkov (Helm chart) no pipeline"
   - name: terraform-aws
     notes: "Ativa tfsec + checkov no pipeline; bloqueia recursos sem tags de segurança"
-  - name: data-pipeline-airflow
-    notes: "Ativa secrets scan no DAG scan; valida conexões sem credenciais embutidas"
   - name: data-warehouse-dbt
     notes: "Ativa auditoria de modelos dbt: sem PII em campos não-mascarados"
   - name: lgpd-baseline

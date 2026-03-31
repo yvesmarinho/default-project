@@ -56,8 +56,6 @@ excludes_with:
 combines_with:
   - name: devops-security
     notes: "Transversal — sempre combinado; ativa secrets scan em DAGs e notebooks"
-  - name: data-pipeline-airflow
-    notes: "[Layer 3] Especialização: orquestração de pipelines com Apache Airflow"
   - name: data-warehouse-dbt
     notes: "[Layer 3] Especialização: transformações de data warehouse com dbt"
   - name: lgpd-baseline
