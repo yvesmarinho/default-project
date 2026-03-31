@@ -1,9 +1,9 @@
 # Session Report — 2026-03-30
 
-**Project:** a-default-project — Enterprise Default Project Template  
-**Session Date:** 2026-03-30  
-**Duration:** ~2.5 hours  
-**Work Mode:** INFRASTRUCTURE/SECURITY  
+**Project:** a-default-project — Enterprise Default Project Template
+**Session Date:** 2026-03-30
+**Duration:** ~2.5 hours
+**Work Mode:** INFRASTRUCTURE/SECURITY
 
 ---
 
@@ -21,8 +21,8 @@
 
 Após commit de8b329 (feat: IMP-48 - Fundação do sistema de documentação incremental), o GitGuardian detectou potenciais secrets expostos em `tests/test_session_lib.py`. Os valores detectados eram strings de teste usadas para validar a funcionalidade de sanitização de logs, mas tinham formato idêntico a secrets reais:
 
-- Tokens GitHub: `ghp_0123456789abcdefghijklmnopqrstuvwxyz`  
-- Tokens JWT: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`  
+- Tokens GitHub: `ghp_0123456789abcdefghijklmnopqrstuvwxyz`
+- Tokens JWT: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
 - Senhas genéricas: `test-password-123`, `TestP@ssw0rd!`
 
 ### Solution Approach
@@ -120,7 +120,7 @@ paths = [
 
 ## 🔄 Git Activity
 
-**Branch:** master  
+**Branch:** master
 **Commits:**
 1. ca1e58e - fix(security): configurar exceções GitGuardian para testes
 
