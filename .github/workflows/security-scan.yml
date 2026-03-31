@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -46,7 +46,7 @@ jobs:
     if: hashFiles('**/*.py') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -77,7 +77,7 @@ jobs:
     if: hashFiles('**/requirements.txt', '**/pyproject.toml') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -101,7 +101,7 @@ jobs:
     if: hashFiles('ansible/**/*.yml', 'ansible/**/*.yaml') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -123,7 +123,7 @@ jobs:
     if: hashFiles('**/docker-compose*.yml', '**/Dockerfile') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run Trivy on Docker Compose Templates
         uses: aquasecurity/trivy-action@0.28.0
@@ -145,7 +145,7 @@ jobs:
     if: hashFiles('**/*.tf', '**/docker-compose*.yml') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@v12.2926.0
