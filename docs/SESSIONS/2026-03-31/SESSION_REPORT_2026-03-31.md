@@ -192,7 +192,7 @@
 ### 3. P2 Improvements: Test Coverage Refactor & Workflow Consolidation
 - ✅ Refactored pytest.ini to make coverage optional (IMP-01)
 - ✅ Added Makefile targets for test management
-- ✅ Consolidated workflows - removed test-scaffold.yml (IMP-02) 
+- ✅ Consolidated workflows - removed test-scaffold.yml (IMP-02)
 - ✅ Analyzed all 13 Dependabot PRs (IMP-03, IMP-04)
 
 **pytest.ini refactor:**
@@ -237,13 +237,13 @@ format        # Code formatting with black
 Created comprehensive analysis document: `DEPENDABOT_PRS_ANALYSIS_2026-03-31.md`
 
 **Actions taken:**
-1. PR #12 (codeql-action v3→v4): Added comment explaining manual application in commit 05165de  
+1. PR #12 (codeql-action v3→v4): Added comment explaining manual application in commit 05165de
    [Comment link](https://github.com/yvesmarinho/default-project/pull/12#issuecomment-4162582955)
 
-2. PR #9 (apache-airflow 2→3): Blocked with detailed justification  
+2. PR #9 (apache-airflow 2→3): Blocked with detailed justification
    - Identified critical breaking changes
    - Documented migration pre-requisites
-   - Recommended creating separate migration plan issue  
+   - Recommended creating separate migration plan issue
    [Comment link](https://github.com/yvesmarinho/default-project/pull/9#issuecomment-4162584615)
 
 **Analysis summary table:**
