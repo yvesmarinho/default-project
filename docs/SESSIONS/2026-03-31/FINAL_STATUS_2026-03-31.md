@@ -3,7 +3,7 @@
 **Project:** a-default-project — Enterprise Default Project Template
 **Session Date:** 2026-03-31 (Monday)
 **Initial HEAD:** 315f721
-**Final HEAD:** 9dba8e7
+**Final HEAD:** 33e40a3
 **Branch:** master
 **Status:** ✅ CONCLUÍDO
 
@@ -18,13 +18,14 @@
 | Apply P0/P1 corrections | ✅ Completed | 3 P0 + 5 P1 fixes applied |
 | Execute P2 improvements | ✅ Completed | 4 improvements delivered |
 | Manage Dependabot PRs | ✅ Completed | 4 PRs actioned, 10 analyzed |
+| Remove CI/CD workflows | ✅ Completed | Opção C com documentação completa |
 
 ---
 
 ## 📊 Activity Summary
 
-**Total Activities:** 16
-**Completed:** 16 ✅
+**Total Activities:** 19
+**Completed:** 19 ✅
 **In Progress:** 0
 **Blocked:** 0
 
@@ -32,6 +33,7 @@
 - **P0 (Critical):** 3/3 completed
 - **P1 (High):** 9/9 completed (5 fixes + 4 PR actions)
 - **P2 (Quality):** 4/4 completed
+- **Strategic Decision:** 3/3 completed (debate + documentation + removal)
 
 ---
 
@@ -43,6 +45,7 @@
 - ✅ Pinned all security action versions (supply chain hardening)
 - ✅ Updated codeql v3 → v4
 - ✅ Removed GITLEAKS_LICENSE (not required)
+- 🔴 **Workflows temporariamente removidos** (commit 33e40a3)
 
 ### Test Infrastructure
 - ✅ Refactored pytest.ini (optional coverage)
@@ -68,35 +71,109 @@
 - `docs/SESSIONS/2026-03-31/FINAL_STATUS_2026-03-31.md`
 - `docs/SESSIONS/2026-03-31/ERROR_REPORT_2026-03-31.md`
 - `docs/SESSIONS/2026-03-31/DEPENDABOT_PRS_ANALYSIS_2026-03-31.md`
+- `docs/SESSIONS/2026-03-31/DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES_2026-03-31.md`
+- `docs/SESSIONS/2026-03-31/DEBATE_REMOCAO_TEMPORARIA_CI_CD_2026-03-31.md`
+- `docs/SESSIONS/2026-03-31/DEBATE_REMOCAO_WORKFLOWS_2026-03-31.md`
+- `docs/CI-CD-RESTORATION-GUIDE.md`
+- `WORKFLOWS_REMOVED_TEMPORARILY.md`
 - `.github/workflows/DEPRECATED-test-scaffold.md`
 
 ### Files Modified
-- `.github/workflows/test-scaffold.yml` (pytest-cov dependency)
-- `.github/workflows/ci-template.yml` (pytest-cov + pyyaml + explicit coverage)
-- `.github/workflows/security-scan.yml` (pinned versions, updated codeql)
+- `.github/workflows/test-scaffold.yml` (pytest-cov dependency) — 🔴 REMOVIDO
+- `.github/workflows/ci-template.yml` (pytest-cov + pyyaml + explicit coverage) — 🔴 REMOVIDO
+- `.github/workflows/security-scan.yml` (pinned versions, updated codeql) — 🔴 REMOVIDO
 - `pytest.ini` (removed --cov from addopts)
 - `Makefile` (added test-quick, test, test-cov, lint, format)
+- `README.md` (aviso de workflows removidos)
+- `docs/INDEX.md` (atualizado com novos documentos + aviso)
+
+### Files Removed (Preserved in git @ dce227b)
+- `.github/workflows/ci-template.yml`
+- `.github/workflows/security-scan.yml`
+- `.github/workflows/test-scaffold.yml`
+
+---
+
+## 🎭 Strategic Decision: Workflows Removal
+
+### Debate Between Agents (Template Architect vs Session Manager)
+
+**Opções analisadas:**
+- **Opção A** (Consolidação + Otimização) — Template Architect recomendou (Score 9.2/10)
+- **Opção B** (Branch Protection Only) — Não recomendada por nenhum agente
+- **Opção C** (Remoção Total) — Session Manager aprovou COM CONDIÇÕES ✅
+
+**Decisão final:** Opção C implementada com documentação completa obrigatória
+
+### Rationale da Remoção
+1. **Foco no desenvolvimento core** (scaffold.py, MCP, docs incrementais)
+2. **Reduzir ruído** durante experimentação (~100% menos notificações)
+3. **Economizar recursos** (100% GitHub Actions minutes)
+4. **Template em desenvolvimento** (IMPs 49-51 pendentes)
+
+### Documentação Criada (Exigência Atendida)
+- ✅ `docs/CI-CD-RESTORATION-GUIDE.md` (roteiro completo, 30 minutos)
+- ✅ `WORKFLOWS_REMOVED_TEMPORARILY.md` (aviso público)
+- ✅ `README.md` atualizado (aviso visível no topo)
+- ✅ `docs/INDEX.md` atualizado (novos docs indexados)
+- ✅ Debate consolidado (3 documentos: agentes + consolidação)
+
+### Restauração Futura (Trivial — 15 minutos)
+```bash
+git checkout dce227b -- .github/workflows/
+git commit -m "feat(ci): restaurar workflows CI/CD"
+git push origin master
+```
+
+**Workflows preservados:** Commit `dce227b` (TOTALMENTE FUNCIONAIS)
 
 ---
 
 ## 🔐 Security Status
 
-**Security Scan:** 🟢 LIMPO
+**Security Scan:** 🟢 LIMPO (antes da remoção dos workflows)
 - No `.env` files outside `.secrets/`
 - No exposed credentials
 - `.secrets/` properly configured in `.gitignore`
 
-**Security Actions Hardened:**
+**Security Actions Hardened (antes da remoção):**
 - trufflesecurity/trufflehog: @main → @v3.82.6
 - aquasecurity/trivy-action: @master → @0.28.0
 - bridgecrewio/checkov-action: @master → @v12.2926.0
 - github/codeql-action: v3 → v4
 
-**Supply Chain Risk:** HIGH → LOW
+**Supply Chain Risk:** HIGH → LOW → 🔴 **CI/CD desabilitado** (sem validação automática)
 
 ---
 
 ## 🔄 Git Status
+
+**Branch:** master
+**Commits pushed:** 7 (1 adicional para remoção de workflows)
+- c315895: docs(session): finalizar documentação sessão 2026-03-30
+- 05165de: fix(ci): corrigir falhas críticas nos workflows do GitHub Actions
+- dce227b: refactor(ci): refatorar cobertura de testes e consolidar workflows
+- 96c1e52: docs(dependabot): análise completa dos 13 PRs pendentes
+- 9dba8e7: docs(session): atualizar SESSION_REPORT e DEPENDABOT_PRS_ANALYSIS
+- bc321e6: docs(session): finalizar documentação da sessão 2026-03-31
+- 33e40a3: chore(ci): remover workflows temporariamente para foco no desenvolvimento
+
+**Sync status:** ✅ Up to date with origin/master
+**CI state:** 🔴 Workflows removidos (sem validação automática)
+
+---
+
+## 📊 Metrics
+
+**Lines of Code Changed:** ~2,400+ (workflows removed + extensive documentation)
+**Files Touched:** 20+
+**Commits:** 7
+**PRs Managed:** 4 (1 closed, 2 merged, 1 blocked)
+**Issues Created:** 1 (#14 - Airflow Migration Plan)
+**Workflows:** 3 removed (preservados em dce227b)
+**Documentation Created:** 6 novos arquivos (guias + debates)
+
+---
 
 **Branch:** master
 **Commits pushed:** 5
