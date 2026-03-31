@@ -189,6 +189,89 @@
 
 ---
 
+### 3. P2 Improvements: Test Coverage Refactor & Workflow Consolidation
+- ✅ Refactored pytest.ini to make coverage optional (IMP-01)
+- ✅ Added Makefile targets for test management
+- ✅ Consolidated workflows - removed test-scaffold.yml (IMP-02) 
+- ✅ Analyzed all 13 Dependabot PRs (IMP-03, IMP-04)
+
+**pytest.ini refactor:**
+```ini
+# BEFORE (addopts):
+--cov=src
+--cov=scripts/lib
+--cov-report=html:htmlcov
+--cov-report=term-missing:skip-covered
+--cov-report=xml:coverage.xml
+--cov-fail-under=80
+
+# AFTER (addopts):
+# (removed - coverage flags moved to explicit commands)
+```
+
+**Rationale:**
+- Developers can run quick tests without pytest-cov: `pytest tests/`
+- CI still collects coverage via explicit commands
+- Better developer experience (DX)
+
+**New Makefile targets:**
+```makefile
+test-quick    # Fast tests without coverage
+test          # Full tests with coverage (CI default)
+test-cov      # Alias for test
+lint          # Python + YAML syntax validation
+format        # Code formatting with black
+```
+
+**Workflow consolidation:**
+- Removed `test-scaffold.yml` (redundant)
+- All functionality covered by `ci-template.yml`
+- Benefits:
+  - Eliminates duplicate CI runs
+  - Reduces GitHub Actions minutes usage
+  - Single workflow to maintain
+  - Better test coverage (matriz Python 3.10-3.12)
+
+**Dependabot PR Analysis:**
+
+Created comprehensive analysis document: `DEPENDABOT_PRS_ANALYSIS_2026-03-31.md`
+
+**Actions taken:**
+1. PR #12 (codeql-action v3→v4): Added comment explaining manual application in commit 05165de  
+   [Comment link](https://github.com/yvesmarinho/default-project/pull/12#issuecomment-4162582955)
+
+2. PR #9 (apache-airflow 2→3): Blocked with detailed justification  
+   - Identified critical breaking changes
+   - Documented migration pre-requisites
+   - Recommended creating separate migration plan issue  
+   [Comment link](https://github.com/yvesmarinho/default-project/pull/9#issuecomment-4162584615)
+
+**Analysis summary table:**
+
+| PR | Package | From | To | Decision | Risk | Priority |
+|----|---------|------|-----|----------|------|----------|
+| #12 | codeql-action | v3 | v4 | ✅ Close (applied) | - | - |
+| #13 | upload-artifact | v4 | v7 | ⚠️ Validate runners | 🟠 | P1 |
+| #8 | jest | 29.7.0 | 30.3.0 | ✅ Safe to merge | 🟢 | P1 |
+| #10 | @types/jest | 29 | 30 | ✅ Merge with #8 | 🟢 | P1 |
+| #11 | zod | 3.25 | 4.3 | ⚠️ Test first | 🟠 | P1 |
+| #9 | apache-airflow | 2.10 | 3.1 | ❌ Block | 🔴 | P2 |
+
+**Key findings:**
+- 1 PR already applied (can close)
+- 1 PR blocked (critical breaking changes)
+- 3 PRs safe to merge after basic validation
+- 1 PR requires runner version check
+
+**Commits:**
+- `dce227b` - refactor(ci): refatorar cobertura de testes e consolidar workflows
+
+**Files created:**
+- `.github/workflows/DEPRECATED-test-scaffold.md` - Deprecation notice
+- `docs/SESSIONS/2026-03-31/DEPENDABOT_PRS_ANALYSIS_2026-03-31.md` - Full analysis
+
+---
+
 *Will be updated as work progresses*
 
 ---

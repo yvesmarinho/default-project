@@ -66,4 +66,79 @@
 
 ---
 
+### 14:00 - Execução de Tarefas P2 (IMP-01 a IMP-04)
+**Activity:** Melhorias de qualidade e análise de dependências
+**Status:** ✅ Completed
+**Details:**
+
+**IMP-01: Refatoração pytest.ini ✅**
+- Removidos flags `--cov*` do `addopts` em pytest.ini
+- Flags movidos para comandos explícitos (Makefile)
+- Permite testes rápidos sem cobertura: `pytest tests/`
+- Cobertura disponível via: `make test` ou `make test-cov`
+
+**Novos targets no Makefile:**
+```makefile
+test-quick  # Testes rápidos sem cobertura
+test        # Testes com cobertura completa (CI)
+test-cov    # Alias para test
+lint        # Validação Python + YAML
+format      # Formatação com black
+```
+
+**IMP-02: Consolidação de workflows ✅**
+- Workflow `test-scaffold.yml` REMOVIDO
+- Funcionalidade 100% coberta por `ci-template.yml`
+- Reduz minutos de CI (elimina runs duplicados)
+- Documentação: `.github/workflows/DEPRECATED-test-scaffold.md`
+
+**Benefícios:**
+- Melhor DX: desenvolvedores podem rodar testes rápidos localmente
+- CI mantém cobertura normalmente
+- Workflow único = manutenção mais fácil
+- Menos consumo de GitHub Actions minutes
+
+**IMP-03 + IMP-04: Análise de PRs Dependabot ✅**
+
+Analisados **13 PRs** do Dependabot:
+
+**Ações executadas:**
+1. ✅ PR #12 (codeql-action v3→v4): Comentado e preparado para fechamento
+   - Mudança já aplicada manualmente em commit 05165de
+   - [Comentário adicionado no PR](https://github.com/yvesmarinho/default-project/pull/12#issuecomment-4162582955)
+
+2. ❌ PR #9 (apache-airflow 2→3): Bloqueado com justificativa
+   - Breaking changes críticos - requer plano de migração
+   - [Comentário detalhado no PR](https://github.com/yvesmarinho/default-project/pull/9#issuecomment-4162584615)
+   - Issue de migração a ser criada: "Airflow 3.x Migration Plan"
+
+3. ✅ PRs #8, #10, #11, #13: Análise documentada
+   - Jest 29→30: SAFE TO MERGE (P1)
+   - @types/jest 29→30: SAFE TO MERGE com #8 (P1)
+   - Zod 3→4: REVISAR COM TESTES (P1)
+   - upload-artifact v4→v7: VALIDAR RUNNERS (P1)
+
+**Documento criado:**
+- [DEPENDABOT_PRS_ANALYSIS_2026-03-31.md](DEPENDABOT_PRS_ANALYSIS_2026-03-31.md)
+  - Análise detalhada de cada PR
+  - Breaking changes identificados
+  - Priorização e plano de ação
+  - Automações sugeridas
+
+**Sumário da análise:**
+
+| PR | Pacote | Decisão | Risco |
+|----|--------|---------|-------|
+| #12 | codeql-action | ✅ Fechar (já aplicado) | - |
+| #9 | apache-airflow | ❌ Bloquear (breaking) | 🔴 |
+| #8 | jest | ✅ Mergear | 🟢 |
+| #10 | @types/jest | ✅ Mergear | 🟢 |
+| #11 | zod | ⚠️ Testar | 🟠 |
+| #13 | upload-artifact | ⚠️ Validar | 🟠 |
+
+**Commit criado:**
+- `dce227b` - refactor(ci): refatorar cobertura de testes e consolidar workflows
+
+---
+
 *Activity log will be updated throughout the session*
