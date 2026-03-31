@@ -1,9 +1,16 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-30 — Session 2026-03-30 closed (Security scanner configuration)
-**Project Status**: ✅ Production Ready Template
+**Last Updated**: 2026-03-31 — Workflows CI/CD temporariamente removidos
+**Project Status**: 🟡 Em Desenvolvimento Ativo (CI/CD desabilitado temporariamente)
 **Version**: 1.3.0
-**Last Session**: 2026-03-30 — Security scanner exceptions for test files
+**Last Session**: 2026-03-31 — CI/CD corrections + Dependabot triage + workflows removal
+
+---
+
+> **⚠️ AVISO IMPORTANTE: CI/CD Temporariamente Desabilitado**  
+> Os workflows GitHub Actions foram removidos em 2026-03-31 para foco no desenvolvimento core.  
+> **Guia de restauração:** [CI-CD-RESTORATION-GUIDE.md](CI-CD-RESTORATION-GUIDE.md)  
+> **Aviso público:** [WORKFLOWS_REMOVED_TEMPORARILY.md](../WORKFLOWS_REMOVED_TEMPORARILY.md)
 
 ---
 
@@ -77,7 +84,8 @@ a-default-project/
         ├── 2026-03-21/          # Bug fix agentes + documentação scaffold upgrade (encerrada)
         ├── 2026-03-23/          # Upgrade docs + bug analysis + session-manager v1.2.0 (encerrada)
         ├── 2026-03-29/          # IMP-47 Bug Fix + IMP-48 Session Documentation Foundation (encerrada)
-        └── 2026-03-30/          # Security scanner exceptions for test files (encerrada)
+        ├── 2026-03-30/          # Security scanner exceptions for test files (encerrada)
+        └── 2026-03-31/          # 🔴 CI/CD corrections + Dependabot triage + workflows removal (em andamento)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão
@@ -149,6 +157,20 @@ a-default-project/
   - Implementation guide
   - Automation scripts
   - Benefits and metrics
+
+- **[docs/CI-CD-RESTORATION-GUIDE.md](CI-CD-RESTORATION-GUIDE.md)** - 🔴 Guia completo de restauração CI/CD
+  - Contexto da remoção temporária (2026-03-31)
+  - Roteiro de restauração (3 passos, 30 minutos)
+  - Estado dos workflows no momento da remoção (TOTALMENTE FUNCIONAIS)
+  - Snapshot completo: ci-template.yml + security-scan.yml
+  - Riscos durante período sem CI/CD
+  - Checklist de restauração
+
+- **[WORKFLOWS_REMOVED_TEMPORARILY.md](../WORKFLOWS_REMOVED_TEMPORARILY.md)** - 🔴 Aviso público workflows
+  - Por que workflows foram removidos
+  - O que isso significa para desenvolvedores/usuários
+  - Restauração rápida (15 minutos)
+  - Riscos e mitigações
 
 ### Security Documentation
 - **[docs/ANSIBLE_VAULT_GUIDE.md](ANSIBLE_VAULT_GUIDE.md)** - ⭐ Complete Ansible Vault reference

@@ -4,6 +4,17 @@ A production-ready, scalable project template designed to accelerate development
 
 > **🎯 Ready to Use**: This is a complete template. Clone, run the initialization script, and start coding in minutes!
 
+---
+
+> **⚠️ CI/CD Temporariamente Desabilitado**  
+> Os workflows GitHub Actions foram temporariamente removidos durante o desenvolvimento ativo do template.  
+> **Status:** 🔴 Workflows desabilitados desde 2026-03-31  
+> **Motivo:** Foco no desenvolvimento core (scaffold.py, MCP, documentação)  
+> **Restauração:** Q2 2026 após conclusão do core  
+> **Guia completo:** [WORKFLOWS_REMOVED_TEMPORARILY.md](WORKFLOWS_REMOVED_TEMPORARILY.md) | [CI-CD-RESTORATION-GUIDE.md](docs/CI-CD-RESTORATION-GUIDE.md)
+
+---
+
 ## 📋 Table of Contents
 
 - [Overview](#overview)
