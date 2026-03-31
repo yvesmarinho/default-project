@@ -15,18 +15,6 @@ updates:
       - "github-actions"
 
   # ─────────────────────────────────────────────────────────────
-  # pip — template data-pipeline-airflow
-  # ─────────────────────────────────────────────────────────────
-  - package-ecosystem: "pip"
-    directory: "/.github/templates/data-pipeline-airflow/airflow"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 3
-    labels:
-      - "dependencies"
-      - "template:airflow"
-
-  # ─────────────────────────────────────────────────────────────
   # npm — template typescript-next
   # ─────────────────────────────────────────────────────────────
   - package-ecosystem: "npm"

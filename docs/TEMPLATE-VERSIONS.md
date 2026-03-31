@@ -15,14 +15,13 @@
 |--------|-------|--------|--------|-----------------|-------------|
 | `devops-programming` | core | 1.0.0 | ✅ stable | 2026-03-07 | Python 3.12, TS 5.5, Go 1.23 |
 | `devops-infrastructure` | core | 1.0.0 | 🔵 stub | 2026-03-14 | Terraform 1.5+, Kubernetes 1.27+, Helm 3.12+ |
-| `devops-analysis` | core | 1.0.0 | 🔵 stub | 2026-03-14 | Python 3.12, Jupyter, dbt, Airflow |
+| `devops-analysis` | core | 1.0.0 | 🔵 stub | 2026-03-14 | Python 3.12, Jupyter, dbt |
 | `devops-security` | transversal | 1.0.0 | ✅ stable | 2026-03-14 | Todos os domínios (transversal) |
 | `python-fastapi` | layer2 | 1.0.0 | ✅ stable | 2026-03-07 | FastAPI 0.115, Python 3.12, uv 0.5 |
 | `python-flask` | layer2 | 1.0.0 | ✅ stable | 2026-03-07 | Flask 3.1, Python 3.12, uv 0.5 |
 | `typescript-next` | layer2 | 1.0.0 | ✅ stable | 2026-03-07 | Next.js 15, TypeScript 5.5, Node 20 |
 | `k8s-helm` | layer3 | 1.0.0 | ✅ stable | 2026-03-07 | Helm 3.12+, Kubernetes 1.25+ |
 | `terraform-aws` | layer3 | 1.0.0 | ✅ stable | 2026-03-07 | Terraform 1.7+, AWS provider 5.x |
-| `data-pipeline-airflow` | layer3 | 1.0.0 | ✅ stable | 2026-03-07 | Airflow 2.8+, Python 3.12 |
 | `data-warehouse-dbt` | layer3 | 1.0.0 | ✅ stable | 2026-03-07 | dbt-core 1.7+, dbt-bigquery/snowflake |
 | `lgpd-baseline` | layer4 | 1.0.0 | ✅ stable | 2026-03-07 | Qualquer stack Python/TS |
 | `soc2-baseline` | layer4 | 1.0.0 | ✅ stable | 2026-03-07 | Qualquer stack Python/TS |
@@ -79,9 +78,9 @@
 |--------|------|-------------|
 | 1.0.0 | 2026-03-14 | Stub criado — resolve referências em excludes_with de outros perfis core; expansão planejada |
 
-**Requer**: Python >= 3.11, dbt >= 1.7, Airflow >= 2.8
+**Requer**: Python >= 3.11, dbt >= 1.7
 **Exclui com**: `devops-programming`, `devops-infrastructure`
-**Combina com**: `devops-security`, `data-pipeline-airflow`, `data-warehouse-dbt`, `lgpd-baseline`, `soc2-baseline`
+**Combina com**: `devops-security`, `data-warehouse-dbt`, `lgpd-baseline`, `soc2-baseline`
 
 ---
 
@@ -133,21 +132,6 @@
 **Stack**: Terraform >= 1.7, AWS provider 5.x
 **Requer**: AWS CLI configurado, credenciais via .secrets/.env
 **Combina com**: qualquer perfil layer2, `devops-security`
-
----
-
-### `data-pipeline-airflow` — v1.0.0
-
-**Layer**: layer3
-**Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/data-pipeline-airflow.yaml`](../profile-descriptors/data-pipeline-airflow.yaml)
-
-| Versão | Data | O que mudou |
-|--------|------|-------------|
-| 1.0.0 | 2026-03-07 | Versão inicial — DAG templates, connections via .env, Makefile targets |
-
-**Stack**: Airflow >= 2.8, Python >= 3.12
-**Combina com**: `devops-analysis` (core), `devops-security`
 
 ---
 

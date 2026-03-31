@@ -23,21 +23,20 @@
 
 ## Matriz Completa (perfis implementados)
 
-|  | `devops-programming` | `devops-infrastructure` | `devops-analysis` | `devops-security` | `python-fastapi` | `python-flask` | `typescript-next` | `k8s-helm` | `terraform-aws` | `data-pipeline-airflow` | `data-warehouse-dbt` | `lgpd-baseline` | `soc2-baseline` |
-|--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| **`devops-programming`** | — | ❌ | ❌ | ✅ | ✅ ➕ | ✅ ➕ | ✅ ➕ | ✅ | ✅ | — | — | ✅ | ✅ |
-| **`devops-infrastructure`** | ❌ | — | ❌ | ✅ | — | — | — | ✅ | ✅ | — | — | ✅ | ✅ |
-| **`devops-analysis`** | ❌ | ❌ | — | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ | ✅ |
-| **`devops-security`** | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **`python-fastapi`** | ✅ ➕ | — | — | ✅ | — | ❌ | ⚠️ (1) | ✅ | ✅ | — | — | ✅ | ✅ |
-| **`python-flask`** | ✅ ➕ | — | — | ✅ | ❌ | — | ⚠️ (1) | ✅ | ✅ | — | — | ✅ | ✅ |
-| **`typescript-next`** | ✅ ➕ | — | — | ✅ | ⚠️ (1) | ⚠️ (1) | — | ✅ | ✅ | — | — | ✅ | ✅ |
-| **`k8s-helm`** | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | — | ⚠️ (2) | — | — | ✅ | ✅ |
-| **`terraform-aws`** | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ⚠️ (2) | — | — | — | ✅ | ✅ |
-| **`data-pipeline-airflow`** | — | — | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ | ✅ |
-| **`data-warehouse-dbt`** | — | — | ✅ | ✅ | — | — | — | — | — | ✅ | — | ✅ | ✅ |
-| **`lgpd-baseline`** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
-| **`soc2-baseline`** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
+|  | `devops-programming` | `devops-infrastructure` | `devops-analysis` | `devops-security` | `python-fastapi` | `python-flask` | `typescript-next` | `k8s-helm` | `terraform-aws` | `data-warehouse-dbt` | `lgpd-baseline` | `soc2-baseline` |
+|--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| **`devops-programming`** | — | ❌ | ❌ | ✅ | ✅ ➕ | ✅ ➕ | ✅ ➕ | ✅ | ✅ | — | ✅ | ✅ |
+| **`devops-infrastructure`** | ❌ | — | ❌ | ✅ | — | — | — | ✅ | ✅ | — | ✅ | ✅ |
+| **`devops-analysis`** | ❌ | ❌ | — | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ |
+| **`devops-security`** | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **`python-fastapi`** | ✅ ➕ | — | — | ✅ | — | ❌ | ⚠️ (1) | ✅ | ✅ | — | ✅ | ✅ |
+| **`python-flask`** | ✅ ➕ | — | — | ✅ | ❌ | — | ⚠️ (1) | ✅ | ✅ | — | ✅ | ✅ |
+| **`typescript-next`** | ✅ ➕ | — | — | ✅ | ⚠️ (1) | ⚠️ (1) | — | ✅ | ✅ | — | ✅ | ✅ |
+| **`k8s-helm`** | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | — | ⚠️ (2) | — | ✅ | ✅ |
+| **`terraform-aws`** | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ⚠️ (2) | — | — | ✅ | ✅ |
+| **`data-warehouse-dbt`** | — | — | ✅ | ✅ | — | — | — | — | — | — | ✅ | ✅ |
+| **`lgpd-baseline`** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ |
+| **`soc2-baseline`** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — |
 
 ### Notas
 

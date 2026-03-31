@@ -38,7 +38,7 @@ cd a-default-project
 python scripts/scaffold.py --list-profiles
 ```
 
-Saída esperada (13 perfis):
+Saída esperada (12 perfis):
 
 ```
 ┌──────────────────────────┬────────────────┬────────┬──────────────────┬──────────
@@ -53,13 +53,12 @@ Saída esperada (13 perfis):
 │ typescript-next          │ 2              │ 1.0.0  │ 2026-03-07       │ Layer 2 T
 │ k8s-helm                 │ 3              │ 1.0.0  │ 2026-03-07       │ Layer 3 K
 │ terraform-aws            │ 3              │ 1.0.0  │ 2026-03-07       │ Layer 3 T
-│ data-pipeline-airflow    │ 3              │ 1.0.0  │ 2026-03-07       │ Layer 3 A
 │ data-warehouse-dbt       │ 3              │ 1.0.0  │ 2026-03-07       │ Layer 3 d
 │ lgpd-baseline            │ 4              │ 1.0.0  │ 2026-03-07       │ Layer 4 c
 │ soc2-baseline            │ 4              │ 1.0.0  │ 2026-03-07       │ Layer 4 c
 └──────────────────────────┴────────────────┴────────┴──────────────────┴──────────
 
-  13 perfil(s) em profile-descriptors/
+  12 perfil(s) em profile-descriptors/
 ```
 
 Para output em JSON (útil em pipelines CI):
@@ -210,17 +209,6 @@ python scripts/scaffold.py \
   --language python \
   --compose k8s-helm \
   --infra
-```
-
-### Pipeline de Dados (Airflow)
-
-```bash
-python scripts/scaffold.py \
-  --ci \
-  --name etl-pipeline \
-  --domain programming \
-  --language python \
-  --compose data-pipeline-airflow
 ```
 
 ---
