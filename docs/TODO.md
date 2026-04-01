@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-31 — Session 2026-03-31 closed (CI/CD workflows temporarily removed)
+**Last Updated**: 2026-04-01 — BUG-01 (scaffold duplicate directory) documented
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
@@ -82,6 +82,16 @@
 ---
 
 ### 🔴 P0 — Quick wins (baixo esforço, alto impacto) — executar na próxima sessão
+
+- [ ] **[BUG-01]** Scaffold cria estrutura de diretórios duplicada
+  - **Problema**: Executar `scaffold.py new --name X` de dentro de pasta chamada `X/` cria `X/X/` (estrutura duplicada)
+  - **Causa raiz**: `project_path = target_dir / project_name` onde `target_dir = cwd()` e `cwd().name == project_name`
+  - **Workaround**: Executar de diretório pai ou usar `--target-dir` explícito
+  - **Correção P1**: Adicionar validação em `lib/ui.py::collect_project_info()` para detectar conflito nome/diretório
+  - **Documentação completa**: [`docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md`](SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md)
+  - **Arquivos afetados**: `scripts/lib/ui.py` (linhas 140-230)
+  - **Estimativa**: 30 minutos (validação + testes + atualizar QUICKSTART.md)
+  - *Reportado em*: 2026-04-01
 
 - [x] **[IMP-33]** Fechar o "perfil fantasma" `devops-security` + atualizar `TEMPLATE-VERSIONS.md`
   - Criar `profile-descriptors/devops-security.yaml` (descriptor completo do perfil transversal)

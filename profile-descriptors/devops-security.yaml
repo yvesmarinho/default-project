@@ -8,10 +8,10 @@
 # ------------------------------------------------------------------
 name: devops-security
 description: >
-  Perfil transversal de segurança — aplicado silenciosamente a todos os projetos,
-  independente do domínio (programming, infrastructure, analysis).
-  Ativa controles de segurança em 5 escopos: IaC, código, segredos, modelagem
-  de ameaças e pre-commit. Não conflita com nenhum outro perfil.
+  Perfil transversal de segurança — aplicado silenciosamente a todos os
+  projetos, independente do domínio (programming, infrastructure, analysis).
+  Ativa controles de segurança em 5 escopos: IaC, código, segredos, modelagem de
+  ameaças e pre-commit. Não conflita com nenhum outro perfil.
 
 VERSION: "1.0.0"
 LAST_TESTED_DATE: "2026-03-14"
@@ -29,16 +29,17 @@ requires:
   # - tfsec / checkov   (IaC: Terraform)
   # - trivy             (containers: vulnerabilidades de imagem)
 
-# ------------------------------------------------------------------
-# Artefatos gerados
-# ------------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # Artefatos gerados
+  # ------------------------------------------------------------------
 generates:
   files:
     - path: ".github/prompts/domain/devops-security.prompt.md"
       source: ".copilot-shared/.github/prompts/domain/devops-security.prompt.md"
       description: >
-        Domain profile transversal: comportamento do Copilot para revisões de segurança,
-        IaC hardening, gestão de segredos, threat modeling e pre-commit hooks.
+        Domain profile transversal: comportamento do Copilot para revisões de
+        segurança, IaC hardening, gestão de segredos, threat modeling e
+        pre-commit hooks.
       required: true
       when: null
 
@@ -46,22 +47,22 @@ generates:
       source: "project.py:generate_load_mcp()"
       description: >
         Script de carregamento de variáveis de ambiente para servidores MCP.
-        Verifica .secrets/.env, valida tokens obrigatórios, orienta abertura do VS Code.
-        Nunca exibe o valor dos tokens (SPEC-11).
+        Verifica .secrets/.env, valida tokens obrigatórios, orienta abertura do
+        VS Code. Nunca exibe o valor dos tokens (SPEC-11).
       required: true
       when: null
 
   patches:
     - file: ".copilot-rules.md"
       description: >
-        Seção P0: scan de segurança obrigatório a cada sessão — padrões .env*, *.key,
-        *.pem, *secret*, *password*, *token*.
+        Seção P0: scan de segurança obrigatório a cada sessão — padrões .env*,
+        *.key, *.pem, *secret*, *password*, *token*.
       operation: "referenced"
 
     - file: ".copilot-rules-{project_name}.md"
       description: >
-        Bloco de segurança: regras P0 sobre credenciais, mcp.json sem tokens hardcoded,
-        .secrets/ no .gitignore.
+        Bloco de segurança: regras P0 sobre credenciais, mcp.json sem tokens
+        hardcoded, .secrets/ no .gitignore.
       operation: "embedded"
 
 # ------------------------------------------------------------------
@@ -81,7 +82,8 @@ combines_with:
   - name: k8s-helm
     notes: "Ativa trivy (image scan) + checkov (Helm chart) no pipeline"
   - name: terraform-aws
-    notes: "Ativa tfsec + checkov no pipeline; bloqueia recursos sem tags de segurança"
+    notes: "Ativa tfsec + checkov no pipeline; bloqueia recursos sem tags de
+      segurança"
   - name: data-warehouse-dbt
     notes: "Ativa auditoria de modelos dbt: sem PII em campos não-mascarados"
   - name: lgpd-baseline
@@ -140,7 +142,8 @@ security:
       severity: "high"
       automated: false
     - control: "CWE-312"
-      description: "pre-commit hook: detect-secrets + gitleaks + ruff (Python) / eslint (TS)"
+      description: "pre-commit hook: detect-secrets + gitleaks + ruff (Python) /
+        eslint (TS)"
       tool: "pre-commit"
       severity: "high"
       automated: true

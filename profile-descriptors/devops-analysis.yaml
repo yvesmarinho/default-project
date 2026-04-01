@@ -27,16 +27,16 @@ requires:
   # - airflow >= 2.8  (data pipeline orchestration)
   # - mlflow >= 2.10  (ML experiment tracking)
 
-# ------------------------------------------------------------------
-# Artefatos gerados
-# ------------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # Artefatos gerados
+  # ------------------------------------------------------------------
 generates:
   files:
     - path: ".github/prompts/domain/devops-analysis.prompt.md"
       source: ".copilot-shared/.github/prompts/domain/devops-analysis.prompt.md"
       description: >
-        Domain profile analysis: comportamento do Copilot para projetos de dados,
-        ML, engenharia de dados, Jupyter, dbt e Airflow.
+        Domain profile analysis: comportamento do Copilot para projetos de
+        dados, ML, engenharia de dados, Jupyter, dbt e Airflow.
       required: true
       when: null
 

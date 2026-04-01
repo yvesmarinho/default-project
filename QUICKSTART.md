@@ -71,6 +71,28 @@ python scripts/scaffold.py --list-profiles --json
 
 ## Passo 3 — Gerar um projeto (modo CI/não-interativo)
 
+> ⚠️ **IMPORTANTE**: Execute o scaffold do **diretório PAI** onde deseja criar o projeto.
+>
+> ```bash
+> # ✅ CORRETO — executar de /path/to/projetos/
+> cd /path/to/projetos/
+> python /path/to/a-default-project/scripts/scaffold.py --ci --name meu-projeto --domain programming --language python
+> # Cria: /path/to/projetos/meu-projeto/
+>
+> # ❌ ERRADO — executar de /path/to/projetos/meu-projeto/
+> cd /path/to/projetos/meu-projeto/
+> python /path/to/a-default-project/scripts/scaffold.py --ci --name meu-projeto --domain programming --language python
+> # Cria: /path/to/projetos/meu-projeto/meu-projeto/ (DUPLICADO!)
+> ```
+>
+> **Alternativa**: Use `--target-dir` para especificar onde criar:
+>
+> ```bash
+> python scripts/scaffold.py --ci --name meu-projeto --domain programming --language python --target-dir /path/to/projetos/
+> ```
+>
+> Veja detalhes em: [`docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md`](docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md)
+
 ### Projeto Python básico
 
 ```bash

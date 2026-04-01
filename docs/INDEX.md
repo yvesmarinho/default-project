@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-03-31 — Session-end: Workflows temporarily removed
+**Last Updated**: 2026-04-01 — Session-end: Bug investigation and documentation (BUG-01 scaffold duplicate directory)
 **Project Status**: 🟡 Em Desenvolvimento Ativo (CI/CD desabilitado temporariamente)
 **Version**: 1.3.0
-**Last Session**: 2026-03-31 — CI/CD corrections, Dependabot triage, workflows removal (strategic decision)
+**Last Session**: 2026-04-01 — BUG-01 scaffold duplicate directory investigation (documented, awaiting fix)
 
 ---
 
@@ -87,7 +87,8 @@ a-default-project/
         ├── 2026-03-23/          # Upgrade docs + bug analysis + session-manager v1.2.0 (encerrada)
         ├── 2026-03-29/          # IMP-47 Bug Fix + IMP-48 Session Documentation Foundation (encerrada)
         ├── 2026-03-30/          # Security scanner exceptions for test files (encerrada)
-        └── 2026-03-31/          # 🔴 CI/CD corrections + Dependabot triage + workflows removal (em andamento)
+        ├── 2026-03-31/          # CI/CD corrections + Dependabot triage + workflows removal (encerrada)
+        └── 2026-04-01/          # BUG-01 scaffold duplicate directory investigation (encerrada)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão

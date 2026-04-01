@@ -9,8 +9,8 @@ status: stable
 description: >
   Perfil Layer 4 de conformidade com a Lei Geral de Proteção de Dados (LGPD —
   Lei nº 13.709/2018). Documentos obrigatórios (mapeamento de dados, aviso de
-  privacidade, plano de resposta a incidentes), script de atendimento de direitos
-  dos titulares (DSAR) e workflow de secret scanning no CI/CD.
+  privacidade, plano de resposta a incidentes), script de atendimento de
+  direitos dos titulares (DSAR) e workflow de secret scanning no CI/CD.
   Aplicável sobre qualquer stack — overlay de compliance.
 
 meta:
@@ -51,19 +51,26 @@ templates_path: ".github/templates/lgpd-baseline"
 
 templates:
   - path: "docs/lgpd/DATA-MAPPING.md"
-    description: "Registro de operações de tratamento (Art. 37) — inventário completo de dados pessoais, bases legais, retenção e operadores"
+    description: "Registro de operações de tratamento (Art. 37) — inventário
+      completo de dados pessoais, bases legais, retenção e operadores"
 
   - path: "docs/lgpd/PRIVACY-NOTICE.md"
-    description: "Aviso de Privacidade — direitos dos titulares, base legal por dado, retenção, transferências internacionais e contato do DPO"
+    description: "Aviso de Privacidade — direitos dos titulares, base legal por
+      dado, retenção, transferências internacionais e contato do DPO"
 
   - path: "docs/lgpd/INCIDENT-RESPONSE.md"
-    description: "Plano de Resposta a Incidentes de Dados Pessoais (Art. 48) — 5 fases, critérios de severidade, template de notificação à ANPD e SLAs"
+    description: "Plano de Resposta a Incidentes de Dados Pessoais (Art. 48) — 5
+      fases, critérios de severidade, template de notificação à ANPD e SLAs"
 
   - path: "scripts/lgpd/data-subject-request.py"
-    description: "CLI para atendimento de direitos dos titulares (Art. 18) — ações: export, delete, anonymize, list. Log de auditoria incluso. Adaptar para a stack."
+    description: "CLI para atendimento de direitos dos titulares (Art. 18) — ações:
+      export, delete, anonymize, list. Log de auditoria incluso. Adaptar para a
+      stack."
 
   - path: ".github/workflows/secret-scan.yml"
-    description: "Workflow CI/CD de secret scanning (Gitleaks + TruffleHog) + scan de PII brasileira (CPF, chaves AWS) + pip-audit/npm-audit"
+    description: "Workflow CI/CD de secret scanning (Gitleaks + TruffleHog) + scan
+      de PII brasileira (CPF, chaves AWS) + pip-audit/npm-audit"
 
   - path: "Makefile.lgpd"
-    description: "Targets Makefile: lgpd-check, lgpd-scan-secrets, lgpd-scan-code, lgpd-scan-deps, lgpd-docs-check, lgpd-report, lgpd-dsar"
+    description: "Targets Makefile: lgpd-check, lgpd-scan-secrets, lgpd-scan-code,
+      lgpd-scan-deps, lgpd-docs-check, lgpd-report, lgpd-dsar"
