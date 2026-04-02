@@ -71,6 +71,39 @@
 **Documentation Updated**:
 - `docs/TODO.md` — marked IMP-33 as ✅ already resolved
 
+#### 3. new-project Global Command (Bonus Enhancement)
+
+**Status**: ✅ Complete
+
+**Implementation**:
+- Created shell script wrapper for `scaffold.py`
+- Installed in `~/.local/bin/new-project` for global access
+- Provides convenient syntax sugar for common use cases
+
+**Features**:
+- **Interactive mode**: `new-project` (no arguments)
+- **Quick start**: `new-project my-api` (intelligent defaults: Python + programming)
+- **Profile support**: `new-project my-api --compose python-fastapi`
+- **Utilities**: `--help`, `--list-profiles`, `--validate`
+- **Validation**: Automatic kebab-case name validation
+- **Help**: Colorized output with practical examples
+
+**Files Created**:
+- `scripts/bin/new-project` — shell script (171 lines)
+- `scripts/bin/README.md` — installation guide
+- `docs/NEW_PROJECT_COMMAND.md` — complete usage guide
+
+**Documentation Integration**:
+- Updated [README.md](../../../README.md#-quick-start) — added Quick Start with Option 1 (Global Command - Recommended)
+- Updated [QUICKSTART.md](../../../QUICKSTART.md#-via-rápida-comando-global) — added fast track section at the top
+
+**Benefits**:
+- ✅ Global availability: use from any directory
+- ✅ Improved DX: one-time install, lifetime convenience
+- ✅ Smart defaults: reduces typing for common cases
+- ✅ User-friendly: clear help and examples
+- ✅ Seamless: wraps scaffold.py without breaking existing workflows
+
 ---
 
 ## 📁 Files Created/Modified
@@ -84,13 +117,20 @@
 ### Created (Code)
 - `tests/test_bug01_directory_conflict.py` — 47 lines, 4 test cases
 
+### Created (Scripts & Documentation)
+- `scripts/bin/new-project` — 171 lines shell script
+- `scripts/bin/README.md` — installation guide
+- `docs/NEW_PROJECT_COMMAND.md` — complete usage documentation
+
 ### Modified (Code)
 - `scripts/lib/ui.py` — +33 lines (validation logic)
 
 ### Modified (Documentation)
 - `docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md` — added resolution section
 - `docs/TODO.md` — marked BUG-01 and IMP-33 as resolved
-- `docs/SESSIONS/2026-04-02/DAILY_ACTIVITIES_2026-04-02.md` — logged activities
+- `docs/SESSIONS/2026-04-02/DAILY_ACTIVITIES_2026-04-02.md` — logged all activities
+- `README.md` — added Quick Start section with new-project
+- `QUICKSTART.md` — added Via Rápida section highlighting new-project
 
 ---
 
@@ -100,6 +140,8 @@
 2. **Error Handling**: Same validation logic for both interactive and CI modes
 3. **Test Coverage**: Focus on edge cases (nested paths, case sensitivity)
 4. **Documentation**: Update bug report with resolution details for future reference
+5. **Global Command**: Create user-friendly wrapper to improve developer experience
+6. **Documentation Priority**: Highlight new-project as recommended method in README/QUICKSTART
 
 ---
 
@@ -114,21 +156,27 @@
 - Documentation and migration guides
 - Additional profile development
 
+### Enhancements (Ideas)
+- Shell completions for new-project command
+- Gather user feedback on new-project usability
+- Consider tab-completion for --compose profiles
+
 ### Maintenance
 - Monitor for any edge cases in directory conflict validation
-- Consider adding warning in QUICKSTART.md about proper scaffold usage
 
 ---
 
 ## 📈 Metrics
 
-- **Commits**: 1 (`3209001`)
-- **Files changed**: 8
-- **Lines added**: +475
-- **Lines removed**: -17
+- **Commits**: 4 (`3209001`, `cef598a`, `66a56c5`, `9bda488`)
+- **Files changed**: 15
+- **Lines added**: +1,163
+- **Lines removed**: -19
 - **Tests added**: 4 (100% pass)
 - **Bugs fixed**: 1 (BUG-01)
-- **Validation warnings**: 0 (was 9, now 0 for unrelated IMP-33)
+- **Features added**: 1 (new-project global command)
+- **Docs major updates**: 2 (README + QUICKSTART)
+- **Validation warnings**: 0 (IMP-33 already resolved)
 
 ---
 

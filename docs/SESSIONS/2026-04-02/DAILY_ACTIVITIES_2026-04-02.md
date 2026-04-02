@@ -122,6 +122,36 @@ new-project --help
 
 ---
 
+### Activity 005 — Atualização README e QUICKSTART
+**Time**: [Current]
+**Type**: Documentation
+**Status**: ✅ Complete
+
+**Actions**:
+- ✅ Atualizado [README.md](../../../README.md) com seção Quick Start
+  - Opção 1 (Recommended): Comando global `new-project`
+  - Opção 2: Scaffold direto
+- ✅ Atualizado [QUICKSTART.md](../../../QUICKSTART.md) com "Via Rápida"
+  - Guia de instalação one-time do comando global
+  - Exemplos práticos de uso rápido
+  - Link para guia completo
+- ✅ Ambos os docs agora destacam `new-project` como método preferencial
+
+**Motivação**:
+- Usuários precisam descobrir o comando global imediatamente
+- Reduzir friction: instalação única, uso global
+- Manter scaffold direto como alternativa documentada
+
+**Files Modified**:
+- `README.md` — seção Quick Start adicionada
+- `QUICKSTART.md` — Via Rápida no início do documento
+
+---
+
+*Fim das atividades — sessão completada*
+
+---
+
 *Activities will be logged incrementally throughout the session*
 
 ---
