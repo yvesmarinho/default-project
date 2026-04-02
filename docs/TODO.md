@@ -86,7 +86,7 @@
 - [x] **[BUG-01]** Scaffold cria estrutura de diretórios duplicada ✅ **RESOLVIDO** (2026-04-02)
   - **Problema**: Executar `scaffold.py new --name X` de dentro de pasta chamada `X/` cria `X/X/` (estrutura duplicada)
   - **Causa raiz**: `project_path = target_dir / project_name` onde `target_dir = cwd()` e `cwd().name == project_name`
-  - **Correção implementada**: 
+  - **Correção implementada**:
     - Adicionada função `_validate_directory_conflict()` em `lib/ui.py`
     - Validação integrada em modo interativo e CI
     - 4 testes unitários criados (100% passou)

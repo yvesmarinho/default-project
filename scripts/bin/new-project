@@ -19,6 +19,19 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Detectar Python disponível (python3 ou python)
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+else
+    echo -e "${RED}❌ Erro: Python não encontrado${NC}"
+    echo -e "${YELLOW}💡 Instale Python 3.10+ para usar este comando${NC}"
+    echo -e "${YELLOW}   Ubuntu/Debian: sudo apt install python3${NC}"
+    echo -e "${YELLOW}   macOS: brew install python3${NC}"
+    exit 1
+fi
+
 # Caminho do template (ajustar conforme sua instalação)
 TEMPLATE_DIR="${HOME}/Documentos/DevOps/Vya-Jobs/a-default-project"
 SCAFFOLD_SCRIPT="${TEMPLATE_DIR}/scripts/scaffold.py"
@@ -84,14 +97,14 @@ EOF
 list_profiles() {
     echo -e "${CYAN}📋 Perfis disponíveis:${NC}\n"
     cd "${TEMPLATE_DIR}"
-    python "${SCAFFOLD_SCRIPT}" --list-profiles
+    "${PYTHON_CMD}" "${SCAFFOLD_SCRIPT}" --list-profiles
 }
 
 # Função para validar perfis
 validate_profiles() {
     echo -e "${CYAN}🔍 Validando perfis...${NC}\n"
     cd "${TEMPLATE_DIR}"
-    python "${SCAFFOLD_SCRIPT}" --validate
+    "${PYTHON_CMD}" "${SCAFFOLD_SCRIPT}" --validate
 }
 
 # Parse argumentos
@@ -99,7 +112,7 @@ if [[ $# -eq 0 ]]; then
     # Modo interativo
     echo -e "${CYAN}🚀 Criando novo projeto (modo interativo)${NC}\n"
     cd "${TEMPLATE_DIR}"
-    exec python "${SCAFFOLD_SCRIPT}" new
+    exec "${PYTHON_CMD}" "${SCAFFOLD_SCRIPT}" new
 fi
 
 case "${1}" in
@@ -136,7 +149,7 @@ case "${1}" in
         fi
         
         # Construir comando
-        CMD=(python "${SCAFFOLD_SCRIPT}" new --ci --name "${PROJECT_NAME}")
+        CMD=("${PYTHON_CMD}" "${SCAFFOLD_SCRIPT}" new --ci --name "${PROJECT_NAME}")
         
         # Adicionar opções default se não fornecidas
         HAS_DOMAIN=0

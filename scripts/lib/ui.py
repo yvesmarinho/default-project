@@ -54,16 +54,16 @@ def _validate_name(name: str) -> bool:
 def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[bool, str]:
     """
     Valida se há conflito entre nome do projeto e diretório alvo.
-    
+
     Detecta o caso onde target_dir.name == project_name, que resultaria
     em estrutura duplicada: project_name/project_name/
-    
+
     Returns:
         (is_valid, error_message)
     """
     # Normalizar nome do diretório para comparação
     target_dir_name = target_dir.resolve().name
-    
+
     if target_dir_name == project_name:
         return False, (
             f"⚠️  Conflito detectado: o diretório alvo '{target_dir}' tem o mesmo nome "
@@ -74,7 +74,7 @@ def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[b
             f"   • Usar --target-dir diferente\n"
             f"   • Escolher outro nome de projeto"
         )
-    
+
     return True, ""
 
 
@@ -162,7 +162,7 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         )
 
     target_dir = Path(overrides["target_dir"]) if overrides.get("target_dir") else get_default_target_dir()
-    
+
     # Validar conflito de diretório (BUG-01)
     is_valid, error_msg = _validate_directory_conflict(name, target_dir)
     if not is_valid:
@@ -242,7 +242,7 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
     ).strip()
 
     target_dir = Path(target_dir_str).expanduser()
-    
+
     # Validar conflito de diretório (BUG-01)
     is_valid, error_msg = _validate_directory_conflict(name, target_dir)
     if not is_valid:

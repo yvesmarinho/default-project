@@ -25,14 +25,14 @@
    def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[bool, str]:
        """
        Valida se há conflito entre nome do projeto e diretório alvo.
-       
+
        Retorna: (is_valid, error_message)
        """
        target_dir_name = target_dir.resolve().name
-       
+
        if target_dir_name == project_name:
            return False, "⚠️ Conflito detectado: estrutura duplicada..."
-       
+
        return True, ""
    ```
 
