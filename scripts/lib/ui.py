@@ -53,28 +53,35 @@ def _validate_name(name: str) -> bool:
 
 def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[bool, str]:
     """
-    Valida se há conflito entre nome do projeto e diretório alvo.
-
-    Detecta o caso onde target_dir.name == project_name, que resultaria
-    em estrutura duplicada: project_name/project_name/
-
+    Valida se há potencial conflito entre nome do projeto e diretório alvo.    
+    Com a nova lógica de project_path (config.py), se target_dir.name == project_name,o scaffold usa target_dir diretamente (sem criar subdiretório duplicado).
+    
+    Esta validação agora apenas AVISA o usuário quando isso acontece,
+    sem bloquear a operação.
+    
     Returns:
-        (is_valid, error_message)
+        (is_valid, warning_message)
     """
-    # Normalizar nome do diretório para comparação
-    target_dir_name = target_dir.resolve().name
-
-    if target_dir_name == project_name:
-        return False, (
-            f"⚠️  Conflito detectado: o diretório alvo '{target_dir}' tem o mesmo nome "
-            f"do projeto '{project_name}'.\n"
-            f"   Isso criaria estrutura duplicada: {project_name}/{project_name}/\n\n"
-            f"   Soluções:\n"
-            f"   • Executar de um diretório pai (ex: cd ..)\n"
-            f"   • Usar --target-dir diferente\n"
-            f"   • Escolher outro nome de projeto"
-        )
-
+    target_dir_resolved = target_dir.resolve()
+    
+    # Se nomes coincidem, scaffold criará arquivos diretamente em target_dir
+    if target_dir_resolved.name == project_name:
+        # Se diretório tem conteúdo, avisar usuário
+        if target_dir_resolved.exists() and target_dir_resolved.is_dir():
+            try:
+                # Verifica se tem algum conteúdo
+                has_content = any(target_dir_resolved.iterdir())
+                if has_content:
+                    # Retorna warning mas permite continuar (valid=True)
+                    return True, (
+                        f"⚠️  Aviso: o diretório '{target_dir}' já existe e tem conteúdo.\n"
+                        f"   Como o nome coincide com o projeto '{project_name}', "
+                        f"os arquivos serão criados diretamente neste diretório.\n"
+                        f"   Arquivos existentes NÃO serão sobrescritos (serão pulados)."
+                    )
+            except OSError:
+                pass  # Ignorar erros de permissão
+    
     return True, ""
 
 
