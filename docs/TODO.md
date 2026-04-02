@@ -1,11 +1,17 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-01 — BUG-01 (scaffold duplicate directory) documented
+**Last Updated**: 2026-04-02 — BUG-01 (scaffold duplicate directory) RESOLVIDO (commit 66a2a31)
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
 ---
 
+> **✅ SESSION 2026-04-02 UPDATE:**
+> - **BUG-01 RESOLVIDO**: Duplicação de diretório corrigida com property logic
+> - Modificados: `scripts/lib/config.py` (project_path), `scripts/lib/ui.py` (warning)
+> - Testes: 6 BUG-01 tests + 9 smoke tests passando (279 total)
+> - Commit: `66a2a31` — ready for push (7 commits ahead)
+>
 > **⚠️ SESSION 2026-03-31 UPDATE:**
 > - CI/CD workflows temporariamente removidos (commit 33e40a3)
 > - Workflows preservados em commit dce227b (TOTALMENTE FUNCIONAIS)

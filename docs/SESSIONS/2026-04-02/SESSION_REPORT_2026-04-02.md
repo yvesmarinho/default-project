@@ -26,36 +26,54 @@
 
 ### Work Completed
 
-#### 1. BUG-01: Scaffold Duplicate Directory Prevention
+#### 1. BUG-01: Scaffold Duplicate Directory Prevention (COMPLETE FIX)
 
 **Problem**: When running `scaffold.py new --name X` from inside a directory named `X/`, the tool created a duplicate structure `X/X/`.
 
-**Solution Implemented**:
-- Created `_validate_directory_conflict()` function in `scripts/lib/ui.py`
-- Detects when `target_dir.name == project_name`
-- Integrated in both interactive and CI modes
-- Provides clear error message with 3 solutions
+**Evolution of Solution**:
 
-**Code Changes**:
-- `scripts/lib/ui.py`: +33 lines (validation logic)
-- `tests/test_bug01_directory_conflict.py`: new file, 47 lines (test coverage)
+**Initial Approach** (Activity 002):
+- Created `_validate_directory_conflict()` function in `scripts/lib/ui.py`
+- Raised `ValueError` when `target_dir.name == project_name`
+- Issue: Too aggressive — blocked legitimate use cases
+
+**Final Solution** (Activity 006):
+- **Modified `scripts/lib/config.py`** — Changed `project_path` property logic:
+  - When `target_dir.name == project_name`: returns `target_dir` directly (no duplication)
+  - When names differ: returns `target_dir / project_name` (normal behavior)
+  - Result: Creates flat structure instead of duplicate
+- **Modified `scripts/lib/ui.py`** — Transformed validation from error to warning:
+  - Changed from `raise ValueError` to `logging.warning()`
+  - Allows user to proceed while informing about potential confusion
+- **Updated `tests/test_bug01_directory_conflict.py`** — 6 tests updated:
+  - Tests verify warning is logged (not exception)
+  - Tests verify correct path construction (no duplication)
 
 **Test Results**:
 ```
-4 tests created, 4 passed ✅
-- test_directory_conflict_detected
-- test_directory_no_conflict
-- test_directory_conflict_with_parent_paths
-- test_directory_different_case_same_name
+✅ BUG-01 Unit Tests: 6/6 passing
+✅ Smoke Tests: 9/9 passing (were failing before fix)
+✅ Total Test Suite: 279 tests passing
 ```
 
-**Documentation Updated**:
-- `docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md` — added resolution section
-- `docs/TODO.md` — marked BUG-01 as ✅ resolved
+**Manual Verification**:
+```bash
+cd /tmp/test-project/
+uv run scripts/scaffold.py new --name test-project --profile python --domain programming
+# Result: Created /tmp/test-project/ directly
+# ✅ No duplicate /tmp/test-project/test-project/ directory
+```
+
+**Code Changes**:
+- `scripts/lib/config.py`: Modified `project_path` property logic
+- `scripts/lib/ui.py`: Validation changed from error to warning
+- `tests/test_bug01_directory_conflict.py`: 6 tests updated for new behavior
 
 **Behavior Change**:
-- **Before**: Silently created duplicate structure
-- **After**: Raises `ValueError` with descriptive error message and solutions
+- **Before**: `cd my-project/; scaffold.py new --name my-project` → creates `my-project/my-project/` (DUPLICATE ❌)
+- **After**: Same command → creates flat structure `my-project/` (NO DUPLICATE ✅), logs warning about name match
+
+**Git Commit**: `66a2a31` — `fix(scaffold): corrigir duplicação de diretório quando target_dir.name == project_name`
 
 #### 2. IMP-33: devops-security Profile Verification
 
@@ -168,14 +186,19 @@
 
 ## 📈 Metrics
 
-- **Commits**: 4 (`3209001`, `cef598a`, `66a56c5`, `9bda488`)
-- **Files changed**: 15
-- **Lines added**: +1,163
-- **Lines removed**: -19
-- **Tests added**: 4 (100% pass)
-- **Bugs fixed**: 1 (BUG-01)
+- **Commits**: 1 (`66a2a31` — BUG-01 complete fix)
+- **Git Status**: 7 commits ahead of origin/master
+- **Files changed**: 3
+  - Modified: `scripts/lib/config.py` (project_path property)
+  - Modified: `scripts/lib/ui.py` (validation → warning)
+  - Modified: `tests/test_bug01_directory_conflict.py` (6 tests updated)
+- **Tests status**: 
+  - BUG-01 tests: 6/6 passing ✅
+  - Smoke tests: 9/9 passing ✅ (were failing before)
+  - Total: 279 passing ✅
+- **Bugs fixed**: 1 (BUG-01 — duplicate directory)
 - **Features added**: 1 (new-project global command)
-- **Docs major updates**: 2 (README + QUICKSTART)
+- **Docs major updates**: 4 (README + QUICKSTART + NEW_PROJECT_COMMAND + session docs)
 - **Validation warnings**: 0 (IMP-33 already resolved)
 
 ---

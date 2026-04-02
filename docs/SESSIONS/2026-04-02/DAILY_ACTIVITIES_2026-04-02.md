@@ -123,7 +123,7 @@ new-project --help
 ---
 
 ### Activity 005 — Atualização README e QUICKSTART
-**Time**: [Current]
+**Time**: [Earlier in session]
 **Type**: Documentation
 **Status**: ✅ Complete
 
@@ -145,6 +145,61 @@ new-project --help
 **Files Modified**:
 - `README.md` — seção Quick Start adicionada
 - `QUICKSTART.md` — Via Rápida no início do documento
+
+---
+
+### Activity 006 — BUG-01 Resolution Complete (Final Fix)
+**Time**: [Session continuation]
+**Type**: Bug Fix - Critical Path Fix
+**Status**: ✅ Complete
+
+**Problem Context**:
+After initial validation logic, discovered that the validation was too aggressive - it blocked cases where parent directory name matched project name, but where the user INTENDED to create the structure (e.g., `/home/user/my-project/` + name `my-project` → `/home/user/my-project/my-project/` might be intentional in some cases).
+
+**Solution Refinement**:
+- **Modified**: `scripts/lib/config.py` — Changed `project_path` property to detect and prevent duplicate directory creation when `target_dir.name == project_name`
+  - Now creates flat structure: `/home/user/my-project/` + name `my-project` → `/home/user/my-project/` (no duplication)
+  - Uses `target_dir` directly instead of `target_dir / project_name` when names match
+- **Modified**: `scripts/lib/ui.py` — Transformed validation from hard error to warning
+  - Changed from `ValueError` to `logging.warning()`
+  - Allows user to proceed, but informs about potential confusion
+- **Updated**: `tests/test_bug01_directory_conflict.py` — Updated 6 tests to match new behavior
+  - Tests now verify warning is logged instead of exception raised
+  - Tests verify correct path construction (no duplication)
+
+**Test Results**:
+```
+BUG-01 Unit Tests: 6/6 passing ✅
+Smoke Tests: 9/9 passing ✅ (were failing before fix)
+Total Tests: 279 passing ✅
+```
+
+**Manual Verification**:
+```bash
+cd /tmp/test-project/
+uv run scripts/scaffold.py new --name test-project --profile python --domain programming
+# Result: Created /tmp/test-project/ directly (no /tmp/test-project/test-project/)
+# ✅ SUCCESS: No duplicate directory created
+```
+
+**Commits Created**:
+- `66a2a31` — `fix(scaffold): corrigir duplicação de diretório quando target_dir.name == project_name`
+  - Modified: `scripts/lib/config.py` (property logic changed)
+  - Modified: `scripts/lib/ui.py` (error → warning)
+  - Modified: `tests/test_bug01_directory_conflict.py` (6 tests updated)
+  - Tests: 279 passing, 6 BUG-01 tests ✅, 9 smoke tests ✅
+
+**Git Status**:
+- Branch: master
+- Status: 7 commits ahead of origin/master
+- Ready for push: ✅
+
+**Impact**:
+- ✅ BUG-01 completely resolved
+- ✅ No more duplicate directory creation
+- ✅ Tests validate correct behavior
+- ✅ Manual testing confirms fix works
+- ✅ Code follows project conventions
 
 ---
 

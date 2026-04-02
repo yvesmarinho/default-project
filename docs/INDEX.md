@@ -1,12 +1,18 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-01 — Session-end: Bug investigation and documentation (BUG-01 scaffold duplicate directory)
-**Project Status**: 🟡 Em Desenvolvimento Ativo (CI/CD desabilitado temporariamente)
+**Last Updated**: 2026-04-02 — Session-end: BUG-01 resolution complete (commit 66a2a31)
+**Project Status**: 🟢 Stable — BUG-01 resolved, 279 tests passing, ready for push
 **Version**: 1.3.0
-**Last Session**: 2026-04-01 — BUG-01 scaffold duplicate directory investigation (documented, awaiting fix)
+**Last Session**: 2026-04-02 — ✅ BUG-01 scaffold duplicate directory RESOLVED + 6 tests passing
 
 ---
 
+> **✅ BUG-01 RESOLVIDO (2026-04-02)**
+> - Duplicação de diretório corrigida usando property logic em `scripts/lib/config.py`
+> - Validação transformada em warning (non-blocking)
+> - 6 testes BUG-01 + 9 smoke tests + 279 total passando ✅
+> - Git: 7 commits ahead of origin (ready for push)
+>
 > **⚠️ AVISO IMPORTANTE: CI/CD Temporariamente Desabilitado**
 > Os workflows GitHub Actions foram removidos em 2026-03-31 para foco no desenvolvimento core.
 > **Workflows preservados:** commit `dce227b` (TOTALMENTE FUNCIONAIS)
@@ -88,7 +94,8 @@ a-default-project/
         ├── 2026-03-29/          # IMP-47 Bug Fix + IMP-48 Session Documentation Foundation (encerrada)
         ├── 2026-03-30/          # Security scanner exceptions for test files (encerrada)
         ├── 2026-03-31/          # CI/CD corrections + Dependabot triage + workflows removal (encerrada)
-        └── 2026-04-01/          # BUG-01 scaffold duplicate directory investigation (encerrada)
+        ├── 2026-04-01/          # BUG-01 scaffold duplicate directory investigation (encerrada)
+        └── 2026-04-02/          # ✅ BUG-01 RESOLVED — duplicate directory fix + 279 tests passing (encerrada)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão
