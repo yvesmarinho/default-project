@@ -1,10 +1,73 @@
 # 🐛 Bug Report: Scaffold cria estrutura de diretórios duplicada
 
 **Reportado em**: 2026-04-01
+**Resolvido em**: 2026-04-02
 **Severidade**: ⚠️ Média (user error + design flaw)
-**Status**: 📝 Aguardando correção
+**Status**: ✅ **RESOLVIDO**
 **Bugs confirmados**: 1 (duplicação de diretório)
-**User error identificado**: 1 (caminho Vya-Jets digitado incorretamente — não é bug do código)
+**User error identificado**: 1 (caminho digitado incorretamente — não é bug do código)
+
+---
+
+## ✅ RESOLUÇÃO (2026-04-02)
+
+### Correção Implementada
+
+**Commit**: (pending)
+**Arquivos modificados**:
+- `scripts/lib/ui.py` (+33 linhas)
+- `tests/test_bug01_directory_conflict.py` (novo, 47 linhas)
+
+**Mudanças**:
+
+1. **Nova função de validação** `_validate_directory_conflict()`:
+   ```python
+   def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[bool, str]:
+       """
+       Valida se há conflito entre nome do projeto e diretório alvo.
+       
+       Retorna: (is_valid, error_message)
+       """
+       target_dir_name = target_dir.resolve().name
+       
+       if target_dir_name == project_name:
+           return False, "⚠️ Conflito detectado: estrutura duplicada..."
+       
+       return True, ""
+   ```
+
+2. **Integração em modo interativo** (`_collect_interactive()`):
+   - Valida após coletar `target_dir`
+   - Exibe mensagem de erro clara com soluções
+   - Levanta `ValueError` para interromper execução
+
+3. **Integração em modo CI** (`_collect_ci()`):
+   - Valida antes de criar `ProjectConfig`
+   - Levanta `ValueError` com mensagem descritiva
+
+**Testes criados** (4 casos, 100% passou):
+- ✅ `test_directory_conflict_detected` — detecta conflito
+- ✅ `test_directory_no_conflict` — passa sem conflito
+- ✅ `test_directory_conflict_with_parent_paths` — detecta com caminhos aninhados
+- ✅ `test_directory_different_case_same_name` — case-sensitive correto
+
+### Comportamento Após Correção
+
+**Antes** (buggy):
+```bash
+cd /path/to/my-project/
+scaffold.py new --name my-project
+# Criava: /path/to/my-project/my-project/ (DUPLICADO)
+```
+
+**Depois** (corrigido):
+```bash
+cd /path/to/my-project/
+scaffold.py new --name my-project
+# ❌ Erro: Conflito detectado
+# Mensagem: "o diretório alvo tem o mesmo nome do projeto"
+# Soluções: cd .., --target-dir diferente, outro nome
+```
 
 ---
 

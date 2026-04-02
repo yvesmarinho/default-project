@@ -51,6 +51,33 @@ def _validate_name(name: str) -> bool:
     return bool(_NAME_RE.match(name))
 
 
+def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[bool, str]:
+    """
+    Valida se há conflito entre nome do projeto e diretório alvo.
+    
+    Detecta o caso onde target_dir.name == project_name, que resultaria
+    em estrutura duplicada: project_name/project_name/
+    
+    Returns:
+        (is_valid, error_message)
+    """
+    # Normalizar nome do diretório para comparação
+    target_dir_name = target_dir.resolve().name
+    
+    if target_dir_name == project_name:
+        return False, (
+            f"⚠️  Conflito detectado: o diretório alvo '{target_dir}' tem o mesmo nome "
+            f"do projeto '{project_name}'.\n"
+            f"   Isso criaria estrutura duplicada: {project_name}/{project_name}/\n\n"
+            f"   Soluções:\n"
+            f"   • Executar de um diretório pai (ex: cd ..)\n"
+            f"   • Usar --target-dir diferente\n"
+            f"   • Escolher outro nome de projeto"
+        )
+    
+    return True, ""
+
+
 def _iso_now() -> str:
     return datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -134,6 +161,13 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
             f"--name inválido: '{name}'. Use apenas letras minúsculas, números e hífens."
         )
 
+    target_dir = Path(overrides["target_dir"]) if overrides.get("target_dir") else get_default_target_dir()
+    
+    # Validar conflito de diretório (BUG-01)
+    is_valid, error_msg = _validate_directory_conflict(name, target_dir)
+    if not is_valid:
+        raise ValueError(f"Conflito de diretório: {name} == {target_dir.name}. {error_msg}")
+
     return ProjectConfig(
         project_name=name,
         project_title=overrides.get("title") or _to_title(name),
@@ -142,7 +176,7 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         language=language,
         github_repo=overrides.get("repo") or None,
         shared_dir=Path(overrides["shared_dir"]) if overrides.get("shared_dir") else get_default_shared_dir(),
-        target_dir=Path(overrides["target_dir"]) if overrides.get("target_dir") else get_default_target_dir(),
+        target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_parse_extra_profiles(overrides.get("extra_profiles") or "domain-only", domain),
     )
@@ -207,6 +241,14 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         default=str(defaults.get("target_dir") or get_default_target_dir()),
     ).strip()
 
+    target_dir = Path(target_dir_str).expanduser()
+    
+    # Validar conflito de diretório (BUG-01)
+    is_valid, error_msg = _validate_directory_conflict(name, target_dir)
+    if not is_valid:
+        console.print(f"\n[bold red]{error_msg}[/bold red]\n")
+        raise ValueError(f"Conflito de diretório: {name} == {target_dir.name}")
+
     return ProjectConfig(
         project_name=name,
         project_title=title,
@@ -215,7 +257,7 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         language=language,
         github_repo=github_repo,
         shared_dir=Path(shared_dir_str).expanduser(),
-        target_dir=Path(target_dir_str).expanduser(),
+        target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_collect_extra_profiles(domain),
     )

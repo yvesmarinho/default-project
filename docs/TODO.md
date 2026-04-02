@@ -83,21 +83,23 @@
 
 ### 🔴 P0 — Quick wins (baixo esforço, alto impacto) — executar na próxima sessão
 
-- [ ] **[BUG-01]** Scaffold cria estrutura de diretórios duplicada
+- [x] **[BUG-01]** Scaffold cria estrutura de diretórios duplicada ✅ **RESOLVIDO** (2026-04-02)
   - **Problema**: Executar `scaffold.py new --name X` de dentro de pasta chamada `X/` cria `X/X/` (estrutura duplicada)
   - **Causa raiz**: `project_path = target_dir / project_name` onde `target_dir = cwd()` e `cwd().name == project_name`
-  - **Workaround**: Executar de diretório pai ou usar `--target-dir` explícito
-  - **Correção P1**: Adicionar validação em `lib/ui.py::collect_project_info()` para detectar conflito nome/diretório
-  - **Documentação completa**: [`docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md`](SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md)
-  - **Arquivos afetados**: `scripts/lib/ui.py` (linhas 140-230)
-  - **Estimativa**: 30 minutos (validação + testes + atualizar QUICKSTART.md)
-  - *Reportado em*: 2026-04-01
+  - **Correção implementada**: 
+    - Adicionada função `_validate_directory_conflict()` em `lib/ui.py`
+    - Validação integrada em modo interativo e CI
+    - 4 testes unitários criados (100% passou)
+  - **Arquivos modificados**: `scripts/lib/ui.py` (+33 linhas)
+  - **Testes**: `tests/test_bug01_directory_conflict.py` (4 casos)
+  - **Documentação**: [`docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md`](SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md)
+  - *Reportado em*: 2026-04-01 | *Resolvido em*: 2026-04-02
 
-- [x] **[IMP-33]** Fechar o "perfil fantasma" `devops-security` + atualizar `TEMPLATE-VERSIONS.md`
-  - Criar `profile-descriptors/devops-security.yaml` (descriptor completo do perfil transversal)
-  - `--validate` deve sair de 9 warnings para 0 warnings
-  - Atualizar `TEMPLATE-VERSIONS.md`: adicionar k8s-helm, terraform-aws, data-pipeline-airflow, data-warehouse-dbt, lgpd-baseline, soc2-baseline (todos implementados mas ausentes da tabela)
-  - Atualizar `COMPATIBILITY-MATRIX.md` com `devops-security` como linha/coluna
+- [x] **[IMP-33]** Fechar o "perfil fantasma" `devops-security` + atualizar `TEMPLATE-VERSIONS.md` ✅ **JÁ CONCLUÍDO**
+  - Criar `profile-descriptors/devops-security.yaml` (descriptor completo do perfil transversal) ✅
+  - `--validate` deve sair de 9 warnings para 0 warnings ✅
+  - Atualizar `TEMPLATE-VERSIONS.md`: adicionar k8s-helm, terraform-aws, data-pipeline-airflow, data-warehouse-dbt, lgpd-baseline, soc2-baseline ✅
+  - Atualizar `COMPATIBILITY-MATRIX.md` com `devops-security` como linha/coluna ✅
   - *Alerta resolvido*: Template Architect • AppSec • Release Maintainer
 
 - [x] **[IMP-34]** QUICKSTART.md + exemplo de output de `generate_profile_guide()`
