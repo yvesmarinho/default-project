@@ -1,11 +1,45 @@
 # QUICKSTART — Enterprise Default Project Template
 
-> **5 minutos para o seu primeiro projeto.**
+> **3 minutos para o seu primeiro projeto.**
 > Guia direto ao ponto: pré-requisitos, primeiro uso e fluxos mais comuns.
 
 ---
 
-## Pré-requisitos
+## 🚀 Via Rápida (Comando Global)
+
+### 1. Instalar comando global (uma vez)
+
+```bash
+# Clone o template
+git clone <url-do-repositorio> a-default-project
+cd a-default-project
+
+# Instalar comando global
+cp scripts/bin/new-project ~/.local/bin/new-project
+chmod +x ~/.local/bin/new-project
+```
+
+### 2. Criar projeto (de qualquer lugar)
+
+```bash
+# Quick start Python
+new-project my-api
+
+# Com perfil específico
+new-project my-api --compose python-fastapi
+
+# Ver opções
+new-project --help
+new-project --list-profiles
+```
+
+📖 **Guia completo**: [docs/NEW_PROJECT_COMMAND.md](docs/NEW_PROJECT_COMMAND.md)
+
+---
+
+## 📘 Via Tradicional (Scaffold Direto)
+
+### Pré-requisitos
 
 | Requisito | Versão mínima | Instalação |
 |-----------|--------------|------------|

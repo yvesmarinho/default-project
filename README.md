@@ -44,6 +44,39 @@ This template provides a comprehensive starting point for enterprise projects, e
 - **Maintainability**: Clean architecture with clear separation of concerns
 - **Developer Experience**: Integrated tooling and automation for smooth development workflow
 
+## 🚀 Quick Start
+
+### Option 1: Global Command (Recommended)
+
+Install the `new-project` command globally for maximum convenience:
+
+```bash
+# Install (one time)
+cp scripts/bin/new-project ~/.local/bin/new-project
+chmod +x ~/.local/bin/new-project
+
+# Use from anywhere
+new-project my-api
+new-project my-api --compose python-fastapi
+new-project --help
+```
+
+📖 **Full guide**: [docs/NEW_PROJECT_COMMAND.md](docs/NEW_PROJECT_COMMAND.md)
+
+### Option 2: Direct Scaffold Usage
+
+```bash
+# Interactive mode
+python scripts/scaffold.py new
+
+# CI mode (non-interactive)
+python scripts/scaffold.py new --ci --name my-api --domain programming --language python
+```
+
+📖 **Detailed guide**: [QUICKSTART.md](QUICKSTART.md)
+
+---
+
 ## ✨ Features
 
 ### 🏗️ Architecture & Design Patterns
@@ -56,6 +89,7 @@ This template provides a comprehensive starting point for enterprise projects, e
 
 ### 🛠️ Development Tools
 
+- **Global Command**: `new-project` wrapper for convenient project creation
 - **Speckit Integration**: Automated specification and documentation generation
 - **CI/CD Ready**: Pre-configured GitHub Actions workflows
 - **Code Quality**: ESLint, Prettier, and language-specific linters
