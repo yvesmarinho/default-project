@@ -85,6 +85,43 @@
 
 ---
 
+### Activity 004 — Script Global new-project
+**Time**: [Current]
+**Type**: Developer Experience Enhancement
+**Status**: ✅ Complete
+
+**Actions**:
+- ✅ Criado script shell `~/.local/bin/new-project`
+- ✅ Configurado como executável (+x)
+- ✅ Validado que `~/.local/bin` está no PATH
+- ✅ Implementadas features:
+  - Modo interativo (sem argumentos)
+  - Quick start com defaults inteligentes
+  - Suporte a todos os perfis e opções
+  - Validação de nome (kebab-case)
+  - Help colorido e exemplos práticos
+  - Comandos auxiliares (--list-profiles, --validate)
+- ✅ Testado e funcionando corretamente
+- ✅ Criada documentação: `docs/NEW_PROJECT_COMMAND.md`
+
+**Benefícios**:
+- ✅ Comando global acessível de qualquer diretório
+- ✅ Syntax sugar para casos de uso comuns
+- ✅ Defaults inteligentes (Python + programming se não especificado)
+- ✅ Interface amigável com cores e exemplos
+- ✅ Integra perfeitamente com o scaffold.py existente
+
+**Exemplos de Uso**:
+```bash
+new-project                              # interativo
+new-project my-api                       # quick start
+new-project my-api --compose python-fastapi
+new-project --list-profiles
+new-project --help
+```
+
+---
+
 *Activities will be logged incrementally throughout the session*
 
 ---
