@@ -53,17 +53,17 @@ def _validate_name(name: str) -> bool:
 
 def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[bool, str]:
     """
-    Valida se há potencial conflito entre nome do projeto e diretório alvo.    
+    Valida se há potencial conflito entre nome do projeto e diretório alvo.
     Com a nova lógica de project_path (config.py), se target_dir.name == project_name,o scaffold usa target_dir diretamente (sem criar subdiretório duplicado).
-    
+
     Esta validação agora apenas AVISA o usuário quando isso acontece,
     sem bloquear a operação.
-    
+
     Returns:
         (is_valid, warning_message)
     """
     target_dir_resolved = target_dir.resolve()
-    
+
     # Se nomes coincidem, scaffold criará arquivos diretamente em target_dir
     if target_dir_resolved.name == project_name:
         # Se diretório tem conteúdo, avisar usuário
@@ -81,7 +81,7 @@ def _validate_directory_conflict(project_name: str, target_dir: Path) -> tuple[b
                     )
             except OSError:
                 pass  # Ignorar erros de permissão
-    
+
     return True, ""
 
 

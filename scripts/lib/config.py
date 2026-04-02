@@ -141,10 +141,10 @@ class ProjectConfig:
     def project_path(self) -> Path:
         """
         Retorna o caminho completo do projeto.
-        
+
         Se target_dir já termina com project_name, usa target_dir diretamente
         (evita duplicação quando usuário especifica caminho completo).
-        
+
         Caso contrário, retorna target_dir / project_name.
         """
         # Evita duplicação: se target_dir.name == project_name, não concatena novamente

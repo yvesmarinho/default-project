@@ -192,7 +192,7 @@ uv run scripts/scaffold.py new --name test-project --profile python --domain pro
   - Modified: `scripts/lib/config.py` (project_path property)
   - Modified: `scripts/lib/ui.py` (validation → warning)
   - Modified: `tests/test_bug01_directory_conflict.py` (6 tests updated)
-- **Tests status**: 
+- **Tests status**:
   - BUG-01 tests: 6/6 passing ✅
   - Smoke tests: 9/9 passing ✅ (were failing before)
   - Total: 279 passing ✅

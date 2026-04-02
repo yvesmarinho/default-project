@@ -139,7 +139,7 @@ case "${1}" in
         # Nome do projeto fornecido
         PROJECT_NAME="${1}"
         shift
-        
+
         # Validar formato do nome
         if [[ ! "${PROJECT_NAME}" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
             echo -e "${RED}❌ Erro: Nome inválido '${PROJECT_NAME}'${NC}"
@@ -147,15 +147,15 @@ case "${1}" in
             echo -e "${YELLOW}Exemplo: my-api-v2${NC}"
             exit 1
         fi
-        
+
         # Construir comando
         CMD=("${PYTHON_CMD}" "${SCAFFOLD_SCRIPT}" new --ci --name "${PROJECT_NAME}")
-        
+
         # Adicionar opções default se não fornecidas
         HAS_DOMAIN=0
         HAS_LANGUAGE=0
         HAS_COMPOSE=0
-        
+
         for arg in "$@"; do
             case "${arg}" in
                 --domain) HAS_DOMAIN=1 ;;
@@ -163,22 +163,22 @@ case "${1}" in
                 --compose) HAS_COMPOSE=1 ;;
             esac
         done
-        
+
         # Defaults
         if [[ ${HAS_DOMAIN} -eq 0 && ${HAS_COMPOSE} -eq 0 ]]; then
             CMD+=(--domain programming)
         fi
-        
+
         if [[ ${HAS_LANGUAGE} -eq 0 && ${HAS_COMPOSE} -eq 0 ]]; then
             CMD+=(--language python)
         fi
-        
+
         # Adicionar argumentos do usuário
         CMD+=("$@")
-        
+
         echo -e "${CYAN}🚀 Criando projeto: ${GREEN}${PROJECT_NAME}${NC}"
         echo -e "${BLUE}Comando: ${CMD[*]}${NC}\n"
-        
+
         cd "${TEMPLATE_DIR}"
         exec "${CMD[@]}"
         ;;

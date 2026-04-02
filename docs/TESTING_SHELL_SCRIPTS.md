@@ -30,7 +30,7 @@ fi
 
 Substituídas 4 ocorrências de `python` por `"${PYTHON_CMD}"`:
 - `list_profiles()`
-- `validate_profiles()`  
+- `validate_profiles()`
 - Modo interativo
 - Construção do comando CI
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Smoke tests para o script new-project
-# 
+#
 # Testa as funcionalidades básicas sem criar projetos reais
 #
 
@@ -26,17 +26,17 @@ test_command() {
     local test_name="$1"
     local command="$2"
     local expected_exit_code="${3:-0}"
-    
+
     TESTS_RUN=$((TESTS_RUN + 1))
-    
+
     echo -n "  Testing: ${test_name}... "
-    
+
     if eval "${command}" > /dev/null 2>&1; then
         actual_exit=$?
     else
         actual_exit=$?
     fi
-    
+
     if [[ ${actual_exit} -eq ${expected_exit_code} ]]; then
         echo -e "${GREEN}✓ PASS${NC}"
         TESTS_PASSED=$((TESTS_PASSED + 1))
@@ -52,11 +52,11 @@ test_command() {
 test_command_fails() {
     local test_name="$1"
     local command="$2"
-    
+
     TESTS_RUN=$((TESTS_RUN + 1))
-    
+
     echo -n "  Testing: ${test_name}... "
-    
+
     if eval "${command}" > /dev/null 2>&1; then
         echo -e "${RED}✗ FAIL${NC} (expected failure, got success)"
         TESTS_FAILED=$((TESTS_FAILED + 1))
