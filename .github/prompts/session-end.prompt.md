@@ -118,11 +118,78 @@ ansible-lint playbooks/                          # se Ansible
 hadolint Dockerfile                              # se Docker
 ```
 
+### Passo 6 — Session Security Review & Scan Final
+
+<br />
+
+#### 6.1 — Session Documentation Security Review
+
+**CRÍTICO**: Revisar documentos de sessão antes de commitar para garantir que nenhum dado sensível foi exposto:
+
+**Arquivos a revisar**:
+- `docs/SESSIONS/[YYYY-MM-DD]/DAILY_ACTIVITIES_[YYYY-MM-DD].md`
+- `docs/SESSIONS/[YYYY-MM-DD]/SESSION_RECOVERY_[YYYY-MM-DD].md`
+- `docs/SESSIONS/[YYYY-MM-DD]/SESSION_REPORT_[YYYY-MM-DD].md` (se existir)
+- `docs/SESSIONS/[YYYY-MM-DD]/FINAL_STATUS_[YYYY-MM-DD].md` (se existir)
+
+**Checklist de segurança para session docs**:
+
+- [ ] ❌ **Credenciais**: Sem senhas, API keys, tokens, certificados
+- [ ] ❌ **IPs/URLs**: Sem IPs privados, URLs de produção, endpoints internos
+- [ ] ❌ **Dados pessoais**: Sem emails reais, nomes de clientes, CPF/CNPJ
+- [ ] ❌ **Estrutura interna**: Sem arquitetura detalhada de infraestrutura crítica
+- [ ] ❌ **Vulnerabilidades**: Sem descrição de falhas de segurança não corrigidas
+- [ ] ❌ **Paths sensíveis**: Sem caminhos completos de sistemas de produção
+- [ ] ✅ **Exemplos sanitizados**: Usar `user@example.com`, `192.0.2.1`, `api.exemplo.local`
+- [ ] ✅ **Placeholders**: Usar `<TOKEN>`, `<API_KEY>`, `***` em exemplos
+- [ ] ✅ **Paths relativos**: Usar caminhos relativos ao projeto, não absolutos do sistema
+
+**Padrões comuns de exposição acidental**:
+
+| Risco | Exemplo INCORRETO | Exemplo CORRETO |
+|-------|------------------|-----------------|
+| API Keys | `API_KEY=sk_live_abc123...` | `API_KEY=<REDACTED>` |
+| URLs internas | `https://internal-db.company.local` | `https://<INTERNAL_DB>` |
+| IPs privados | `ssh admin@10.20.30.40` | `ssh admin@<PRIVATE_IP>` |
+| Emails reais | `contato@empresa-real.com` | `user@example.com` |
+| Tokens JWT | `Bearer eyJhbGciOi...` | `Bearer <JWT_TOKEN>` |
+| Senhas | `DB_PASS=MyS3cr3tP@ss` | `DB_PASS=<REDACTED>` |
+| Paths absolutos | `/home/user/.secrets/api.key` | `.secrets/api.key` (relativo) |
+
+**Comandos de auto-verificação**:
+
+```bash
+# Buscar padrões suspeitos em session docs (última semana)
+find docs/SESSIONS/ -name "*.md" -mtime -7 -exec grep -HEi \
+  'password|secret|token|api_key|bearer|private.*key' {} \;
+
+# Verificar se houve exposição de IPs privados
+find docs/SESSIONS/ -name "*.md" -mtime -7 -exec grep -HE \
+  '(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)' {} \;
+```
+
+**Se encontrar exposição**: 
+1. PARAR imediatamente (não commitar)
+2. Sanitizar os arquivos (remover/substituir por placeholders)
+3. Verificar se já foi commitado antes → se sim, seguir procedimento de credential rotation
+4. Adicionar padrão ao `.gitleaks-session-docs.toml` (após implementar IMP-49 subtarefa 3)
+
+**Resultado esperado**:
+```
+🟢 Session docs security review: PASSED
+   ✅ No credentials found
+   ✅ No internal IPs/URLs exposed
+   ✅ No personal data leaked
+   ✅ All examples sanitized
+```
+
 ---
 
-### Passo 6 — Scan de Segurança Final
+<br />
 
-Último check antes do commit:
+#### 6.2 — Source Code & Staging Area Security Scan
+
+Último check antes do commit (scan de arquivos a serem commitados):
 
 ```
 Padrões: *.env, .env*, *.key, *.pem, *secret*, *password*, *token*, *.log
@@ -250,7 +317,8 @@ Remover arquivos temporários gerados durante a sessão:
 - [ ] Testes passando (se código foi modificado)
 - [ ] Lint/formatter aplicado (se código foi modificado)
 - [ ] IaC validado (se infra foi modificada)
-- [ ] Scan de segurança final: 🟢 LIMPO
+- [ ] **Session docs security review: 🟢 PASSED** (sem credenciais, IPs, dados sensíveis)
+- [ ] Scan de segurança final (source code): 🟢 LIMPO
 
 ### Git
 - [ ] `git status` revisado — nada inesperado no staging

@@ -17,7 +17,15 @@
     "auto_git_init": true,
     "create_venv": true,
     "setup_symlinks": true,
-    "validate_on_create": true
+    "validate_on_create": true,
+    "session_docs": {
+      "enabled": true,
+      "auto_create_daily": true,
+      "format": "structured",
+      "security_scan": true,
+      "validate_on_commit": false,
+      "template_version": "1.0.0"
+    }
   },
   "prompts": {
     "show_emoji": true,
@@ -26,7 +34,7 @@
   },
   "metadata": {
     "config_version": "1.0.0",
-    "last_updated": "2026-03-20",
+    "last_updated": "2026-04-03",
     "author": "Vya.Digital"
   }
 }

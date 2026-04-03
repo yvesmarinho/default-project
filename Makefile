@@ -687,6 +687,78 @@ status:
 
 ##
 ## ═══════════════════════════════════════════════════════════════════════
+## SESSION DOCUMENTATION
+## ═══════════════════════════════════════════════════════════════════════
+##
+
+## session-log: Show recent session activity log
+session-log:
+	@echo "$(BLUE)📋 Recent Session Activity$(NC)"
+	@echo ""
+	@if [ -d "docs/SESSIONS" ]; then \
+		LATEST_SESSION=$$(find docs/SESSIONS -maxdepth 1 -type d -name "20*" | sort -r | head -1); \
+		if [ -n "$$LATEST_SESSION" ]; then \
+			SESSION_DATE=$$(basename $$LATEST_SESSION); \
+			echo "$(YELLOW)Session: $$SESSION_DATE$(NC)"; \
+			echo ""; \
+			if [ -f "$$LATEST_SESSION/DAILY_ACTIVITIES_$$SESSION_DATE.md" ]; then \
+				echo "$(GREEN)DAILY_ACTIVITIES:$(NC)"; \
+				tail -n 50 "$$LATEST_SESSION/DAILY_ACTIVITIES_$$SESSION_DATE.md"; \
+			else \
+				echo "$(YELLOW)⚠️  No DAILY_ACTIVITIES found for this session$(NC)"; \
+			fi; \
+		else \
+			echo "$(YELLOW)⚠️  No session directories found$(NC)"; \
+		fi; \
+	else \
+		echo "$(RED)❌ docs/SESSIONS/ directory not found$(NC)"; \
+	fi
+
+## session-validate: Validate session documentation format
+session-validate:
+	@echo "$(BLUE)🔍 Validating session documentation...$(NC)"
+	@echo ""
+	@if command -v python3 >/dev/null 2>&1; then \
+		python3 scripts/session-validate.py --all; \
+	else \
+		echo "$(RED)❌ python3 not found$(NC)"; \
+		exit 1; \
+	fi
+
+## session-sanitize: Scan session docs for sensitive data exposure
+session-sanitize:
+	@echo "$(BLUE)🛡️  Scanning session docs for sensitive data...$(NC)"
+	@echo ""
+	@if command -v gitleaks >/dev/null 2>&1; then \
+		if [ -d "docs/SESSIONS" ]; then \
+			gitleaks detect \
+				--config .gitleaks-session-docs.toml \
+				--source docs/SESSIONS/ \
+				--verbose \
+				--no-git; \
+			if [ $$? -eq 0 ]; then \
+				echo ""; \
+				echo "$(GREEN)✅ No sensitive data found$(NC)"; \
+			else \
+				echo ""; \
+				echo "$(RED)❌ Sensitive data detected - review and sanitize$(NC)"; \
+				echo "$(YELLOW)See session-end.prompt.md (Passo 6) for sanitization guidelines$(NC)"; \
+				exit 1; \
+			fi; \
+		else \
+			echo "$(YELLOW)⚠️  docs/SESSIONS/ directory not found$(NC)"; \
+		fi; \
+	else \
+		echo "$(YELLOW)⚠️  gitleaks not installed$(NC)"; \
+		echo ""; \
+		echo "Install gitleaks:"; \
+		echo "  macOS:  brew install gitleaks"; \
+		echo "  Linux:  wget https://github.com/gitleaks/gitleaks/releases/..."; \
+		exit 1; \
+	fi
+
+##
+## ═══════════════════════════════════════════════════════════════════════
 ## TEMPLATE MANAGEMENT
 ## ═══════════════════════════════════════════════════════════════════════
 ##

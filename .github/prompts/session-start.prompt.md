@@ -104,7 +104,7 @@ git log --oneline -5   # últimos 5 commits
 
 ---
 
-### Passo 6 — Criar Documentos de Sessão
+### Passo 6 — Criar Documentos de Sessão e Carregar Protocolo
 
 Criar os arquivos de sessão do dia (se ainda não existirem):
 
@@ -127,6 +127,57 @@ Arquivos a criar:
 
 ## Itens P0 para Esta Sessão
 [lista do TODO.md]
+```
+
+**Protocolo de Documentação Incremental**:
+
+Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIES_[YYYY-MM-DD].md` seguindo o formato estruturado definido em [`docs/SESSION_DOCS_STYLE_GUIDE.md`](../../docs/SESSION_DOCS_STYLE_GUIDE.md).
+
+**Regras de documentação durante a sessão**:
+
+1. **Quando documentar**: Após completar atividades significativas (>= 10 linhas de código, decisões técnicas, criação/modificação de documentação estrutural)
+
+2. **Formato obrigatório**: Usar template canônico com separador `---` e campos estruturados:
+   ```markdown
+   ---
+   
+   ### [Título da Atividade] ([TODO-ID])
+   
+   **HH:MM — [STATUS]**
+   
+   **Objetivo**: [O que foi feito]
+   **Contexto**: [Por que foi necessário]
+   **Passos executados**:
+   1. [Passo 1 com ferramenta usada]
+   2. [Passo 2 com comando executado]
+   
+   **Resultado**: [Outcome — sucesso/bloqueio/aprendizado]
+   **Arquivos modificados/criados**:
+   - path/to/file.py (+N/-N)
+   
+   **Commits**:
+   - `abc1234` — tipo(escopo): descrição
+   
+   **Status**: [✅ Completo | 🔵 Em progresso | ❌ Bloqueado | ⏸️ On hold]
+   
+   ---
+   ```
+
+3. **Atualização**: Usar `replace_string_in_file` em modo **append** (adicionar blocos ao final do arquivo)
+
+4. **Não documentar**: Typos (< 5 linhas), chores, mudanças cosméticas
+
+5. **Segurança**: NUNCA incluir credenciais, tokens, senhas, ou dados sensíveis nos blocos
+
+**Carregar style guide**:
+- Ler [`docs/SESSION_DOCS_STYLE_GUIDE.md`](../../docs/SESSION_DOCS_STYLE_GUIDE.md) após criar os arquivos de sessão
+- Confirmar compreensão dos campos obrigatórios vs opcionais
+- Confirmar compreensão dos anti-padrões (DO/DON'T)
+
+**Resultado esperado**:
+```
+✅ Documentos de sessão criados
+✅ SESSION_DOCS_STYLE_GUIDE.md carregado — protocolo ativo
 ```
 
 ---
