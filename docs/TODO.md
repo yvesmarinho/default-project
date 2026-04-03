@@ -1,17 +1,20 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-03 — BUG-01 recurrence + BUG-02 (SpecKit placement) RESOLVIDOS
+**Last Updated**: 2026-04-03 — IMP-52 ✅ IMP-49 ✅ IMP-50 (60%) Session Documentation System
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
 ---
 
 > **✅ SESSION 2026-04-03 UPDATE:**
-> - **BUG-01 RECURRENCE RESOLVIDO**: Tilde expansion missing in CI mode
-> - **BUG-02 RESOLVIDO**: SpecKit assets copied to wrong directory (target_dir vs project_path)
-> - Modificados: `scripts/lib/ui.py` (expanduser), `scripts/lib/project.py` (copy_speckit base path)
-> - Testes: 279 total passed (5 pre-existing failures unrelated to fixes)
-> - Test project validated: `tmp/projeto-teste` created correctly ✅
+> - **IMP-52 CONCLUÍDO**: yamllint/jsonschema documentation and Makefile targets
+> - **IMP-49 CONCLUÍDO**: Session docs integration (prompts, validation, security, tests)
+> - **IMP-50 PROGRESSO**: Adoption guide (60% - docs done, migration script pending)
+> - Criados: SESSION_DOCS_ADOPTION.md (~1500 lines), SECURITY_SESSION_DOCS.md (~800 lines)
+> - Criados: .gitleaks-session-docs.toml, scripts/session-validate.py (420 lines)
+> - Criados: tests/test_session_integration.py (20 tests, 100% passing)
+> - Testes: 299/304 passed (98.4%), 20/20 session integration tests passing
+> - Commits: bd43bc2 (IMP-52), 284a499 (IMP-49), 47ba9ac (IMP-50), 05a33dc (formatting)
 >
 > **✅ SESSION 2026-04-02 UPDATE:**
 > - **BUG-01 RESOLVIDO**: Duplicação de diretório corrigida com property logic
@@ -29,13 +32,12 @@
 
 ## 🎯 Current Sprint
 
-### 🚀 Próximas Ações — Sistema de Documentação Incremental (Sessões consecutivas 2026-03-30 a 2026-04-02)
+### 🚀 Próximas Ações — Sistema de Documentação Incremental (Sessões consecutivas 2026-03-30 a 2026-04-03)
 
 > **IMP-48 ✅ CONCLUÍDO** (2026-03-29) — Fundação (lib + templates + style guide + 36 tests)
->
-> **Next: IMP-49** (P0, 6h) — Integração com prompts, CI, gitleaks
-> **Then: IMP-50** (P0, 4h) — Documentação e migração de projetos existentes
-> **Then: IMP-51** (P1, 4h) — Busca/indexação MCP (objetivo B: memória aprimorada)
+> **IMP-49 ✅ CONCLUÍDO** (2026-04-03) — Integração com prompts, CI, gitleaks, validação
+> **IMP-50 🔵 60% COMPLETO** (2026-04-03) — Adoption + security guides (migration pending)
+> **IMP-51 🔵 PENDENTE** (P1, 4h) — Busca/indexação MCP (objetivo B: memória aprimorada)
 >
 > **Origem**: Debate 2026-03-29 — [`DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md`](SESSIONS/2026-03-29/DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md)
 
@@ -43,24 +45,87 @@
 
 ### 📋 Itens Recentes (2026-04-03)
 
-- [x] **[BUG-03]** .github/copilot-instructions.md não é gerado durante scaffold ❌ **NÃO CONFIRMADO** (2026-04-03)
-  - **Problema reportado**: Projeto gerado não contém `.github/copilot-instructions.md` com instruções básicas
-  - **Investigação realizada**:
-    - Função `generate_copilot_instructions()` existe em `scripts/lib/templates.py:455`
-    - Função é chamada corretamente em `scripts/lib/flows/new_project.py:54`
-    - Template `_COPILOT_INSTRUCTIONS_TEMPLATE` está definido e correto
-  - **Teste de validação**:
-    ```bash
-    python scripts/scaffold.py new --ci --name test-bug03 \
-      --domain programming --language python --target-dir ./tmp
-    ls -la ./tmp/test-bug03/.github/copilot-instructions.md
-    # Resultado: arquivo EXISTE ✅ (3127 bytes, conteúdo correto)
-    ```
-  - **Conclusão**: Scaffold está funcionando corretamente. Arquivo é gerado com sucesso.
-  - **Possível causa do relato**: Teste realizado antes das correções BUG-01/BUG-02, ou verificação em diretório incorreto
-  - *Reportado em*: 2026-04-03 | *Investigado em*: 2026-04-03 | *Status*: FECHADO (não é bug)
-
 - [x] **[IMP-52]** Adicionar instruções de uso para jsonschema e yamllint ✅ **CONCLUÍDO** (2026-04-03)
+  - **Contexto**: Ferramentas `jsonschema` e `yamllint` já estão disponíveis no ambiente, mas não há documentação de uso
+  - **Implementação realizada**:
+    - ✅ README.md: Nova seção "Configuration Validation" (~150 linhas após "Development Commands")
+      - yamllint: instalação (uv/pip), uso, configuração (.yamllint.yml template)
+      - jsonschema: validação Python e Node.js (ajv-cli) com exemplos completos
+      - Pre-commit hooks: exemplo de script bash para automação
+    - ✅ Makefile: Três novos targets após `format` (linha ~75):
+      - `lint-yaml`: Valida .github/workflows/, profile-descriptors/, .scaffold-state.yaml
+      - `lint-json`: Valida todos arquivos .json com Python (fallback gracioso)
+      - `lint-config`: Target agregador que chama lint-yaml + lint-json
+    - ✅ Validação funcional: `make lint-config` executado com sucesso
+  - **Arquivos modificados**:
+    - `README.md` (seção Configuration Validation inserida linha ~570)
+    - `Makefile` (targets lint-yaml, lint-json, lint-config adicionados linha ~75)
+  - **Resultado**: Ferramentas documentadas e integradas ao workflow de desenvolvimento
+  - *Reportado em*: 2026-04-03 | *Concluído em*: 2026-04-03 | *Estimativa original*: 2h | *Tempo real*: 1.5h
+  - **Commit**: `bd43bc2`
+
+- [x] **[IMP-49]** Integração Session Documentation System ✅ **CONCLUÍDO** (2026-04-03)
+  - **Contexto**: Sistema de documentação de sessão criado (IMP-48), precisa integração com workflows existentes
+  - **Implementação realizada**:
+    - ✅ Session Prompts: Atualizados session-start.prompt.md e session-end.prompt.md
+    - ✅ Security Config: .gitleaks-session-docs.toml com 25+ padrões de segurança
+    - ✅ Validation Tool: scripts/session-validate.py (420 linhas)
+    - ✅ Test Suite: tests/test_session_integration.py (20 testes, 100% passando)
+    - ✅ Makefile Targets: session-log, session-validate, session-sanitize
+    - ✅ Scaffold Config: .scaffold-config.json com features.session_docs
+  - **Arquivos criados**:
+    - `.gitleaks-session-docs.toml` (~150 linhas)
+    - `scripts/session-validate.py` (420 linhas)
+    - `tests/test_session_integration.py` (~600 linhas)
+  - **Arquivos modificados**:
+    - `.github/prompts/session-start.prompt.md`
+    - `.github/prompts/session-end.prompt.md`
+    - `Makefile` (3 novos targets)
+    - `.scaffold-config.json`
+  - **Resultado**: Sistema completo integrado com prompts, CI/CD, validação e segurança
+  - *Reportado em*: 2026-03-29 | *Concluído em*: 2026-04-03 | *Estimativa original*: 6h | *Tempo real*: 5.5h
+  - **Commit**: `284a499`
+
+- [ ] **[IMP-50]** Session Documentation Adoption 🔵 **60% COMPLETO** (2026-04-03)
+  - **Contexto**: Sistema implementado, precisa documentação de adoção e guias de migração
+  - **Implementação parcial**:
+    - ✅ SESSION_DOCS_ADOPTION.md (~1500 linhas):
+      - Part 1: Foundation (system overview, architecture, lifecycle)
+      - Part 2: File Structure and Naming
+      - Part 3: Implementation Guide
+      - Part 4: Style Guide Quick Reference
+      - Part 5: FAQ and Troubleshooting
+    - ✅ SECURITY_SESSION_DOCS.md (~800 linhas):
+      - Threat model and risk categories
+      - Security patterns and sanitization
+      - Validation and scanning procedures
+      - Incident response protocols
+      - Security checklists
+  - **Pendente (40%)**:
+    - [ ] scripts/migrate-daily-activities.py (migration script for legacy docs) — 1h
+    - [ ] Tests for migration script — 30min
+    - [ ] Example migrated session directory — 15min
+    - [ ] Update documentation with migration guide section — 15min
+  - **Arquivos criados**:
+    - `docs/SESSION_DOCS_ADOPTION.md` (~1500 linhas)
+    - `docs/SECURITY_SESSION_DOCS.md` (~800 linhas)
+  - **Resultado**: Documentação completa criada, ferramentas de migração pendentes
+  - *Reportado em*: 2026-03-29 | *Iniciado em*: 2026-04-03 | *Estimativa original*: 4h | *Tempo usado*: 2.5h | *Tempo restante*: 1.5h
+  - **Commit**: `47ba9ac` (documentação)
+
+- [ ] **[IMP-51]** MCP Search Integration for Session History 🔵 **PENDENTE**
+  - **Contexto**: Sistema de documentação implementado, precisa busca semântica via MCP
+  - **Objetivo**: Objetivo B do debate - memória aprimorada do sistema
+  - **Escopo**:
+    - Implementar busca semântica em histórico de sessões
+    - Criar CLI tool para queries
+    - Integração com MCP memory server
+  - **Estimativa**: 4h
+  - *Reportado em*: 2026-03-29 | *Status*: Pendente (aguarda conclusão IMP-50)
+
+---
+
+### 📋 Itens Recentes (2026-04-02)
   - **Contexto**: Ferramentas `jsonschema` e `yamllint` já estão disponíveis no ambiente, mas não há documentação de uso
   - **Implementação realizada**:
     - ✅ README.md: Nova seção "Configuration Validation" (~150 linhas após "Development Commands")
