@@ -502,7 +502,7 @@ def generate_copilot_instructions(config: ProjectConfig) -> CreatedItem:
 
 def generate_copilot_rules(config: ProjectConfig) -> CreatedItem:
     """
-    Gera `.copilot-rules-[project_name].md` em config.target_dir.
+    Gera `.copilot-rules-[project_name].md` em config.project_path.
 
     Conteúdo enriquecido (IMP-09):
     - Identidade do projeto

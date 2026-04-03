@@ -1,11 +1,18 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-02 — BUG-01 (scaffold duplicate directory) RESOLVIDO (commit 66a2a31)
+**Last Updated**: 2026-04-03 — BUG-01 recurrence + BUG-02 (SpecKit placement) RESOLVIDOS
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
 ---
 
+> **✅ SESSION 2026-04-03 UPDATE:**
+> - **BUG-01 RECURRENCE RESOLVIDO**: Tilde expansion missing in CI mode
+> - **BUG-02 RESOLVIDO**: SpecKit assets copied to wrong directory (target_dir vs project_path)
+> - Modificados: `scripts/lib/ui.py` (expanduser), `scripts/lib/project.py` (copy_speckit base path)
+> - Testes: 279 total passed (5 pre-existing failures unrelated to fixes)
+> - Test project validated: `tmp/projeto-teste` created correctly ✅
+>
 > **✅ SESSION 2026-04-02 UPDATE:**
 > - **BUG-01 RESOLVIDO**: Duplicação de diretório corrigida com property logic
 > - Modificados: `scripts/lib/config.py` (project_path), `scripts/lib/ui.py` (warning)
@@ -100,6 +107,28 @@
   - **Testes**: `tests/test_bug01_directory_conflict.py` (4 casos)
   - **Documentação**: [`docs/SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md`](SESSIONS/2026-04-01/BUG_SCAFFOLD_DUPLICATE_DIRECTORY.md)
   - *Reportado em*: 2026-04-01 | *Resolvido em*: 2026-04-02
+
+- [x] **[BUG-01 Recurrence]** Tilde expansion missing in CI mode ✅ **RESOLVIDO** (2026-04-03)
+  - **Problema**: Modo CI não expande `~` em `--target-dir` e `--shared-dir`, criando estrutura literal `~/Documentos/...`
+  - **Causa raiz**: `_collect_ci()` em `scripts/lib/ui.py` usava `Path(overrides["target_dir"])` sem `.expanduser()`
+  - **Correção implementada**:
+    - Adicionado `.expanduser()` em ambos `target_dir` e `shared_dir` na linha ~172
+    - Modo interativo já tinha o fix (linha ~251), mas modo CI não
+  - **Arquivos modificados**: `scripts/lib/ui.py` (+2 `.expanduser()` calls)
+  - **Teste de validação**: Test project `tmp/projeto-teste` created successfully with `~` paths
+  - *Reportado em*: 2026-04-03 | *Resolvido em*: 2026-04-03
+
+- [x] **[BUG-02]** SpecKit assets copied to wrong directory ✅ **RESOLVIDO** (2026-04-03)
+  - **Problema**: SpecKit files (`.github/`, `.specify/`) copiados para `target_dir` ao invés de `project_path`
+  - **Sintoma**: Projeto em `tmp/projeto-teste/` mas arquivos em `tmp/.github/`
+  - **Causa raiz**: `copy_speckit()` em `scripts/lib/project.py` linha ~552 usava `base = config.target_dir`
+  - **Correção implementada**:
+    - Mudado para `base = config.project_path` com comment "BUG FIX"
+    - Atualizados docstrings em `project.py` e `templates.py` (target_dir → project_path)
+  - **Arquivos modificados**: `scripts/lib/project.py`, `scripts/lib/templates.py`
+  - **Teste de validação**: Test project structure verified, all files in correct locations
+  - **Impact**: P0 (created broken project structure)
+  - *Reportado em*: 2026-04-03 | *Resolvido em*: 2026-04-03
 
 - [x] **[IMP-33]** Fechar o "perfil fantasma" `devops-security` + atualizar `TEMPLATE-VERSIONS.md` ✅ **JÁ CONCLUÍDO**
   - Criar `profile-descriptors/devops-security.yaml` (descriptor completo do perfil transversal) ✅

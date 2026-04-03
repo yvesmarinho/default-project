@@ -168,7 +168,7 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
             f"--name inválido: '{name}'. Use apenas letras minúsculas, números e hífens."
         )
 
-    target_dir = Path(overrides["target_dir"]) if overrides.get("target_dir") else get_default_target_dir()
+    target_dir = Path(overrides["target_dir"]).expanduser() if overrides.get("target_dir") else get_default_target_dir()
 
     # Validar conflito de diretório (BUG-01)
     is_valid, error_msg = _validate_directory_conflict(name, target_dir)
@@ -182,7 +182,7 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         domain=domain,
         language=language,
         github_repo=overrides.get("repo") or None,
-        shared_dir=Path(overrides["shared_dir"]) if overrides.get("shared_dir") else get_default_shared_dir(),
+        shared_dir=Path(overrides["shared_dir"]).expanduser() if overrides.get("shared_dir") else get_default_shared_dir(),
         target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_parse_extra_profiles(overrides.get("extra_profiles") or "domain-only", domain),

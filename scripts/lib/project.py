@@ -536,7 +536,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
     """
     Copia assets SpecKit do template para o projeto gerado.
 
-    Copia (de _TEMPLATE_ROOT → config.target_dir):
+    Copia (de _TEMPLATE_ROOT → config.project_path):
       - .github/agents/speckit.*.agent.md
       - .github/prompts/speckit.*.prompt.md
       - .github/prompts/session-*.prompt.md
@@ -550,7 +550,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
     """
     results: list[CreatedItem] = []
     errors: list[str] = []
-    base = config.target_dir
+    base = config.project_path  # BUG FIX: usar project_path, não target_dir
     src_root = _TEMPLATE_ROOT
 
     # --- Padrões glob de arquivos SpecKit a copiar ---
