@@ -575,6 +575,152 @@ npm run build               # or language equivalent
 npm run docs:generate       # or language equivalent
 ```
 
+### Configuration Validation
+
+The project supports automated validation of YAML and JSON configuration files using industry-standard tools.
+
+#### YAML Validation with yamllint
+
+**Installation**:
+```bash
+# Using uv (recommended for Python projects)
+uv add --dev yamllint
+
+# Or using pip
+pip install yamllint
+
+# Verify installation
+yamllint --version
+```
+
+**Usage**:
+```bash
+# Validate specific directories
+yamllint .github/workflows/
+yamllint profile-descriptors/
+
+# Validate with custom config
+yamllint -c .yamllint.yml .
+
+# Check all YAML files in project
+find . -name "*.yml" -o -name "*.yaml" | xargs yamllint
+
+# Integration with make
+make lint-yaml
+```
+
+**Configuration**: Create `.yamllint.yml` in project root:
+```yaml
+extends: default
+rules:
+  line-length:
+    max: 120
+  indentation:
+    spaces: 2
+  comments:
+    min-spaces-from-content: 1
+```
+
+#### JSON Schema Validation
+
+**Installation**:
+```bash
+# Using uv (recommended for Python projects)
+uv add --dev jsonschema
+
+# Or using pip
+pip install jsonschema
+
+# Or using npm (for Node.js projects)
+npm install --save-dev ajv-cli
+```
+
+**Usage with Python**:
+```bash
+# Validate JSON against schema
+python -m jsonschema -i config.json schema.json
+
+# Validate VS Code settings
+python -m jsonschema -i .vscode/mcp.json schemas/mcp-schema.json
+
+# Check .scaffold-state.yaml format
+python -m jsonschema -i .scaffold-state.yaml schemas/scaffold-state-schema.json
+```
+
+**Usage with Node.js (ajv-cli)**:
+```bash
+# Validate JSON
+npx ajv validate -s schema.json -d config.json
+
+# Validate multiple files
+npx ajv validate -s schema.json -d "config/*.json"
+```
+
+**Example Python validation script**:
+```python
+import json
+from jsonschema import validate, ValidationError
+
+# Load schema
+with open('schema.json') as f:
+    schema = json.load(f)
+
+# Load and validate data
+with open('config.json') as f:
+    data = json.load(f)
+    try:
+        validate(instance=data, schema=schema)
+        print("✅ Valid configuration")
+    except ValidationError as e:
+        print(f"❌ Validation error: {e.message}")
+```
+
+#### Makefile Integration
+
+Add these targets to your `Makefile`:
+```makefile
+.PHONY: lint-yaml lint-json lint-config
+
+## Validate YAML files
+lint-yaml:
+	@echo "🔍 Validating YAML configuratio files..."
+	@yamllint .github/workflows/ profile-descriptors/ .scaffold-state.yaml
+
+## Validate JSON files
+lint-json:
+	@echo "🔍 Validating JSON configuration files..."
+	@find . -name "*.json" -not -path "*/node_modules/*" -not -path "*/.venv/*" \
+	  -exec echo "Checking: {}" \; -exec python -m json.tool {} /dev/null \;
+
+## Validate all configuration files
+lint-config: lint-yaml lint-json
+	@echo "✅ All configuration files validated"
+```
+
+**Usage**:
+```bash
+# Validate all configuration
+make lint-config
+
+# Validate only YAML
+make lint-yaml
+
+# Validate only JSON
+make lint-json
+
+# Integrate with CI
+make lint lint-config
+```
+
+#### Pre-commit Hooks
+
+Automate validation with pre-commit hooks in `.git/hooks/pre-commit`:
+```bash
+#!/bin/bash
+make lint-yaml || exit 1
+make lint-json || exit 1
+```
+
 ### Temporary Files Management
 
 The project includes a dedicated `tmp/` directory for temporary files:

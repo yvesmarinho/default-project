@@ -41,6 +41,45 @@
 
 ---
 
+### 📋 Itens Recentes (2026-04-03)
+
+- [x] **[BUG-03]** .github/copilot-instructions.md não é gerado durante scaffold ❌ **NÃO CONFIRMADO** (2026-04-03)
+  - **Problema reportado**: Projeto gerado não contém `.github/copilot-instructions.md` com instruções básicas
+  - **Investigação realizada**:
+    - Função `generate_copilot_instructions()` existe em `scripts/lib/templates.py:455`
+    - Função é chamada corretamente em `scripts/lib/flows/new_project.py:54`
+    - Template `_COPILOT_INSTRUCTIONS_TEMPLATE` está definido e correto
+  - **Teste de validação**:
+    ```bash
+    python scripts/scaffold.py new --ci --name test-bug03 \
+      --domain programming --language python --target-dir ./tmp
+    ls -la ./tmp/test-bug03/.github/copilot-instructions.md
+    # Resultado: arquivo EXISTE ✅ (3127 bytes, conteúdo correto)
+    ```
+  - **Conclusão**: Scaffold está funcionando corretamente. Arquivo é gerado com sucesso.
+  - **Possível causa do relato**: Teste realizado antes das correções BUG-01/BUG-02, ou verificação em diretório incorreto
+  - *Reportado em*: 2026-04-03 | *Investigado em*: 2026-04-03 | *Status*: FECHADO (não é bug)
+
+- [x] **[IMP-52]** Adicionar instruções de uso para jsonschema e yamllint ✅ **CONCLUÍDO** (2026-04-03)
+  - **Contexto**: Ferramentas `jsonschema` e `yamllint` já estão disponíveis no ambiente, mas não há documentação de uso
+  - **Implementação realizada**:
+    - ✅ README.md: Nova seção "Configuration Validation" (~150 linhas após "Development Commands")
+      - yamllint: instalação (uv/pip), uso, configuração (.yamllint.yml template)
+      - jsonschema: validação Python e Node.js (ajv-cli) com exemplos completos
+      - Pre-commit hooks: exemplo de script bash para automação
+    - ✅ Makefile: Três novos targets após `format` (linha ~75):
+      - `lint-yaml`: Valida .github/workflows/, profile-descriptors/, .scaffold-state.yaml
+      - `lint-json`: Valida todos arquivos .json com Python (fallback gracioso)
+      - `lint-config`: Target agregador que chama lint-yaml + lint-json
+    - ✅ Validação funcional: `make lint-config` executado com sucesso
+  - **Arquivos modificados**: 
+    - `README.md` (seção Configuration Validation inserida linha ~570)
+    - `Makefile` (targets lint-yaml, lint-json, lint-config adicionados linha ~75)
+  - **Resultado**: Ferramentas documentadas e integradas ao workflow de desenvolvimento
+  - *Reportado em*: 2026-04-03 | *Concluído em*: 2026-04-03 | *Estimativa original*: 2h | *Tempo real*: 1.5h
+
+---
+
 ## 📋 Plano de Ação Pós-Homologação
 
 > **Origem**: Debate de homologação 2026-03-08 — 6 perspectivas profissionais analisaram IMPs 01–32.

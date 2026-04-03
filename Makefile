@@ -72,6 +72,34 @@ format:
 		echo "$(YELLOW)⚠ black not installed. Install with: pip install black$(NC)"; \
 	fi
 
+## lint-yaml: Validate YAML configuration files
+lint-yaml:
+	@echo "$(BLUE)🔍 Validating YAML configuration files...$(NC)"
+	@if command -v yamllint >/dev/null 2>&1; then \
+		yamllint .github/workflows/ profile-descriptors/ .scaffold-state.yaml 2>/dev/null || true; \
+		echo "$(GREEN)✅ YAML files validated$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠ yamllint not installed. Install with: uv add --dev yamllint$(NC)"; \
+	fi
+
+## lint-json: Validate JSON configuration files
+lint-json:
+	@echo "$(BLUE)🔍 Validating JSON configuration files...$(NC)"
+	@if command -v python3 >/dev/null 2>&1; then \
+		for file in .vscode/*.json **/*.json; do \
+			if [ -f "$$file" ]; then \
+				python3 -c "import json; json.load(open('$$file'))" 2>/dev/null && echo "$(GREEN)✓$(NC) $$file" || echo "$(YELLOW)✗$(NC) $$file"; \
+			fi; \
+		done; \
+		echo "$(GREEN)✅ JSON files validated$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠ python3 not found$(NC)"; \
+	fi
+
+## lint-config: Run all configuration validation checks
+lint-config: lint-yaml lint-json
+	@echo "$(GREEN)✅ All configuration files validated$(NC)"
+
 ## structure: Create complete directory structure
 structure: dirs github specify docs src tests scripts config docker
 	@echo "$(GREEN)✅ Directory structure created$(NC)"
