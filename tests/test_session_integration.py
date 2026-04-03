@@ -313,10 +313,10 @@ def test_validate_file_with_valid_content(session_validator, tmp_path, valid_act
 def test_scaffold_config_has_session_docs_feature():
     """Test that .scaffold-config.json has session_docs feature."""
     config_path = Path(__file__).parent.parent / ".scaffold-config.json"
-    
+
     if not config_path.exists():
         pytest.skip(".scaffold-config.json not found (expected in project root)")
-    
+
     with open(config_path) as f:
         config = json.load(f)
 
@@ -329,11 +329,11 @@ def test_scaffold_config_has_session_docs_feature():
 def test_gitleaks_session_docs_config_exists():
     """Test that .gitleaks-session-docs.toml exists."""
     gitleaks_config = Path(__file__).parent.parent / ".gitleaks-session-docs.toml"
-    
+
     assert gitleaks_config.exists(), ".gitleaks-session-docs.toml should exist in project root"
-    
+
     content = gitleaks_config.read_text()
-    
+
     # Verify key sections exist
     assert "session-aws-access-key" in content
     assert "session-github-token" in content

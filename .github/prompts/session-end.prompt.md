@@ -168,7 +168,7 @@ find docs/SESSIONS/ -name "*.md" -mtime -7 -exec grep -HE \
   '(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)' {} \;
 ```
 
-**Se encontrar exposição**: 
+**Se encontrar exposição**:
 1. PARAR imediatamente (não commitar)
 2. Sanitizar os arquivos (remover/substituir por placeholders)
 3. Verificar se já foi commitado antes → se sim, seguir procedimento de credential rotation

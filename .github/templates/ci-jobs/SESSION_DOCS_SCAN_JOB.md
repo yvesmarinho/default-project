@@ -1,7 +1,7 @@
 # Session Documentation Security Scan Job Template
 
-**Part of**: IMP-49 — Sistema de documentação incremental — Integração  
-**Created**: 2026-04-03  
+**Part of**: IMP-49 — Sistema de documentação incremental — Integração
+**Created**: 2026-04-03
 **Status**: Template pronto para integração no ci-template.yml após restauração
 
 ---
@@ -21,9 +21,9 @@ Adicionar o seguinte job ao `.github/workflows/ci-template.yml`:
     name: 🛡️ Session Docs Security Scan
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'push' || 
+      github.event_name == 'push' ||
       github.event_name == 'pull_request'
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,9 +47,9 @@ Adicionar o seguinte job ao `.github/workflows/ci-template.yml`:
               --report-format json \
               --verbose \
               --exit-code 1
-            
+
             EXIT_CODE=$?
-            
+
             if [ $EXIT_CODE -eq 0 ]; then
               echo "✅ No sensitive data found in session documentation"
             elif [ $EXIT_CODE -eq 1 ]; then
@@ -87,30 +87,30 @@ Adicionar o seguinte job ao `.github/workflows/ci-template.yml`:
         with:
           script: |
             const fs = require('fs');
-            
+
             if (fs.existsSync('gitleaks-session-docs-report.json')) {
               const report = JSON.parse(fs.readFileSync('gitleaks-session-docs-report.json', 'utf8'));
-              
+
               if (report.length > 0) {
-                const violations = report.map(v => 
+                const violations = report.map(v =>
                   `- **${v.RuleID}**: \`${v.File}:${v.StartLine}\` - ${v.Description}`
                 ).join('\n');
-                
+
                 const comment = `## 🛡️ Session Documentation Security Violations Detected
-  
+
 ${violations}
 
 **Action Required**: Review and sanitize the files above before merging.
 
 📖 See: [Session Documentation Style Guide](docs/SESSION_DOCS_STYLE_GUIDE.md)
-  
+
 **Common fixes**:
 - Replace real credentials with \`<REDACTED>\` or \`<API_KEY>\`
 - Use \`example.com\`, \`example.org\` for email domains
 - Use RFC 5737 IPs: \`192.0.2.1\`, \`198.51.100.1\`, \`203.0.113.1\`
 - Use relative paths instead of absolute paths
 `;
-                
+
                 github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -132,10 +132,10 @@ Ordem sugerida dos jobs:
 jobs:
   security-scan:
     # ... (job existente)
-  
+
   session-docs-scan:  # ← ADICIONAR AQUI
     # ... (template acima)
-  
+
   test:
     # ... (job existente)
 ```

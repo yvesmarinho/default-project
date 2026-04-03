@@ -140,26 +140,26 @@ Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIE
 2. **Formato obrigatório**: Usar template canônico com separador `---` e campos estruturados:
    ```markdown
    ---
-   
+
    ### [Título da Atividade] ([TODO-ID])
-   
+
    **HH:MM — [STATUS]**
-   
+
    **Objetivo**: [O que foi feito]
    **Contexto**: [Por que foi necessário]
    **Passos executados**:
    1. [Passo 1 com ferramenta usada]
    2. [Passo 2 com comando executado]
-   
+
    **Resultado**: [Outcome — sucesso/bloqueio/aprendizado]
    **Arquivos modificados/criados**:
    - path/to/file.py (+N/-N)
-   
+
    **Commits**:
    - `abc1234` — tipo(escopo): descrição
-   
+
    **Status**: [✅ Completo | 🔵 Em progresso | ❌ Bloqueado | ⏸️ On hold]
-   
+
    ---
    ```
 

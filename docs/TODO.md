@@ -72,7 +72,7 @@
       - `lint-json`: Valida todos arquivos .json com Python (fallback gracioso)
       - `lint-config`: Target agregador que chama lint-yaml + lint-json
     - ✅ Validação funcional: `make lint-config` executado com sucesso
-  - **Arquivos modificados**: 
+  - **Arquivos modificados**:
     - `README.md` (seção Configuration Validation inserida linha ~570)
     - `Makefile` (targets lint-yaml, lint-json, lint-config adicionados linha ~75)
   - **Resultado**: Ferramentas documentadas e integradas ao workflow de desenvolvimento
