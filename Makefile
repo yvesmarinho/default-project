@@ -659,6 +659,36 @@ docker-down:
 	@docker-compose -f docker/docker-compose.yml down
 	@echo "$(GREEN)✅ Containers stopped$(NC)"
 
+## session-index: Build or update session documentation search index
+session-index:
+	@echo "$(BLUE)📚 Indexing session documentation...$(NC)"
+	@python scripts/session-index.py
+	@echo "$(GREEN)✅ Session index updated$(NC)"
+
+## session-index-rebuild: Rebuild session index from scratch
+session-index-rebuild:
+	@echo "$(BLUE)📚 Rebuilding session documentation index...$(NC)"
+	@python scripts/session-index.py --rebuild
+	@echo "$(GREEN)✅ Session index rebuilt$(NC)"
+
+## session-search: Search session documentation (use QUERY="text")
+session-search:
+	@if [ -z "$(QUERY)" ]; then \
+		echo "$(RED)✗ Error: QUERY parameter is required$(NC)"; \
+		echo "$(YELLOW)Usage: make session-search QUERY=\"your search text\"$(NC)"; \
+		echo "$(YELLOW)Examples:$(NC)"; \
+		echo "  make session-search QUERY=\"IMP-50\""; \
+		echo "  make session-search QUERY=\"python AND fastapi\""; \
+		echo "  make session-search QUERY='\"bug fix\"'"; \
+		exit 1; \
+	fi
+	@python scripts/session-search.py "$(QUERY)"
+
+## session-index-stats: Show session index statistics
+session-index-stats:
+	@echo "$(BLUE)📊 Session Index Statistics$(NC)"
+	@python scripts/session-index.py --stats
+
 ## clean: Remove generated files and directories
 clean:
 	@echo "$(BLUE)🧹 Cleaning project...$(NC)"
