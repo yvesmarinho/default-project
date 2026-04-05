@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-05 — IMP-57 CONCL UÍDO (Fase 1 Engram: scope search) + Debates estratégicos
+**Last Updated**: 2026-04-05 — IMP-58 INICIADO (coleta de dados 2-4 semanas) + IMP-57 concluído
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
@@ -249,22 +249,36 @@
   - **Prioridade**: P1
   - *Reportado em*: 2026-04-05 | *Status*: Pendente (blocker: nenhum)
 
-- [ ] **[IMP-58]** Avaliar necessidade de memória ativa 🔵 **PENDENTE** (Fase 2)
+- [ ] **[IMP-58]** Avaliar necessidade de memória ativa � **EM ANDAMENTO** (Fase 2 — Coleta iniciada)
   - **Contexto**: IMP-51 v2.0 (IMP-57 ✅ concluído) oferece memória passiva ampliada; validar se suficiente
   - **Objetivo**: Coletar dados de uso real para decisão fundamentada sobre Engram
   - **Escopo**:
-    - Criar survey (5 perguntas): frequência de busca, perda de contexto, onboarding, interesse em memória ativa
-    - Coletar logs de uso: `make session-search | tee usage.log`
-    - Entrevistar 3–5 desenvolvedores
-    - Análise de dados + report
-    - **Decision gate**: ≥2 critérios alta necessidade → Fase 3a; <2 → manter IMP-51 v2.0
+    - ✅ Criar survey (5 perguntas): frequência de busca, perda de contexto, onboarding, interesse em memória ativa
+    - ✅ Criar script de logging: `scripts/imp58-usage-logger.py` (wrapper de session-search)
+    - ✅ Criar template de entrevista: 30-45 min estruturado, 5 seções
+    - ✅ Criar report template: `IMP-58_MEMORY_ASSESSMENT_REPORT.md`
+    - 🟡 **Coletar dados** (2-4 semanas): surveys, logs, entrevistas
+    - ⏸️ Análise de dados + report consolidado (1 semana após coleta)
+    - ⏸️ **Decision gate**: ≥2 critérios alta necessidade → Fase 3a; <2 → manter IMP-51 v2.0
   - **Critérios**:
     - Frequência busca manual ≥5x/dia → necessidade alta
     - Queixas perda de contexto ≥3x/semana → necessidade alta
     - Onboarding lento >2h para encontrar info → necessidade alta
-  - **Estimativa**: 16h (distribuído em 2–4 semanas)
+  - **Arquivos criados**:
+    - `docs/IMP-58_MEMORY_ASSESSMENT_SURVEY.md` (survey template)
+    - `docs/IMP-58_INTERVIEW_TEMPLATE.md` (entrevista estruturada)
+    - `docs/IMP-58_MEMORY_ASSESSMENT_REPORT.md` (report consolidado)
+    - `docs/IMP-58_README.md` (instruções de uso)
+    - `scripts/imp58-usage-logger.py` (usage analytics)
+  - **Timeline**:
+    - Preparação: 2026-04-05 ✅
+    - Distribuição: 2026-04-05 a 04-07
+    - Coleta: 2026-04-05 a 05-03 (2-4 semanas) 🟡
+    - Análise: 2026-05-03 a 05-10 (1 semana) ⏸️
+    - Decisão: 2026-05-10 ⏸️
+  - **Estimativa**: 16h distribuído em 4 semanas + 8h análise
   - **Prioridade**: P1
-  - *Reportado em*: 2026-04-05 | *Status*: Pendente (blocker: IMP-57 ✅ concluído, aguarda período de coleta 2-4 semanas)
+  - *Reportado em*: 2026-04-05 | *Status*: 🟡 Em andamento (coleta iniciada 2026-04-05)
 
 - [ ] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas 🔵 **PENDENTE** (Fase 3a — condicional)
   - **Contexto**: SE IMP-58 decision gate = GO, implementar memória ativa em Python puro
@@ -717,7 +731,7 @@
 | IMP-55 | Sistema CHAT-*.md capture | P2 | 1 semana | DevEx / Memory | 🔵 2026-04-05 |
 | IMP-56 | speckit.validate quality gates | P1 | 1 semana | SpecKit / QA | 🔵 2026-04-05 |
 | IMP-57 | Estender IMP-51 — indexar all docs (Fase 1) | P1 | 16h | DevEx / Search | ✅ 2026-04-05 |
-| IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | 🔵 2026-04-05 |
+| IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | � 2026-04-05 |
 | IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 40h | DevEx / Memory | 🔵 2026-04-05 |
 
 ---
