@@ -1,12 +1,23 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-03 — Session-end: IMP-52 ✅ IMP-49 ✅ IMP-50 (60%) + formatting
-**Project Status**: 🟢 Stable — Session documentation system integrated, 299 tests passing
-**Version**: 1.4.0
-**Last Session**: 2026-04-03 — ✅ Session Documentation System integration complete
+**Last Updated**: 2026-04-05 — Session-end: IMP-50 ✅ IMP-51 ✅ IMP-57 ✅ + IMP-58 (started) + IMP-59 (prep)
+**Project Status**: 🟢 Stable — Full-text search system operational, memory assessment framework deployed
+**Version**: 1.5.0
+**Last Session**: 2026-04-05 — ✅ Engram memory integration work (3 implementations completed)
 
 ---
 
+> **✅ SESSION 2026-04-05 SUMMARY**
+> - **IMP-50 COMPLETE**: Session docs migration toolkit (600 lines script + 22 tests)
+> - **IMP-51 COMPLETE**: Full-text search system (SQLite FTS5, 21 tests, <0.1s queries)
+> - **IMP-57 COMPLETE**: Scope search extension (sessions/docs/specs, 15 tests)
+> - **IMP-58 STARTED**: Memory assessment framework (4-phase evaluation, data collection began)
+> - **IMP-59 PREPARED**: Mini-Engram design + POC (1200-line design, 400-line POC)
+> - Created: search library (750 lines), 3 CLI tools, 5 major docs (~4,200 lines)
+> - Tests: 58 new tests (100% passing) — Total suite: 299+ tests
+> - Git: 6 commits created (2 pushed, 1 unpushed, session-end pending)
+> - Impact: Full-text search operational, dual-track memory development (assess + prepare)
+>
 > **✅ SESSION 2026-04-03 SUMMARY**
 > - **IMP-52 COMPLETE**: yamllint/jsonschema documentation and Makefile targets
 > - **IMP-49 COMPLETE**: Session docs integration (prompts, validation, security)
@@ -105,7 +116,8 @@ a-default-project/
         ├── 2026-03-31/          # CI/CD corrections + Dependabot triage + workflows removal (encerrada)
         ├── 2026-04-01/          # BUG-01 scaffold duplicate directory investigation (encerrada)
         ├── 2026-04-02/          # ✅ BUG-01 RESOLVED — duplicate directory fix + 279 tests passing (encerrada)
-        └── 2026-04-03/          # ✅ IMP-52, IMP-49 ✅ IMP-50 (60%) — Session docs system integration (encerrada)
+        ├── 2026-04-03/          # ✅ IMP-52, IMP-49 ✅ IMP-50 (60%) — Session docs system integration (encerrada)
+        └── 2026-04-05/          # ✅ IMP-50/51/57 ✅ IMP-58/59 started — Engram memory integration (3 implementations, 58 tests) (encerrada)
 ├── .github/
 │   └── agents/                   # Custom Copilot agents
 │       └── session-manager.agent.md  # ✅ v1.0.0 — automação de inicialização de sessão

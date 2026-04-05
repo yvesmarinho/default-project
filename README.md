@@ -91,7 +91,11 @@ python scripts/scaffold.py new --ci --name my-api --domain programming --languag
 
 - **Global Command**: `new-project` wrapper for convenient project creation
 - **Speckit Integration**: Automated specification and documentation generation
-- **CI/CD Ready**: Pre-configured GitHub Actions workflows
+- **Session Documentation System**: Structured session tracking with incremental documentation (IMP-48, IMP-49, IMP-50)
+- **Full-Text Search**: SQLite FTS5-based search across all documentation (sessions, docs, specs) with scope filtering (IMP-51, IMP-57)
+- **Migration Toolkit**: Legacy session docs → canonical format converter with validation (IMP-50)
+- **Memory Assessment**: Data-driven framework for evaluating active memory needs (IMP-58)
+- **CI/CD Ready**: Pre-configured GitHub Actions workflows (temporarily disabled, restoration guide available)
 - **Code Quality**: ESLint, Prettier, and language-specific linters
 - **Testing Framework**: Unit, integration, and E2E testing setup
 - **Docker Support**: Containerization for consistent environments
