@@ -86,8 +86,17 @@ def format_snippet(snippet: str) -> str:
 
 def print_result(result, show_context: bool = False, searcher = None):
     """Print a single search result."""
+    # Document type badge
+    doc_type_badge = ""
+    if result.document_type == "docs":
+        doc_type_badge = f"[{BLUE}DOC{RESET}] "
+    elif result.document_type == "specs":
+        doc_type_badge = f"[{GREEN}SPEC{RESET}] "
+    elif result.document_type == "sessions":
+        doc_type_badge = f"[{CYAN}SESSION{RESET}] "
+    
     # Header: date + timestamp + title
-    print(f"{CYAN}{result.session_date}{RESET} {DIM}{result.timestamp}{RESET} — {BOLD}{result.title}{RESET}")
+    print(f"{doc_type_badge}{CYAN}{result.session_date}{RESET} {DIM}{result.timestamp}{RESET} — {BOLD}{result.title}{RESET}")
     
     # Snippet with highlighted matches
     snippet = format_snippet(result.snippet)
@@ -146,6 +155,13 @@ def main():
     )
     
     parser.add_argument(
+        "--scope",
+        type=str,
+        choices=["sessions", "docs", "specs", "all"],
+        help="Filter by document type (sessions, docs, specs, or all)",
+    )
+    
+    parser.add_argument(
         "--context",
         action="store_true",
         help="Show full activity block for each result",
@@ -180,6 +196,7 @@ def main():
             limit=args.limit,
             date_from=args.date_from,
             date_to=args.date_to,
+            scope=args.scope,
         )
         
         # Print header
@@ -190,6 +207,8 @@ def main():
             print(f"From:  {args.date_from}")
         if args.date_to:
             print(f"To:    {args.date_to}")
+        if args.scope:
+            print(f"Scope: {args.scope}")
         print(f"Found: {BOLD}{len(results)}{RESET} result(s)")
         print(f"{CYAN}{'─' * 60}{RESET}\n")
         

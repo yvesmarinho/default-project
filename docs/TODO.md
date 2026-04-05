@@ -1,17 +1,33 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-05 — IMP-52 ✅ IMP-49 ✅ IMP-50 ✅ Session Documentation System Complete
+**Last Updated**: 2026-04-05 — IMP-57 CONCL UÍDO (Fase 1 Engram: scope search) + Debates estratégicos
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
 ---
 
+> **✅ SESSION 2026-04-05 UPDATE — DEBATES ESTRATÉGICOS:**
+> - **DEBATE NOVO**: Engram MCP Integration — Memória Persistente
+>   - Documentação: [`DEBATE_ENGRAM_INTEGRATION_2026-04-05.md`](debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md)
+>   - Decisão: APROVADO — Implementação faseada (Cenário 3)
+>   - 7 perspectivas debateram: template-architect, session-manager, constitution, Platform Tooling, DevEx, AppSec, SRE
+>   - Issues criadas: IMP-57 (estender IMP-51), IMP-58 (avaliar necessidade), IMP-59 (mini-Engram Python), IMP-45 (renomeado para fallback)
+>   - Próximo: Fase 1 (IMP-57) — estender session search para indexar README, TODO, specs
+> - **DEBATE:** Spec Driven Development e 4 Camadas
+>   - Validação de mercado: Score 78% (BOM) — alinhado com DDD, ADRs, BDD, TDD
+>   - Issues criadas: IMP-53 (objetivo.yaml), IMP-54 (ADRs), IMP-55 (CHAT capture), IMP-56 (quality gates)
+> - **IMP-51 ✅ CONCLUÍDO**: Session Search System (full-text search SQLite FTS5)
+> - **IMP-50 ✅ CONCLUÍDO**: Session Documentation Adoption complete with migration toolkit
+>
 > **✅ SESSION 2026-04-05 UPDATE:**
+> - **IMP-51 CONCLUÍDO**: Session Search System (full-text search SQLite FTS5)
+> - Criados: scripts/lib/search.py (550 lines), session-index.py, session-search.py
+> - Tests: 21/21 passing (100%), performance <0.1s/query
 > - **IMP-50 CONCLUÍDO**: Session Documentation Adoption complete with migration toolkit
-> - Criados: scripts/migrate-daily-activities.py (600 lines), tests/test_migrate_daily_activities.py (22 tests, 100% passing)
-> - Criados: docs/SESSIONS/EXAMPLE-MIGRATION/ (exemplo completo de migração)
-> - Atualizados: SESSION_DOCS_ADOPTION.md (guia de migração detalhado)
-> - Testes: 321/326 passed (98.5%), 22/22 migration tests passing
+> - Criados: scripts/migrate-daily-activities.py (600 lines), tests (22 tests, 100% passing)
+> - **DEBATE NOVO**: Spec Driven Development e 4 Camadas (Negócio → Produto → Arquitetura → Implementação)
+> - Issues criadas: IMP-53 (objetivo.yaml), IMP-54 (ADRs), IMP-55 (CHAT capture), IMP-56 (quality gates)
+> - Commits: 4a3e059 (IMP-50), 84bc0fa (IMP-51), 0af2779 (docs)
 >
 > **✅ SESSION 2026-04-03 UPDATE:**
 > - **IMP-52 CONCLUÍDO**: yamllint/jsonschema documentation and Makefile targets
@@ -38,14 +54,23 @@
 
 ## 🎯 Current Sprint
 
-### 🚀 Próximas Ações — Sistema de Documentação Incremental (Sessões consecutivas 2026-03-30 a 2026-04-03)
+### 🚀 Próximas Ações — Sistema de Documentação Incremental (concluído) + SpecKit Evolution
 
 > **IMP-48 ✅ CONCLUÍDO** (2026-03-29) — Fundação (lib + templates + style guide + 36 tests)
 > **IMP-49 ✅ CONCLUÍDO** (2026-04-03) — Integração com prompts, CI, gitleaks, validação
 > **IMP-50 ✅ CONCLUÍDO** (2026-04-05) — Adoption + security guides + migration toolkit
-> **IMP-51 🔵 PENDENTE** (P1, 4h) — Busca/indexação MCP (objetivo B: memória aprimorada)
+> **IMP-51 ✅ CONCLUÍDO** (2026-04-05) — Busca/indexação FTS5 (objetivo B: memória aprimorada)
 >
 > **Origem**: Debate 2026-03-29 — [`DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md`](SESSIONS/2026-03-29/DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md)
+>
+> **Novo foco**: Spec Driven Development (IMP-53 a IMP-56)
+>
+> **IMP-53 🔵 PENDENTE** (P1, 1 semana) — objetivo.yaml + speckit.clarify (Camada 1: Negócio)
+> **IMP-54 🔵 PENDENTE** (P1, 3 dias) — ADRs no plan-template.md (Camada 3: Arquitetura)
+> **IMP-55 🔵 PENDENTE** (P2, 1 semana) — Sistema de captura CHAT-*.md
+> **IMP-56 🔵 PENDENTE** (P1, 1 semana) — speckit.validate quality gates
+>
+> **Origem**: Debate 2026-04-05 — [`DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md`](debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md)
 
 ---
 
@@ -187,7 +212,171 @@
     - Query complexa (boolean + date filter): <0.1s
     - Tamanho do índice: ~100KB (107 blocos)
   - *Reportado em*: 2026-03-29 | *Iniciado em*: 2026-04-05 | *Concluído em*: 2026-04-05 | *Tempo total*: ~3.5h
-  - **Commits**: `[pending - commit em andamento]`
+  - **Commits**: `84bc0fa` (feat), `0af2779` (docs update)
+
+---
+
+### 🎯 Spec Driven Development — SpecKit Evolution (2026-04-05)
+
+> **Origem**: Debate 2026-04-05 — [`DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md`](debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md)
+> **Contexto**: Integrar as 4 Camadas de Desenvolvimento (Negócio → Produto → Arquitetura → Implementação) no SpecKit
+> **Referência**: [Spec Driven Development é o Caminho?](https://www.youtube.com/watch?v=DJE0LL0CuUQ)
+> **Validação de mercado**: Score 78% (BOM) — Alinhado com DDD, ADRs, BDD, TDD, C4 Model, DORA Metrics
+
+---
+
+### 🧠 Engram MCP Integration — Memória Persistente (2026-04-05)
+
+> **Origem**: Debate 2026-04-05 — [`DEBATE_ENGRAM_INTEGRATION_2026-04-05.md`](debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md)
+> **Contexto**: Avaliar integração Engram após conclusão de IMP-51 (session search)
+> **Decisão**: APROVADO — Implementação faseada (Cenário 3)
+> **Participantes**: 7 perspectivas (template-architect, session-manager, constitution, Platform Tooling, DevEx, AppSec, SRE)
+> **Veredicto**: Prudência arquitetural — estender IMP-51 antes de adicionar Engram
+
+- [ ] **[IMP-57]** Estender IMP-51: Indexação além de DAILY_ACTIVITIES 🔵 **PENDENTE** (Fase 1)
+  - **Contexto**: IMP-51 indexa só DAILY_ACTIVITIES; precisa cobrir README, TODO, specs, plans
+  - **Objetivo**: Aumentar cobertura de memória passiva antes de introduzir memória ativa (Engram)
+  - **Escopo**:
+    - Atualizar `scripts/lib/search.py`: adicionar `index_file(file_path)` genérico
+    - Atualizar `scripts/session-index.py`: flag `--scope [sessions|docs|specs|all]`
+    - Atualizar `scripts/session-search.py`: flag `--scope` para filtrar por tipo
+    - Documentação: atualizar SESSION_SEARCH_GUIDE.md com novos scopes
+  - **Benefícios**:
+    - Busca em TODO, README, SESSION_REPORT sem código adicional
+    - Indexar specs (.specify/specs/*/spec.md, plan.md) para RAG-like local
+    - Zero dependência externa (Python puro)
+  - **Estimativa**: 16h
+  - **Prioridade**: P1
+  - *Reportado em*: 2026-04-05 | *Status*: Pendente (blocker: nenhum)
+
+- [ ] **[IMP-58]** Avaliar necessidade de memória ativa 🔵 **PENDENTE** (Fase 2)
+  - **Contexto**: IMP-51 v2.0 (IMP-57 ✅ concluído) oferece memória passiva ampliada; validar se suficiente
+  - **Objetivo**: Coletar dados de uso real para decisão fundamentada sobre Engram
+  - **Escopo**:
+    - Criar survey (5 perguntas): frequência de busca, perda de contexto, onboarding, interesse em memória ativa
+    - Coletar logs de uso: `make session-search | tee usage.log`
+    - Entrevistar 3–5 desenvolvedores
+    - Análise de dados + report
+    - **Decision gate**: ≥2 critérios alta necessidade → Fase 3a; <2 → manter IMP-51 v2.0
+  - **Critérios**:
+    - Frequência busca manual ≥5x/dia → necessidade alta
+    - Queixas perda de contexto ≥3x/semana → necessidade alta
+    - Onboarding lento >2h para encontrar info → necessidade alta
+  - **Estimativa**: 16h (distribuído em 2–4 semanas)
+  - **Prioridade**: P1
+  - *Reportado em*: 2026-04-05 | *Status*: Pendente (blocker: IMP-57 ✅ concluído, aguarda período de coleta 2-4 semanas)
+
+- [ ] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas 🔵 **PENDENTE** (Fase 3a — condicional)
+  - **Contexto**: SE IMP-58 decision gate = GO, implementar memória ativa em Python puro
+  - **Objetivo**: RAG-like memory (mem_save, mem_search, mem_context) sem binário externo
+  - **Escopo**:
+    - Estrutura: `.memory/memories/*.md` (fonte commitável), `.memory/index/memory.db` (cache SQLite)
+    - CLI: `scripts/mem_save.py`, `scripts/mem_search.py`
+    - MCP server: `scripts/mem_mcp_server.py` (Python, package `mcp`)
+    - Security: `scripts/lib/sanitize.py` (PII/secrets), `.gitleaks-memory.toml`, pre-commit hook
+    - Policy: `.memory/MEMORY_POLICY.md` (seções: Secrets Management, Data Privacy, Usage Guidelines)
+    - Tests: `tests/test_memory_*.py` (20 tests: search, save, security, integration)
+    - Integration: atualizar `session-start.prompt.md` (mem_search step), `session-end.prompt.md` (mem_save step)
+  - **Benefícios**:
+    - Zero dependência externa (100% Python)
+    - Reutiliza código IMP-51 (SQLite + FTS5)
+    - 100% controle e manutenibilidade
+  - **Estimativa**: 40h
+  - **Prioridade**: P1 (SE decision gate GO)
+  - *Reportado em*: 2026-04-05 | *Status*: Pendente (blocker: IMP-58 decision gate)
+
+- [ ] **[IMP-45]** Engram MCP oficial — Fallback se Python inadequado 🔵 **PENDENTE** (Fase 3b — fallback)
+  - **Contexto**: SE mini-Engram Python (IMP-59) tiver bugs críticos, performance ruim, ou manutenibilidade difícil
+  - **Objetivo**: Integrar Engram oficial (Gentleman-Programming/engram) como fallback
+  - **Escopo** (implementação completa conforme Cenário 1 do debate):
+    - **Security controls** (P0 — blockers obrigatórios):
+      - `.gitignore`: patterns de secrets em `.engram/memory/`
+      - `.gitleaks-engram.toml`: scan configurado e testado
+      - `scripts/lib/engram.py`: sanitização de PII/secrets
+      - Pre-commit hook: scan automático antes de commit
+      - `.engram/AGENT_MEMORY_POLICY.md`: seções "Secrets Management" + "Data Privacy"
+      - `tests/test_engram_security.py`: test de segurança (simular saves com secrets, verificar bloqueio)
+    - **Operational controls**:
+      - `make setup-engram`: automação de instalação do binário
+      - `make engram-health`: health check (binário, DB integrity)
+      - `make engram-rebuild`: disaster recovery (rebuild DB from .md files)
+      - `make engram-stats`: observability (total memories, tags, size)
+      - `.engram/OPERATIONS.md`: troubleshooting guide
+    - **Integration**:
+      - `.vscode/mcp.json`: config MCP server
+      - `.engram/scripts/engram_mcp.sh`: wrapper script
+      - `session-start.prompt.md`: adicionar `mem_search` step
+      - `session-end.prompt.md`: adicionar `mem_save` step
+      - `.engram/memory/.examples/`: templates de memórias exemplo
+    - **Tests**:
+      - `tests/test_engram_integration.py`: integração com session system
+      - `tests/test_engram_security.py`: security compliance
+    - **Docs**:
+      - `.engram/README.md`: casos de uso e quickstart
+      - `docs/COMPATIBILITY-MATRIX.md`: adicionar coluna "Engram MCP"
+  - **Estimativa**: 80h
+  - **Prioridade**: P2 (fallback — baixa prioridade se IMP-59 funcionar)
+  - **Blocker crítico**: AppSec sign-off obrigatório (todos security controls implementados)
+  - *Reportado em*: 2026-03-XX | *Reescrito em*: 2026-04-05 | *Status*: Pendente (blocker: IMP-59 inadequado)
+
+- [ ] **[IMP-53]** Implementar objetivo.yaml e speckit.clarify (Camada 1: Negócio) 🔵 **PENDENTE**
+  - **Contexto**: SpecKit não tem artefato estruturado para Camada 1 (contexto de negócio)
+  - **Objetivo**: Capturar problema, valor, stakeholders, métricas antes de especificação técnica
+  - **Escopo**:
+    - Criar template: `.specify/templates/objetivo-template.yaml`
+    - Criar agent: `.github/agents/speckit.clarify.agent.md` (entrevista usuário → gera objetivo.yaml)
+    - Atualizar `spec-template.md` para referenciar objetivo.yaml
+    - Atualizar fluxo SpecKit: objetivo.yaml → spec.md → plan.md → tasks.md
+  - **Estrutura objetivo.yaml**:
+    - `negocio:` problema, valor, métricas, stakeholders, constraints
+    - `produto:` visão, personas, jornadas críticas (P1/P2/P3)
+    - `decisoes_iniciais:` decisões conhecidas (D-01, D-02, ...)
+    - `perguntas_abertas:` questões não resolvidas
+  - **Estimativa**: 1 semana (Fase 1)
+  - *Reportado em*: 2026-04-05 | *Status*: Pendente (depende de aprovação do debate)
+
+- [ ] **[IMP-54]** Integrar ADRs no plan-template.md (Camada 3: Arquitetura) 🔵 **PENDENTE**
+  - **Contexto**: plan.md documenta "o quê", mas não "por quê" de decisões arquiteturais
+  - **Objetivo**: Formalizar Architecture Decision Records (ADRs) no SpecKit
+  - **Escopo**:
+    - Atualizar `.specify/templates/plan-template.md` com seção ADRs obrigatória
+    - Template ADR: Status, Context, Decision, Rationale, Consequences, Alternatives Considered
+    - Adicionar comando: `python scripts/manage.py speckit adr add --title "..." --feature IMP-XX`
+    - Validação: `speckit.validate` exige >=1 ADR para features arquiteturais
+  - **Benefícios**:
+    - Onboarding mais rápido (explicita decisões passadas)
+    - Evita re-debates de decisões já tomadas
+    - Facilita revisão e evolução de arquitetura
+  - **Estimativa**: 3 dias
+  - *Reportado em*: 2026-04-05 | *Status*: Pendente (depende de aprovação do debate)
+
+- [ ] **[IMP-55]** Sistema de captura de conversas (CHAT-*.md) 🔵 **PENDENTE**
+  - **Contexto**: Conversas com Copilot contêm decisões/clarificações valiosas que se perdem
+  - **Objetivo**: Capturar e indexar conversas importantes como memória do projeto
+  - **Escopo**:
+    - Template: `CHAT-YYYYMMDD-HHMMSS.md` (context, conversation, decisions, artifacts, next steps)
+    - Fase 1: Adicionar instrução em `.github/copilot-instructions.md` (Copilot oferece criar arquivo)
+    - Fase 2: Comando `python scripts/manage.py chat capture --feature IMP-XX`
+    - Fase 3: Integração Engram (captura automática)
+  - **Localização**:
+    - Session-scoped: `docs/SESSIONS/YYYY-MM-DD/CHAT-*.md`
+    - Feature-scoped: `.specify/specs/<feature>/CHAT-*.md`
+  - **Estimativa**: 1 semana (Fase 3)
+  - *Reportado em*: 2026-04-05 | *Status*: Pendente — Prioridade P2 (após IMP-53, IMP-54)
+
+- [ ] **[IMP-56]** Agent speckit.validate para quality gates 🔵 **PENDENTE**
+  - **Contexto**: Avanço entre camadas sem validação pode gerar specs incompletos
+  - **Objetivo**: Criar gates de qualidade para validar cada camada antes de avançar
+  - **Escopo**:
+    - Agent: `.github/agents/speckit.validate.agent.md`
+    - Comando: `python scripts/manage.py speckit validate --layer [business|product|architecture|implementation]`
+    - Quality Gates:
+      - business → product: objetivo.yaml completo, >= 1 métrica de sucesso
+      - product → architecture: spec.md com >= 1 user story P1, acceptance criteria
+      - architecture → implementation: plan.md com >= 1 ADR, component design
+      - implementation → done: tasks.md completo, testes passando, checklist aprovado
+  - **Estimativa**: 1 semana (Fase 2)
+  - *Reportado em*: 2026-04-05 | *Status*: Pendente — Prioridade P1 (após IMP-53, IMP-54)
 
 ---
 
@@ -497,17 +686,6 @@
   - Arquivos: `session-start.prompt.md`, `session-start-first.prompt.md` (template + projeto enterprise-infra-docker)
   - Decisão D-47a: verificação de *configuração* (agente) × verificação de *runtime* (usuário manual)
 
-- [ ] **[IMP-45]** Engram MCP — memória persistente por projeto (opt-in)
-  - Integrar [Gentleman-Programming/engram](https://github.com/Gentleman-Programming/engram) como MCP server FTS local
-  - `.engram/memory/*.md` — fonte de verdade commitável; `.engram/index/engram.db` — cache local (não commitado)
-  - Wrapper `.engram/scripts/engram_mcp.sh` + entrada no `.vscode/mcp.json`
-  - Makefile: `make engram-check` e `make engram-rebuild`
-  - `.engram/AGENT_MEMORY_POLICY.md` — política de uso para o agente
-  - **Bloqueador**: binário `engram` deve ser instalado e `engram mcp --help` / `engram import --help` validados antes de iniciar
-  - **Design opt-in**: não altera `make init` nem projetos gerados que não instalam `engram`
-  - Spec completa: [`docs/SESSIONS/2026-03-14/IMP-45-SPEC.md`](SESSIONS/2026-03-14/IMP-45-SPEC.md)
-  - *Origem*: análise de impacto `docs/GitHub Copilot - Engram how to.md` — 2026-03-14
-
 ---
 
 ### Resumo do Plano
@@ -526,13 +704,21 @@
 | IMP-42 | SBOM nos perfis Layer 2 | P3 | Médio | AppSec |
 | IMP-43 | `--new-profile` scaffolder | P3 | Alto | Template Arch |
 | IMP-44 | Subcomandos CLI (breaking change) | P3 | Alto | DevEx |
-| IMP-45 | Engram MCP — memória persistente (opt-in) | P3 | Médio | DevEx / Template Arch |
+| IMP-45 | Engram oficial — Fallback (Fase 3b) | P2 | 80h | DevEx / AppSec | 🔵 2026-04-05 |
 | IMP-46 | Testes de integração estrutura + AppSec | P2 | Médio | Template Arch • AppSec | ✅ 2026-03-14 |
 | IMP-47 | Testes executáveis por template (`make lint` matrix) | P2 | Alto | AppSec • SRE |
 | IMP-48 | Session Docs — Fundação (lib + templates) | P0 | 8h | DevEx / Template Arch | ✅ 2026-03-29 |
-| IMP-49 | Session Docs — Integração (prompts + CI) | P0 | 6h | DevEx / AppSec | 🔵 2026-03-29 |
-| IMP-50 | Session Docs — Docs + Migração | P0 | 4h | Release / Docs | 🔵 2026-03-29 |
-| IMP-51 | Session Docs — Busca/indexação (MCP) | P1 | 4h | DevEx / Template Arch | 🔵 2026-03-29 |
+| IMP-49 | Session Docs — Integração (prompts + CI) | P0 | 6h | DevEx / AppSec | ✅ 2026-04-03 |
+| IMP-50 | Session Docs — Docs + Migração | P0 | 4h | Release / Docs | ✅ 2026-04-05 |
+| IMP-51 | Session Docs — Busca/indexação FTS5 | P1 | 4h | DevEx / Template Arch | ✅ 2026-04-05 |
+| IMP-52 | yamllint/jsonschema docs + Makefile | P1 | 2h | DevEx / Docs | ✅ 2026-04-03 |
+| IMP-53 | objetivo.yaml + speckit.clarify (Camada 1) | P1 | 1 semana | SpecKit / Product | 🔵 2026-04-05 |
+| IMP-54 | ADRs em plan-template.md (Camada 3) | P1 | 3 dias | SpecKit / Arch | 🔵 2026-04-05 |
+| IMP-55 | Sistema CHAT-*.md capture | P2 | 1 semana | DevEx / Memory | 🔵 2026-04-05 |
+| IMP-56 | speckit.validate quality gates | P1 | 1 semana | SpecKit / QA | 🔵 2026-04-05 |
+| IMP-57 | Estender IMP-51 — indexar all docs (Fase 1) | P1 | 16h | DevEx / Search | ✅ 2026-04-05 |
+| IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | 🔵 2026-04-05 |
+| IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 40h | DevEx / Memory | 🔵 2026-04-05 |
 
 ---
 

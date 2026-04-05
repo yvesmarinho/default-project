@@ -141,12 +141,192 @@ make session-search QUERY="result:success"
 ```
 
 **Available columns:**
-- `title` - Activity titles
-- `objective` - Activity objectives
-- `context` - Context descriptions
-- `result` - Results/outcomes
-- `decisions` - Technical decisions
-- `observations` - Observations/notes
+- `title` - Activity titles or section headers
+- `objective` - Activity objectives (sessions only)
+- `context` - Context descriptions (sessions only)
+- `result` - Results/outcomes (sessions only)
+- `decisions` - Technical decisions (sessions only)
+- `observations` - Observations/notes (sessions only)
+- `document_type` - Type of document ("sessions", "docs", "specs") **[NEW in IMP-57]**
+
+**Example: Search only in docs:**
+```bash
+make session-search QUERY="document_type:docs AND architecture"
+```
+
+---
+
+## Searching Beyond Sessions (IMP-57)
+
+**Added:** 2026-04-05  
+**Feature:** Extended search to all markdown documents
+
+The search system now indexes and searches beyond just session documentation. You can search across:
+
+- **sessions:** `DAILY_ACTIVITIES` files in `docs/SESSIONS/`
+- **docs:** Documentation files (README, TODO, guides, etc.) in `docs/`
+- **specs:** SpecKit specifications (spec.md, plan.md, tasks.md) in `.specify/specs/`
+- **all:** All of the above
+
+### Indexing with Scope
+
+```bash
+# Index only sessions (default, backward compatible)
+python scripts/session-index.py
+
+# Index only documentation files
+python scripts/session-index.py --scope docs
+
+# Index only specification files
+python scripts/session-index.py --scope specs
+
+# Index everything
+python scripts/session-index.py --scope all
+
+# Rebuild entire index across all scopes
+python scripts/session-index.py --scope all --rebuild
+```
+
+**Output Example:**
+```
+Session Documentation Indexer
+────────────────────────────────────────
+Scope: all
+
+Indexing 21 session activity files...
+✓ 2026-04-03/DAILY_ACTIVITIES_2026-04-03.md (7 blocks)
+✓ 2026-04-05/DAILY_ACTIVITIES_2026-04-05.md (3 blocks)
+...
+Summary: 21 files, 107 blocks indexed
+
+Indexing 25 documentation files...
+✓ docs/README.md (1 sections)
+✓ docs/TODO.md (3 sections)
+✓ docs/CONVENTIONS.md (5 sections)
+...
+Summary: 25 files, 48 sections indexed
+
+Indexing 12 specification files...
+✓ .specify/specs/IMP-48/spec.md (4 sections)
+✓ .specify/specs/IMP-49/plan.md (6 sections)
+...
+Summary: 12 files, 34 sections indexed
+
+Grand Total: 58 files, 189 blocks/sections indexed
+
+✓ Indexing complete!
+```
+
+### Searching with Scope Filter
+
+Filter search results by document type:
+
+```bash
+# Search ONLY in session documentation
+python scripts/session-search.py "IMP-57" --scope sessions
+
+# Search ONLY in docs (README, TODO, guides)
+python scripts/session-search.py "architecture" --scope docs
+
+# Search ONLY in specifications
+python scripts/session-search.py "requirements" --scope specs
+
+# Search everywhere (no scope filter, default if all indexed)
+python scripts/session-search.py "python"
+```
+
+**Output Example:**
+```
+Search Results
+────────────────────────────────────────────────────────────
+Query: architecture
+Scope: docs
+Found: 3 result(s)
+────────────────────────────────────────────────────────────
+
+[DOC] 2026-04-05 [auto] — Architecture
+  The system uses Python and FastAPI. <mark>Architecture</mark> follows
+  clean <mark>architecture</mark> principles with separation of concerns…
+
+[DOC] 2026-04-05 [auto] — System Design
+  …detailed <mark>architecture</mark> diagram showing components…
+
+[SPEC] 2026-04-05 [auto] — Technical Design
+  …microservices <mark>architecture</mark> with event-driven communication…
+```
+
+**Document Type Badges:**
+- `[SESSION]` - Session activity from `DAILY_ACTIVITIES`
+- `[DOC]` - Documentation file from `docs/`
+- `[SPEC]` - Specification file from `.specify/specs/`
+
+### Use Cases
+
+#### 1. Find Architectural Documentation
+
+```bash
+# Search in docs for architecture decisions
+python scripts/session-search.py "architecture OR design" --scope docs
+
+# Find ADRs (Architecture Decision Records)
+python scripts/session-search.py "ADR OR decision" --scope docs
+```
+
+#### 2. Search Specifications
+
+```bash
+# Find requirements across all specs
+python scripts/session-search.py "requirements" --scope specs
+
+# Find tasks related to testing
+python scripts/session-search.py "test" --scope specs
+```
+
+#### 3. Cross-Document Search
+
+```bash
+# Find IMP-57 mentions across ALL documents
+python scripts/session-search.py "IMP-57" --scope all
+
+# Or no --scope to search across all indexed types
+python scripts/session-search.py "IMP-57"
+```
+
+#### 4. Track Feature Evolution
+
+```bash
+# First, find spec
+python scripts/session-search.py "search enhancement" --scope specs
+
+# Then, find implementation sessions
+python scripts/session-search.py "search enhancement" --scope sessions
+
+# Finally, check documentation
+python scripts/session-search.py "search enhancement" --scope docs
+```
+
+### Document Indexing Behavior
+
+**Sessions (`--scope sessions`):**
+- Indexed by activity blocks (each `### Title` section)
+- Uses structured fields (objective, context, result, etc.)
+- Preserves timestamps and session dates
+
+**Docs (`--scope docs`):**
+- Indexed by `## Header` sections
+- Whole document indexed as single block if no `##` headers
+- Skips `SESSIONS/` subdirectory (handled by sessions scope)
+- Skips `templates/` and hidden files (`.md`)
+
+**Specs (`--scope specs`):**
+- Indexes only `spec.md`, `plan.md`, `tasks.md` in `.specify/specs/*/`
+- Indexed by `## Header` sections
+- Skips `.specify/` if not present (no error)
+
+**All (`--scope all`):**
+- Combines all three scopes sequentially
+- Shows grand total at end
+- Efficient: uses document_type column for filtering
 
 ---
 
@@ -418,29 +598,26 @@ make session-search QUERY='"IMP-50"'
    - Interactive search interface
    - Result formatting with ANSI colors
    - Context expansion
-
-### Database Schema
-
-**SQLite FTS5 Virtual Table:**
-```sql
-CREATE VIRTUAL TABLE activities USING fts5(
-    session_date,     -- YYYY-MM-DD
-    timestamp,        -- HH:MM
-    title,            -- Activity title
-    objective,        -- Activity objective
-    context,          -- Context description
-    steps,            -- Executed steps
-    result,           -- Result/outcome
-    decisions,        -- Technical decisions
-    files,            -- Modified files
-    commits,          -- Git commits
-    observations,     -- Observations/notes
-    status,           -- Activity status
+ (or date from filename/current)
+    timestamp,        -- HH:MM (or [auto] for non-sessions)
+    title,            -- Activity title or section header
+    objective,        -- Activity objective (sessions only)
+    context,          -- Context description (sessions only)
+    steps,            -- Executed steps (sessions only)
+    result,           -- Result/outcome (sessions only)
+    decisions,        -- Technical decisions (sessions only)
+    files,            -- Modified files (sessions only)
+    commits,          -- Git commits (sessions only)
+    observations,     -- Observations/notes (sessions only)
+    status,           -- Activity status (sessions only)
     searchable_text,  -- All fields combined
     file_path,        -- Source file path
+    document_type,    -- Type: "sessions", "docs", "specs" [NEW in IMP-57]
     tokenize = 'porter unicode61'
 );
 ```
+
+**Note:** For `docs` and `specs`, structured fields (objective, context, etc.) are set to `NULL`. Only `title` and `searchable_text` (section content) are populated.
 
 **Metadata Table:**
 ```sql
@@ -448,6 +625,12 @@ CREATE TABLE metadata (
     key TEXT PRIMARY KEY,
     value TEXT
 );
+```
+
+Stores:
+- `last_indexed` - Timestamp of last index update
+- `total_files` - Total files indexed (cumulative across scopes)
+- `total_blocks` - Total activity blocks/sections indexed (cumulative)
 ```
 
 Stores:
@@ -479,30 +662,24 @@ Stores:
 
 ### Index Size
 
-- **Database overhead:** ~50KB base
-- **Per activity block:** ~500 bytes average
-- **100 blocks:** ~100KB total
-- **1000 blocks:** ~500KB estimated
-
----
-
-## Testing
-
-**Test suite:** `tests/test_session_search.py` (21 tests)
+- **Database overhead:** ~50KB base + `tests/test_search_scope.py` (9 tests) **[NEW in IMP-57]**
 
 ```bash
 # Run all session search tests
 pytest tests/test_session_search.py -v
 
-# Run specific test class
-pytest tests/test_session_search.py::TestSessionSearcher -v
+# Run scope functionality tests
+pytest tests/test_search_scope.py -v
+
+# Run all search tests
+pytest tests/test_session*.py tests/test_search*.py -v
 ```
 
 **Coverage:**
 - ✅ ActivityBlock parsing (canonical and legacy formats)
 - ✅ Database schema creation
 - ✅ Single file indexing
-- ✅ Bulk indexing
+- ✅ Bulk indexing  
 - ✅ Index rebuilding
 - ✅ Simple keyword search
 - ✅ Phrase search
@@ -511,9 +688,30 @@ pytest tests/test_session_search.py::TestSessionSearcher -v
 - ✅ Result limiting
 - ✅ Error handling (missing index, invalid queries)
 - ✅ Statistics retrieval
+- ✅ **Generic markdown document indexing** **[NEW in IMP-57]**
+- ✅ **Section splitting by `##` headers** **[NEW in IMP-57]**
+- ✅ **Scope-based indexing (sessions/docs/specs/all)** **[NEW in IMP-57]**
+- ✅ **Scope-based search filtering** **[NEW in IMP-57]**
+- ✅ **Document type tracking and display** **[NEW in IMP-57]**
+- ✅ Bulk indexing
+- ✅ Index rebuilding
+- ✅ Simple keyword search
+- ✅ Phrase sComplete ✅ (IMP-57)
 
----
+- ✅ **Multi-scope Search:** Index and search sessions, docs, and specs
+- ✅ **Document Type Filtering:** `--scope` parameter for targeted searches
+- ✅ **Generic Markdown Support:** Index any .md file by sections
+- ✅ **Test Coverage:** 9 additional tests for scope functionality
 
+### Phase 3 (Optional)
+
+- **Semantic Search:** Add embedding-based similarity search using sentence-transformers
+- **MCP Integration:** Direct integration with MCP memory server for Copilot queries
+- **Web UI:** Build simple web interface for visual search and browsing
+- **Live Indexing:** Watch filesystem and auto-index new files
+- **Export:** Export search results to CSV, JSON, Markdown
+
+### Phase 4
 ## Future Enhancements
 
 ### Phase 2 (Optional)
@@ -534,7 +732,7 @@ pytest tests/test_session_search.py::TestSessionSearcher -v
 ---
 
 ## Related Documentation
-
+1.0 (IMP-57: Extended scope support)
 - [SESSION_DOCS_ADOPTION.md](SESSION_DOCS_ADOPTION.md) - Session documentation adoption guide
 - [SESSION_DOCS_STYLE_GUIDE.md](SESSION_DOCS_STYLE_GUIDE.md) - Style guide for DAILY_ACTIVITIES
 - [TODO.md](TODO.md) - Project task tracking (see IMP-51)

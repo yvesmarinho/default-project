@@ -84,9 +84,17 @@ def main():
     )
     
     parser.add_argument(
+        "--scope",
+        type=str,
+        choices=["sessions", "docs", "specs", "all"],
+        default="sessions",
+        help="Scope of documents to index (default: sessions)",
+    )
+    
+    parser.add_argument(
         "--session",
         type=str,
-        help="Index specific session date (YYYY-MM-DD)",
+        help="Index specific session date (YYYY-MM-DD) - only for sessions scope",
     )
     
     parser.add_argument(
@@ -123,8 +131,12 @@ def main():
         indexer.close()
         sys.exit(0)
     
-    # Index specific session
+    # Index specific session (only valid for sessions scope)
     if args.session:
+        if args.scope != "sessions":
+            print(f"{RED}✗ Error:{RESET} --session flag is only valid with --scope sessions")
+            sys.exit(1)
+        
         session_dir = args.sessions_dir / args.session
         
         if not session_dir.exists():
@@ -143,7 +155,7 @@ def main():
         total_blocks = 0
         for file_path in activity_files:
             try:
-                blocks_count = indexer.index_file(file_path)
+                blocks_count = indexer.index_file(file_path, document_type="sessions")
                 total_blocks += blocks_count
                 print(f"{GREEN}✓{RESET} {file_path.name} ({blocks_count} blocks)")
             except Exception as e:
@@ -153,24 +165,26 @@ def main():
         indexer.close()
         sys.exit(0)
     
-    # Index all sessions
+    # Index by scope
     print(f"\n{CYAN}{BOLD}Session Documentation Indexer{RESET}")
-    print(f"{CYAN}{'─' * 40}{RESET}\n")
+    print(f"{CYAN}{'─' * 40}{RESET}")
+    print(f"Scope: {args.scope}\n")
     
     if args.rebuild:
-        print(f"{YELLOW}⚠ Rebuilding index from scratch...{RESET}")
+        print(f"{YELLOW}⚠ Rebuilding index from scratch...{RESET}\n")
     
     try:
-        files_indexed, blocks_indexed = indexer.index_all_sessions(
-            sessions_dir=args.sessions_dir,
+        files_indexed, blocks_indexed = indexer.index_by_scope(
+            scope=args.scope,
             force_rebuild=args.rebuild,
         )
         
         print(f"\n{GREEN}✓ Indexing complete!{RESET}")
         print(f"  Index: {args.index_path}")
+        print(f"  Scope: {args.scope}")
         print(f"  Files: {files_indexed}")
-        print(f"  Blocks: {blocks_indexed}")
-        print(f"\n{BLUE}💡 Tip:{RESET} Use 'python scripts/session-search.py' to search indexed content\n")
+        print(f"  Blocks/Sections: {blocks_indexed}")
+        print(f"\n{BLUE}💡 Tip:{RESET} Use 'python scripts/session-search.py --scope {args.scope}' to search indexed content\n")
         
     except Exception as e:
         print(f"\n{RED}✗ Error during indexing:{RESET} {e}")

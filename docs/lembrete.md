@@ -1,6 +1,91 @@
 # Alterações necessárias
 
 ---
+## ✅ Processado em 2026-04-05 — Spec Driven Development
+
+Os itens abaixo foram analisados, debatidos e **validados contra metodologias de mercado (Score: 78% — BOM)**.
+
+**Informações adquiridas para futuro debate:**
+- ✅ Buscar melhores práticas em Engenharia de Especificação orientada a Engenharia de Software
+- ✅ 4 Camadas do desenvolvimento: Negócio → Produto → Arquitetura → Implementação
+- ✅ Decisões de Arquitetura (ADRs)
+- ✅ Requisitos Funcionais
+- ✅ Critérios de Aceite
+
+**Debate gerado**: [`docs/debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md`](debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md)
+**Validação de mercado**: [`docs/debates/ANALISE_4_CAMADAS_VS_MERCADO_2026-04-05.md`](debates/ANALISE_4_CAMADAS_VS_MERCADO_2026-04-05.md)
+
+**Resultado da validação**:
+- ✅ **Alinhamento com DDD** (Domain-Driven Design): 90%
+- ✅ **Alinhamento com ADRs** (Architecture Decision Records): 100% — PERFEITO!
+- ✅ **Alinhamento com BDD** (Behavior-Driven Development): 70%
+- ✅ **Alinhamento com TDD** (Test-Driven Development): 85%
+- ⚠️ **Gap identificado**: C4 Model (40%) — adicionar diagramas opcionais
+- ⚠️ **Gap identificado**: DORA Metrics (50%) — adicionar métricas de entrega
+
+**Empresas que usam práticas similares**: Amazon (AWS), Google, ThoughtWorks, Spotify, Netflix
+
+**Veredicto**: ✅ **APROVADO para implementação** com ajustes P1 (bounded_contexts em objetivo.yaml, explicitar TDD em quality gates)
+
+**Issues criadas**:
+1. ✅ **[IMP-53]** Implementar objetivo.yaml e speckit.clarify (Camada 1: Negócio)
+   - Tipo: Improvement (SpecKit evolution)
+   - Prioridade: P1
+   - Estimativa: 1 semana (Fase 1)
+
+2. ✅ **[IMP-54]** Integrar ADRs no plan-template.md (Camada 3: Arquitetura)
+   - Tipo: Improvement (SpecKit template)
+   - Prioridade: P1
+   - Estimativa: 3 dias
+
+3. ✅ **[IMP-55]** Sistema de captura de conversas (CHAT-*.md)
+   - Tipo: Improvement (memória/documentation)
+   - Prioridade: P2
+   - Estimativa: 1 semana (Fase 3)
+
+4. ✅ **[IMP-56]** Agent speckit.validate para quality gates
+   - Tipo: Improvement (SpecKit validation)
+   - Prioridade: P1
+   - Estimativa: 1 semana (Fase 2)
+
+**Novas demandas** (originais mantidas para referência):
+
+1. ✅ Criar modelo `objetivo.yaml` → **IMP-53**
+2. ✅ Atualizar `mcp-questions.yaml` → Integrado no **IMP-53** (speckit.clarify)
+3. ✅ Sistema de captura de conversas → **IMP-55**
+
+---
+## ✅ Processado em 2026-04-05 — Integração Engram MCP
+
+**Debate gerado**: [`docs/debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md`](debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md)
+
+**Decisão consensual**: ✅ **APROVADO COM CONDIÇÕES** — Implementação Faseada (Cenário 3)
+
+**Veredicto**:
+- 7 perspectivas profissionais debateram (template-architect, session-manager, constitution, Platform Tooling, DevEx, AppSec, SRE)
+- **Consenso**: Engram tem valor, mas timing incerto (IMP-51 muito recente)
+- **Approach**: Incrementar capacidades antes de adicionar complexidade
+
+**Fases aprovadas**:
+1. **Fase 1** (imediato, 16h): Estender IMP-51 para indexar mais docs (README, TODO, specs)
+2. **Fase 2** (2-4 semanas, 16h): Avaliar necessidade real com dados de uso
+3. **Fase 3a** (condicional, 40h): Mini-Engram Python puro SE necessário
+4. **Fase 3b** (fallback, 80h): Engram oficial SE Python inadequado
+
+**Issues criadas**:
+- **[IMP-57]** Estender IMP-51: indexação de documentos além de DAILY_ACTIVITIES (Fase 1)
+- **[IMP-58]** Avaliar necessidade de memória ativa (Fase 2)
+- **[IMP-59]** Mini-Engram Python (Fase 3a — condicional)
+- **[IMP-45]** Engram oficial (renomeado para Fase 3b — fallback)
+
+**Blockers de segurança identificados** (AppSec + constitution):
+- 🚨 Principle IV (Zero-Trust on Secrets) pode ser violado se Engram salvar outputs com credenciais
+- ✅ Controles obrigatórios: `.gitignore` patterns, `.gitleaks-engram.toml`, sanitização de PII/secrets, pre-commit hooks
+- ✅ Policy: `.engram/AGENT_MEMORY_POLICY.md` com seções "Secrets Management" + "Data Privacy"
+
+**Próximo passo**: Implementar IMP-57 (Fase 1) — extensão do IMP-51
+
+---
 ## Informações adquiridas para futuro debate
 
 - Buscar melhores práticas em Engenharia de Especificação orientada a Engenharia de Software.
