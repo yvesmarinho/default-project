@@ -1,8 +1,8 @@
 # IMP-58 — Survey de Avaliação de Necessidade de Memória Ativa
 
-**Criado**: 2026-04-05  
-**Parte de**: IMP-58 — Avaliar necessidade de memória ativa (Fase 2 Engram Integration)  
-**Duração**: 2-4 semanas de coleta  
+**Criado**: 2026-04-05
+**Parte de**: IMP-58 — Avaliar necessidade de memória ativa (Fase 2 Engram Integration)
+**Duração**: 2-4 semanas de coleta
 **Objetivo**: Decidir entre manter IMP-51 v2.0 (memória passiva) ou implementar IMP-59 (memória ativa)
 
 ---
@@ -17,7 +17,7 @@
 
 - [ ] **Nunca** — não uso o sistema de busca
 - [ ] **Raramente** — 1-2x por semana
-- [ ] **Ocasionalmente** — 3-4x por semana  
+- [ ] **Ocasionalmente** — 3-4x por semana
 - [ ] **Frequentemente** — 1-2x por dia
 - [ ] **Muito frequentemente** — 3-4x por dia
 - [ ] **Constantemente** — ≥5x por dia ⭐ (necessidade alta)
@@ -80,7 +80,7 @@ Exemplo: "Levei 3h para entender todas as decisões do IMP-48 lendo 4 sessões d
 **Cenário de uso ideal** (se sim):
 ```
 [Descreva como você usaria memória ativa]
-Exemplo: "Quando pergunto ao Copilot sobre validação, ele deveria lembrar automaticamente 
+Exemplo: "Quando pergunto ao Copilot sobre validação, ele deveria lembrar automaticamente
 que já implementamos validador semver no IMP-XX"
 ```
 
@@ -120,11 +120,11 @@ que já implementamos validador semver no IMP-XX"
 | Tempo de onboarding | [resposta] | 0-5 | 2x | [score × 2] |
 | Interesse em memória ativa | [resposta] | 0-5 | 1x | [score × 1] |
 
-**Total de Pontos**: [soma] / 40 pontos possíveis  
+**Total de Pontos**: [soma] / 40 pontos possíveis
 **Percentual**: [% do total]
 
-**Necessidade Alta**: ≥60% pontuação (≥24/40 pontos)  
-**Necessidade Moderada**: 40-59% pontuação (16-23/40 pontos)  
+**Necessidade Alta**: ≥60% pontuação (≥24/40 pontos)
+**Necessidade Moderada**: 40-59% pontuação (16-23/40 pontos)
 **Necessidade Baixa**: <40% pontuação (<16/40 pontos)
 
 ### Observações Qualitativas
@@ -143,7 +143,7 @@ que já implementamos validador semver no IMP-XX"
 2. ✅ **Perda de contexto**: ≥50% dos respondentes relatam ≥3x/semana
 3. ✅ **Onboarding lento**: ≥50% dos respondentes levam >2h
 
-**Decisão**: Se **≥2 critérios** atendidos → **GO** para IMP-59  
+**Decisão**: Se **≥2 critérios** atendidos → **GO** para IMP-59
 **Caso contrário**: **MANTER** IMP-51 v2.0 (scope search suficiente)
 
 ---
@@ -186,5 +186,5 @@ que já implementamos validador semver no IMP-XX"
 
 ---
 
-**Status**: 🟡 Coleta em andamento  
+**Status**: 🟡 Coleta em andamento
 **Última atualização**: 2026-04-05

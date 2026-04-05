@@ -1,0 +1,7 @@
+# POC artifacts (gitignored)
+*.db
+*.db-shm
+*.db-wal
+memory_poc.db*
+test_data/*.pyc
+__pycache__/

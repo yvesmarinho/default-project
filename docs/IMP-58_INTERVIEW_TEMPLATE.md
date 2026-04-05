@@ -1,8 +1,8 @@
 # IMP-58 — Interview Template: Memory Needs Assessment
 
-**Criado**: 2026-04-05  
-**Parte de**: IMP-58 — Avaliar necessidade de memória ativa (Fase 2 Engram Integration)  
-**Duração**: 30-45 minutos por entrevista  
+**Criado**: 2026-04-05
+**Parte de**: IMP-58 — Avaliar necessidade de memória ativa (Fase 2 Engram Integration)
+**Duração**: 30-45 minutos por entrevista
 **Meta**: 3-5 desenvolvedores entrevistados
 
 ---
@@ -126,7 +126,7 @@ Tempo médio: [X minutos/horas]
 **3.1 [CENÁRIO 1: Sugestão Automática]**
 
 > Imagine que, durante uma conversa com GitHub Copilot, ele **automaticamente** lembrasse:
-> 
+>
 > _"Você perguntou sobre validação. Em 2026-03-23 (IMP-47), implementamos validador semver
 > que lida com pre-releases usando regex XYZ. Quer usar o mesmo padrão?"_
 
@@ -312,5 +312,5 @@ Resposta:
 
 ---
 
-**Status**: 🟡 Template pronto para uso  
+**Status**: 🟡 Template pronto para uso
 **Última atualização**: 2026-04-05

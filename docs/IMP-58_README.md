@@ -1,8 +1,8 @@
 # IMP-58 — Memory Needs Assessment System
 
-**Status**: 🟡 Coleta em andamento  
-**Criado**: 2026-04-05  
-**Período de coleta**: 2026-04-05 a 2026-05-03 (4 semanas)  
+**Status**: 🟡 Coleta em andamento
+**Criado**: 2026-04-05
+**Período de coleta**: 2026-04-05 a 2026-05-03 (4 semanas)
 **Decisão esperada**: 2026-05-10
 
 ---
@@ -287,30 +287,30 @@ Log file: /projeto/.imp58-usage/usage.log
 
 ## ❓ FAQ
 
-**P: Preciso participar de tudo (survey + logs + entrevista)?**  
+**P: Preciso participar de tudo (survey + logs + entrevista)?**
 R: Não. Cada método é independente. Quanto mais participar, melhor a qualidade da decisão.
 
-**P: Os logs capturam minhas queries pessoais?**  
+**P: Os logs capturam minhas queries pessoais?**
 R: Sim, MAS são gitignored e não versionados. Só análises agregadas vão para o report.
 
-**P: Posso ver meus próprios dados de log?**  
+**P: Posso ver meus próprios dados de log?**
 R: Sim: `python scripts/imp58-usage-logger.py --stats`
 
-**P: E se eu não quiser logging?**  
+**P: E se eu não quiser logging?**
 R: Não adicione o alias. Use `python scripts/session-search.py` diretamente (sem logging).
 
-**P: Quanto tempo leva para preencher o survey?**  
+**P: Quanto tempo leva para preencher o survey?**
 R: ~5 minutos (5 perguntas fechadas + comentários opcionais).
 
-**P: O que acontece se nenhum critério for atendido?**  
+**P: O que acontece se nenhum critério for atendido?**
 R: **MANTER IMP-51 v2.0** — memória passiva é suficiente, não implementar Engram.
 
-**P: E se TODOS os critérios forem atendidos?**  
+**P: E se TODOS os critérios forem atendidos?**
 R: **GO forte para IMP-59** — memória ativa é necessidade crítica.
 
 ---
 
-**Status**: 🟡 Coleta em andamento  
-**Última atualização**: 2026-04-05  
-**Responsável**: [definir]  
+**Status**: 🟡 Coleta em andamento
+**Última atualização**: 2026-04-05
+**Responsável**: [definir]
 **Dúvidas/sugestões**: [canal de comunicação]

@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-05 — IMP-58 INICIADO (coleta de dados 2-4 semanas) + IMP-57 concluído
+**Last Updated**: 2026-04-05 — IMP-58 coleta iniciada + IMP-59 preparação (trabalho paralelo) + IMP-57 concluído
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
@@ -280,7 +280,7 @@
   - **Prioridade**: P1
   - *Reportado em*: 2026-04-05 | *Status*: 🟡 Em andamento (coleta iniciada 2026-04-05)
 
-- [ ] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas 🔵 **PENDENTE** (Fase 3a — condicional)
+- [ ] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas � **EM PREPARAÇÃO** (Fase 3a — condicional)
   - **Contexto**: SE IMP-58 decision gate = GO, implementar memória ativa em Python puro
   - **Objetivo**: RAG-like memory (mem_save, mem_search, mem_context) sem binário externo
   - **Escopo**:
@@ -295,9 +295,14 @@
     - Zero dependência externa (100% Python)
     - Reutiliza código IMP-51 (SQLite + FTS5)
     - 100% controle e manutenibilidade
-  - **Estimativa**: 40h
+  - **Trabalho em paralelo** (enquanto IMP-58 coleta dados):
+    - ✅ Documento de design/arquitetura (`docs/IMP-59_DESIGN.md`)
+    - ✅ POC isolado (`poc/mem_poc.py` — 500 linhas, standalone)
+    - ⏸️ Validação POC (executar e medir critérios de sucesso)
+    - ⏸️ Decisão final aguarda IMP-58 (2026-05-10)
+  - **Estimativa**: 40h (implementação completa SE GO)
   - **Prioridade**: P1 (SE decision gate GO)
-  - *Reportado em*: 2026-04-05 | *Status*: Pendente (blocker: IMP-58 decision gate)
+  - *Reportado em*: 2026-04-05 | *Status*: 🟡 Em preparação (design + POC pronto, aguarda IMP-58)
 
 - [ ] **[IMP-45]** Engram MCP oficial — Fallback se Python inadequado 🔵 **PENDENTE** (Fase 3b — fallback)
   - **Contexto**: SE mini-Engram Python (IMP-59) tiver bugs críticos, performance ruim, ou manutenibilidade difícil
@@ -732,7 +737,7 @@
 | IMP-56 | speckit.validate quality gates | P1 | 1 semana | SpecKit / QA | 🔵 2026-04-05 |
 | IMP-57 | Estender IMP-51 — indexar all docs (Fase 1) | P1 | 16h | DevEx / Search | ✅ 2026-04-05 |
 | IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | � 2026-04-05 |
-| IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 40h | DevEx / Memory | 🔵 2026-04-05 |
+| IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 40h | DevEx / Memory | � 2026-04-05 |
 
 ---
 

@@ -30,19 +30,19 @@ Usage:
 Examples:
     # Find when semver validator was implemented
     $ python scripts/session-search.py "validador de semver"
-    
+
     2026-03-23 16:00 — Bug Analysis & Fix
     …Corrigir <mark>validador</mark> de <mark>semver</mark> em versões pre-release…
-    
+
     # Find all IMP-47 related activities
     $ python scripts/session-search.py "IMP-47"
-    
+
     2026-03-23 16:00 — Bug Analysis & Fix (IMP-47)
     …análise detalhada do bug <mark>IMP-47</mark> nested folder issue…
-    
+
     # Find Python-related work in April
     $ python scripts/session-search.py "python" --from 2026-04-01
-    
+
     2026-04-03 14:32 — Migration Script Implementation
     …Implementado migration script em <mark>Python</mark> com 600 linhas…
 
@@ -94,14 +94,14 @@ def print_result(result, show_context: bool = False, searcher = None):
         doc_type_badge = f"[{GREEN}SPEC{RESET}] "
     elif result.document_type == "sessions":
         doc_type_badge = f"[{CYAN}SESSION{RESET}] "
-    
+
     # Header: date + timestamp + title
     print(f"{doc_type_badge}{CYAN}{result.session_date}{RESET} {DIM}{result.timestamp}{RESET} — {BOLD}{result.title}{RESET}")
-    
+
     # Snippet with highlighted matches
     snippet = format_snippet(result.snippet)
     print(f"  {snippet}")
-    
+
     # Optional: show full context
     if show_context and searcher:
         context = searcher.get_activity_context(result.session_date, result.title)
@@ -109,7 +109,7 @@ def print_result(result, show_context: bool = False, searcher = None):
             print(f"\n{DIM}{'─' * 60}{RESET}")
             print(context)
             print(f"{DIM}{'─' * 60}{RESET}")
-    
+
     print()  # Blank line between results
 
 
@@ -119,76 +119,76 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    
+
     parser.add_argument(
         "query",
         type=str,
         help="Search query (FTS5 syntax)",
     )
-    
+
     parser.add_argument(
         "--index-path",
         type=Path,
         default=Path(".session-index/index.db"),
         help="Path to index database (default: .session-index/index.db)",
     )
-    
+
     parser.add_argument(
         "--limit",
         type=int,
         default=20,
         help="Maximum number of results (default: 20)",
     )
-    
+
     parser.add_argument(
         "--from",
         dest="date_from",
         type=str,
         help="Filter by start date (YYYY-MM-DD)",
     )
-    
+
     parser.add_argument(
         "--to",
         dest="date_to",
         type=str,
         help="Filter by end date (YYYY-MM-DD)",
     )
-    
+
     parser.add_argument(
         "--scope",
         type=str,
         choices=["sessions", "docs", "specs", "all"],
         help="Filter by document type (sessions, docs, specs, or all)",
     )
-    
+
     parser.add_argument(
         "--context",
         action="store_true",
         help="Show full activity block for each result",
     )
-    
+
     parser.add_argument(
         "--stats",
         action="store_true",
         help="Show search statistics",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Check if index exists
     if not args.index_path.exists():
         print(f"{RED}✗ Error:{RESET} Index database not found: {args.index_path}")
         print(f"\n{BLUE}💡 Tip:{RESET} Build the index first:")
         print(f"  python scripts/session-index.py\n")
         sys.exit(1)
-    
+
     # Initialize searcher
     try:
         searcher = SessionSearcher(index_path=args.index_path)
     except Exception as e:
         print(f"{RED}✗ Error:{RESET} Failed to initialize searcher: {e}")
         sys.exit(1)
-    
+
     # Perform search
     try:
         results = searcher.search(
@@ -198,7 +198,7 @@ def main():
             date_to=args.date_to,
             scope=args.scope,
         )
-        
+
         # Print header
         print(f"\n{CYAN}{BOLD}Search Results{RESET}")
         print(f"{CYAN}{'─' * 60}{RESET}")
@@ -211,7 +211,7 @@ def main():
             print(f"Scope: {args.scope}")
         print(f"Found: {BOLD}{len(results)}{RESET} result(s)")
         print(f"{CYAN}{'─' * 60}{RESET}\n")
-        
+
         # Print results
         if not results:
             print(f"{YELLOW}No results found{RESET}\n")
@@ -225,14 +225,14 @@ def main():
                 if args.stats:
                     print(f"{DIM}[{i}] Rank: {result.rank:.4f}{RESET}")
                 print_result(result, show_context=args.context, searcher=searcher)
-        
+
         # Stats summary
         if args.stats and results:
             avg_rank = sum(r.rank for r in results) / len(results)
             print(f"\n{CYAN}{'─' * 60}{RESET}")
             print(f"Average rank: {avg_rank:.4f}")
             print(f"Best match:   {results[0].title if results else 'N/A'}")
-    
+
     except ValueError as e:
         print(f"{RED}✗ Invalid query:{RESET} {e}")
         print(f"\n{BLUE}💡 FTS5 query syntax:{RESET}")
@@ -244,13 +244,13 @@ def main():
         print(f"  Near:        migration NEAR/3 script")
         print(f"\nSee --help for more examples\n")
         sys.exit(1)
-    
+
     except Exception as e:
         print(f"{RED}✗ Error during search:{RESET} {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
-    
+
     finally:
         searcher.close()
 

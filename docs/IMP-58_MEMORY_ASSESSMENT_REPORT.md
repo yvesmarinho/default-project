@@ -1,9 +1,9 @@
 # IMP-58 — Memory Needs Assessment Report
 
-**Criado**: 2026-04-05  
-**Período de coleta**: 2026-04-05 a 2026-05-03 (4 semanas)  
-**Análise**: 2026-05-03 a 2026-05-10  
-**Decisão**: 2026-05-10  
+**Criado**: 2026-04-05
+**Período de coleta**: 2026-04-05 a 2026-05-03 (4 semanas)
+**Análise**: 2026-05-03 a 2026-05-10
+**Decisão**: 2026-05-10
 **Status**: 🟡 Coleta em andamento
 
 ---
@@ -18,7 +18,7 @@
 - **Surveys completados**: [N/N esperados]
 - **Entrevistas realizadas**: [N/5 meta]
 
-**Recomendação**: 
+**Recomendação**:
 - [ ] **GO para IMP-59** (Mini-Engram Python) — memória ativa necessária
 - [ ] **MANTER IMP-51 v2.0** (scope search) — memória passiva suficiente
 
@@ -430,7 +430,7 @@ Conclusão:
 
 ---
 
-**Responsável**: [nome do responsável pela análise]  
-**Revisores**: [nomes dos revisores]  
-**Status**: 🟡 Coleta em andamento → 🟢 Análise completa → ✅ Decisão tomada  
+**Responsável**: [nome do responsável pela análise]
+**Revisores**: [nomes dos revisores]
+**Status**: 🟡 Coleta em andamento → 🟢 Análise completa → ✅ Decisão tomada
 **Última atualização**: 2026-04-05 (criação do template)

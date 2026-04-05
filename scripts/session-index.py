@@ -29,7 +29,7 @@ Examples:
     ✓ 2026-04-03/DAILY_ACTIVITIES_2026-04-03.md (8 blocks)
     ...
     Summary: 18 files, 142 blocks indexed
-    
+
     # Update index after new session
     $ python scripts/session-index.py
     Indexing 1 new activity files...
@@ -62,27 +62,27 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
-    
+
     parser.add_argument(
         "--sessions-dir",
         type=Path,
         default=Path("docs/SESSIONS"),
         help="Path to sessions directory (default: docs/SESSIONS)",
     )
-    
+
     parser.add_argument(
         "--index-path",
         type=Path,
         default=Path(".session-index/index.db"),
         help="Path to index database (default: .session-index/index.db)",
     )
-    
+
     parser.add_argument(
         "--rebuild",
         action="store_true",
         help="Rebuild index from scratch (clears existing data)",
     )
-    
+
     parser.add_argument(
         "--scope",
         type=str,
@@ -90,34 +90,34 @@ def main():
         default="sessions",
         help="Scope of documents to index (default: sessions)",
     )
-    
+
     parser.add_argument(
         "--session",
         type=str,
         help="Index specific session date (YYYY-MM-DD) - only for sessions scope",
     )
-    
+
     parser.add_argument(
         "--stats",
         action="store_true",
         help="Show index statistics and exit",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Validate sessions directory
     if not args.sessions_dir.exists():
         print(f"{RED}✗ Error:{RESET} Sessions directory not found: {args.sessions_dir}")
         print(f"  Expected path: {args.sessions_dir.absolute()}")
         sys.exit(1)
-    
+
     # Initialize indexer
     try:
         indexer = SessionIndexer(index_path=args.index_path)
     except Exception as e:
         print(f"{RED}✗ Error:{RESET} Failed to initialize indexer: {e}")
         sys.exit(1)
-    
+
     # Show stats and exit
     if args.stats:
         stats = indexer.get_stats()
@@ -130,28 +130,28 @@ def main():
         print()
         indexer.close()
         sys.exit(0)
-    
+
     # Index specific session (only valid for sessions scope)
     if args.session:
         if args.scope != "sessions":
             print(f"{RED}✗ Error:{RESET} --session flag is only valid with --scope sessions")
             sys.exit(1)
-        
+
         session_dir = args.sessions_dir / args.session
-        
+
         if not session_dir.exists():
             print(f"{RED}✗ Error:{RESET} Session directory not found: {session_dir}")
             sys.exit(1)
-        
+
         activity_files = list(session_dir.glob("DAILY_ACTIVITIES_*.md"))
         activity_files.extend(session_dir.glob("TODAY_ACTIVITIES_*.md"))
-        
+
         if not activity_files:
             print(f"{YELLOW}⚠ Warning:{RESET} No activity files found in {session_dir}")
             sys.exit(0)
-        
+
         print(f"{BLUE}Indexing session {args.session}...{RESET}\n")
-        
+
         total_blocks = 0
         for file_path in activity_files:
             try:
@@ -160,38 +160,38 @@ def main():
                 print(f"{GREEN}✓{RESET} {file_path.name} ({blocks_count} blocks)")
             except Exception as e:
                 print(f"{RED}✗{RESET} {file_path.name}: {e}")
-        
+
         print(f"\n{CYAN}Summary:{RESET} {len(activity_files)} file(s), {total_blocks} blocks indexed")
         indexer.close()
         sys.exit(0)
-    
+
     # Index by scope
     print(f"\n{CYAN}{BOLD}Session Documentation Indexer{RESET}")
     print(f"{CYAN}{'─' * 40}{RESET}")
     print(f"Scope: {args.scope}\n")
-    
+
     if args.rebuild:
         print(f"{YELLOW}⚠ Rebuilding index from scratch...{RESET}\n")
-    
+
     try:
         files_indexed, blocks_indexed = indexer.index_by_scope(
             scope=args.scope,
             force_rebuild=args.rebuild,
         )
-        
+
         print(f"\n{GREEN}✓ Indexing complete!{RESET}")
         print(f"  Index: {args.index_path}")
         print(f"  Scope: {args.scope}")
         print(f"  Files: {files_indexed}")
         print(f"  Blocks/Sections: {blocks_indexed}")
         print(f"\n{BLUE}💡 Tip:{RESET} Use 'python scripts/session-search.py --scope {args.scope}' to search indexed content\n")
-        
+
     except Exception as e:
         print(f"\n{RED}✗ Error during indexing:{RESET} {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
-    
+
     finally:
         indexer.close()
 

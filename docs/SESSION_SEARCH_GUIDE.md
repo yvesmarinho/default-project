@@ -158,7 +158,7 @@ make session-search QUERY="document_type:docs AND architecture"
 
 ## Searching Beyond Sessions (IMP-57)
 
-**Added:** 2026-04-05  
+**Added:** 2026-04-05
 **Feature:** Extended search to all markdown documents
 
 The search system now indexes and searches beyond just session documentation. You can search across:
@@ -679,7 +679,7 @@ pytest tests/test_session*.py tests/test_search*.py -v
 - ✅ ActivityBlock parsing (canonical and legacy formats)
 - ✅ Database schema creation
 - ✅ Single file indexing
-- ✅ Bulk indexing  
+- ✅ Bulk indexing
 - ✅ Index rebuilding
 - ✅ Simple keyword search
 - ✅ Phrase search
@@ -749,6 +749,6 @@ pytest tests/test_session*.py tests/test_search*.py -v
 
 ---
 
-**Last updated:** 2026-04-05  
-**Version:** 1.0.0  
+**Last updated:** 2026-04-05
+**Version:** 1.0.0
 **Status:** ✅ Production Ready
