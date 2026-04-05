@@ -103,7 +103,7 @@
 - `scripts/lib/templates.py` — Updated docstring comments (target_dir → project_path)
 
 **Testes**:
-- Created test project: `tmp/projeto-teste` ✅  
+- Created test project: `tmp/projeto-teste` ✅
 - Verified structure: All files in correct locations
 - Test suite: 279/284 passed (5 pre-existing failures unrelated)
 - All 6 BUG-01 tests passed ✅
@@ -426,7 +426,7 @@
    ```python
    import shutil
    from pathlib import Path
-   
+
    src = Path("a-default-project/docs/modelo_docs")
    dst = Path("enterprise-update-lab-n8n/docs/copilot")
    dst.parent.mkdir(parents=True, exist_ok=True)

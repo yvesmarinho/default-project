@@ -120,71 +120,104 @@ Escolha uma estratégia:
 ```bash
 # Criar sessão de hoje com formato estruturado
 mkdir -p docs/SESSIONS/$(date +%Y-%m-%d)
-cp docs/templates/DAILY_ACTIVITIES_TEMPLATE.md \
-   docs/SESSIONS/$(date +%Y-%m-%d)/DAILY_ACTIVITIES_$(date +%Y-%m-%d).md
+# Use session-manager agent para criação automática
 ```
 
 **Semana 2+**: Migrar sessões antigas progressivamente (mais recentes primeiro)
 
 ```bash
-# Migrar sessões das últimas 4 semanas
-python scripts/migrate-daily-activities.py \
-  --start-date 2026-03-01 \
-  --end-date 2026-03-31 \
-  --dry-run
+# Preview de migração (dry-run)
+python scripts/migrate-daily-activities.py docs/SESSIONS/2026-03-20/ --dry-run
 
-# Revisar mudanças propostas, depois aplicar:
-python scripts/migrate-daily-activities.py \
-  --start-date 2026-03-01 \
-  --end-date 2026-03-31
+# Aplicar migração em uma sessão específica
+python scripts/migrate-daily-activities.py docs/SESSIONS/2026-03-20/
+
+# Migrar múltiplas sessões (recentes primeiro)
+for dir in docs/SESSIONS/2026-03-*/; do
+  python scripts/migrate-daily-activities.py "$dir"
+done
 ```
+
+**Características da migração**:
+- ✅ **Backup automático**: Arquivo original preservado com sufixo `.backup`
+- ✅ **Detecção de formato**: Pula arquivos já em formato canônico
+- ✅ **Extração inteligente**: Converte campos legados para estrutura canônica
+- ✅ **Preservação de conteúdo**: Nada é perdido, apenas reestruturado
+- ✅ **Metadata tracking**: Adiciona nota de migração com data
+
+**Exemplo de migração**:
+Ver diretório de exemplo: `docs/SESSIONS/EXAMPLE-MIGRATION/`
 
 **Mês 2+**: Manter sessões antigas em formato legado (marcar como legacy)
 
 ```bash
-# Adicionar README.md em sessões legadas
+# Adicionar marcador em sessões muito antigas (< 2026)
 for dir in docs/SESSIONS/202[0-5]-*/; do
-  echo "⚠️ Legacy format - not migrated" > "$dir/README.md"
+  echo "⚠️ **Legacy Format** — This session was not migrated. See SESSION_DOCS_ADOPTION.md for migration guide." > "$dir/README.md"
 done
 ```
 
 #### 2.3 — Migração Big Bang (Histórico Pequeno)
 
 ```bash
-# Migrar todas as sessões de uma vez
+# Preview: migrar todas as sessões de uma vez
 python scripts/migrate-daily-activities.py --all --dry-run
 
-# Revisar, depois aplicar
+# Aplicar migração completa
 python scripts/migrate-daily-activities.py --all
 
 # Validar resultado
-make session-validate
+python scripts/session-validate.py --all
 ```
 
-#### 2.4 — Migração Híbrida (Histórico Grande)
+**Quando usar Big Bang**:
+- ✅ Histórico pequeno (< 10 sessões)
+- ✅ Sessões recentes (últimos 3 meses)
+- ✅ Time pequeno (1-2 pessoas)
+- ✅ Disponibilidade para revisar todas de uma vez
 
-**Estrutura proposta:**
-
-```
-docs/SESSIONS/
-├── 2024-01-01/ to 2025-12-31/   ← LEGACY (não migrar)
-│   └── README.md                 ← "Legacy format"
-├── 2026-01-01/ to 2026-02-29/   ← PARTIAL (migrar apenas críticas)
+#### 2.4 — Migração Híbrida (Histórico Grande), marcar)
+│   └── README.md                 ← "⚠️ Legacy format"
+├── 2026-01-01/ to 2026-02-29/   ← PARTIAL (migrar apenas críticas manualmente)
 │   └── ...
-└── 2026-03-01/ onwards          ← STRUCTURED (todas migradas)
+└── 2026-03-01/ onwards          ← STRUCTURED (migrar todas)
     └── ...
 ```
 
 **Implementação:**
 
 ```bash
-# 1. Marcar sessões legacy
-find docs/SESSIONS -type d -name "202[0-5]-*" -exec \
-  sh -c 'echo "⚠️ Legacy format" > "$1/README.md"' _ {} \;
+# 1. Marcar sessões muito antigas como legacy
+for dir in docs/SESSIONS/202[0-5]-*/; do
+  echo "⚠️ **Legacy Format** — Not migrated. Historical reference only." > "$dir/README.md"
+done
 
-# 2. Migrar apenas sessões críticas de 2026 Q1
-python scripts/migrate-daily-activities.py \
-  --start-date 2026-01-01 \
+# 2. Migrar sessões críticas de Q1 2026 manualmente (seletivo)
+# Identifique sessões importantes visualmente
+ls -1 docs/SESSIONS/2026-0[1-2]-*/
+
+# Migre apenas as importantes
+python scripts/migrate-daily-activities.py docs/SESSIONS/2026-01-28/
+python scripts/migrate-daily-activities.py docs/SESSIONS/2026-02-15/
+# ... etc
+
+# 3. Migrar automaticamente todas de Q2 2026 em diante
+for dir in docs/SESSIONS/2026-0[3-9]-*/ docs/SESSIONS/2026-1[0-2]-*/; do
+  if [ -d "$dir" ]; then
+    python scripts/migrate-daily-activities.py "$dir"
+  fi
+done
+```
+
+**⚡ Performance tip**: Para históricos grandes (> 50 sessões), use dry-run primeiro:
+
+```bash
+# Conta quantas sessões serão migradas
+python scripts/migrate-daily-activities.py --all --dry-run | grep "Migrated:"
+
+# Se aprovado, rode em paralelo (bash 4.0+)
+find docs/SESSIONS -type d -name "2026-*" | \
+  parallel -j 4 python scripts/migrate-daily-activities.py {} \
   --end-date 2026-02-29 \
   --filter "IMP-|BUG-|RELEASE"  # apenas sessões com IMPs/BUGs
 
@@ -192,6 +225,84 @@ python scripts/migrate-daily-activities.py \
 python scripts/migrate-daily-activities.py \
   --start-date 2026-03-01
 ```
+
+#### 2.5 — Guia Prático do Migration Script
+
+**Nome do script**: `scripts/migrate-daily-activities.py`
+
+**Sintaxe**:
+```bash
+python scripts/migrate-daily-activities.py <path> [options]
+```
+
+**Opções disponíveis**:
+
+| Opção | Descrição |
+|-------|-----------|
+| `<path>` | Arquivo ou diretório para migrar |
+| `--all` | Migrar todas as sessões em `docs/SESSIONS/` |
+| `--dry-run` | Preview sem modificar arquivos |
+| `--force` | Forçar migração mesmo se já canônico |
+
+**Casos de uso**:
+
+```bash
+# 1. Migrar um arquivo específico
+python scripts/migrate-daily-activities.py \
+  docs/SESSIONS/2026-03-20/DAILY_ACTIVITIES_2026-03-20.md
+
+# 2. Migrar todos arquivos de um diretório de sessão
+python scripts/migrate-daily-activities.py \
+  docs/SESSIONS/2026-03-20/
+
+# 3. Preview de migração completa (recomendado primeiro)
+python scripts/migrate-daily-activities.py --all --dry-run
+
+# 4. Migração completa de todas sessões
+python scripts/migrate-daily-activities.py --all
+
+# 5. Forçar re-migração de arquivo já migrado
+python scripts/migrate-daily-activities.py \
+  docs/SESSIONS/2026-03-20/ --force
+```
+
+**Comportamento do script**:
+
+1. **Detecção de formato**: Identifica automaticamente se arquivo é:
+   - `TODAY_ACTIVITIES` (formato muito antigo)
+   - `DAILY_ACTIVITIES` legado (formato antigo estruturado)
+   - `DAILY_ACTIVITIES` semi-canônico (campos mas sem separadores)
+   - `DAILY_ACTIVITIES` canônico (formato atual)
+
+2. **Backup automático**: Cria arquivo `.backup` antes de modificar
+
+3. **Extração e conversão**:
+   - Extrai blocos de atividade do formato legado
+   - Converte para formato canônico com separadores `---`
+   - Adiciona campos obrigatórios faltantes (inferidos ou placeholder)
+   - Preserva todo conteúdo original
+
+4. **Metadata**: Adiciona nota de migração com data no cabeçalho
+
+5. **Validação**: Pode ser validado após com `session-validate.py`
+
+**Output do script**:
+
+```
+Processing: docs/SESSIONS/2026-01-28/TODAY_ACTIVITIES_2026-01-28.md
+✓ Backup created: TODAY_ACTIVITIES_2026-01-28.md.backup
+✓ Migrated: 4 block(s) → canonical format
+
+============================================================
+Migration Summary
+============================================================
+✓ Migrated: 1
+⊘ Skipped:  0
+✗ Failed:   0
+Total:     1
+```
+
+**Ver exemplo completo**: [docs/SESSIONS/EXAMPLE-MIGRATION/](SESSIONS/EXAMPLE-MIGRATION/)
 
 ---
 
