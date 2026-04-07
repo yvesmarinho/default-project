@@ -31,7 +31,7 @@
    - Context: Solo developer (not team project)
    - Recommendation: Simplify to Lite version
    - Decision gate: 2026-05-10 (or earlier if simplified)
-   
+
 2. **IMP-59 Uncommitted Work**: Review and commit changes to:
    - Design document edits
    - POC refinements
