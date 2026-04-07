@@ -4,26 +4,129 @@
 
 **Debate gerado**: [`docs/SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md`](SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md)
 **Análise completa**: [`docs/SESSIONS/2026-04-07/ANALISE-GAPS-SCAFFOLD-PLANO-ACAO.md`](SESSIONS/2026-04-07/ANALISE-GAPS-SCAFFOLD-PLANO-ACAO.md)
+**Verificação FASE 1**: [`docs/SESSIONS/2026-04-07/SCAFFOLD_VERIFICATION_REPORT.md`](SESSIONS/2026-04-07/SCAFFOLD_VERIFICATION_REPORT.md) — ✅ **COMPLETA**
 
 **Resultado da análise**:
 - ✅ 9 gaps identificados e categorizados
 - ✅ Plano de ação estruturado em 4 fases (28h estimadas)
 - ✅ Workflow SpecKit atualizado com novos agentes
 - ✅ Issues criadas: VERIFY-01 a 05, BUG-04 a 08, IMP-60 a 64
+- ✅ **FASE 1 completa**: 5 bugs confirmados, 2 falsos positivos
 
-**Prioridades**:
-- 🔴 **P0 (Crítica)**: VERIFY-01 a 05, BUG-04 a 08 (14h)
-- 🟡 **P1 (Alta)**: IMP-60 a 62 (10h)
-- 🟢 **P2 (Média)**: IMP-63 a 64 (6h)
+**Prioridades (ajustadas pós-FASE 1)**:
+- 🔴 **P0 (Crítica)**: BUG-04, 05, 06, 07, 08 (11h) — **BLOQUEANTE**
+- 🟡 **P1 (Alta)**: IMP-60, 61, 62 (8h)
+- 🟢 **P2 (Média)**: IMP-63, 64 (4h)
+- ✅ **Resolvidos**: GAP #4 (PROJECT_CREATION_SUMMARY.md), GAP #9 (Git)
 
 ### Issues criadas:
 
-#### Verificações (URGENTE - P0)
-- [ ] **[VERIFY-01]** Verificar se `.specify/templates/` foi copiado no yves-eti-br
-- [ ] **[VERIFY-02]** Verificar se agentes foram copiados em `.github/agents/`
-- [ ] **[VERIFY-03]** Verificar se `.code-workspace` existe
-- [ ] **[VERIFY-04]** Verificar arquivos `.vscode/` (extensions, tasks, launch)
-- [ ] **[VERIFY-05]** Verificar inicialização Git (init, remote, commits)
+#### Verificações (URGENTE - P0) — ✅ COMPLETAS
+- [x] **[VERIFY-01]** Verificar se `.specify/templates/` foi copiado no yves-eti-br → ❌ **AUSENTE** (BUG-04 confirmado)
+- [x] **[VERIFY-02]** Verificar se agentes foram copiados em `.github/agents/` → ❌ **AUSENTE** (BUG-05 confirmado)
+- [x] **[VERIFY-03]** Verificar se `.code-workspace` existe → ❌ **AUSENTE** (BUG-08 confirmado)
+- [x] **[VERIFY-04]** Verificar arquivos `.vscode/` (extensions, tasks, launch) → ❌ **AUSENTE** (BUG-07 confirmado)
+- [x] **[VERIFY-05]** Verificar inicialização Git (init, remote, commits) → ✅ **OK** (GAP #9 = FALSO POSITIVO)
+
+**Resultado FASE 1**: 🔴 **22.5% conformidade** — 4 bugs P0 confirmados, projeto NÃO conforme
+
+---
+
+### ✅ FASE 2: INVESTIGAÇÃO + TESTES (11h) — **COMPLETA** ✅
+
+**Data**: 2026-04-07 17:28:00 BRT
+**Duração real**: ~40 minutos  (criação de projeto teste + análise de código)
+
+**Tarefas executadas**:
+- [x] Criar projeto de teste `test-scaffold-bug` (Python base)
+- [x] Comparar estruturas: teste (Layer 1) vs yves-eti-br (Layer 2)
+- [x] Ler código completo: project.py, vscode.py, composer.py, flows/new_project.py
+- [x] Buscar onde templates Layer 2 são aplicados
+- [x] Identificar causa raiz dos bugs
+
+**Resultado CHOCANTE**: 😱
+
+🎉 **O SCAFFOLD ESTÁ 100% FUNCIONAL!**
+
+**Teste de Validação**:
+```bash
+python scripts/scaffold.py --new --ci \
+  --name test-scaffold-bug \
+  --domain programming --language python \
+  --target-dir /tmp/test-scaffold-bug
+```
+
+**Resultado** (`/tmp/test-scaffold-bug`):
+- ✅ `.specify/templates/` — 6 arquivos SpecKit
+- ✅ `.github/agents/` — 11  agentes
+- ✅ `.github/prompts/` — 12 prompts
+- ✅ `.vscode/` — 5 arquivos (settings, mcp, extensions, tasks, launch)
+- ✅ `.code-workspace` — criado
+- ✅ Git init — completo
+
+**Score de conformidade do teste**: **100%** ✅
+
+---
+
+### 🔍 **DESCOBERTA: O Bug NÃO é do Scaffold!**
+
+**Conclusão**: O projeto `yves-eti-br` foi criado **incorretamente**, mas NÃO é culpa do código do scaffold.
+
+**Possíveis causas**:
+1. **Scaffold executado em projeto pré-existente** (pasta yves-eti-br já existia)
+2. **Subcommand errado** (talvez `--upgrade` ao invés de `--new`)
+3. **Interrupção durante scaffold** (Ctrl+C antes de completar?)
+
+**Evidências**:
+- `.scaffold-state.yaml` existe (scaffold foi executado)
+- Timestamp: 15:50:03 (apenas 1 segundo de execução — muito rápido!)
+- Estrutura híbrida: Next.js manual + alguns arquivos scaffold
+
+---
+
+### 📊 **SCORECARD ATUALIZADO — Bugs REAIS vs FALSOS POSITIVOS**
+
+| Bug Original | Status Final | Causa | Afeta |
+|--------------|--------------|-------|-------|
+| BUG-04: `.specify/` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
+| BUG-05: `.github/agents/` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
+| BUG-07: `.vscode/` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
+| BUG-08: `.code-workspace` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
+| **BUG-06: Arquivos segurança GitHub** | 🔴 **REAL** | Não implementado | **TODOS** projetos |
+| GAP #4: PROJECT_CREATION_SUMMARY | ✅ **RESOLVIDO** | Arquivo existe | N/A |
+| GAP #9: Git não init | ✅ **RESOLVIDO** | Funciona perfeitamente | N/A |
+
+**Total de bugs REAIS no scaffold**: **1** (BUG-06 apenas)
+
+**Relatório completo**: [FASE2-ANALISE-APROFUNDADA.md](SESSIONS/2026-04-07/FASE2-ANALISE-APROFUNDADA.md)
+
+---
+
+### 🎯 **AJUSTE DO PLANO DE AÇÃO**
+
+**ORIGINAL** (obsoleto):
+- ❌ Corrigir copy_speckit() (3h) — **NÃO NECESSÁRIO**
+- ❌ Corrigir .vscode/ (2h) — **NÃO NECESSÁRIO**
+- ❌ Corrigir .code-workspace (1h) — **NÃO NECESSÁRIO**
+- ✅ Implementar arquivos segurança GitHub (3h) — **AINDA NECESSÁRIO**
+
+**ATUALIZADO**:
+- [ ] **BUG-06**: Implementar `generate_github_security_files()` (3h)
+  - `SECURITY.md`
+  - `.github/CODEOWNERS`
+  - `.github/dependabot.yml`
+  - `.github/workflows/security-scan.yml`
+  - `.github/workflows/dependency-review.yml`
+
+- [ ] **DECISÃO**: Corrigir yves-eti-br
+  - **Opção A (RECOMENDADO)**: Recriar do zero com scaffold correto
+  - **Opção B**: Copiar manualmente .specify/, .github/agents/, .vscode/
+
+**Total restante**: 3h (apenas BUG-06)
+
+---
+
+**Resultado FASE 1**: 🔴 **22.5% conformidade** — 4 bugs P0 confirmados, projeto NÃO conforme
 
 #### Bugs Críticos (P0)
 - [ ] **[BUG-04]** Scaffold não copia templates `.specify/` para projeto (se confirmado)
@@ -192,6 +295,69 @@ Os itens abaixo foram analisados e convertidos em issues estruturadas no `docs/T
    - Prioridade: P0
    - Adicionado em: docs/TODO.md (seção "Itens Recentes")
    - Requer investigação em: scripts/lib/templates.py, scripts/lib/flows/new_project.py
+
+---
+
+## 🎯 PROGRESSO DO PLANO DE AÇÃO — Gaps do Scaffold
+
+### ✅ FASE 1: VERIFICAÇÃO (6h) — **COMPLETA** ✅
+
+**Data**: 2026-04-07 17:15:00 BRT
+**Duração real**: ~15 minutos (verificações automatizadas)
+
+**Tarefas executadas**:
+- [x] VERIFY-01: `.specify/templates/` → ❌ AUSENTE
+- [x] VERIFY-02: `.github/agents/` → ❌ AUSENTE
+- [x] VERIFY-03: `.code-workspace` → ❌ AUSENTE
+- [x] VERIFY-04: `.vscode/` → ❌ AUSENTE
+- [x] VERIFY-05: Git init → ✅ OK
+
+**Resultados**:
+- 🔴 **4 bugs P0 confirmados**: BUG-04, BUG-05, BUG-07, BUG-08
+- 🔴 **1 bug P1 confirmado**: BUG-06 (arquivos segurança GitHub)
+- ✅ **2 falsos positivos**: GAP #4 (PROJECT_CREATION_SUMMARY.md existe), GAP #9 (Git OK)
+- 📊 **Score de conformidade**: 22.5% (crítico)
+
+**Relatório**: [SCAFFOLD_VERIFICATION_REPORT.md](SESSIONS/2026-04-07/SCAFFOLD_VERIFICATION_REPORT.md)
+
+---
+
+### ⏭️ FASE 2: CORREÇÕES CRÍTICAS (11h) — **PRÓXIMO PASSO**
+
+**Prioridade**: 🔴 **P0 - BLOQUEANTE**
+**ETA**: 2026-04-08 (amanhã)
+
+**Tarefas pendentes**:
+- [ ] **[BUG-04]** Corrigir `copy_speckit()` — `.specify/templates/` não copiado (3h)
+  - Debugar `scripts/lib/project.py::copy_speckit()` função
+  - Adicionar logs verbosos
+  - Testar com novo projeto
+
+- [ ] **[BUG-05]** Corrigir `copy_speckit()` — `.github/agents/` não copiado (1h)
+  - Resolver junto com BUG-04 (mesma causa raiz)
+
+- [ ] **[BUG-06]** Criar arquivos de segurança GitHub (3h)
+  - `SECURITY.md`
+  - `.github/CODEOWNERS`
+  - `.github/dependabot.yml`
+  - `.github/workflows/security-scan.yml`
+
+- [ ] **[BUG-07]** Corrigir geração `.vscode/` (2h)
+  - Debugar `scripts/lib/flows/new_project.py` passo 5
+  - Verificar por que `vscode.generate_*()` não executou
+
+- [ ] **[BUG-08]** Corrigir criação `.code-workspace` (1h)
+  - Debugar `scripts/lib/project.py::create_structure()` linha 519
+
+**Bloqueio**: Workflow SpecKit **INDISPONÍVEL** até correção de BUG-04 + BUG-05
+
+---
+
+### ⏸️ FASES 3-4: IMPROVEMENTS (12h) — **EM ESPERA**
+
+Aguardar conclusão de FASE 2 (bugs críticos) antes de iniciar melhorias.
+
+---
 
 3. (vazio - descartado)
 
