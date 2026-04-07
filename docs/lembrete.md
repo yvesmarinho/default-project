@@ -219,7 +219,15 @@ python scripts/scaffold.py --new --ci \
   - **Implementação**: `setup_secrets_security()` em project.py (linhas 1310-1405)
   - **Integração**: new_project.py linha 48-50
   - **Validado**: Projeto test-imp60 com permissões 700 ✅
-- [ ] **[IMP-61]** Criar sub-pastas padrão de `docs/` (debates, decisions, templates, guides, retrospectives, architecture)
+- [x] **[IMP-61]** ✅ RESOLVIDO (2026-04-07) — Sub-pastas padrão de `docs/`
+  - ✅ 6 sub-pastas criadas: architecture, debates, decisions, guides, retrospectives, templates
+  - ✅ README.md explicativo em cada pasta
+  - ✅ Documentação de propósito, formato e boas práticas
+  - ✅ Templates de ADRs, debates, post-mortems e guias
+  - ✅ Referências cruzadas entre pastas
+  - **Implementação**: 6 constantes template em project.py (linhas 436-875)
+  - **Integração**: DIRS_TO_CREATE + FILES_TO_CREATE (linhas 1273-1318)
+  - **Validado**: Projeto test-imp61 com 9 directories + 6 READMEs ✅
 - [ ] **[IMP-62]** Melhorar inicialização Git (commit inicial, tag scaffold-v*, configurar remote)
 
 #### Features (P2)
