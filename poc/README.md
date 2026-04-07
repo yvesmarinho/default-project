@@ -103,5 +103,5 @@ Para prosseguir com IMP-59 completo (SE IMP-58 der GO):
 
 ---
 
-**Status**: 🟡 POC pronto para execução  
+**Status**: 🟡 POC pronto para execução
 **Decisão final**: Aguarda IMP-58 (2026-05-10)

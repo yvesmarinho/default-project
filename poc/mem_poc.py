@@ -112,17 +112,17 @@ def init_db(db_path: Path = DB_PATH) -> sqlite3.Connection:
         DROP TRIGGER IF EXISTS memories_ai;
         DROP TRIGGER IF EXISTS memories_au;
         DROP TRIGGER IF EXISTS memories_ad;
-        
+
         CREATE TRIGGER memories_ai AFTER INSERT ON memories BEGIN
             INSERT INTO memories_fts(rowid, title, content, tags)
             SELECT new.id, new.title, '', new.tags;
         END;
-        
+
         CREATE TRIGGER memories_au AFTER UPDATE ON memories BEGIN
             UPDATE memories_fts SET title=new.title, tags=new.tags
             WHERE rowid=new.id;
         END;
-        
+
         CREATE TRIGGER memories_ad AFTER DELETE ON memories BEGIN
             DELETE FROM memories_fts WHERE rowid=old.id;
         END;
@@ -192,7 +192,7 @@ def search_memories(
 ) -> List[Dict]:
     """Search memories with FTS5 ranking."""
     sql = """
-        SELECT 
+        SELECT
             m.id,
             m.file_path,
             m.title,
@@ -298,7 +298,7 @@ FTS5 is sufficient for MVP. Can add embeddings later if needed.
 
 ## Performance
 **Issue**: Search is slow (>1s)
-**Solution**: 
+**Solution**:
 - Build proper indices (category, updated_at)
 - Limit result set (LIMIT 10)
 - Use phrase queries ("exact match") instead of OR queries

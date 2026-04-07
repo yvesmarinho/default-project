@@ -1,7 +1,7 @@
 # IMP-59 — Mini-Engram Python: Design & Arquitetura
 
-**Status**: 🟡 Design em andamento (trabalho paralelo com IMP-58)  
-**Criado**: 2026-04-05  
+**Status**: 🟡 Design em andamento (trabalho paralelo com IMP-58)
+**Criado**: 2026-04-05
 **Decisão final**: Aguarda IMP-58 (2026-05-10)
 
 ---
@@ -273,7 +273,7 @@ PATTERNS = {
 
 def detect_secrets(text: str) -> List[Tuple[str, str]]:
     """Detect potential secrets/PII in text.
-    
+
     Returns: List of (pattern_name, matched_value) tuples
     """
     findings = []
@@ -286,17 +286,17 @@ def detect_secrets(text: str) -> List[Tuple[str, str]]:
 
 def sanitize(text: str, redact: bool = True) -> Tuple[str, List[str]]:
     """Sanitize text by removing/redacting secrets.
-    
+
     Args:
         text: Input text
         redact: If True, replace with [REDACTED]; if False, remove entirely
-    
+
     Returns:
         (sanitized_text, list_of_warnings)
     """
     warnings = []
     sanitized = text
-    
+
     for name, pattern in PATTERNS.items():
         matches = list(re.finditer(pattern, sanitized, re.IGNORECASE))
         if matches:
@@ -304,7 +304,7 @@ def sanitize(text: str, redact: bool = True) -> Tuple[str, List[str]]:
             for match in reversed(matches):  # Reverse to preserve indices
                 replacement = "[REDACTED]" if redact else ""
                 sanitized = sanitized[:match.start()] + replacement + sanitized[match.end():]
-    
+
     return sanitized, warnings
 ```
 
@@ -321,10 +321,10 @@ if findings:
     print("⚠️  Warning: Potential secrets detected:")
     for pattern, value in findings:
         print(f"  - {pattern}: {value[:10]}...")
-    
+
     if not confirm("Continue saving with redaction?"):
         sys.exit(1)
-    
+
     # 2. Sanitizar
     content, warnings = sanitize(content, redact=True)
     for warning in warnings:
@@ -343,16 +343,16 @@ save_memory(content)
 ```python
 def search_memories(query: str, category: str = None, tags: List[str] = None, limit: int = 10):
     """Search memories with ranking.
-    
+
     Ranking factors:
     1. FTS5 BM25 score (built-in)
     2. Tag match bonus (+10 per tag)
     3. Recency bonus (updated in last 7 days: +5)
     4. Title match bonus (query in title: +15)
     """
-    
+
     sql = """
-    SELECT 
+    SELECT
         m.id,
         m.file_path,
         m.title,
@@ -371,25 +371,25 @@ def search_memories(query: str, category: str = None, tags: List[str] = None, li
     JOIN memories_fts fts ON m.id = fts.rowid
     WHERE fts MATCH ?
     """
-    
+
     filters = []
     params = [f"%{query}%", query, query]
-    
+
     if category:
         filters.append("m.category = ?")
         params.append(category)
-    
+
     if tags:
         for tag in tags:
             filters.append("m.tags LIKE ?")
             params.append(f"%{tag}%")
-    
+
     if filters:
         sql += " AND " + " AND ".join(filters)
-    
+
     sql += " ORDER BY final_score DESC LIMIT ?"
     params.append(limit)
-    
+
     return db.execute(sql, params).fetchall()
 ```
 
@@ -423,7 +423,7 @@ def search_memories(query: str, category: str = None, tags: List[str] = None, li
    "💡 I found these relevant memories:
    - [Memory 1 title]
    - [Memory 2 title]
-   
+
    Would you like me to load them into context?"
 
 4. If yes, read the memory files and incorporate context into planning
@@ -444,7 +444,7 @@ def search_memories(query: str, category: str = None, tags: List[str] = None, li
 
 2. Ask user:
    "Would you like to save any insights from this session to memory?"
-   
+
    Examples:
    - "Learned: SQLite FTS5 doesn't support leading wildcards"
    - "Decision: Use Python stdlib only for memory system"
@@ -541,7 +541,7 @@ def init_db():
         )
     """)
     conn.execute("""
-        CREATE VIRTUAL TABLE IF NOT EXISTS memories_fts 
+        CREATE VIRTUAL TABLE IF NOT EXISTS memories_fts
         USING fts5(title, content, content=memories, content_rowid=id)
     """)
     return conn
@@ -550,7 +550,7 @@ def index_memory(conn, file_path: Path):
     """Index a markdown file."""
     content = file_path.read_text()
     title = content.split('\n')[0].strip('# ')
-    
+
     conn.execute(
         "INSERT OR REPLACE INTO memories (file_path, title, content) VALUES (?, ?, ?)",
         (str(file_path), title, content)
@@ -704,12 +704,12 @@ SCHEMA_VERSION = 1
 def migrate_schema(conn):
     """Apply migrations if needed."""
     current = conn.execute("PRAGMA user_version").fetchone()[0]
-    
+
     if current < 1:
         # Migration 1: Initial schema
         conn.executescript(INITIAL_SCHEMA)
         conn.execute("PRAGMA user_version = 1")
-    
+
     # Future migrations
     # if current < 2:
     #     conn.executescript(MIGRATION_2)
@@ -741,6 +741,6 @@ Para prosseguir com implementação completa (pós-IMP-58 GO), o POC deve demons
 
 ---
 
-**Status**: 🟡 Design completo, aguardando POC  
-**Próximo**: Implementar POC isolado (4h)  
+**Status**: 🟡 Design completo, aguardando POC
+**Próximo**: Implementar POC isolado (4h)
 **Decisão final**: 2026-05-10 (pós-IMP-58)
