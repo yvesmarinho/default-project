@@ -46,7 +46,11 @@ def detect_secrets(text: str) -> List[Tuple[str, str]]:
     for name, pattern in SECRET_PATTERNS.items():
         matches = re.finditer(pattern, text, re.IGNORECASE)
         for match in matches:
-            value = match.group(2) if match.lastindex >= 2 else match.group(0)
+            # Get the actual secret value (group 2) or full match if no groups
+            if match.lastindex and match.lastindex >= 2:
+                value = match.group(2)
+            else:
+                value = match.group(0)
             findings.append((name, value))
     return findings
 
@@ -84,6 +88,7 @@ def init_db(db_path: Path = DB_PATH) -> sqlite3.Connection:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             file_path TEXT NOT NULL UNIQUE,
             title TEXT NOT NULL,
+            content TEXT NOT NULL,
             category TEXT NOT NULL,
             tags TEXT,
             created_at TEXT NOT NULL,
@@ -115,11 +120,11 @@ def init_db(db_path: Path = DB_PATH) -> sqlite3.Connection:
 
         CREATE TRIGGER memories_ai AFTER INSERT ON memories BEGIN
             INSERT INTO memories_fts(rowid, title, content, tags)
-            SELECT new.id, new.title, '', new.tags;
+            SELECT new.id, new.title, new.content, new.tags;
         END;
 
         CREATE TRIGGER memories_au AFTER UPDATE ON memories BEGIN
-            UPDATE memories_fts SET title=new.title, tags=new.tags
+            UPDATE memories_fts SET title=new.title, content=new.content, tags=new.tags
             WHERE rowid=new.id;
         END;
 
@@ -165,18 +170,10 @@ def save_memory(
     # Insert or replace
     cursor = conn.execute(
         """
-        INSERT OR REPLACE INTO memories (file_path, title, category, tags, created_at, updated_at, hash)
-        VALUES (?, ?, ?, ?, COALESCE((SELECT created_at FROM memories WHERE file_path = ?), ?), ?, ?)
+        INSERT OR REPLACE INTO memories (file_path, title, content, category, tags, created_at, updated_at, hash)
+        VALUES (?, ?, ?, ?, ?, COALESCE((SELECT created_at FROM memories WHERE file_path = ?), ?), ?, ?)
     """,
-        (str(file_path), title, category, tags_str, str(file_path), now, now, content_hash),
-    )
-
-    # Update FTS5 content manually (trigger doesn't have access to content)
-    conn.execute(
-        """
-        UPDATE memories_fts SET content = ? WHERE rowid = ?
-    """,
-        (content, cursor.lastrowid),
+        (str(file_path), title, content, category, tags_str, str(file_path), now, now, content_hash),
     )
 
     conn.commit()
@@ -199,10 +196,10 @@ def search_memories(
             m.category,
             m.tags,
             m.updated_at,
-            fts.rank AS score
-        FROM memories m
-        JOIN memories_fts fts ON m.id = fts.rowid
-        WHERE fts MATCH ?
+            memories_fts.rank AS score
+        FROM memories_fts
+        JOIN memories m ON memories_fts.rowid = m.id
+        WHERE memories_fts MATCH ?
     """
 
     params = [query]
@@ -216,7 +213,7 @@ def search_memories(
             sql += " AND m.tags LIKE ?"
             params.append(f"%{tag}%")
 
-    sql += " ORDER BY fts.rank LIMIT ?"
+    sql += " ORDER BY memories_fts.rank LIMIT ?"
     params.append(limit)
 
     results = conn.execute(sql, params).fetchall()
