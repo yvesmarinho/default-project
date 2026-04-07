@@ -259,7 +259,29 @@ python scripts/scaffold.py --new --ci \
     - Fix: DOMAIN_DEFAULT_PROFILES é dict[str, str], use append() não extend()
   - **Integração**: new_project.py passo 7b (antes do git init)
   - **Validado**: Projeto test-imp63 com summary completo no commit ✅
-- [ ] **[IMP-64]** Completar setup `.vscode/` (extensions.json, MCP servers por domínio)
+- [x] **[IMP-64]** ✅ RESOLVIDO (2026-04-07) — Completar setup `.vscode/`
+  - ✅ MCP servers customizados por domínio (3 perfis)
+  - ✅ Extensions recomendadas (BASE + DOMAIN + LANGUAGE)
+  - ✅ Settings personalizados por linguagem e domínio
+  - ✅ Tasks.json com Makefile targets
+  - ✅ Launch.json com debug configs por linguagem
+  - **Problema detectado e corrigido**:
+    - Templates fixos `_VSCODE_MCP_JSON` e `_VSCODE_SETTINGS_JSON` conflitavam com funções dinâmicas
+    - Arquivos eram criados por `FILES_TO_CREATE` antes de `vscode.generate_*()`
+    - Funções retornavam "skipped" porque arquivos já existiam
+    - **Solução**: Removidos templates fixos de `FILES_TO_CREATE` (linha 1639-1640)
+  - **MCP servers por domínio** (vscode.py):
+    - programming: memory, sequential-thinking, filesystem, github (4)
+    - infrastructure: + sqlite (5 total)
+    - analysis: + brave-search (sem github, 5 total)
+  - **Extensions por domínio** (vscode.py):
+    - BASE: 11 extensões universais (copilot, gitlens, errorlens, etc)
+    - programming: definido por linguagem (python: 9, typescript: 6, go: 1)
+    - infrastructure: 11 extensões (docker, k8s, terraform, ansible, etc)
+    - analysis: 5 extensões (jupyter, csv, excel viewers)
+  - **Implementação**: Já existia em vscode.py (linhas 23-350), apenas ativada
+  - **Fix**: project.py removidos templates obsoletos + comentário IMP-64
+  - **Validado**: 3 domínios testados com MCP e extensions corretos ✅
 
 ### Novos Agentes SpecKit identificados:
 - [ ] **`scaffold-verifier.agent.md`** (P0) — Verifica conformidade do projeto gerado
