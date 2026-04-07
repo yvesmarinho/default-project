@@ -411,6 +411,245 @@ _CODE_WORKSPACE = """\
 """
 
 # ---------------------------------------------------------------------------
+# Templates de segurança GitHub (BUG-06)
+# ---------------------------------------------------------------------------
+
+_SECURITY_MD = """\
+# Security Policy
+
+## Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| Latest  | :white_check_mark: |
+
+## Reporting a Vulnerability
+
+**DO NOT** open public issues for security vulnerabilities.
+
+Instead, please report them privately:
+
+1. Go to the [Security tab]({{GITHUB_REPO}}/security) of this repository
+2. Click "Report a vulnerability"
+3. Provide detailed information about the vulnerability
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if available)
+
+### Response Timeline
+
+- **Initial response**: Within 48 hours
+- **Status update**: Within 7 days
+- **Fix timeline**: Depends on severity (Critical: 24-48h, High: 1 week, Medium: 2 weeks, Low: 1 month)
+
+## Security Best Practices
+
+This project follows security best practices:
+
+- ✅ Dependency scanning via Dependabot
+- ✅ CodeQL analysis on every PR
+- ✅ Secret scanning enabled
+- ✅ Branch protection rules
+- ✅ Required code review
+
+## Security Contacts
+
+For security-related questions, contact: [security contact info]
+"""
+
+_CODEOWNERS = """\
+# Code Owners
+# 
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+# Owners can be @username, @org/team-name, or email addresses.
+#
+# Docs: https://docs.github.com/articles/about-code-owners
+
+# Default owners for everything in the repo
+* @OWNER
+
+# Security-related files require security team review
+/.github/workflows/security-*.yml @OWNER
+/.github/dependabot.yml @OWNER
+/SECURITY.md @OWNER
+
+# Infrastructure and deployment
+/deploy/ @OWNER
+/terraform/ @OWNER
+/ansible/ @OWNER
+/.github/workflows/ @OWNER
+
+# CI/CD pipelines
+/.github/workflows/*.yml @OWNER
+
+# Documentation
+/docs/ @OWNER
+/*.md @OWNER
+"""
+
+_DEPENDABOT_YML = """\
+# Dependabot configuration
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "OWNER"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # Python (if applicable)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    labels:
+      - "dependencies"
+      - "python"
+    reviewers:
+      - "OWNER"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "pytest*"
+          - "black"
+          - "ruff"
+          - "mypy"
+
+  # Node.js (if applicable)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    labels:
+      - "dependencies"
+      - "npm"
+    reviewers:
+      - "OWNER"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "typescript"
+"""
+
+_SECURITY_SCAN_YML = """\
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Mondays at 6 AM UTC
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python', 'javascript' ]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+"""
+
+_DEPENDENCY_REVIEW_YML = """\
+name: Dependency Review
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    name: Review Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          warn-on-OpenSSF-scorecard-level: 3
+          comment-summary-in-pr: always
+"""
+
+# ---------------------------------------------------------------------------
 # Pastas a criar
 # ---------------------------------------------------------------------------
 
@@ -621,6 +860,49 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
     return results
 
 
+# ---------------------------------------------------------------------------
+# Templates de documentação — cópia de docs/templates/
+# ---------------------------------------------------------------------------
+
+def copy_docs_templates(config: ProjectConfig) -> list[CreatedItem]:
+    """
+    Copia templates de documentação do template para o projeto gerado.
+
+    Copia (de _TEMPLATE_ROOT/docs/templates/ → config.project_path/docs/templates/):
+      - DAILY_ACTIVITIES.template.md
+      - mcp-questions-template.yaml
+      - objetivo-manifest-template.yaml
+      - Qualquer outro arquivo .md ou .yaml futuramente adicionado
+
+    Arquivos já existentes no destino são saltados (idempotente).
+    
+    Ref: BUG-09 — documentado em docs/lembrete.md
+    """
+    results: list[CreatedItem] = []
+    errors: list[str] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT
+
+    src_templates = src_root / "docs" / "templates"
+    if not src_templates.is_dir():
+        log.warning("⚠️  Diretório de origem não encontrado: %s", src_templates)
+        return results
+
+    # Copiar todos os arquivos .md e .yaml
+    for pattern in ["*.md", "*.yaml", "*.yml"]:
+        for src_file in sorted(src_templates.glob(pattern)):
+            dst_file = base / "docs" / "templates" / src_file.name
+            result = _copy_file(src_file, dst_file)
+            if result.status == "error":
+                errors.append(str(src_file))
+            results.append(result)
+
+    if errors:
+        log.warning("⚠️  %d erro(s) ao copiar templates de docs: %s", len(errors), errors)
+
+    return results
+
+
 def _copy_domain_profile(
     src_root: Path,
     base: Path,
@@ -808,6 +1090,77 @@ def generate_load_mcp(config: ProjectConfig) -> CreatedItem:
     except OSError as exc:
         log.warning("⚠️  erro ao gerar load-mcp.sh: %s", exc)
         return CreatedItem(path=dest, kind="file", status="error", message=str(exc))
+
+
+# ---------------------------------------------------------------------------
+# GitHub Security Files (BUG-06)
+# ---------------------------------------------------------------------------
+
+def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
+    """
+    Gera arquivos de segurança GitHub no projeto.
+
+    Cria:
+      - SECURITY.md (política de reporte de vulnerabilidades)
+      - .github/CODEOWNERS (ownership de código)
+      - .github/dependabot.yml (atualizações automáticas)
+      - .github/workflows/security-scan.yml (CodeQL + secret scan)
+      - .github/workflows/dependency-review.yml (análise de dependências em PRs)
+
+    OWNER placeholder é substituído pelo dono do repo GitHub (se disponível).
+    
+    Ref: BUG-06 — documentado em docs/lembrete.md
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    
+    # Extrair owner do github_repo (ex: https://github.com/user/repo → user)
+    owner = "OWNER"
+    if config.github_repo:
+        parts = config.github_repo.rstrip("/").split("/")
+        if len(parts) >= 2:
+            owner = f"@{parts[-2]}"
+    
+    # Arquivo 1: SECURITY.md (raiz do projeto)
+    security_md = base / "SECURITY.md"
+    content = _apply_placeholders(_SECURITY_MD, config)
+    results.append(_write_file(security_md, content))
+    
+    # Arquivo 2: .github/CODEOWNERS
+    codeowners = base / ".github" / "CODEOWNERS"
+    content = _CODEOWNERS.replace("@OWNER", owner)
+    results.append(_write_file(codeowners, content))
+    
+    # Arquivo 3: .github/dependabot.yml
+    dependabot = base / ".github" / "dependabot.yml"
+    content = _DEPENDABOT_YML.replace("OWNER", owner.lstrip("@"))
+    results.append(_write_file(dependabot, content))
+    
+    # Arquivo 4: .github/workflows/security-scan.yml
+    security_scan = base / ".github" / "workflows" / "security-scan.yml"
+    results.append(_write_file(security_scan, _SECURITY_SCAN_YML))
+    
+    # Arquivo 5: .github/workflows/dependency-review.yml
+    dependency_review = base / ".github" / "workflows" / "dependency-review.yml"
+    results.append(_write_file(dependency_review, _DEPENDENCY_REVIEW_YML))
+    
+    return results
+
+
+def _write_file(path: Path, content: str) -> CreatedItem:
+    """Escreve arquivo com conteúdo, criando diretórios necessários."""
+    try:
+        if path.exists():
+            log.info("⏭️  já existe: %s", path.name)
+            return CreatedItem(path=path, kind="file", status="skipped")
+        
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+        log.info("✅ criado: %s", path.name)
+        return CreatedItem(path=path, kind="file", status="created")
+    except OSError as exc:
+        log.warning("⚠️  erro ao criar %s: %s", path.name, exc)
+        return CreatedItem(path=path, kind="file", status="error", message=str(exc))
 
 
 # ---------------------------------------------------------------------------

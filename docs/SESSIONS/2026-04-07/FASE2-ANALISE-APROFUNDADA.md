@@ -47,7 +47,7 @@ python scripts/scaffold.py --new --ci \
 
 #### test-scaffold-bug (Python base) — ✅ FUNCIONA
 ```
-Profile: devops-programming (Layer 1 — domain default)  
+Profile: devops-programming (Layer 1 — domain default)
 Language: python
 Templates: Estrutura BASE do template (sem profiles adicionais)
 ```
