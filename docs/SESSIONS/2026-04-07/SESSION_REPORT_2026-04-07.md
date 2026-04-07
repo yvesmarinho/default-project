@@ -89,7 +89,7 @@ Max: 0.16ms
 ✅ PASS (target: <100ms)
 ```
 
-**Security Detection**: 
+**Security Detection**:
 Successfully detected and sanitized:
 - API keys (sk_test_*)
 - GitHub tokens (ghp_*)

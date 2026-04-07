@@ -1,5 +1,66 @@
 # Alterações necessárias
 
+## ✅ Processado em 2026-04-07 — Análise de Gaps do Scaffold
+
+**Debate gerado**: [`docs/SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md`](SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md)
+**Análise completa**: [`docs/SESSIONS/2026-04-07/ANALISE-GAPS-SCAFFOLD-PLANO-ACAO.md`](SESSIONS/2026-04-07/ANALISE-GAPS-SCAFFOLD-PLANO-ACAO.md)
+
+**Resultado da análise**:
+- ✅ 9 gaps identificados e categorizados
+- ✅ Plano de ação estruturado em 4 fases (28h estimadas)
+- ✅ Workflow SpecKit atualizado com novos agentes
+- ✅ Issues criadas: VERIFY-01 a 05, BUG-04 a 08, IMP-60 a 64
+
+**Prioridades**:
+- 🔴 **P0 (Crítica)**: VERIFY-01 a 05, BUG-04 a 08 (14h)
+- 🟡 **P1 (Alta)**: IMP-60 a 62 (10h)
+- 🟢 **P2 (Média)**: IMP-63 a 64 (6h)
+
+### Issues criadas:
+
+#### Verificações (URGENTE - P0)
+- [ ] **[VERIFY-01]** Verificar se `.specify/templates/` foi copiado no yves-eti-br
+- [ ] **[VERIFY-02]** Verificar se agentes foram copiados em `.github/agents/`
+- [ ] **[VERIFY-03]** Verificar se `.code-workspace` existe
+- [ ] **[VERIFY-04]** Verificar arquivos `.vscode/` (extensions, tasks, launch)
+- [ ] **[VERIFY-05]** Verificar inicialização Git (init, remote, commits)
+
+#### Bugs Críticos (P0)
+- [ ] **[BUG-04]** Scaffold não copia templates `.specify/` para projeto (se confirmado)
+- [ ] **[BUG-05]** Scaffold não copia agentes `.github/agents/` (se confirmado)
+- [ ] **[BUG-06]** Faltam arquivos de segurança GitHub (SECURITY.md, dependabot, CodeQL)
+- [ ] **[BUG-07]** Git não inicializado corretamente (sem commit inicial, sem tags)
+- [ ] **[BUG-08]** `.code-workspace` não criado (se confirmado)
+
+#### Improvements (P1)
+- [ ] **[IMP-60]** Completar proteção de `.secrets/` (chmod 700, pre-commit hooks, docs)
+- [ ] **[IMP-61]** Criar sub-pastas padrão de `docs/` (debates, decisions, templates, guides, retrospectives, architecture)
+- [ ] **[IMP-62]** Melhorar inicialização Git (commit inicial, tag scaffold-v*, configurar remote)
+
+#### Features (P2)
+- [ ] **[IMP-63]** Gerar `docs/PROJECT_CREATION_SUMMARY.md` ao final do scaffold
+- [ ] **[IMP-64]** Completar setup `.vscode/` (extensions.json, MCP servers por domínio)
+
+### Novos Agentes SpecKit identificados:
+- [ ] **`scaffold-verifier.agent.md`** (P0) — Verifica conformidade do projeto gerado
+- [ ] **`security-auditor.agent.md`** (P0) — Valida configurações de segurança
+- [ ] **`docs-structure-validator.agent.md`** (P1) — Valida estrutura de documentação
+- [ ] **`adr-reviewer.agent.md`** (P2) — Revisa Architecture Decision Records
+
+---
+
+## 📝 Lista Original (referência histórica)
+
+1 - Na estrturua de pastas deve conter ".secrets" com toda a protação necessária.
+2 - Na pasta "docs" não criou as sub-pastas padrões.
+3 - Os templates não foram criados no projeto destino.
+4 - Gerar ao final da criação um arquivo "Resumo completo da criação do projeto" na pasta "docs" do novo projeto.
+5 - Não criou a estrutura de pasta do ".vscode" e os arquivos iniciais do mcp
+6 - Não criou a pasta nem os agentes necessários ao projeto.
+7 - Não criou o arquivo "code-workspace" com as confgurações do projeto.
+8 - não existem os arquivos do github de segurança, verificar se foi aplicado o hardening no novo projeto.
+9 - Não criou a estrutura do git, uma vez que já foi informado o repositório na linha de comando do scaffold
+
 ---
 ## ✅ Processado em 2026-04-05 — Spec Driven Development
 
