@@ -228,7 +228,17 @@ python scripts/scaffold.py --new --ci \
   - **Implementação**: 6 constantes template em project.py (linhas 436-875)
   - **Integração**: DIRS_TO_CREATE + FILES_TO_CREATE (linhas 1273-1318)
   - **Validado**: Projeto test-imp61 com 9 directories + 6 READMEs ✅
-- [ ] **[IMP-62]** Melhorar inicialização Git (commit inicial, tag scaffold-v*, configurar remote)
+- [x] **[IMP-62]** ✅ RESOLVIDO (2026-04-07) — Melhorar inicialização Git
+  - ✅ Commit inicial automático após criação completa
+  - ✅ Tag anotada `scaffold-v1.0.0` no commit inicial
+  - ✅ Remote origin já estava implementado (mantido)
+  - ✅ Mensagens padronizadas de commit e tag
+  - ✅ Tratamento de erros (nothing to commit, tag exists)
+  - **Implementação**: 2 novas funções em git.py:
+    - `create_initial_commit()` - git add -A + commit
+    - `tag_scaffold()` - tag anotada com versão
+  - **Integração**: new_project.py passos 10-11 (após security files)
+  - **Validado**: Projeto test-imp62 com 64 arquivos commitados + tag ✅
 
 #### Features (P2)
 - [ ] **[IMP-63]** Gerar `docs/PROJECT_CREATION_SUMMARY.md` ao final do scaffold

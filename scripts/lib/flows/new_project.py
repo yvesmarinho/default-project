@@ -88,6 +88,16 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 9. GitHub Security Files (BUG-06 fix)
     console.print("  [blue]🔒 Gerando arquivos de segurança GitHub...[/blue]")
     results.extend(project.generate_github_security_files(cfg))
+    
+    # 10. Commit inicial (IMP-62) - após TODOS os arquivos estarem prontos
+    console.print("  [blue]💾 Criando commit inicial...[/blue]")
+    results.append(git.create_initial_commit(cfg))
+    
+    # 11. Tag scaffold-v* (IMP-62)
+    console.print("  [blue]🏷️  Criando tag de versão scaffold...[/blue]")
+    results.append(git.tag_scaffold(cfg, version="1.0.0"))
+    console.print("  [blue]🔒 Gerando arquivos de segurança GitHub...[/blue]")
+    results.extend(project.generate_github_security_files(cfg))
 
     # Resumo final
     print_final_summary(results)
