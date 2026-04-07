@@ -210,7 +210,15 @@ python scripts/scaffold.py --new --ci \
 - [x] **[BUG-09]** ✅ RESOLVIDO (CONCEITO CORRIGIDO) — Templates configurados na raiz + sessão inicial
 
 #### Improvements (P1)
-- [ ] **[IMP-60]** Completar proteção de `.secrets/` (chmod 700, pre-commit hooks, docs)
+- [x] **[IMP-60]** ✅ RESOLVIDO (2026-04-07) — Proteção completa de `.secrets/`
+  - ✅ chmod 700 automático aplicado
+  - ✅ `.secrets/SECURITY.md` com guia completo de segurança
+  - ✅ `.git-hooks/pre-commit.secrets` template criado
+  - ✅ Validação de .gitignore integrada
+  - ✅ Logs informativos sobre ativação do hook
+  - **Implementação**: `setup_secrets_security()` em project.py (linhas 1310-1405)
+  - **Integração**: new_project.py linha 48-50
+  - **Validado**: Projeto test-imp60 com permissões 700 ✅
 - [ ] **[IMP-61]** Criar sub-pastas padrão de `docs/` (debates, decisions, templates, guides, retrospectives, architecture)
 - [ ] **[IMP-62]** Melhorar inicialização Git (commit inicial, tag scaffold-v*, configurar remote)
 

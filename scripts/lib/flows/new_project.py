@@ -44,6 +44,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("\n  [blue]📁 Criando estrutura...[/blue]")
     results.extend(project.create_structure(cfg))
 
+    # 1b. Proteção avançada de .secrets/ (IMP-60)
+    console.print("  [blue]🔒 Configurando segurança de .secrets/...[/blue]")
+    results.extend(project.setup_secrets_security(cfg))
+
     # 2. Symlinks .copilot-*
     console.print("  [blue]🔗 Configurando symlinks...[/blue]")
     results.extend(links.setup_symlinks(cfg))

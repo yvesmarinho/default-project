@@ -257,6 +257,183 @@ Para servidores MCP que precisam de tokens:
 Configure em `.secrets/.env` e carregue no shell antes de iniciar o VS Code.
 """
 
+_SECRETS_SECURITY_MD = """\
+# 🔒 Segurança do Diretório .secrets/
+
+## ⚠️ ATENÇÃO: NUNCA COMMITAR ESTE DIRETÓRIO
+
+Este diretório armazena credenciais, tokens e chaves sensíveis.
+
+## 🛡️ Proteções Aplicadas
+
+### 1. Permissões Restritivas
+- **chmod 700** (somente proprietário pode ler/escrever/executar)
+- Outros usuários não têm acesso
+- Configurado automaticamente pelo scaffold
+
+### 2. Exclusão do Git
+- `.secrets/` está em `.gitignore` ✅
+- Arquivos não são versionados
+- Pre-commit hook valida (se ativado)
+
+### 3. Padrões de Arquivos Sensíveis
+**Nunca versionar**:
+- `.env*` (qualquer variante)
+- `*.key`, `*.pem`, `*.crt` (certificados/chaves)
+- `*secret*`, `*password*`, `*token*` (padrões de nome)
+- `.vault_pass` (Ansible Vault)
+
+## 📝 Boas Práticas
+
+### Armazenar Credenciais
+```bash
+# Variáveis de ambiente
+cat > .secrets/.env << 'EOF'
+GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxxxxxxxxxxxx
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
+AWS_ACCESS_KEY_ID=AKIAXXXXXXXXXXXXXXXX
+AWS_SECRET_ACCESS_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+EOF
+
+# Proteger arquivo
+chmod 600 .secrets/.env
+```
+
+### Carregar no Shell
+```bash
+# Antes de abrir VS Code com MCP
+source .secrets/.env
+code .
+```
+
+### Referenciar em .vscode/mcp.json
+```json
+{
+  "servers": {
+    "github": {
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+## 🔍 Validação de Segurança
+
+### Verificar Permissões
+```bash
+ls -la .secrets/
+# Deve mostrar: drwx------ (700)
+```
+
+### Ativar Pre-Commit Hook (Opcional)
+```bash
+# Copiar do template
+cp .git-hooks/pre-commit.secrets .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+
+# Testar
+git add .secrets/.env  # Deve FALHAR
+```
+
+## 🚨 Checklist de Segurança
+
+- [ ] `.secrets/` tem permissão 700
+- [ ] Arquivos sensíveis têm permissão 600
+- [ ] `.secrets/` está em `.gitignore`
+- [ ] Variáveis carregadas antes do VS Code
+- [ ] Credenciais NÃO estão em mcp.json (usar ${env:VAR})
+- [ ] Pre-commit hook ativado (recomendado)
+
+## 📚 Documentação Relacionada
+
+- [Secrets Management Best Practices](../docs/SECURITY.md)
+- [MCP Server Setup](../docs/README.md)
+- [Ansible Vault Guide](../docs/ANSIBLE_VAULT_GUIDE.md) (se aplicável)
+
+---
+
+**Última verificação**: Automatizada via scaffold
+**Permissões atuais**: `ls -ld .secrets/` para verificar
+"""
+
+_PRE_COMMIT_SECRETS_HOOK = r"""#!/usr/bin/env bash
+# Pre-commit hook: Valida que arquivos sensíveis não sejam commitados
+# Instalação: 
+#   cp .git-hooks/pre-commit.secrets .git/hooks/pre-commit
+#   chmod +x .git/hooks/pre-commit
+
+set -euo pipefail
+
+# Cores
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}🔍 Validando segurança de secrets...${NC}"
+
+# 1. Verificar se .secrets/ está sendo commitado
+if git diff --cached --name-only | grep -q '^\.secrets/'; then
+    echo -e "${RED}❌ BLOQUEADO: .secrets/ detectado${NC}"
+    echo ""
+    echo "Arquivos detectados:"
+    git diff --cached --name-only | grep '^\.secrets/' | sed 's/^/  - /'
+    echo ""
+    echo "💡 Solução: remova os arquivos do staging:"
+    echo "   git reset HEAD .secrets/"
+    exit 1
+fi
+
+# 2. Verificar padrões de arquivos sensíveis
+SENSITIVE_PATTERNS=(
+    '\.env'
+    '\.env\.'
+    '\*\.key$'
+    '\*\.pem$'
+    '\*\.crt$'
+    'secret'
+    'password'
+    'token'
+    '\.vault_pass'
+    'credentials'
+    'kubeconfig'
+)
+
+BLOCKED_FILES=()
+for pattern in "${SENSITIVE_PATTERNS[@]}"; do
+    while IFS= read -r file; do
+        [[ -n "$file" ]] && BLOCKED_FILES+=("$file")
+    done < <(git diff --cached --name-only | grep -iE "$pattern" || true)
+done
+
+if [ ${#BLOCKED_FILES[@]} -gt 0 ]; then
+    echo -e "${RED}❌ BLOQUEADO: Arquivos sensíveis detectados${NC}"
+    echo ""
+    echo "Arquivos bloqueados:"
+    printf '  - %s\n' "${BLOCKED_FILES[@]}"
+    echo ""
+    echo "💡 Estes arquivos devem estar em .secrets/"
+    exit 1
+fi
+
+# 3. Verificar permissões da pasta .secrets/
+if [ -d .secrets ]; then
+    PERMS=$(stat -c "%a" .secrets 2>/dev/null || \
+            stat -f "%A" .secrets 2>/dev/null || echo "000")
+    if [ "$PERMS" != "700" ]; then
+        echo -e "${YELLOW}⚠️  .secrets/ não tem permissão 700${NC}"
+        echo "   Corrigindo automaticamente..."
+        chmod 700 .secrets
+        echo -e "${GREEN}✅ Permissões corrigidas${NC}"
+    fi
+fi
+
+echo -e "${GREEN}✅ Validação de secrets OK${NC}"
+exit 0
+"""
+
 _VSCODE_MCP_JSON = """\
 {
   "servers": {
@@ -661,6 +838,7 @@ DIRS_TO_CREATE = [
     ".github/agents",
     ".github/prompts",
     ".github/prompts/domain",
+    ".git-hooks",
     ".secrets",
     ".vscode",
     "scripts/lib",
@@ -679,6 +857,8 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     ("docs/TODAY_ACTIVITIES.md",   _DOCS_TODAY_ACTIVITIES_MD),
     (".gitignore",                 _GITIGNORE),
     (".secrets/README.md",         _SECRETS_README),
+    (".secrets/SECURITY.md",       _SECRETS_SECURITY_MD),
+    (".git-hooks/pre-commit.secrets", _PRE_COMMIT_SECRETS_HOOK),
     (".vscode/mcp.json",           _VSCODE_MCP_JSON),
     (".vscode/settings.json",      _VSCODE_SETTINGS_JSON),
     ("Makefile",                   _MAKEFILE),
@@ -1121,6 +1301,106 @@ def generate_load_mcp(config: ProjectConfig) -> CreatedItem:
     except OSError as exc:
         log.warning("⚠️  erro ao gerar load-mcp.sh: %s", exc)
         return CreatedItem(path=dest, kind="file", status="error", message=str(exc))
+
+
+# ---------------------------------------------------------------------------
+# Secrets Security Setup (IMP-60)
+# ---------------------------------------------------------------------------
+
+def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
+    """
+    Configura proteção avançada para .secrets/ directory.
+
+    Implementa:
+      - chmod 700 em .secrets/ (somente proprietário tem acesso)
+      - .secrets/SECURITY.md já foi criado em FILES_TO_CREATE
+      - .git-hooks/pre-commit.secrets template já foi criado
+      - Valida que .secrets/ está no .gitignore
+
+    Esta função é chamada APÓS create_structure(), garantindo que:
+      1. .secrets/ já existe
+      2. Arquivos de documentação já foram criados
+      3. Aplicamos permissões restritivas
+
+    Retorna lista de ações realizadas (permissões modificadas, validações).
+
+    Ref: IMP-60 — documentado em docs/lembrete.md
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    secrets_dir = base / ".secrets"
+    
+    # 1. Verificar que .secrets/ existe
+    if not secrets_dir.exists():
+        msg = ".secrets/ não existe ainda — pulando setup de segurança"
+        log.warning("⚠️  %s", msg)
+        return results
+    
+    # 2. Aplicar chmod 700 (rwx------)
+    try:
+        current_perms = secrets_dir.stat().st_mode & 0o777
+        if current_perms != 0o700:
+            secrets_dir.chmod(0o700)
+            log.info("🔒 .secrets/ protegido: chmod 700 aplicado")
+            results.append(CreatedItem(
+                path=secrets_dir,
+                kind="dir",
+                status="secured",
+                message="chmod 700 aplicado"
+            ))
+        else:
+            log.info("✅ .secrets/ já tem permissão 700")
+            results.append(CreatedItem(
+                path=secrets_dir,
+                kind="dir",
+                status="skipped",
+                message="permissões já corretas (700)"
+            ))
+    except OSError as exc:
+        log.warning("⚠️  erro ao aplicar chmod 700: %s", exc)
+        results.append(CreatedItem(
+            path=secrets_dir,
+            kind="dir",
+            status="error",
+            message=f"chmod falhou: {exc}"
+        ))
+    
+    # 3. Validar .gitignore contém .secrets/
+    gitignore = base / ".gitignore"
+    if gitignore.exists():
+        content = gitignore.read_text(encoding="utf-8")
+        if ".secrets/" in content:
+            log.info("✅ .gitignore contém .secrets/")
+            results.append(CreatedItem(
+                path=gitignore,
+                kind="validation",
+                status="ok",
+                message=".secrets/ está ignorado no git"
+            ))
+        else:
+            log.warning("⚠️  .secrets/ NÃO está em .gitignore!")
+            results.append(CreatedItem(
+                path=gitignore,
+                kind="validation",
+                status="warning",
+                message=".secrets/ ausente no .gitignore"
+            ))
+    
+    # 4. Informar sobre pre-commit hook (opcional)
+    hook_template = base / ".git-hooks" / "pre-commit.secrets"
+    if hook_template.exists():
+        log.info("💡 Pre-commit hook disponível")
+        log.info("   cp .git-hooks/pre-commit.secrets ")
+        log.info("      .git/hooks/pre-commit")
+        log.info("   chmod +x .git/hooks/pre-commit")
+        results.append(CreatedItem(
+            path=hook_template,
+            kind="file",
+            status="available",
+            message="pre-commit hook criado (ativar manualmente)"
+        ))
+    
+    return results
 
 
 # ---------------------------------------------------------------------------
