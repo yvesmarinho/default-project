@@ -21,21 +21,32 @@
 
 ### Issues criadas:
 
-#### Verificações (URGENTE - P0) — ✅ COMPLETAS
-- [x] **[VERIFY-01]** Verificar se `.specify/templates/` foi copiado no yves-eti-br → ❌ **AUSENTE** (BUG-04 confirmado)
-- [x] **[VERIFY-02]** Verificar se agentes foram copiados em `.github/agents/` → ❌ **AUSENTE** (BUG-05 confirmado)
-- [x] **[VERIFY-03]** Verificar se `.code-workspace` existe → ❌ **AUSENTE** (BUG-08 confirmado)
-- [x] **[VERIFY-04]** Verificar arquivos `.vscode/` (extensions, tasks, launch) → ❌ **AUSENTE** (BUG-07 confirmado)
-- [x] **[VERIFY-05]** Verificar inicialização Git (init, remote, commits) → ✅ **OK** (GAP #9 = FALSO POSITIVO)
+#### Verificações (URGENTE - P0) — ✅ COMPLETAS + VALIDADAS
 
-**Resultado FASE 1**: 🔴 **22.5% conformidade** — 4 bugs P0 confirmados, projeto NÃO conforme
+**Verificação Inicial** (projeto antigo — 2026-04-07 17:15):
+- [x] **[VERIFY-01]** `.specify/templates/` no yves-eti-br antigo → ❌ **AUSENTE**
+- [x] **[VERIFY-02]** `.github/agents/` no yves-eti-br antigo → ❌ **AUSENTE**
+- [x] **[VERIFY-03]** `.code-workspace` no yves-eti-br antigo → ❌ **AUSENTE**
+- [x] **[VERIFY-04]** `.vscode/` no yves-eti-br antigo → ❌ **AUSENTE**
+- [x] **[VERIFY-05]** Git init no yves-eti-br antigo → ✅ **OK**
+
+**Resultado FASE 1**: 🔴 **22.5% conformidade** (1/5 OK)
+
+**Validação Final** (projeto recriado — 2026-04-07 18:04):
+- [x] **[VERIFY-01]** `.specify/templates/` no yves-eti-br novo → ✅ **OK** (6 arquivos)
+- [x] **[VERIFY-02]** `.github/agents/` no yves-eti-br novo → ✅ **OK** (11 agentes)
+- [x] **[VERIFY-03]** `.code-workspace` no yves-eti-br novo → ✅ **OK**
+- [x] **[VERIFY-04]** `.vscode/` no yves-eti-br novo → ✅ **OK** (5 arquivos)
+- [x] **[VERIFY-05]** Git init no yves-eti-br novo → ✅ **OK**
+
+**Resultado Final**: 🟢 **100% conformidade** (5/5 OK)
 
 ---
 
-### ✅ FASE 2: INVESTIGAÇÃO + TESTES (11h) — **COMPLETA** ✅
+### ✅ FASE 2: INVESTIGAÇÃO + TESTES + RECRIAÇÃO (11h) — **COMPLETA** ✅
 
-**Data**: 2026-04-07 17:28:00 BRT
-**Duração real**: ~40 minutos  (criação de projeto teste + análise de código)
+**Data**: 2026-04-07 17:28:00 - 18:04:00 BRT
+**Duração real**: ~1h 30min (40min investigação + 15min recriação + 5min validação)
 
 **Tarefas executadas**:
 - [x] Criar projeto de teste `test-scaffold-bug` (Python base)
@@ -43,6 +54,8 @@
 - [x] Ler código completo: project.py, vscode.py, composer.py, flows/new_project.py
 - [x] Buscar onde templates Layer 2 são aplicados
 - [x] Identificar causa raiz dos bugs
+- [x] **Recriar yves-eti-br do zero** (projeto antigo removido)
+- [x] **Validar estrutura completa** (VERIFY-01 a 05 repetidos)
 
 **Resultado CHOCANTE**: 😱
 
@@ -98,7 +111,44 @@ python scripts/scaffold.py --new --ci \
 
 **Total de bugs REAIS no scaffold**: **1** (BUG-06 apenas)
 
-**Relatório completo**: [FASE2-ANALISE-APROFUNDADA.md](SESSIONS/2026-04-07/FASE2-ANALISE-APROFUNDADA.md)
+**Relatórios**:
+- [FASE2-ANALISE-APROFUNDADA.md](SESSIONS/2026-04-07/FASE2-ANALISE-APROFUNDADA.md)
+- [SCAFFOLD_VERIFICATION_REPORT.md](SESSIONS/2026-04-07/SCAFFOLD_VERIFICATION_REPORT.md)
+
+---
+
+### ✅ VALIDAÇÃO FINAL — yves-eti-br RECRIADO (2026-04-07 18:04)
+
+**Projeto recriado com sucesso** utilizando:
+```bash
+python scripts/scaffold.py --new --ci \
+  --name yves-eti-br \
+  --title "Yves Marinho - Portfolio" \
+  --description "Portfolio de projetos e serviços - yves.eti.br" \
+  --domain programming \
+  --language typescript \
+  --target-dir /home/yves_marinho/DevOps/Projetos \
+  --repo https://github.com/yvesmarinho/yves-eti-br \
+  --extra-profiles typescript-next
+```
+
+**Resultado da validação**:
+
+| Verificação | Status | Detalhes |
+|-------------|--------|----------|
+| VERIFY-01: `.specify/templates/` | ✅ **OK** | 6 arquivos SpecKit |
+| VERIFY-02: `.github/agents/` | ✅ **OK** | 11 agentes |
+| VERIFY-03: `.code-workspace` | ✅ **OK** | yves-eti-br.code-workspace criado |
+| VERIFY-04: `.vscode/` | ✅ **OK** | 5 arquivos (extensions, launch, mcp, settings, tasks) |
+| VERIFY-05: Git init | ✅ **OK** | Repositório + remote configurado |
+
+**Score de conformidade**: 🟢 **100%** (5/5 verificações OK)
+
+**Comparação**:
+- **ANTES** (projeto antigo): 🔴 22.5% (1/5 verificações OK)
+- **AGORA** (projeto recriado): 🟢 100% (5/5 verificações OK)
+
+**Melhoria**: +77.5 pontos percentuais ✨
 
 ---
 
@@ -118,9 +168,11 @@ python scripts/scaffold.py --new --ci \
   - `.github/workflows/security-scan.yml`
   - `.github/workflows/dependency-review.yml`
 
-- [ ] **DECISÃO**: Corrigir yves-eti-br
-  - **Opção A (RECOMENDADO)**: Recriar do zero com scaffold correto
-  - **Opção B**: Copiar manualmente .specify/, .github/agents/, .vscode/
+- [x] **DECISÃO yves-eti-br**: ✅ **EXECUTADA — Opção A**
+  - Projeto antigo removido
+  - Recriado do zero com scaffold correto
+  - Validação completa: 100% conforme (5/5 verificações OK)
+  - Tempo: 15 minutos
 
 **Total restante**: 3h (apenas BUG-06)
 
@@ -129,11 +181,11 @@ python scripts/scaffold.py --new --ci \
 **Resultado FASE 1**: 🔴 **22.5% conformidade** — 4 bugs P0 confirmados, projeto NÃO conforme
 
 #### Bugs Críticos (P0)
-- [ ] **[BUG-04]** Scaffold não copia templates `.specify/` para projeto (se confirmado)
-- [ ] **[BUG-05]** Scaffold não copia agentes `.github/agents/` (se confirmado)
-- [ ] **[BUG-06]** Faltam arquivos de segurança GitHub (SECURITY.md, dependabot, CodeQL)
-- [ ] **[BUG-07]** Git não inicializado corretamente (sem commit inicial, sem tags)
-- [ ] **[BUG-08]** `.code-workspace` não criado (se confirmado)
+- [x] **[BUG-04]** ✅ FALSO POSITIVO — Scaffold copia templates corretamente (validado)
+- [x] **[BUG-05]** ✅ FALSO POSITIVO — Scaffold copia agentes corretamente (validado)
+- [ ] **[BUG-06]** 🔴 REAL — Faltam arquivos de segurança GitHub (SECURITY.md, dependabot, CodeQL)
+- [x] **[BUG-07]** ✅ FALSO POSITIVO — Git inicializado corretamente (validado)
+- [x] **[BUG-08]** ✅ FALSO POSITIVO — `.code-workspace` criado corretamente (validado)
 
 #### Improvements (P1)
 - [ ] **[IMP-60]** Completar proteção de `.secrets/` (chmod 700, pre-commit hooks, docs)
