@@ -65,6 +65,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🤖 Copiando assets SpecKit...[/blue]")
     results.extend(project.copy_speckit(cfg))
 
+    # 5b. Templates de documentação (BUG-09 fix)
+    console.print("  [blue]📋 Copiando templates de documentação...[/blue]")
+    results.extend(project.copy_docs_templates(cfg))
+
     # 6. Constitution: .specify/memory/constitution.md
     console.print("  [blue]📜 Gerando constitution.md...[/blue]")
     results.append(project.generate_constitution(cfg))
@@ -76,6 +80,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 8. Git
     console.print("  [blue]🗃️  Inicializando repositório Git...[/blue]")
     results.append(git.init_repository(cfg))
+
+    # 9. GitHub Security Files (BUG-06 fix)
+    console.print("  [blue]🔒 Gerando arquivos de segurança GitHub...[/blue]")
+    results.extend(project.generate_github_security_files(cfg))
 
     # Resumo final
     print_final_summary(results)
