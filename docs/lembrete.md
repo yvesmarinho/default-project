@@ -106,10 +106,11 @@ python scripts/scaffold.py --new --ci \
 | BUG-07: `.vscode/` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
 | BUG-08: `.code-workspace` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
 | **BUG-06: Arquivos segurança GitHub** | 🔴 **REAL** | Não implementado | **TODOS** projetos |
+| **BUG-09: docs/templates/ não copiado** | 🔴 **REAL** | Não implementado | **TODOS** projetos |
 | GAP #4: PROJECT_CREATION_SUMMARY | ✅ **RESOLVIDO** | Arquivo existe | N/A |
 | GAP #9: Git não init | ✅ **RESOLVIDO** | Funciona perfeitamente | N/A |
 
-**Total de bugs REAIS no scaffold**: **1** (BUG-06 apenas)
+**Total de bugs REAIS no scaffold**: **2** (BUG-06 + BUG-09)
 
 **Relatórios**:
 - [FASE2-ANALISE-APROFUNDADA.md](SESSIONS/2026-04-07/FASE2-ANALISE-APROFUNDADA.md)
@@ -168,13 +169,20 @@ python scripts/scaffold.py --new --ci \
   - `.github/workflows/security-scan.yml`
   - `.github/workflows/dependency-review.yml`
 
+- [ ] **BUG-09**: Implementar cópia de `docs/templates/` (1h) — 🆕 **DESCOBERTO 2026-04-07**
+  - `DAILY_ACTIVITIES.template.md`
+  - `mcp-questions-template.yaml`
+  - `objetivo-manifest-template.yaml`
+  - **STATUS**: ✅ Corrigido manualmente no yves-eti-br (pendente fix no scaffold)
+
 - [x] **DECISÃO yves-eti-br**: ✅ **EXECUTADA — Opção A**
   - Projeto antigo removido
   - Recriado do zero com scaffold correto
   - Validação completa: 100% conforme (5/5 verificações OK)
   - Tempo: 15 minutos
+  - **Correção pós-validação**: docs/templates/ copiados manualmente (BUG-09)
 
-**Total restante**: 3h (apenas BUG-06)
+**Total restante**: 4h (BUG-06 3h + BUG-09 1h)
 
 ---
 
@@ -185,6 +193,7 @@ python scripts/scaffold.py --new --ci \
 - [x] **[BUG-05]** ✅ FALSO POSITIVO — Scaffold copia agentes corretamente (validado)
 - [ ] **[BUG-06]** 🔴 REAL — Faltam arquivos de segurança GitHub (SECURITY.md, dependabot, CodeQL)
 - [x] **[BUG-07]** ✅ FALSO POSITIVO — Git inicializado corretamente (validado)
+- [ ] **[BUG-09]** 🔴 REAL — `docs/templates/` não copiado (DAILY_ACTIVITIES, mcp-questions, objetivo-manifest)
 - [x] **[BUG-08]** ✅ FALSO POSITIVO — `.code-workspace` criado corretamente (validado)
 
 #### Improvements (P1)
