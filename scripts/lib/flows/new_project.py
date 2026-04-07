@@ -80,6 +80,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 7. MCP script: scripts/load-mcp.sh
     console.print("  [blue]🔑 Gerando load-mcp.sh...[/blue]")
     results.append(project.generate_load_mcp(cfg))
+    
+    # 7b. Project Creation Summary (IMP-63) - resumo de criação
+    console.print("  [blue]📋 Gerando resumo de criação do projeto...[/blue]")
+    results.append(project.generate_project_creation_summary(cfg))
 
     # 8. Git
     console.print("  [blue]🗃️  Inicializando repositório Git...[/blue]")
