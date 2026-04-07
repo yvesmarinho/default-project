@@ -861,44 +861,75 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
 
 
 # ---------------------------------------------------------------------------
-# Templates de documentação — cópia de docs/templates/
+# Templates de documentação — setup inicial do projeto
 # ---------------------------------------------------------------------------
 
-def copy_docs_templates(config: ProjectConfig) -> list[CreatedItem]:
+def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     """
-    Copia templates de documentação do template para o projeto gerado.
+    Configura templates de documentação do projeto.
 
-    Copia (de _TEMPLATE_ROOT/docs/templates/ → config.project_path/docs/templates/):
-      - DAILY_ACTIVITIES.template.md
-      - mcp-questions-template.yaml
-      - objetivo-manifest-template.yaml
-      - Qualquer outro arquivo .md ou .yaml futuramente adicionado
+    Operações:
+      1. objetivo-manifest-template.yaml → objetivo.yaml (raiz, com placeholders)
+      2. mcp-questions-template.yaml → mcp-questions.yaml (raiz)
+      3. DAILY_ACTIVITIES.template.md → docs/SESSIONS/<data>/DAILY_ACTIVITIES_<data>.md
 
-    Arquivos já existentes no destino são saltados (idempotente).
+    Substituições em objetivo.yaml:
+      - CHANGE_ME (project.name) → config.project_name
+      - CHANGE_ME (summary) → config.description
+      - CHANGE_ME (problem_statement) → config.description
+      - Pasta do projeto atualizada
+
+    Arquivos já existentes são saltados (idempotente).
     
-    Ref: BUG-09 — documentado em docs/lembrete.md
+    Ref: BUG-09 (corrigido) — documentado em docs/lembrete.md
     """
     results: list[CreatedItem] = []
-    errors: list[str] = []
     base = config.project_path
     src_root = _TEMPLATE_ROOT
-
     src_templates = src_root / "docs" / "templates"
+
     if not src_templates.is_dir():
         log.warning("⚠️  Diretório de origem não encontrado: %s", src_templates)
         return results
 
-    # Copiar todos os arquivos .md e .yaml
-    for pattern in ["*.md", "*.yaml", "*.yml"]:
-        for src_file in sorted(src_templates.glob(pattern)):
-            dst_file = base / "docs" / "templates" / src_file.name
-            result = _copy_file(src_file, dst_file)
-            if result.status == "error":
-                errors.append(str(src_file))
-            results.append(result)
+    # 1. objetivo.yaml (raiz, com substituições)
+    src_objetivo = src_templates / "objetivo-manifest-template.yaml"
+    dst_objetivo = base / "objetivo.yaml"
+    try:
+        if dst_objetivo.exists():
+            log.info("⏭️  já existe: objetivo.yaml")
+            results.append(CreatedItem(path=dst_objetivo, kind="file", status="skipped"))
+        else:
+            content = src_objetivo.read_text(encoding="utf-8")
+            # Substituir placeholders
+            content = content.replace('name: "CHANGE_ME"', f'name: "{config.project_name}"')
+            content = content.replace('summary: "CHANGE_ME (1-2 linhas)"', f'summary: "{config.description}"')
+            content = content.replace('problem_statement: "CHANGE_ME (qual dor real será resolvida?)"', f'problem_statement: "{config.description}"')
+            content = content.replace('team_or_person: "CHANGE_ME"', f'team_or_person: "{config.project_name} team"')
+            content = content.replace('- "CHANGE_ME"', f'- "{config.project_name} owner"')
+            
+            dst_objetivo.write_text(content, encoding="utf-8")
+            log.info("✅ criado: objetivo.yaml")
+            results.append(CreatedItem(path=dst_objetivo, kind="file", status="created"))
+    except OSError as exc:
+        log.warning("⚠️  erro ao criar objetivo.yaml: %s", exc)
+        results.append(CreatedItem(path=dst_objetivo, kind="file", status="error", message=str(exc)))
 
-    if errors:
-        log.warning("⚠️  %d erro(s) ao copiar templates de docs: %s", len(errors), errors)
+    # 2. mcp-questions.yaml (raiz, cópia direta)
+    src_mcp = src_templates / "mcp-questions-template.yaml"
+    dst_mcp = base / "mcp-questions.yaml"
+    result = _copy_file(src_mcp, dst_mcp)
+    results.append(result)
+
+    # 3. DAILY_ACTIVITIES_<data>.md em docs/SESSIONS/<data>/
+    session_date = config.created_at[:10]  # YYYY-MM-DD
+    session_dir = base / "docs" / "SESSIONS" / session_date
+    session_dir.mkdir(parents=True, exist_ok=True)
+    
+    src_daily = src_templates / "DAILY_ACTIVITIES.template.md"
+    dst_daily = session_dir / f"DAILY_ACTIVITIES_{session_date}.md"
+    result = _copy_file(src_daily, dst_daily)
+    results.append(result)
 
     return results
 
