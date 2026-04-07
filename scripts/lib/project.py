@@ -360,7 +360,7 @@ git add .secrets/.env  # Deve FALHAR
 
 _PRE_COMMIT_SECRETS_HOOK = r"""#!/usr/bin/env bash
 # Pre-commit hook: Valida que arquivos sensíveis não sejam commitados
-# Instalação: 
+# Instalação:
 #   cp .git-hooks/pre-commit.secrets .git/hooks/pre-commit
 #   chmod +x .git/hooks/pre-commit
 
@@ -432,6 +432,447 @@ fi
 
 echo -e "${GREEN}✅ Validação de secrets OK${NC}"
 exit 0
+"""
+
+# ---------------------------------------------------------------------------
+# READMEs para sub-pastas de docs/ (IMP-61)
+# ---------------------------------------------------------------------------
+
+_DOCS_DEBATES_README = """\
+# docs/debates/ — Debates Técnicos e de Produto
+
+Armazena debates estruturados sobre decisões importantes do projeto.
+
+## 🎯 Objetivo
+
+Documentar o **processo de decisão** — não apenas o resultado, mas também:
+- Alternativas consideradas
+- Prós e contras de cada opção
+- Contexto da decisão
+- Participantes do debate
+
+## 📝 Formato
+
+Use o template de debate (agent `@template-architect` ou manual):
+
+```markdown
+# DEBATE: [Título da Questão]
+
+**Data**: YYYY-MM-DD
+**Participantes**: @user1, @user2, AI Agent
+**Contexto**: [Por que este debate é necessário?]
+
+## Questão Central
+[Pergunta clara que precisa ser respondida]
+
+## Alternativas
+
+### Opção A: [Nome]
+**Prós**: ...
+**Contras**: ...
+
+### Opção B: [Nome]
+**Prós**: ...
+**Contras**: ...
+
+## Decisão
+[Escolha + Justificativa]
+
+## Ações
+- [ ] Implementar X
+- [ ] Documentar em decisions/
+```
+
+## 🔍 Quando usar
+
+- Mudanças de arquitetura significativas
+- Escolha entre tecnologias/frameworks
+- Decisões que afetam múltiplos times
+- Trade-offs complexos
+
+## 📂 Nomenclatura
+
+`DEBATE_[TOPICO]_YYYY-MM-DD.md`
+
+Exemplos:
+- `DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md`
+- `DEBATE_ESCOLHA_ORM_2026-03-15.md`
+
+## 🔗 Ver também
+
+- [decisions/](../decisions/) — Registro formal de decisões (ADRs)
+- [retrospectives/](../retrospectives/) — Aprendizados pós-sprint
+"""
+
+_DOCS_DECISIONS_README = """\
+# docs/decisions/ — Architecture Decision Records (ADRs)
+
+Registro formal de decisões arquiteturais do projeto.
+
+## 🎯 Objetivo
+
+Documentar **decisões irreversíveis ou caras de reverter** de forma estruturada.
+
+## 📝 Formato ADR
+
+```markdown
+# ADR-NNN: [Título da Decisão]
+
+**Status**: Aceita | Proposta | Depreciada | Substituída por ADR-XXX
+**Data**: YYYY-MM-DD
+**Decisores**: [Quem tomou a decisão]
+
+## Contexto
+[Forças em jogo, restrições, requisitos]
+
+## Decisão
+[O que foi decidido]
+
+## Consequências
+**Positivas**:
+- ...
+
+**Negativas**:
+- ...
+
+**Riscos**:
+- ...
+
+## Alternativas Consideradas
+1. [Opção descartada] — [Por que foi rejeitada]
+2. ...
+```
+
+## 🔍 Quando criar ADR
+
+- Escolha de banco de dados
+- Arquitetura de microserviços vs monolito
+- Padrões de autenticação
+- Estratégia de deployment
+- Frameworks principais
+
+## 📂 Nomenclatura
+
+`ADR-NNN-[titulo-kebab-case].md`
+
+Exemplos:
+- `ADR-001-escolha-postgresql.md`
+- `ADR-002-arquitetura-event-driven.md`
+
+## 🔗 Recursos
+
+- [ADR GitHub](https://adr.github.io/)
+- [decisions/](../decisions/) (esta pasta)
+- [debates/](../debates/) — Discussões que antecederam a decisão
+"""
+
+_DOCS_GUIDES_README = r"""\
+# docs/guides/ — Guias e Tutoriais
+
+Documentação how-to e tutoriais passo-a-passo.
+
+## 🎯 Objetivo
+
+Ensinar como realizar tarefas específicas no projeto.
+
+## 📝 Tipos de Guias
+
+### 1. Guias de Setup
+- Como configurar ambiente de desenvolvimento
+- Como rodar testes localmente
+- Como fazer deploy
+
+### 2. Guias de Desenvolvimento
+- Como adicionar uma nova feature
+- Como escrever testes
+- Como fazer code review
+
+### 3. Guias de Troubleshooting
+- Problemas comuns e soluções
+- Como debugar erros específicos
+
+### 4. Guias de Integração
+- Como integrar com serviços externos
+- Como usar APIs internas
+
+## 📂 Estrutura sugerida
+
+```
+guides/
+├── setup/
+│   ├── local-development.md
+│   └── ci-cd-setup.md
+├── development/
+│   ├── adding-features.md
+│   └── testing-guide.md
+└── troubleshooting/
+    └── common-issues.md
+```
+
+## 📝 Template de Guia
+
+```markdown
+# [Nome da Tarefa]
+
+**Objetivo**: [O que você vai aprender]
+**Pré-requisitos**: [O que precisa antes]
+**Tempo estimado**: X minutos
+
+## Passo 1: [Ação]
+[Instruções detalhadas]
+
+\`\`\`bash
+# Comandos exemplo
+\`\`\`
+
+## Passo 2: [Ação]
+...
+
+## Validação
+Como verificar que funcionou:
+- [ ] Check 1
+- [ ] Check 2
+
+## Troubleshooting
+**Erro X**: Solução Y
+```
+
+## 🔗 Ver também
+
+- [INDEX.md](../INDEX.md) — Índice geral da documentação
+- [templates/](../templates/) — Templates reutilizáveis
+"""
+
+_DOCS_RETROSPECTIVES_README = """\
+# docs/retrospectives/ — Retrospectivas e Lições Aprendidas
+
+Documentação de aprendizados de sprints, incidentes e projetos.
+
+## 🎯 Objetivo
+
+Capturar **lições aprendidas** para melhorar continuamente.
+
+## 📝 Tipos de Retrospectivas
+
+### 1. Retrospectiva de Sprint
+Aprendizados do ciclo de desenvolvimento (semanal/quinzenal)
+
+### 2. Post-Mortem de Incidente
+Análise de falhas em produção
+
+### 3. Retrospectiva de Projeto
+Review ao final de projeto/feature grande
+
+## 📝 Template: Retrospectiva de Sprint
+
+```markdown
+# Retrospectiva Sprint NN — YYYY-MM-DD
+
+**Período**: DD/MM a DD/MM
+**Participantes**: [Time]
+
+## ✅ O que funcionou bem
+- ...
+
+## ⚠️ O que pode melhorar
+- ...
+
+## 💡 Insights e Aprendizados
+- ...
+
+## 🎯 Ações para próxima sprint
+- [ ] Ação 1
+- [ ] Ação 2
+
+## 📊 Métricas
+- Velocity: X pontos
+- Bugs encontrados: Y
+- Deploy frequency: Z
+```
+
+## 📝 Template: Post-Mortem
+
+```markdown
+# Post-Mortem: [Descrição do Incidente]
+
+**Data do incidente**: YYYY-MM-DD HH:MM
+**Duração**: X horas
+**Severidade**: Critical | High | Medium
+**Impacto**: [Quantos usuários afetados]
+
+## Timeline
+- HH:MM - Detecção
+- HH:MM - Resposta iniciada
+- HH:MM - Causa identificada
+- HH:MM - Mitigação aplicada
+- HH:MM - Resolução completa
+
+## Causa Raiz
+[5 Whys ou análise detalhada]
+
+## Ações Corretivas
+- [ ] Curto prazo (hoje)
+- [ ] Médio prazo (esta semana)
+- [ ] Longo prazo (preventivo)
+
+## Lições Aprendidas
+1. ...
+2. ...
+```
+
+## 📂 Nomenclatura
+
+- Sprints: `RETRO_SPRINT_NN_YYYY-MM-DD.md`
+- Post-mortems: `POSTMORTEM_[INCIDENTE]_YYYY-MM-DD.md`
+- Projetos: `RETRO_[NOME_PROJETO]_YYYY-MM-DD.md`
+
+## 🔗 Ver também
+
+- [debates/](../debates/) — Decisões técnicas
+- [SESSIONS/](../SESSIONS/) — Atividades diárias
+"""
+
+_DOCS_ARCHITECTURE_README = """\
+# docs/architecture/ — Documentação de Arquitetura
+
+Diagramas, visões e documentação estrutural do sistema.
+
+## 🎯 Objetivo
+
+Documentar a **estrutura e organização** do sistema.
+
+## 📝 Conteúdo
+
+### 1. Visões Arquiteturais (C4 Model)
+
+```
+architecture/
+├── context/          # C4 Level 1: System Context
+├── containers/       # C4 Level 2: Container Diagram
+├── components/       # C4 Level 3: Component Diagram
+└── code/            # C4 Level 4: Code (opcional)
+```
+
+### 2. Diagramas
+
+- Arquitetura de alto nível
+- Fluxo de dados
+- Deployment topology
+- Integrações externas
+
+### 3. Documentação Estrutural
+
+- Módulos e responsabilidades
+- Padrões arquiteturais adotados
+- Boundaries e interfaces
+
+## 📝 Template: Documento de Arquitetura
+
+```markdown
+# Arquitetura: [Componente/Sistema]
+
+**Última atualização**: YYYY-MM-DD
+**Owner**: [Time/Pessoa]
+
+## Visão Geral
+[Descrição de alto nível]
+
+## Componentes Principais
+### [Nome do Componente]
+- **Responsabilidade**: ...
+- **Tecnologia**: ...
+- **Dependências**: ...
+
+## Decisões Arquiteturais
+Ver ADRs relacionados:
+- [ADR-001](../decisions/ADR-001-xxx.md)
+
+## Diagramas
+![Diagrama Context](./diagrams/context.png)
+
+## Qualidade e Não-Funcionais
+- Escalabilidade: ...
+- Segurança: ...
+- Performance: ...
+
+## Riscos Arquiteturais
+- [Risco] — [Mitigação]
+```
+
+## 🛠️ Ferramentas sugeridas
+
+- **Mermaid** — Diagramas em Markdown
+- **PlantUML** — UML extensivo
+- **Draw.io** — Diagramas gerais
+- **C4 Model** — Framework de visualização
+
+## 📂 Estrutura sugerida
+
+```
+architecture/
+├── README.md (este arquivo)
+├── overview.md
+├── context-diagram.md
+├── api-design.md
+├── data-model.md
+└── diagrams/
+    ├── context.mmd
+    ├── containers.mmd
+    └── deployment.png
+```
+
+## 🔗 Ver também
+
+- [decisions/](../decisions/) — ADRs
+- [debates/](../debates/) — Discussões arquiteturais
+"""
+
+_DOCS_TEMPLATES_README = """\
+# docs/templates/ — Templates Reutilizáveis
+
+Templates de documentos para uso no projeto.
+
+## 🎯 Objetivo
+
+Padronizar documentação com templates prontos.
+
+## 📝 Templates Disponíveis
+
+### Documentação Técnica
+- `FEATURE_SPEC_TEMPLATE.md` — Especificação de feature
+- `API_DESIGN_TEMPLATE.md` — Design de API
+- `DATABASE_SCHEMA_TEMPLATE.md` — Schema de banco de dados
+
+### Processos
+- `BUG_REPORT_TEMPLATE.md` — Reporte de bugs detalhado
+- `INCIDENT_REPORT_TEMPLATE.md` — Relatório de incidente
+- `CHANGE_REQUEST_TEMPLATE.md` — Solicitação de mudança
+
+### Debates e Decisões
+- `DEBATE_TEMPLATE.md` — Estrutura de debate
+- `ADR_TEMPLATE.md` — Architecture Decision Record
+
+### Guides
+- `GUIDE_TEMPLATE.md` — Tutorial passo-a-passo
+- `SETUP_GUIDE_TEMPLATE.md` — Guia de configuração
+
+## ✅ Boas Práticas
+
+1. **Copie, não modifique** — Templates são base, crie cópias
+2. **Mantenha atualizados** — Review trimestral
+3. **Documente mudanças** — Se alterar template, documente por quê
+
+## 🔗 Como usar
+
+```bash
+# Copiar template para novo documento
+cp docs/templates/FEATURE_SPEC_TEMPLATE.md \
+   docs/features/FEAT-123-new-feature.md
+```
+
+## 🔗 Ver também
+
+- Todos os outros diretórios de docs/ usam estes templates
 """
 
 _VSCODE_MCP_JSON = """\
@@ -640,7 +1081,7 @@ For security-related questions, contact: [security contact info]
 
 _CODEOWNERS = """\
 # Code Owners
-# 
+#
 # Lines starting with '#' are comments.
 # Each line is a file pattern followed by one or more owners.
 # Owners can be @username, @org/team-name, or email addresses.
@@ -757,12 +1198,12 @@ jobs:
   codeql:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
-    
+
     strategy:
       fail-fast: false
       matrix:
         language: [ 'python', 'javascript' ]
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -782,7 +1223,7 @@ jobs:
   secret-scan:
     name: Secret Scanning
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -813,7 +1254,7 @@ jobs:
   dependency-review:
     name: Review Dependencies
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -833,7 +1274,13 @@ jobs:
 DIRS_TO_CREATE = [
     "docs",
     "docs/SESSIONS",
+    "docs/architecture",
     "docs/copilot",
+    "docs/debates",
+    "docs/decisions",
+    "docs/guides",
+    "docs/retrospectives",
+    "docs/templates",
     ".github",
     ".github/agents",
     ".github/prompts",
@@ -855,6 +1302,12 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     ("docs/INDEX.md",              _DOCS_INDEX_MD),
     ("docs/TODO.md",               _DOCS_TODO_MD),
     ("docs/TODAY_ACTIVITIES.md",   _DOCS_TODAY_ACTIVITIES_MD),
+    ("docs/architecture/README.md", _DOCS_ARCHITECTURE_README),
+    ("docs/debates/README.md",     _DOCS_DEBATES_README),
+    ("docs/decisions/README.md",   _DOCS_DECISIONS_README),
+    ("docs/guides/README.md",      _DOCS_GUIDES_README),
+    ("docs/retrospectives/README.md", _DOCS_RETROSPECTIVES_README),
+    ("docs/templates/README.md",   _DOCS_TEMPLATES_README),
     (".gitignore",                 _GITIGNORE),
     (".secrets/README.md",         _SECRETS_README),
     (".secrets/SECURITY.md",       _SECRETS_SECURITY_MD),
@@ -1060,7 +1513,7 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
       - Pasta do projeto atualizada
 
     Arquivos já existentes são saltados (idempotente).
-    
+
     Ref: BUG-09 (corrigido) — documentado em docs/lembrete.md
     """
     results: list[CreatedItem] = []
@@ -1087,7 +1540,7 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
             content = content.replace('problem_statement: "CHANGE_ME (qual dor real será resolvida?)"', f'problem_statement: "{config.description}"')
             content = content.replace('team_or_person: "CHANGE_ME"', f'team_or_person: "{config.project_name} team"')
             content = content.replace('- "CHANGE_ME"', f'- "{config.project_name} owner"')
-            
+
             dst_objetivo.write_text(content, encoding="utf-8")
             log.info("✅ criado: objetivo.yaml")
             results.append(CreatedItem(path=dst_objetivo, kind="file", status="created"))
@@ -1105,7 +1558,7 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     session_date = config.created_at[:10]  # YYYY-MM-DD
     session_dir = base / "docs" / "SESSIONS" / session_date
     session_dir.mkdir(parents=True, exist_ok=True)
-    
+
     src_daily = src_templates / "DAILY_ACTIVITIES.template.md"
     dst_daily = session_dir / f"DAILY_ACTIVITIES_{session_date}.md"
     result = _copy_file(src_daily, dst_daily)
@@ -1329,13 +1782,13 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
     results: list[CreatedItem] = []
     base = config.project_path
     secrets_dir = base / ".secrets"
-    
+
     # 1. Verificar que .secrets/ existe
     if not secrets_dir.exists():
         msg = ".secrets/ não existe ainda — pulando setup de segurança"
         log.warning("⚠️  %s", msg)
         return results
-    
+
     # 2. Aplicar chmod 700 (rwx------)
     try:
         current_perms = secrets_dir.stat().st_mode & 0o777
@@ -1364,7 +1817,7 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
             status="error",
             message=f"chmod falhou: {exc}"
         ))
-    
+
     # 3. Validar .gitignore contém .secrets/
     gitignore = base / ".gitignore"
     if gitignore.exists():
@@ -1385,7 +1838,7 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
                 status="warning",
                 message=".secrets/ ausente no .gitignore"
             ))
-    
+
     # 4. Informar sobre pre-commit hook (opcional)
     hook_template = base / ".git-hooks" / "pre-commit.secrets"
     if hook_template.exists():
@@ -1399,7 +1852,7 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
             status="available",
             message="pre-commit hook criado (ativar manualmente)"
         ))
-    
+
     return results
 
 
@@ -1419,42 +1872,42 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
       - .github/workflows/dependency-review.yml (análise de dependências em PRs)
 
     OWNER placeholder é substituído pelo dono do repo GitHub (se disponível).
-    
+
     Ref: BUG-06 — documentado em docs/lembrete.md
     """
     results: list[CreatedItem] = []
     base = config.project_path
-    
+
     # Extrair owner do github_repo (ex: https://github.com/user/repo → user)
     owner = "OWNER"
     if config.github_repo:
         parts = config.github_repo.rstrip("/").split("/")
         if len(parts) >= 2:
             owner = f"@{parts[-2]}"
-    
+
     # Arquivo 1: SECURITY.md (raiz do projeto)
     security_md = base / "SECURITY.md"
     content = _apply_placeholders(_SECURITY_MD, config)
     results.append(_write_file(security_md, content))
-    
+
     # Arquivo 2: .github/CODEOWNERS
     codeowners = base / ".github" / "CODEOWNERS"
     content = _CODEOWNERS.replace("@OWNER", owner)
     results.append(_write_file(codeowners, content))
-    
+
     # Arquivo 3: .github/dependabot.yml
     dependabot = base / ".github" / "dependabot.yml"
     content = _DEPENDABOT_YML.replace("OWNER", owner.lstrip("@"))
     results.append(_write_file(dependabot, content))
-    
+
     # Arquivo 4: .github/workflows/security-scan.yml
     security_scan = base / ".github" / "workflows" / "security-scan.yml"
     results.append(_write_file(security_scan, _SECURITY_SCAN_YML))
-    
+
     # Arquivo 5: .github/workflows/dependency-review.yml
     dependency_review = base / ".github" / "workflows" / "dependency-review.yml"
     results.append(_write_file(dependency_review, _DEPENDENCY_REVIEW_YML))
-    
+
     return results
 
 
@@ -1464,7 +1917,7 @@ def _write_file(path: Path, content: str) -> CreatedItem:
         if path.exists():
             log.info("⏭️  já existe: %s", path.name)
             return CreatedItem(path=path, kind="file", status="skipped")
-        
+
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
         log.info("✅ criado: %s", path.name)
