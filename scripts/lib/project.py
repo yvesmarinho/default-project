@@ -1199,35 +1199,9 @@ Seu projeto foi criado com sucesso usando o **Enterprise Default Project Templat
 *Gerado automaticamente em {{CREATED_AT}}*
 """
 
-_VSCODE_MCP_JSON = """\
-{
-  "servers": {
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "type": "stdio"
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "type": "stdio"
-    }
-  }
-}
-"""
-
-_VSCODE_SETTINGS_JSON = """\
-{
-  "editor.formatOnSave": true,
-  "editor.rulers": [88],
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/*.pyc": true,
-    "**/.pytest_cache": true,
-    "**/.mypy_cache": true
-  }
-}
-"""
+# IMP-64: Templates _VSCODE_MCP_JSON e _VSCODE_SETTINGS_JSON removidos.
+# Esses arquivos são agora gerados dinamicamente por vscode.py com
+# customização por domínio e linguagem.
 
 _MAKEFILE = """\
 # Makefile — {{PROJECT_TITLE}}
@@ -1636,8 +1610,7 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     (".secrets/README.md",         _SECRETS_README),
     (".secrets/SECURITY.md",       _SECRETS_SECURITY_MD),
     (".git-hooks/pre-commit.secrets", _PRE_COMMIT_SECRETS_HOOK),
-    (".vscode/mcp.json",           _VSCODE_MCP_JSON),
-    (".vscode/settings.json",      _VSCODE_SETTINGS_JSON),
+    # .vscode/mcp.json e settings.json são gerados dinamicamente por vscode.py (IMP-64)
     ("Makefile",                   _MAKEFILE),
     ("scripts/logs/.gitkeep",      ""),
 ]
