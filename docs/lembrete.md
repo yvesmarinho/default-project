@@ -106,9 +106,12 @@ python scripts/scaffold.py --new --ci \
 | BUG-07: `.vscode/` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
 | BUG-08: `.code-workspace` ausente | 🟢 **FALSO POSITIVO** | Problema específico yves-eti-br | N/A |
 | **BUG-06: Arquivos segurança GitHub** | ✅ **RESOLVIDO** | Implementado 2026-04-07 | **TODOS** projetos |
-| **BUG-09: docs/templates/ não copiado** | ✅ **RESOLVIDO** | Implementado 2026-04-07 | **TODOS** projetos |
+| **BUG-09: Templates de docs** | ✅ **RESOLVIDO** | Impl. 2026-04-07 (conceito corrigido) | **TODOS** projetos |
 | GAP #4: PROJECT_CREATION_SUMMARY | ✅ **RESOLVIDO** | Arquivo existe | N/A |
 | GAP #9: Git não init | ✅ **RESOLVIDO** | Funciona perfeitamente | N/A |
+
+**BUG-09 ERRATA**: Conceito inicial estava errado (copiar para `docs/templates/`).
+**CORRETO**: `objetivo.yaml` e `mcp-questions.yaml` na raiz + `DAILY_ACTIVITIES_<data>.md` em `docs/SESSIONS/<data>/`
 
 **Total de bugs REAIS no scaffold**: **0** (todos resolvidos!)
 
@@ -174,12 +177,13 @@ python scripts/scaffold.py --new --ci \
   - **Implementação**: `scripts/lib/project.py` linhas 413-600 (templates) + 1099-1166 (função)
   - **Integração**: `scripts/lib/flows/new_project.py` linha 87-89
 
-- [x] **BUG-09**: ✅ IMPLEMENTADO — `copy_docs_templates()`
-  - ✅ `docs/templates/DAILY_ACTIVITIES.template.md` (4.9K)
-  - ✅ `docs/templates/mcp-questions-template.yaml` (12K)
-  - ✅ `docs/templates/objetivo-manifest-template.yaml` (11K)
-  - **Implementação**: `scripts/lib/project.py` linhas 863-904
+- [x] **BUG-09**: ✅ IMPLEMENTADO (CONCEITO CORRIGIDO 2026-04-07) — `setup_project_docs()`
+  - ✅ `objetivo.yaml` (raiz, com placeholders substituídos: project_name, description)
+  - ✅ `mcp-questions.yaml` (raiz, cópia direta)
+  - ✅ `docs/SESSIONS/<data>/DAILY_ACTIVITIES_<data>.md` (pasta de sessão inicial)
+  - **Implementação**: `scripts/lib/project.py` linhas 863-930 (função completa)
   - **Integração**: `scripts/lib/flows/new_project.py` linha 73-75
+  - **CORREÇÃO**: Templates NÃO vão para `docs/templates/`, mas sim raiz + sessão inicial
 
 - [x] **PROJETO yves-eti-br**: ✅ **RECRIADO COM SUCESSO**
   - Scaffold executado com correções BUG-06 e BUG-09
@@ -200,10 +204,10 @@ python scripts/scaffold.py --new --ci \
 #### Bugs Críticos (P0)
 - [x] **[BUG-04]** ✅ FALSO POSITIVO — Scaffold copia templates corretamente (validado)
 - [x] **[BUG-05]** ✅ FALSO POSITIVO — Scaffold copia agentes corretamente (validado)
-- [ ] **[BUG-06]** 🔴 REAL — Faltam arquivos de segurança GitHub (SECURITY.md, dependabot, CodeQL)
+- [x] **[BUG-06]** ✅ RESOLVIDO — Arquivos de segurança GitHub implementados
 - [x] **[BUG-07]** ✅ FALSO POSITIVO — Git inicializado corretamente (validado)
-- [ ] **[BUG-09]** 🔴 REAL — `docs/templates/` não copiado (DAILY_ACTIVITIES, mcp-questions, objetivo-manifest)
 - [x] **[BUG-08]** ✅ FALSO POSITIVO — `.code-workspace` criado corretamente (validado)
+- [x] **[BUG-09]** ✅ RESOLVIDO (CONCEITO CORRIGIDO) — Templates configurados na raiz + sessão inicial
 
 #### Improvements (P1)
 - [ ] **[IMP-60]** Completar proteção de `.secrets/` (chmod 700, pre-commit hooks, docs)

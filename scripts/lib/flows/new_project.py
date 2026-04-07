@@ -65,9 +65,9 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🤖 Copiando assets SpecKit...[/blue]")
     results.extend(project.copy_speckit(cfg))
 
-    # 5b. Templates de documentação (BUG-09 fix)
-    console.print("  [blue]📋 Copiando templates de documentação...[/blue]")
-    results.extend(project.copy_docs_templates(cfg))
+    # 5b. Templates de documentação (BUG-09 fix - corrigido conceito)
+    console.print("  [blue]📋 Configurando templates de documentação...[/blue]")
+    results.extend(project.setup_project_docs(cfg))
 
     # 6. Constitution: .specify/memory/constitution.md
     console.print("  [blue]📜 Gerando constitution.md...[/blue]")
