@@ -241,7 +241,24 @@ python scripts/scaffold.py --new --ci \
   - **Validado**: Projeto test-imp62 com 64 arquivos commitados + tag ✅
 
 #### Features (P2)
-- [ ] **[IMP-63]** Gerar `docs/PROJECT_CREATION_SUMMARY.md` ao final do scaffold
+- [x] **[IMP-63]** ✅ RESOLVIDO (2026-04-07) — Gerar `docs/PROJECT_CREATION_SUMMARY.md`
+  - ✅ Documento completo (325 linhas) gerado automaticamente
+  - ✅ Informações do projeto (nome, descrição, domínio, linguagem, repo)
+  - ✅ Estrutura de diretórios completa documentada
+  - ✅ Profiles aplicados listados (domínio + transversais + extras)
+  - ✅ Status do Git (commit, tag, remote)
+  - ✅ Próximos passos recomendados (5 seções)
+  - ✅ Comandos úteis (Makefile, Git, Docs)
+  - ✅ Links para documentação interna (15+ links)
+  - ✅ Recursos de segurança documentados
+  - ✅ Agentes SpecKit listados (11 agentes + 3 prompts)
+  - ✅ Convenções do projeto (commits, branches, docs)
+  - **Implementação**: 
+    - Template `_PROJECT_CREATION_SUMMARY` em project.py (linhas 876-1225, ~350 linhas)
+    - Função `generate_project_creation_summary()` (70 linhas)
+    - Fix: DOMAIN_DEFAULT_PROFILES é dict[str, str], use append() não extend()
+  - **Integração**: new_project.py passo 7b (antes do git init)
+  - **Validado**: Projeto test-imp63 com summary completo no commit ✅
 - [ ] **[IMP-64]** Completar setup `.vscode/` (extensions.json, MCP servers por domínio)
 
 ### Novos Agentes SpecKit identificados:
