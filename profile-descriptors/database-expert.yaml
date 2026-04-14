@@ -1,0 +1,220 @@
+schema_version: "1.0.0"
+
+name: database-expert
+layer: 2
+version: "1.0.0"
+last_tested: "2026-04-14"
+status: stable
+
+description: >
+  Perfil Layer 2 para expertise em banco de dados profissional.
+  Combina DBA expert (administração, performance tuning, backup/recovery),
+  SQL expert developer (query optimization, indexing strategies, stored procedures),
+  e Spec-Driven Development expert (objetivo.yaml → spec.md → plan.md → tasks.md).
+  Ideal para projetos que exigem design de schema robusto, otimização de queries,
+  e documentação arquitetural rigorosa.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: sql
+  framework: database-agnostic
+  tags:
+    - database
+    - dba
+    - sql
+    - performance-tuning
+    - spec-driven-development
+    - schema-design
+    - query-optimization
+    - layer2
+
+expertise_domains:
+  dba_professional:
+    - Database administration (PostgreSQL, MySQL, SQL Server, Oracle)
+    - Performance tuning and monitoring (pg_stat_statements, explain analyze)
+    - Backup and recovery strategies (pg_dump, PITR, replication)
+    - High availability and disaster recovery (streaming replication, failover)
+    - Security and access control (roles, grants, row-level security)
+    - Capacity planning and resource optimization
+    - Database migrations and version upgrades
+    - Monitoring and alerting (Prometheus, Grafana, PgBadger)
+
+  sql_expert_developer:
+    - Advanced SQL query optimization (CTEs, window functions, lateral joins)
+    - Index strategies (B-tree, GiST, GIN, BRIN, partial indexes)
+    - Stored procedures and functions (PL/pgSQL, PL/SQL, T-SQL)
+    - Transaction management and ACID compliance
+    - Query plan analysis and optimization
+    - Data modeling (normalization, denormalization, star schema, snowflake)
+    - Database design patterns (audit logs, soft deletes, temporal tables)
+    - ETL/ELT pipeline optimization
+
+  spec_driven_development:
+    - Layer 1 (Business): objetivo.yaml creation via speckit.clarify
+    - Layer 2 (Product): spec.md with user stories, acceptance criteria, FR numbering
+    - Layer 3 (Architecture): plan.md with ADRs, component design, implementation strategy
+    - Layer 4 (Implementation): tasks.md → code
+    - Quality gates validation (speckit.validate)
+    - Traceability: Business objectives → Product features → Architecture decisions → Implementation tasks
+    - Documentation-driven development (DDD)
+
+stack:
+  databases:
+    - PostgreSQL >= 14
+    - MySQL >= 8.0
+    - SQL Server >= 2019
+    - Oracle >= 19c
+  tools:
+    - pgAdmin 4
+    - DBeaver
+    - DataGrip
+    - pg_stat_statements
+    - pg_badger
+    - pgBench
+  frameworks:
+    - SpecKit (objetivo.yaml, spec.md, plan.md, tasks.md)
+    - SQLAlchemy (Python ORM)
+    - Flyway/Liquibase (migrations)
+
+combines_with:
+  - python-fastapi
+  - python-flask
+  - data-warehouse-dbt
+  - devops-infrastructure
+
+templates_path: ".github/templates/database-expert"
+
+templates:
+  - path: "database/schema.sql"
+    description: "Schema design com best practices: audit columns, indexes, constraints, comments"
+
+  - path: "database/migrations/"
+    description: "Migration scripts versionados (Flyway/Liquibase format)"
+
+  - path: "database/stored_procedures/"
+    description: "Stored procedures documentadas com performance annotations"
+
+  - path: "database/performance_tuning.md"
+    description: "Guia de performance tuning: index strategies, query optimization, monitoring"
+
+  - path: ".specify/specs/DATABASE_SPEC/"
+    description: "SpecKit workflow para database design: objetivo.yaml → spec.md → plan.md → tasks.md"
+
+  - path: "database/backup_recovery.sh"
+    description: "Script de backup/recovery automatizado com retention policy"
+
+  - path: "database/monitoring/prometheus_exporter.yml"
+    description: "Configuração do PostgreSQL exporter para Prometheus"
+
+  - path: "Makefile.database"
+    description: "Targets: db-migrate, db-rollback, db-seed, db-backup, db-restore, db-monitor, db-performance-report"
+
+project_structure:
+  database/:
+    - schema.sql
+    - migrations/
+      - V001__initial_schema.sql
+      - V002__add_indexes.sql
+      - V003__add_audit_triggers.sql
+    - stored_procedures/
+      - sp_calculate_metrics.sql
+      - sp_archive_old_data.sql
+    - views/
+      - vw_dashboard_metrics.sql
+      - vw_user_summary.sql
+    - performance_tuning.md
+    - backup_recovery.sh
+    - monitoring/
+      - prometheus_exporter.yml
+      - grafana_dashboard.json
+
+  .specify/specs/DATABASE_SPEC/:
+    - objetivo.yaml
+    - spec.md
+    - plan.md
+    - tasks.md
+
+workflows:
+  schema_design:
+    - step: "1. Create objetivo.yaml"
+      tool: "speckit.clarify Mode 1"
+      output: ".specify/specs/DATABASE_SPEC/objetivo.yaml"
+      description: "Define business problem, success metrics, critical journeys for database design"
+
+    - step: "2. Generate spec.md"
+      tool: "speckit.specify"
+      output: ".specify/specs/DATABASE_SPEC/spec.md"
+      description: "Document schema requirements, data model, performance requirements, user stories"
+
+    - step: "3. Create architectural plan"
+      tool: "speckit.plan"
+      output: ".specify/specs/DATABASE_SPEC/plan.md"
+      description: "ADRs for database choice, normalization strategy, index design, replication setup"
+
+    - step: "4. Validate quality gates"
+      tool: "speckit.validate"
+      description: "Ensure objetivo.yaml has metrics, spec.md has P1 stories, plan.md has ADRs"
+
+    - step: "5. Generate implementation tasks"
+      tool: "speckit.tasks"
+      output: ".specify/specs/DATABASE_SPEC/tasks.md"
+      description: "Break down schema creation, migration scripts, stored procedures into tasks"
+
+    - step: "6. Implement"
+      description: "Execute tasks: write schema.sql, create migrations, implement procedures"
+
+  performance_optimization:
+    - step: "1. Analyze slow queries"
+      tool: "pg_stat_statements, EXPLAIN ANALYZE"
+      description: "Identify queries > 100ms, analyze execution plans"
+
+    - step: "2. Design indexes"
+      description: "Create B-tree for equality/range, GIN for JSONB/array, partial for filtered queries"
+
+    - step: "3. Optimize queries"
+      description: "Rewrite with CTEs, avoid N+1, use JOIN instead of subqueries"
+
+    - step: "4. Monitor impact"
+      tool: "Prometheus + Grafana"
+      description: "Track query time reduction, index hit ratio, cache efficiency"
+
+    - step: "5. Document in ADR"
+      output: "plan.md → ADR-NNN: Index Strategy for User Queries"
+      description: "Record decision, alternatives considered, performance impact"
+
+best_practices:
+  - "Always use objetivo.yaml to capture business context before schema design"
+  - "Document normalization decisions in ADRs (plan.md)"
+  - "Include audit columns: created_at, updated_at, created_by, updated_by, deleted_at (soft delete)"
+  - "Index foreign keys, frequently filtered columns, JOIN columns"
+  - "Use EXPLAIN ANALYZE for all queries > 50ms"
+  - "Implement monitoring BEFORE going to production (Prometheus + Grafana)"
+  - "Version migrations with sequential numbers (V001, V002, ...)"
+  - "Store passwords in .secrets/.env, never in code"
+  - "Use pg_stat_statements to track query performance over time"
+  - "Document complex queries with inline comments explaining business logic"
+  - "Validate quality gates (speckit.validate) before implementing schema changes"
+  - "Reference objetivo.yaml decisoes_iniciais in ADRs (traceability)"
+
+examples:
+  - name: "E-commerce Database Design"
+    description: "Multi-tenant schema with product catalog, orders, payments, audit trails"
+    spec_path: ".specify/specs/ECOMMERCE_DB/"
+    key_adrs:
+      - "ADR-001: PostgreSQL for ACID compliance and JSONB support"
+      - "ADR-002: Soft delete strategy for all entities"
+      - "ADR-003: Partitioning orders table by month for performance"
+
+  - name: "Analytics Warehouse Optimization"
+    description: "Star schema with fact/dimension tables, columnar indexes, materialized views"
+    spec_path: ".specify/specs/ANALYTICS_WAREHOUSE/"
+    key_adrs:
+      - "ADR-001: BRIN indexes for time-series data (10x faster queries)"
+      - "ADR-002: Materialized views for dashboard queries (sub-second response)"
+      - "ADR-003: Partitioning by date range for 100M+ row tables"
+
+notes: >
+  Este profile descriptor formaliza expertise em três domínios complementares:
+  DBA (operações, performance, HA), SQL Developer (queries, procedures, schema design),
+  e Spec-Driven Development (documentation-first approach). Ideal para projetos
+  que exigem rigor arquitetural e rastreabilidade de decisões de banco de dados.

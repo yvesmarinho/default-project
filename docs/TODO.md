@@ -54,7 +54,13 @@
 
 ## 🎯 Current Sprint
 
-### 🚀 Próximas Ações — Sistema de Documentação Incremental (concluído) + SpecKit Evolution
+### � Nota: PDCA Workflow
+
+> **⚠️ IMPORTANTE**: Todas as automações (PDCA workflow, CI/CD, hooks) serão implementadas **APÓS** conclusão de todas as tarefas prioritárias do SpecKit e Session Management. Foco atual: completar funcionalidades core antes de otimizar processos.
+
+---
+
+### �🚀 Próximas Ações — Sistema de Documentação Incremental (concluído) + SpecKit Evolution
 
 > **IMP-48 ✅ CONCLUÍDO** (2026-03-29) — Fundação (lib + templates + style guide + 36 tests)
 > **IMP-49 ✅ CONCLUÍDO** (2026-04-03) — Integração com prompts, CI, gitleaks, validação
@@ -75,6 +81,38 @@
 ---
 
 ### 📋 Itens Recentes (2026-04-14)
+
+#### ✅ Lembrete.md — 3 Passos Completos (2026-04-14)
+
+**Origem**: `docs/lembrete.md` — Lista de ações pós-IMP-56
+
+- [x] **Passo 2**: PDCA Workflow note adicionada ✅ **CONCLUÍDO**
+  - Nota adicionada em TODO.md: "Todas as automações serão implementadas APÓS conclusão de todas as tarefas prioritárias"
+  - Commit: pending
+
+- [x] **Passo 1**: Domínios de expertise adicionados ✅ **CONCLUÍDO**
+  - Criado: `profile-descriptors/database-expert.yaml`
+  - Expertise: DBA expert profissional, SQL expert developer, Spec-Driven Development expert
+  - Layer 2, estável, stack: PostgreSQL/MySQL/SQL Server/Oracle
+  - Workflows: schema_design (objetivo.yaml → spec.md → plan.md → tasks.md), performance_optimization
+  - Combines with: python-fastapi, data-warehouse-dbt, devops-infrastructure
+  - Commit: pending
+
+- [x] **Passo 3**: IMP-55 implementação iniciada ✅ **EM PROGRESSO** (Fase 1+2 completas)
+  - Criado: `docs/IMP-55_PLAN.md` (plano completo, 5 fases, 1 semana)
+  - Criado: `scripts/lib/chat_capture.py` (430 linhas)
+  - ✅ **Fase 1**: Estrutura base (ChatMessage, ChatMetadata, markdown generation)
+  - ✅ **Fase 2**: Captura de transcripts JSONL → CHAT-*.md
+    - Testado com sucesso: 466 mensagens, 5h24min, 263KB, 10.5k linhas
+    - Arquivo: `docs/SESSIONS/2026-04-14/CHAT-2026-04-14-1317.md`
+    - Topics extracted: IMP-45, IMP-51, IMP-53-60 (26 topics total)
+    - YAML frontmatter válido, markdown canônico
+  - ⏳ **Fase 3**: Integração Session Search (próximo)
+  - ⏳ **Fase 4**: CLI session-chat.py (próximo)
+  - ⏳ **Fase 5**: Testing e Docs (próximo)
+  - Commit: pending (3 arquivos: plan, chat_capture.py, CHAT-*.md)
+
+---
 
 - [x] **[IMP-53]** Implementar objetivo.yaml e speckit.clarify + ADRs (4-Layer Spec Driven Development) ✅ **CONCLUÍDO** (2026-04-14)
   - **Contexto**: SpecKit não tinha artefato estruturado para Camada 1 (Business) e Camada 3 (Architecture) não tinha ADRs formais
