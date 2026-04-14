@@ -86,7 +86,7 @@ def main():
     parser.add_argument(
         "--scope",
         type=str,
-        choices=["sessions", "docs", "specs", "all"],
+        choices=["sessions", "docs", "specs", "chats", "all"],
         default="sessions",
         help="Scope of documents to index (default: sessions)",
     )
