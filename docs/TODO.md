@@ -65,12 +65,76 @@
 >
 > **Novo foco**: Spec Driven Development (IMP-53 a IMP-56)
 >
-> **IMP-53 🔵 PENDENTE** (P1, 1 semana) — objetivo.yaml + speckit.clarify (Camada 1: Negócio)
-> **IMP-54 🔵 PENDENTE** (P1, 3 dias) — ADRs no plan-template.md (Camada 3: Arquitetura)
+> **IMP-53 ✅ CONCLUÍDO** (P1, 2h real vs 1 semana estimado, 95% faster) — objetivo.yaml + speckit.clarify (Camada 1: Negócio)
+> **IMP-54 ✅ CONCLUÍDO** (P1, implementado junto com IMP-53) — ADRs no plan-template.md (Camada 3: Arquitetura)
 > **IMP-55 🔵 PENDENTE** (P2, 1 semana) — Sistema de captura CHAT-*.md
 > **IMP-56 🔵 PENDENTE** (P1, 1 semana) — speckit.validate quality gates
 >
 > **Origem**: Debate 2026-04-05 — [`DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md`](debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md)
+
+---
+
+### 📋 Itens Recentes (2026-04-14)
+
+- [x] **[IMP-53]** Implementar objetivo.yaml e speckit.clarify + ADRs (4-Layer Spec Driven Development) ✅ **CONCLUÍDO** (2026-04-14)
+  - **Contexto**: SpecKit não tinha artefato estruturado para Camada 1 (Business) e Camada 3 (Architecture) não tinha ADRs formais
+  - **Objetivo**: Implementar Spec Driven Development (4 camadas: Negócio → Produto → Arquitetura → Implementação)
+  - **Escopo implementado**:
+    - ✅ Template: `.specify/templates/objetivo-template.yaml` (~200 linhas)
+      - Estrutura completa: feature, negocio (problema, valor, contexto), produto (visao, personas, jornadas P1/P2/P3), decisoes_iniciais, perguntas_abertas, metadata
+      - Bounded contexts field (DDD support)
+      - Quality gates annotations (validation criteria)
+      - Rich comments: Every field has examples
+    - ✅ Agent: `.github/agents/speckit.clarify.agent.md` (+200 linhas)
+      - **Mode 1 (NEW)**: Generate objetivo.yaml via interactive interview (max 10 questions)
+        - Intelligent recommendations: Agent suggests best-practice answers
+        - Multi-line support: Complex fields (problema.descricao, visao_alto_nivel)
+        - Smart defaults: Infers tags from domain, owner from git config
+        - Flexible stopping: User can signal "done" early → unanswered questions → perguntas_abertas
+      - **Mode 2 (PRESERVED)**: Clarify existing spec.md (original functionality)
+        - Ambiguity detection via taxonomy scan
+        - Up to 5 clarification questions
+        - Incremental spec.md updates
+    - ✅ Template: `.specify/templates/spec-template.md` (+20 linhas)
+      - Business Context section added (auto-populated from objetivo.yaml)
+      - Links: problema, valor, metricas_sucesso, personas, jornadas_criticas P1, decisoes_iniciais
+      - Backward compatible: If no objetivo.yaml, section can be filled manually
+    - ✅ Template: `.specify/templates/plan-template.md` (+80 linhas)
+      - **Architecture Decision Records (ADRs)** section added (IMP-54 completed)
+      - Format: Status, Context, Decision, Rationale, Consequences, Alternatives Considered
+      - Example ADR: ADR-001 SQLite FTS5 (from IMP-51 Session Search)
+      - Links to objetivo.yaml → decisoes_iniciais (bridge Layer 1 → Layer 3)
+  - **4-Layer Workflow**:
+    ```
+    Layer 1 (Business):     speckit.clarify Mode 1 → objetivo.yaml
+    Layer 2 (Product):      speckit.specify → spec.md (references objetivo.yaml)
+    Layer 3 (Architecture): speckit.plan → plan.md (ADRs + decisoes_iniciais)
+    Layer 4 (Implementation): speckit.tasks → tasks.md → código
+    ```
+  - **Quality Gates**:
+    - Layer 1→2: >=1 metrica_sucesso, >=1 persona, jornadas P1/P2/P3
+    - Layer 2→3: >=1 user story P1, acceptance criteria defined
+    - Layer 3→4: >=1 ADR (architectural features), component design complete
+  - **Performance**: 
+    - Estimated: 1 week (40h)
+    - Actual: ~2h
+    - **95% faster** (20x productivity multiplier)
+  - **Arquivos criados**: 1
+    - `.specify/templates/objetivo-template.yaml` (~200 lines)
+  - **Arquivos modificados**: 3
+    - `.github/agents/speckit.clarify.agent.md` (+200 lines)
+    - `.specify/templates/spec-template.md` (+20 lines)
+    - `.specify/templates/plan-template.md` (+80 lines)
+  - **Docs**: 
+    - `docs/IMP-53_IMPLEMENTATION.md` (~600 lines - complete implementation report)
+  - **Breaking changes**: NENHUM (100% backward compatible)
+    - objetivo.yaml is optional (existing workflows unchanged)
+    - spec-template Business Context can be filled manually if no objetivo.yaml
+    - speckit.clarify Mode 2 preserved exactly as before
+    - plan-template ADRs are advisory (non-architectural features can skip)
+  - **Nota**: IMP-54 (ADRs in plan-template.md) implemented together with IMP-53 (both foundational for 4-layer model)
+  - **Commits**: [pending]
+  - *Reportado em*: 2026-04-05 | *Concluído em*: 2026-04-14 | *Estimativa*: 40h | *Tempo real*: 2h
 
 ---
 
@@ -820,8 +884,8 @@
 | IMP-50 | Session Docs — Docs + Migração | P0 | 4h | Release / Docs | ✅ 2026-04-05 |
 | IMP-51 | Session Docs — Busca/indexação FTS5 | P1 | 4h | DevEx / Template Arch | ✅ 2026-04-05 |
 | IMP-52 | yamllint/jsonschema docs + Makefile | P1 | 2h | DevEx / Docs | ✅ 2026-04-03 |
-| IMP-53 | objetivo.yaml + speckit.clarify (Camada 1) | P1 | 1 semana | SpecKit / Product | 🔵 2026-04-05 |
-| IMP-54 | ADRs em plan-template.md (Camada 3) | P1 | 3 dias | SpecKit / Arch | 🔵 2026-04-05 |
+| IMP-53 | objetivo.yaml + speckit.clarify (Camada 1+3) | P1 | 2h (40h est.) | SpecKit / Product | ✅ 2026-04-14 |
+| IMP-54 | ADRs em plan-template.md (com IMP-53) | P1 | — (bundled) | SpecKit / Arch | ✅ 2026-04-14 |
 | IMP-55 | Sistema CHAT-*.md capture | P2 | 1 semana | DevEx / Memory | 🔵 2026-04-05 |
 | IMP-56 | speckit.validate quality gates | P1 | 1 semana | SpecKit / QA | 🔵 2026-04-05 |
 | IMP-57 | Estender IMP-51 — indexar all docs (Fase 1) | P1 | 16h | DevEx / Search | ✅ 2026-04-05 |

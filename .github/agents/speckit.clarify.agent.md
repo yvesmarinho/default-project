@@ -1,6 +1,12 @@
 ---
-description: Identify underspecified areas in the current feature spec by asking up to 5 highly targeted clarification questions and encoding answers back into the spec.
+description: Layer 1 (Business) workflow - Generate objetivo.yaml via interview OR clarify existing spec.md by asking targeted questions. Two modes - objetivo generation (if no objetivo.yaml exists) or spec clarification (if spec.md exists).
 handoffs: 
+  - label: Build Constitution
+    agent: speckit.constitution
+    prompt: Analyze objetivo.yaml and update constitution.md with project principles
+  - label: Generate Specification
+    agent: speckit.specify
+    prompt: Create spec.md from objetivo.yaml. I am building...
   - label: Build Technical Plan
     agent: speckit.plan
     prompt: Create a plan for the spec. I am building with...
@@ -14,13 +20,168 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-## Outline
+## Mode Detection
+
+This agent operates in TWO distinct modes based on feature artifacts:
+
+**Mode 1: objetivo.yaml Generation (Layer 1: Business)**
+- Triggered when: No objetivo.yaml exists in feature directory
+- Goal: Interview user to elicit business context and generate objetivo.yaml
+- Output: objetivo.yaml with business problem, value, personas, critical journeys, initial decisions
+
+**Mode 2: spec.md Clarification (Layer 2: Product)**  
+- Triggered when: objetivo.yaml exists but spec.md needs clarification
+- Goal: Detect and reduce ambiguity or missing decision points in spec.md
+- Output: Updated spec.md with clarifications integrated
+
+Run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only` to detect which mode applies.
+- If `objetivo.yaml` DOES NOT exist → Mode 1 (objetivo generation)
+- If `objetivo.yaml` exists AND `spec.md` exists → Mode 2 (spec clarification)
+- If neither exists → Error: run `/speckit.specify` first
+
+---
+
+## Mode 1: objetivo.yaml Generation Workflow
+
+Goal: Elicit business context through structured interview and generate objetivo.yaml from template.
+
+Note: This workflow is Layer 1 (Business) in the Spec Driven Development 4-layer model. It must complete BEFORE invoking `/speckit.specify`.
+
+Execution steps (Mode 1):
+
+1. Run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only` to get:
+   - `FEATURE_DIR`
+   - `OBJECTIVE_FILE` (should be empty/missing for Mode 1)
+   - If JSON parsing fails, abort and instruct user to verify feature branch.
+
+2. Load objetivo-template.yaml from `.specify/templates/objetivo-template.yaml`
+   - If template missing, report error and instruct user to verify SpecKit installation
+
+3. Generate interview questions (maximum 10) covering objetivo.yaml sections:
+   - **Negócio** (4-5 questions):
+     - Qual problema de negócio estamos resolvendo?
+     - Quem são os stakeholders principais?
+     - Qual o impacto se não resolvermos?
+     - Quais restrições de negócio existem (orçamento, prazo, compliance)?
+   
+   - **Valor** (2-3 questions):
+     - Quais objetivos estratégicos esta feature atende?
+     - Quais métricas de sucesso são críticas? (ex: "Taxa de adoção >= 80% em 3 meses")
+   
+   - **Produto** (3-4 questions):
+     - Quem são os usuários principais? (personas)
+     - Quais as jornadas críticas? (priorizar P1 vs P2 vs P3)
+     - Qual a visão de alto nível? (1-2 frases)
+   
+   - **Decisões** (1-2 questions):
+     - Alguma decisão técnica/arquitetural já foi tomada? (ex: cloud provider, build vs buy)
+
+4. Interactive questioning loop:
+   - Present ONE question at a time (do not show all at once)
+   - For each question:
+     - **Analyze context** from user input ($ARGUMENTS) and determine **recommended answer** based on:
+       - Best practices for the project type
+       - Common patterns in similar features
+       - Alignment with any explicit project goals visible in context
+     - **Format**:
+       - Multiple-choice questions:
+         ```
+         **Recommended:** [Option X] - [1-2 sentence reasoning]
+         
+         | Option | Description |
+         |--------|-------------|
+         | A | [Description] |
+         | B | [Description] |
+         | C | [Description] |
+         | Short | Provide custom answer (<=10 words) |
+         
+         You can reply with option letter, "yes"/"recommended" to accept recommendation, or custom answer.
+         ```
+       - Open-ended questions (requires synthesis):
+         ```
+         **Suggested:** [Your proposed answer] - [brief reasoning]
+         
+         Format: Short answer (<=20 words for single-line, <=100 words for multi-line).
+         You can accept suggestion ("yes"/"suggested") or provide your own answer.
+         ```
+   
+   - After user answers:
+     - If "yes"/"recommended"/"suggested", use your stated recommendation
+     - Otherwise, validate answer is reasonable
+     - Record answer in working memory (do NOT write to disk yet)
+     - Move to next question
+   
+   - Stop when:
+     - All critical questions answered (can skip low-priority if user signals "done"/"skip"), OR
+     - User signals completion ("done", "enough", "that's all"), OR
+     - 10 questions asked
+   
+   - Allow user to provide multi-line answers for complex questions (problema.descricao, visao_alto_nivel)
+
+5. Generate objetivo.yaml from template:
+   - Load template from `.specify/templates/objetivo-template.yaml`
+   - Replace placeholders with answers:
+     - `[FEATURE_ID]` → from feature branch or user input
+     - `[FEATURE_NAME]` → from user input or infer from problem description
+     - `[BRANCH_NAME]` → current git branch
+     - `[CREATION_DATE]` → today's date (YYYY-MM-DD)
+     - `negocio.problema.descricao` → answer to "Qual problema..."
+     - `negocio.problema.stakeholders` → list from answer
+     - `negocio.valor.objetivos_estrategicos` → list from answer
+     - `negocio.valor.metricas_sucesso` → list of {metric, target} from answer
+     - `produto.visao_alto_nivel` → answer (1-2 frases)
+     - `produto.personas` → list of {name, needs, pain_points}
+     - `produto.jornadas_criticas` → list of {journey, priority, value}
+     - `decisoes_iniciais` → list of {id, question, decision} (if any)
+     - `perguntas_abertas` → questions NOT answered (if any remain)
+     - `metadata.owner`, `metadata.tech_lead`, `metadata.team` → from user input or "TBD"
+     - `metadata.tags` → infer from problem domain (ex: ["devops", "automation"])
+  
+   - Remove example comments
+   - Keep YAML structure clean and valid
+
+6. Validation:
+   - Check all critical placeholders replaced (error if [FEATURE_ID], [FEATURE_NAME] still present)
+   - Ensure at least 1 métrica de sucesso defined
+   - Ensure at least 1 persona identified
+   - Ensure jornadas_criticas have priorities (P1, P2, or P3)
+   - YAML syntax valid (proper indentation, no tabs)
+
+7. Write objetivo.yaml to `FEATURE_DIR/objetivo.yaml`
+
+8. Report completion:
+   - Path to created objetivo.yaml
+   - Summary of captured information:
+     - Business problem identified
+     - Number of personas defined
+     - Number of critical journeys (breakdown by P1/P2/P3)
+     - Number of success metrics
+     - Number of initial decisions captured
+     - Number of open questions remaining
+   
+   - Next steps:
+     - If perguntas_abertas is NOT empty, recommend running `/speckit.clarify` again after researching answers
+     - If perguntas_abertas is empty, recommend `/speckit.constitution --from-objetivo` to generate/update principles
+     - Then recommend `/speckit.specify` to generate spec.md from objetivo.yaml
+
+Behavior rules (Mode 1):
+
+- Keep questions concise and business-focused (avoid technical details unless blocking understanding)
+- Allow multi-line answers for complex fields (problema.descricao, visao_alto_nivel)
+- If user provides incomplete answer, ask clarifying follow-up (does not count as new question)
+- Respect early termination ("done", "skip remaining") - mark unanswered questions as perguntas_abertas
+- If user says "I don't know" for critical question, add to perguntas_abertas with "Alto" impact
+- Infer reasonable defaults when possible (ex: tags from problem domain, owner from git config)
+
+---
+
+## Mode 2: spec.md Clarification Workflow
 
 Goal: Detect and reduce ambiguity or missing decision points in the active feature specification and record the clarifications directly in the spec file.
 
 Note: This clarification workflow is expected to run (and be completed) BEFORE invoking `/speckit.plan`. If the user explicitly states they are skipping clarification (e.g., exploratory spike), you may proceed, but must warn that downstream rework risk increases.
 
-Execution steps:
+Execution steps (Mode 2):
 
 1. Run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only` from repo root **once** (combined `--json --paths-only` mode / `-Json -PathsOnly`). Parse minimal JSON payload fields:
    - `FEATURE_DIR`

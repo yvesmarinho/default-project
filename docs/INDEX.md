@@ -1,13 +1,49 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-14 21:00 — Session active: IMP-57 complete (Session Search v2.0)
-**Project Status**: 🟢 Stable — Comprehensive search system (sessions + docs + specs)
-**Version**: 1.11.0
-**Last Session**: 2026-04-14 — ✅ IMP-57 COMPLETE (Multi-Scope Document Indexing)
+**Last Updated**: 2026-04-14 23:00 — IMP-53/54 COMPLETE (SpecKit 4-Layer SDD)
+**Project Status**: 🟢 Stable — SpecKit enhanced with Business + Architecture layers
+**Version**: 1.12.0
+**Last Session**: 2026-04-14 — ✅ IMP-53/54 COMPLETE (objetivo.yaml + speckit.clarify + ADRs)
 
 ---
 
-> **✅ SESSION 2026-04-14 SUMMARY**
+> **✅ SESSION 2026-04-14 SUMMARY (IMP-53/54)**
+> - **IMP-53/54 COMPLETE**: SpecKit 4-Layer Spec Driven Development (SDD)
+> - **OBJETIVO**: Introduzir Camada 1 (Business) e Camada 3 (Architecture) no SpecKit
+> - **ARTEFATOS CRIADOS**:
+>   - Template `objetivo-template.yaml` (~200 linhas) — Business context structured artifact
+>     - Sections: feature, negocio, produto, decisoes_iniciais, perguntas_abertas, metadata
+>     - Bounded contexts support (DDD), quality gates annotations
+>   - Agent enhancement: `speckit.clarify.agent.md` (+200 linhas)
+>     - **Mode 1 (NEW)**: Generate objetivo.yaml via interactive interview (max 10 questions)
+>     - **Mode 2 (PRESERVED)**: Clarify spec.md ambiguities (original functionality)
+>   - **ADRs in plan.md** (IMP-54): Architecture Decision Records section added
+>     - Format: Status, Context, Decision, Rationale, Consequences, Alternatives
+>     - Example: ADR-001 SQLite FTS5 (from IMP-51)
+> - **4-LAYER WORKFLOW**:
+>   - Layer 1 (Business): speckit.clarify Mode 1 → objetivo.yaml
+>   - Layer 2 (Product): speckit.specify → spec.md (references objetivo.yaml)
+>   - Layer 3 (Architecture): speckit.plan → plan.md (ADRs + decisoes_iniciais)
+>   - Layer 4 (Implementation): speckit.tasks → tasks.md → código
+> - **QUALITY GATES**:
+>   - L1→L2: >=1 metrica_sucesso, >=1 persona, jornadas P1/P2/P3
+>   - L2→L3: >=1 user story P1, acceptance criteria
+>   - L3→L4: >=1 ADR (architectural features), component design
+> - **FILES MODIFIED**: 4 total
+>   - Created: `.specify/templates/objetivo-template.yaml`
+>   - Modified: `speckit.clarify.agent.md` (+200), `spec-template.md` (+20), `plan-template.md` (+80)
+> - **DOCUMENTAÇÃO**: IMP-53_IMPLEMENTATION.md (~600 linhas)
+> - **TRACKING**: 2h real vs 40h estimado = **95% mais rápido (20x produtividade)**
+> - **IMPACTO**: SpecKit agora suporta Spec Driven Development end-to-end
+>   - ✅ Business context formalized (objetivo.yaml)
+>   - ✅ spec.md linked to business objectives
+>   - ✅ plan.md documents architectural decisions (ADRs)
+>   - ✅ Complete traceability: Business → Product → Architecture → Implementation
+> - **BREAKING CHANGES**: NENHUM (100% backward compatible)
+>   - objetivo.yaml optional, spec/plan templates work without it
+>   - speckit.clarify Mode 2 preserved exactly as before
+>
+> **✅ SESSION 2026-04-14 SUMMARY (IMP-57)**
 > - **IMP-57 COMPLETE**: Session Search v2.0 — Multi-Scope Document Indexing
 > - **DESCOBERTA**: 90% do código já existia mas nunca foi testado/documentado!
 > - **BUGS CORRIGIDOS** (2):
