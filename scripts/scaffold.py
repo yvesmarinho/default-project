@@ -52,6 +52,7 @@ _SUBCOMMAND_MAP: dict[str, list[str]] = {
     "check":         ["--check"],
     "check-templates": ["--check-templates"],
     "diff-template": ["--diff-template"],
+    "merge-template": ["--merge-template"],
     "list-profiles": ["--list-profiles"],
     "validate":      ["--validate"],
     "dry-run":       ["--dry-run"],
@@ -64,7 +65,7 @@ _SUBCOMMAND_MAP: dict[str, list[str]] = {
 }
 
 # Subcommands that take a required value as the next positional argument
-_SUBCOMMAND_VALUE: frozenset[str] = frozenset({"compose", "new-profile", "release", "diff-template"})
+_SUBCOMMAND_VALUE: frozenset[str] = frozenset({"compose", "new-profile", "release", "diff-template", "merge-template"})
 
 
 def _translate_subcommand(argv: list[str]) -> tuple[list[str], bool]:
@@ -110,6 +111,7 @@ from lib.flows import (
     flow_generate_infra,
     flow_generate_rules,
     flow_list_profiles,
+    flow_merge_template,
     flow_new_profile,
     flow_new_project,
     flow_publish,
@@ -168,6 +170,18 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     action_group.add_argument(
+        "--merge-template",
+        metavar="TEMPLATE",
+        dest="merge_template_name",
+        help=(
+            "merge de template upstream preservando customizações (IMP-65 Fase 3)\n"
+            "  ex: scaffold.py merge-template spec-template\n"
+            "  --auto: aplicar se não houver conflitos\n"
+            "  --force: aplicar mesmo com conflitos\n"
+            "  --dry-run: preview sem aplicar"
+        ),
+    )
+    action_group.add_argument(
         "--list-profiles",
         action="store_true",
         dest="list_profiles",
@@ -211,7 +225,11 @@ def build_parser() -> argparse.ArgumentParser:
     action_group.add_argument(
         "--force",
         action="store_true",
-        help="usar com --upgrade: sobrescreve arquivos existentes com divergência",
+        help=(
+            "forçar operação:\n"
+            "  --upgrade: sobrescrever arquivos existentes com divergência\n"
+            "  --merge-template: aplicar merge mesmo com conflitos"
+        ),
     )
     action_group.add_argument(
         "--publish",
@@ -302,6 +320,16 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         dest="output",
         help="arquivo de saída para diff-template (default: stdout)",
+    )
+    fields_group.add_argument(
+        "--auto",
+        action="store_true",
+        help="auto-aplicar merge se não houver conflitos (merge-template)",
+    )
+    fields_group.add_argument(
+        "--interactive",
+        action="store_true",
+        help="resolução interativa de conflitos (merge-template)",
     )
     fields_group.add_argument(
         "--extra-profiles",
@@ -437,6 +465,12 @@ def main() -> int:
     # --diff-template: mostra diff entre templates e sai (IMP-65 Fase 2)
     if getattr(args, "template_name", None):
         return flow_diff_template(args)
+
+    # --merge-template: merge de template upstream e sai (IMP-65 Fase 3)
+    if getattr(args, "merge_template_name", None):
+        # Rename merge_template_name to template_name for flow compatibility
+        args.template_name = args.merge_template_name
+        return flow_merge_template(args)
 
     # --new: pula menu
     if args.new or args.ci:

@@ -442,7 +442,7 @@ The diff command uses heuristics to distinguish between:
 2. **Your customizations**: Project-specific content you added
 
 **Phase 2 Heuristic**: Compares local-only vs upstream-only content
-**Phase 3 (Future)**: Three-way merge with base template tracking
+**Phase 3**: Three-way merge with base template tracking (see merge-template below)
 
 ### Integration with check-templates
 
@@ -466,27 +466,267 @@ python scripts/scaffold.py diff-template spec-template \
   --output docs/template-review.md
 
 # 4. Merge changes (Phase 3)
-# python scripts/scaffold.py merge-template spec-template --interactive
+python scripts/scaffold.py merge-template spec-template --auto
+```
+
+---
+
+## Command: `scaffold.py merge-template`
+
+**IMP-65 Fase 3** — Automatic three-way merge of upstream improvements while preserving local customizations.
+
+### How It Works
+
+The merge uses **git merge-file** to perform intelligent three-way merges:
+
+1. **Base**: Original template content at project creation (stored in `.scaffold-state.yaml`)
+2. **Local**: Current template with your customizations
+3. **Upstream**: Latest template from a-default-project
+
+This enables automatic merging of independent changes and intelligent conflict detection.
+
+### Basic Usage
+
+```bash
+# Dry-run: preview merge without applying
+python scripts/scaffold.py merge-template spec-template --dry-run
+
+# Auto-apply if no conflicts
+python scripts/scaffold.py merge-template spec-template --auto
+
+# Force apply even with conflicts (manual resolution required)
+python scripts/scaffold.py merge-template spec-template --force
+
+# Interactive conflict resolution (coming soon in Phase 3.1)
+python scripts/scaffold.py merge-template spec-template --interactive
+```
+
+### Merge Scenarios
+
+#### 1. Clean Merge (No Conflicts)
+
+When local and upstream modified different sections:
+
+```bash
+$ python scripts/scaffold.py merge-template spec-template --auto
+
+Merging template: spec-template.md...
+Parsing template versions...
+  Local version:    1.0.0
+  Upstream version: 1.5.0
+  Base version:     1.0.0
+
+Performing three-way merge...
+✅ Merge completed cleanly (no conflicts)
+
+✅ Merge applied successfully
+  Backup: .specify/templates/spec-template.backup-20260414-183000.md
+  Updated: .specify/templates/spec-template.md
+  Version: 1.0.0 → 1.5.0
+```
+
+#### 2. Merge with Conflicts
+
+When local and upstream modified the same sections:
+
+```bash
+$ python scripts/scaffold.py merge-template spec-template
+
+Merging template: spec-template.md...
+...
+⚠️  1 conflict(s) detected
+
+Conflict #1 (lines 23-31):
+  Type: both_modified
+  Suggestion: Both local and upstream modified this section.
+              Review carefully and choose the best combination.
+
+To resolve conflicts:
+  1. Open the merged file in your editor
+  2. Search for conflict markers (<<<<<<, =======, >>>>>>>)
+  3. Choose or combine the best content
+  4. Remove all conflict markers
+  5. Save the file
+
+💡 Resolution options:
+  --force        Apply merge with conflict markers (manual resolution)
+  --interactive  Interactive conflict resolution (coming soon)
+  --dry-run      Preview merge without applying
+```
+
+#### 3. Force Apply with Conflicts
+
+```bash
+$ python scripts/scaffold.py merge-template spec-template --force
+
+⚠️  Force-applying merge with conflicts...
+✅ Merge applied (with conflicts)
+  Backup: .specify/templates/spec-template.backup-20260414-183500.md
+  Open .specify/templates/spec-template.md to resolve conflicts
+```
+
+The file will contain conflict markers:
+
+```markdown
+## Overview
+
+<<<<<<< LOCAL
+Brief description with custom security notes.
+||||||| BASE
+Brief description of the feature.
+=======
+Brief description including business value and success metrics.
+>>>>>>> UPSTREAM
+
+## Technical Approach
+```
+
+Resolve by choosing the best content and removing markers:
+
+```markdown
+## Overview
+
+Brief description including business value, success metrics, and custom security notes.
+
+## Technical Approach
+```
+
+### Prerequisites
+
+#### Template Bases Must Be Stored
+
+Merge requires base template content. If not available:
+
+```bash
+$ python scripts/scaffold.py merge-template spec-template
+
+⚠️  No base template stored
+  Cannot perform three-way merge without base
+  Showing diff instead...
+```
+
+**Solution**: Bases are automatically saved when creating new projects with `scaffold.py new`. For existing projects:
+
+1. Manually edit `.scaffold-state.yaml` to add template_bases:
+
+```yaml
+template_bases:
+  spec-template.md:
+    version: "1.0.0"
+    content: |
+      ---
+      template_version: "1.0.0"
+      ---
+      # Specification
+      ...full original content...
+```
+
+2. Or use Python helper (for projects with unmodified templates):
+
+```python
+from pathlib import Path
+from scripts.lib import template_version
+
+template_version.save_all_template_bases(
+    project_dir=Path("."),
+    template_dir=Path(".specify/templates"),
+)
+```
+
+### Use Cases
+
+#### 1. Apply Upstream Improvements
+
+```bash
+# After check-templates shows outdated template
+python scripts/scaffold.py check-templates
+# → spec-template: 1.0.0 → 1.5.0
+
+# Review changes
+python scripts/scaffold.py diff-template spec-template
+
+# Apply if clean
+python scripts/scaffold.py merge-template spec-template --auto
+```
+
+#### 2. Preserve Customizations During Update
+
+```bash
+# Your spec-template has custom "Security Review" section
+# Upstream adds "Performance Criteria" section 
+# → Three-way merge combines both automatically
+
+python scripts/scaffold.py merge-template spec-template --auto
+# ✅ Both sections preserved
+```
+
+#### 3. Batch Update Multiple Templates
+
+```bash
+#!/bin/bash
+# update-templates.sh
+
+for template in spec-template plan-template tasks-template; do
+  echo "Updating $template..."
+  python scripts/scaffold.py merge-template "$template" --auto
+  
+  if [ $? -ne 0 ]; then
+    echo "⚠️ $template had conflicts - review manually"
+  fi
+done
+```
+
+### Safety Features
+
+1. **Automatic backups**: Original file saved as `.backup-TIMESTAMP.md`
+2. **Dry-run preview**: See merge result before applying
+3. **Version tracking**: Base template updated in state file after merge
+4. **Conflict detection**: Never silently overwrites conflicting changes
+
+### Integration with Workflow
+
+Complete drift resolution workflow:
+
+```bash
+# 1. Detect drift
+python scripts/scaffold.py check-templates
+# → ⚠️ 2 templates outdated
+
+# 2. Review each template
+python scripts/scaffold.py diff-template spec-template
+python scripts/scaffold.py diff-template plan-template
+
+# 3. Merge non-breaking changes
+python scripts/scaffold.py merge-template spec-template --auto
+python scripts/scaffold.py merge-template plan-template --auto
+
+# 4. Verify merged templates
+git diff .specify/templates/
+
+# 5. Test project after updates
+make test
+
+# 6. Commit if all good
+git add .specify/templates/
+git commit -m "chore: update SpecKit templates to latest upstream"
 ```
 
 ---
 
 ## Roadmap: Future Phases
 
-### Phase 3: Three-Way Merge (IMP-65 Fase 3)
+### Phase 3.1: Interactive Conflict Resolution
 
 ```bash
-# Merge upstream changes while preserving customizations (coming soon)
-python scripts/scaffold.py merge-template spec-template
-python scripts/scaffold.py merge-template --all  # All templates
-python scripts/scaffold.py merge-template --breaking  # Only breaking changes
+# Interactive resolution (planned)
+python scripts/scaffold.py merge-template spec-template --interactive
 ```
 
 Will provide:
-- Automatic merging of non-conflicting changes
-- Interactive conflict resolution
-- Backup/rollback capability
-- Custom modification preservation
+- Step-by-step conflict resolution prompts
+- Side-by-side diff view
+- Accept local / upstream / both / edit options
+- Immediate validation after resolution
 
 ### Phase 4: Automated Drift Monitoring (IMP-65 Fase 4)
 
@@ -501,9 +741,10 @@ Will provide:
 
 1. **Check Regularly**: Run `check-templates` monthly or before major releases
 2. **Track Versions**: Commit `.scaffold-state.yaml` to version control
-3. **Review Before Updating**: Use JSON output to analyze drift programmatically
-4. **Document Customizations**: Comment custom changes in templates for easier merging
-5. **Test After Updates**: Run full test suite after applying template updates
+3. **Review Before Merging**: Use `diff-template` to understand changes
+4. **Test After Updates**: Run full test suite after applying template updates
+5. **Backup Safety Net**: Keep template backups for at least one git commit
+6. **Document Customizations**: Add comments explaining custom sections for easier conflict resolution
 
 ---
 
@@ -525,14 +766,309 @@ ls .specify/templates/
 
 **Solution**: Templates will be treated as unversioned (v0.0.0 implied). Consider re-generating from latest upstream.
 
-### "JSON parse error"
+### "No base template stored"
 
-**Cause**: Template contains invalid YAML frontmatter.
+**Cause**: Project created before IMP-65 Fase 3 doesn't have template bases in `.scaffold-state.yaml`.
 
-**Solution**: Check template file for malformed YAML:
+**Solution**: 
+1. Review diff with `diff-template` to understand changes
+2. If template is unmodified, safe to copy upstream version directly
+3. If template has customizations, manually add base to state file
+
+### "git merge-file not found"
+
+**Cause**: Git not installed or not in PATH.
+
+**Solution**: Install git:
 
 ```bash
-head -n 10 .specify/templates/spec-template.md
+# Ubuntu/Debian
+sudo apt-get install git
+
+# macOS
+brew install git
+
+# Verify
+git --version
+```
+
+### "Conflict detected but content looks identical"
+
+**Cause**: Whitespace or invisible character differences.
+
+**Solution**: Use diff tool to see exact differences:
+
+```bash
+diff -u .specify/templates/spec-template.md \
+  /path/to/a-default-project/plate: spec-template.md...
+...
+⚠️  1 conflict(s) detected
+
+Conflict #1 (lines 23-31):
+  Type: both_modified
+  Suggestion: Both local and upstream modified this section.
+              Review carefully and choose the best combination.
+
+To resolve conflicts:
+  1. Open the merged file in your editor
+  2. Search for conflict markers (<<<<<<, =======, >>>>>>>)
+  3. Choose or combine the best content
+  4. Remove all conflict markers
+  5. Save the file
+
+💡 Resolution options:
+  --force        Apply merge with conflict markers (manual resolution)
+  --interactive  Interactive conflict resolution (coming soon)
+  --dry-run      Preview merge without applying
+```
+
+#### 3. Force Apply with Conflicts
+
+```bash
+$ python scripts/scaffold.py merge-template spec-template --force
+
+⚠️  Force-applying merge with conflicts...
+✅ Merge applied (with conflicts)
+  Backup: .specify/templates/spec-template.backup-20260414-183500.md
+  Open .specify/templates/spec-template.md to resolve conflicts
+```
+
+The file will contain conflict markers:
+
+```markdown
+## Overview
+
+<<<<<<< LOCAL
+Brief description with custom security notes.
+||||||| BASE
+Brief description of the feature.
+=======
+Brief description including business value and success metrics.
+>>>>>>> UPSTREAM
+
+## Technical Approach
+```
+
+Resolve by choosing the best content and removing markers:
+
+```markdown
+## Overview
+
+Brief description including business value, success metrics, and custom security notes.
+
+## Technical Approach
+```
+
+### Prerequisites
+
+#### Template Bases Must Be Stored
+
+Merge requires base template content. If not available:
+
+```bash
+$ python scripts/scaffold.py merge-template spec-template
+
+⚠️  No base template stored
+  Cannot perform three-way merge without base
+  Showing diff instead...
+```
+
+**Solution**: Bases are automatically saved when creating new projects with `scaffold.py new`. For existing projects:
+
+1. Manually edit `.scaffold-state.yaml` to add template_bases:
+
+```yaml
+template_bases:
+  spec-template.md:
+    version: "1.0.0"
+    content: |
+      ---
+      template_version: "1.0.0"
+      ---
+      # Specification
+      ...full original content...
+```
+
+2. Or use Python helper (for projects with unmodified templates):
+
+```python
+from pathlib import Path
+from scripts.lib import template_version
+
+template_version.save_all_template_bases(
+    project_dir=Path("."),
+    template_dir=Path(".specify/templates"),
+)
+```
+
+### Use Cases
+
+#### 1. Apply Upstream Improvements
+
+```bash
+# After check-templates shows outdated template
+python scripts/scaffold.py check-templates
+# → spec-template: 1.0.0 → 1.5.0
+
+# Review changes
+python scripts/scaffold.py diff-template spec-template
+
+# Apply if clean
+python scripts/scaffold.py merge-template spec-template --auto
+```
+
+#### 2. Preserve Customizations During Update
+
+```bash
+# Your spec-template has custom "Security Review" section
+# Upstream adds "Performance Criteria" section 
+# → Three-way merge combines both automatically
+
+python scripts/scaffold.py merge-template spec-template --auto
+# ✅ Both sections preserved
+```
+
+#### 3. Batch Update Multiple Templates
+
+```bash
+#!/bin/bash
+# update-templates.sh
+
+for template in spec-template plan-template tasks-template; do
+  echo "Updating $template..."
+  python scripts/scaffold.py merge-template "$template" --auto
+  
+  if [ $? -ne 0 ]; then
+    echo "⚠️ $template had conflicts - review manually"
+  fi
+done
+```
+
+### Safety Features
+
+1. **Automatic backups**: Original file saved as `.backup-TIMESTAMP.md`
+2. **Dry-run preview**: See merge result before applying
+3. **Version tracking**: Base template updated in state file after merge
+4. **Conflict detection**: Never silently overwrites conflicting changes
+
+### Integration with Workflow
+
+Complete drift resolution workflow:
+
+```bash
+# 1. Detect drift
+python scripts/scaffold.py check-templates
+# → ⚠️ 2 templates outdated
+
+# 2. Review each template
+python scripts/scaffold.py diff-template spec-template
+python scripts/scaffold.py diff-template plan-template
+
+# 3. Merge non-breaking changes
+python scripts/scaffold.py merge-template spec-template --auto
+python scripts/scaffold.py merge-template plan-template --auto
+
+# 4. Verify merged templates
+git diff .specify/templates/
+
+# 5. Test project after updates
+make test
+
+# 6. Commit if all good
+git add .specify/templates/
+git commit -m "chore: update SpecKit templates to latest upstream"
+```
+
+---
+
+## Roadmap: Future Phases
+
+### Phase 3.1: Interactive Conflict Resolution
+
+```bash
+# Interactive resolution (planned)
+python scripts/scaffold.py merge-template spec-template --interactive
+```
+
+Will provide:
+- Step-by-step conflict resolution prompts
+- Side-by-side diff view
+- Accept local / upstream / both / edit options
+- Immediate validation after resolution
+
+### Phase 4: Automated Drift Monitoring (IMP-65 Fase 4)
+
+- Weekly automated checks
+- Slack/email notifications
+- Dashboard with drift status across all projects
+- Batch update tools
+
+---
+
+## Best Practices
+
+1. **Check Regularly**: Run `check-templates` monthly or before major releases
+2. **Track Versions**: Commit `.scaffold-state.yaml` to version control
+3. **Review Before Merging**: Use `diff-template` to understand changes
+4. **Test After Updates**: Run full test suite after applying template updates
+5. **Backup Safety Net**: Keep template backups for at least one git commit
+6. **Document Customizations**: Add comments explaining custom sections for easier conflict resolution
+
+---
+
+## Troubleshooting
+
+### "No templates found"
+
+**Cause**: `.specify/templates/` directory missing or empty.
+
+**Solution**: Ensure you're in a project created with scaffold.py and templates exist:
+
+```bash
+ls .specify/templates/
+```
+
+### "Version metadata missing"
+
+**Cause**: Templates created before IMP-65 Fase 1 don't have frontmatter.
+
+**Solution**: Templates will be treated as unversioned (v0.0.0 implied). Consider re-generating from latest upstream.
+
+### "No base template stored"
+
+**Cause**: Project created before IMP-65 Fase 3 doesn't have template bases in `.scaffold-state.yaml`.
+
+**Solution**: 
+1. Review diff with `diff-template` to understand changes
+2. If template is unmodified, safe to copy upstream version directly
+3. If template has customizations, manually add base to state file
+
+### "git merge-file not found"
+
+**Cause**: Git not installed or not in PATH.
+
+**Solution**: Install git:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install git
+
+# macOS
+brew install git
+
+# Verify
+git --version
+```
+
+### "Conflict detected but content looks identical"
+
+**Cause**: Whitespace or invisible character differences.
+
+**Solution**: Use diff tool to see exact differences:
+
+```bash
+diff -u .specify/templates/spec-template.md \
+  /path/to/a-default-project/.specify/templates/spec-template.md
 ```
 
 ---

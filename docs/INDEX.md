@@ -237,7 +237,7 @@ a-default-project/
   - Implementação mapeada em IMP-01 a IMP-10 no TODO.md
 
 ### Technical Documentation
-- **[docs/TEMPLATE_DRIFT_DETECTION.md](TEMPLATE_DRIFT_DETECTION.md)** - 🆕 Template versioning, drift detection & visual diff (IMP-65 Fase 1+2)
+- **[docs/TEMPLATE_DRIFT_DETECTION.md](TEMPLATE_DRIFT_DETECTION.md)** - 🆕 Template versioning, diff & three-way merge (IMP-65 Fases 1-3)
   - Problem: Templates don't auto-update after project creation
   - Solution: Version tracking in YAML frontmatter
   - Command: `scaffold.py check-templates` (text and JSON output)

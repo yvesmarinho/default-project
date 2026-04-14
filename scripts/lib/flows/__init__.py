@@ -8,6 +8,7 @@ from .dry_run import flow_dry_run
 from .generate_infra import flow_generate_infra
 from .generate_rules import flow_generate_rules
 from .list_profiles import _load_descriptor, flow_list_profiles
+from .merge_template import flow_merge_template
 from .new_profile import flow_new_profile
 from .new_project import flow_new_project
 from .publish import flow_publish
@@ -24,6 +25,7 @@ __all__ = [
     "flow_check_links",
     "flow_check_templates",
     "flow_diff_template",
+    "flow_merge_template",
     "flow_publish",
     "flow_release",
     "flow_validate",
