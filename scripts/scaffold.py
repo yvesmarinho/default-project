@@ -50,6 +50,8 @@ from pathlib import Path
 _SUBCOMMAND_MAP: dict[str, list[str]] = {
     "new":           ["--new"],
     "check":         ["--check"],
+    "check-templates": ["--check-templates"],
+    "diff-template": ["--diff-template"],
     "list-profiles": ["--list-profiles"],
     "validate":      ["--validate"],
     "dry-run":       ["--dry-run"],
@@ -62,7 +64,7 @@ _SUBCOMMAND_MAP: dict[str, list[str]] = {
 }
 
 # Subcommands that take a required value as the next positional argument
-_SUBCOMMAND_VALUE: frozenset[str] = frozenset({"compose", "new-profile", "release"})
+_SUBCOMMAND_VALUE: frozenset[str] = frozenset({"compose", "new-profile", "release", "diff-template"})
 
 
 def _translate_subcommand(argv: list[str]) -> tuple[list[str], bool]:
@@ -101,7 +103,9 @@ from lib.config import SCAFFOLD_VERSION
 from lib.flows import (
     _load_descriptor,
     flow_check_links,
+    flow_check_templates,
     flow_compose_profiles,
+    flow_diff_template,
     flow_dry_run,
     flow_generate_infra,
     flow_generate_rules,
@@ -141,6 +145,27 @@ def build_parser() -> argparse.ArgumentParser:
         "--check",
         action="store_true",
         help="verifica symlinks .copilot-* e sai",
+    )
+    action_group.add_argument(
+        "--check-templates",
+        action="store_true",
+        dest="check_templates",
+        help=(
+            "detecta drift de templates SpecKit (IMP-65 Fase 1)\n"
+            "  compara versões entre projeto local e upstream\n"
+            "  reporta templates desatualizados ou ausentes"
+        ),
+    )
+    action_group.add_argument(
+        "--diff-template",
+        metavar="TEMPLATE",
+        dest="template_name",
+        help=(
+            "mostra diff entre template local e upstream (IMP-65 Fase 2)\n"
+            "  ex: scaffold.py diff-template spec-template\n"
+            "  --format: colored (default), markdown, html\n"
+            "  --output: arquivo de saída (default: stdout)"
+        ),
     )
     action_group.add_argument(
         "--list-profiles",
@@ -267,6 +292,18 @@ def build_parser() -> argparse.ArgumentParser:
     fields_group.add_argument("--shared-dir", metavar="PATH", dest="shared_dir", help="caminho para .copilot-shared")
     fields_group.add_argument("--target-dir", metavar="PATH", dest="target_dir", help="onde criar o projeto (default: cwd)")
     fields_group.add_argument(
+        "--format",
+        choices=["colored", "markdown", "html"],
+        default="colored",
+        help="formato de saída para diff-template (default: colored)",
+    )
+    fields_group.add_argument(
+        "--output",
+        metavar="FILE",
+        dest="output",
+        help="arquivo de saída para diff-template (default: stdout)",
+    )
+    fields_group.add_argument(
         "--extra-profiles",
         metavar="PROFILES",
         dest="extra_profiles",
@@ -392,6 +429,14 @@ def main() -> int:
     # --check: verifica links e sai
     if args.check:
         return flow_check_links(args)
+
+    # --check-templates: detecta drift de templates e sai (IMP-65 Fase 1)
+    if getattr(args, "check_templates", False):
+        return flow_check_templates(args)
+
+    # --diff-template: mostra diff entre templates e sai (IMP-65 Fase 2)
+    if getattr(args, "template_name", None):
+        return flow_diff_template(args)
 
     # --new: pula menu
     if args.new or args.ci:
