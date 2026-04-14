@@ -1,12 +1,55 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-07 23:30 — Session end: Scaffold improvements (7 implementations complete)
-**Project Status**: 🟢 Stable — Scaffold 100% conformidade, search system operational, memory framework deployed
-**Version**: 1.6.0
-**Last Session**: 2026-04-07 — ✅ Scaffold improvements (BUG-06, BUG-09, IMP-60 to IMP-64 complete)
+**Last Updated**: 2026-04-14 18:45 — Session active: IMP-65 Fase 2 complete (template diff)
+**Project Status**: 🟢 Stable — Template drift detection + visual diff operational
+**Version**: 1.8.0
+**Last Session**: 2026-04-14 — ✅ IMP-65 Fase 2 COMPLETE (Template Diff & Visualization)
 
 ---
 
+> **✅ SESSION 2026-04-14 SUMMARY**
+> - **IMP-65 FASE 2 COMPLETE**: Template Diff & Visualization System
+> - **MÓDULOS CRIADOS**:
+>   - `scripts/lib/template_diff.py` (~420 linhas) — diff engine, customization detection
+>   - `scripts/lib/flows/diff_template.py` (~130 linhas) — CLI flow for diff-template
+>   - `tests/test_template_diff.py` (~450 linhas) — 18 tests (100% passing)
+> - **COMANDO NOVO**: `scaffold.py diff-template TEMPLATE`
+>   - Unified diff (git-style)
+>   - Side-by-side HTML diff
+>   - Customization detection heuristics
+>   - Impact report with recommendations
+>   - 3 output formats: colored terminal, markdown, HTML
+> - **CASOS DE USO**:
+>   - Review template changes before updating
+>   - Document drift in PR reviews
+>   - CI/CD drift validation
+>   - Batch analysis across projects
+> - **DOCUMENTAÇÃO**: TEMPLATE_DRIFT_DETECTION.md atualizado (~600 linhas) — examples completos
+> - **TRACKING**: Phase 2 implementation time: ~6h (vs 40h estimated - 85% faster)
+> - Impact: Visual diff enables informed merge decisions (Phase 3 foundation ready)
+> - Tests: 18/18 passing (100%) — Full coverage of diff, stats, customizations, formats
+> - Git: Changes ready for commit
+> - Productivity: 6.7x faster than estimate (6h vs 40h)
+>
+> **✅ SESSION 2026-04-14 EARLIER**
+> - **IMP-65 FASE 1 COMPLETE**: Template Versioning & Drift Detection System (16h estimated, completed in ~8h)
+> - **PROBLEMA CRÍTICO RESOLVIDO**: Templates não recebem updates após criação do projeto (risco de divergência)
+> - **SOLUÇÃO IMPLEMENTADA**: Sistema de versionamento semântico em YAML frontmatter
+> - **MÓDULOS CRIADOS**:
+>   - `scripts/lib/template_version.py` (~280 linhas) — parsing, comparison, drift detection
+>   - `scripts/lib/flows/check_templates.py` (~120 linhas) — CLI flow implementation
+>   - `tests/test_template_version.py` (~450 linhas) — 36 tests (100% passing)
+> - **COMANDO NOVO**: `scaffold.py check-templates` (text + JSON output, exit codes 0/1/2)
+> - **TEMPLATES ATUALIZADOS**: 6 SpecKit templates com frontmatter versioning (1.0.0)
+> - **STATE TRACKING**: `.scaffold-state.yaml` agora persiste `template_versions` field
+> - **DOCUMENTAÇÃO**: TEMPLATE_DRIFT_DETECTION.md (~370 linhas) — guia completo com roadmap
+> - **TRACKING**: Template versions stored in `.scaffold-state.yaml` for historical audit
+> - **ROADMAP**: 4 fases (1=complete, 2=diff, 3=merge, 4=monitoring)
+> - Impact: Projects can now detect template drift and plan safe updates
+> - Tests: 36/36 passing (100%) — Full coverage of parsing, comparison, drift detection, reports
+> - Git: Changes ready for commit
+> - Productivity: 2x faster than estimate (8h vs 16h)
+>
 > **✅ SESSION 2026-04-07 SUMMARY**
 > - **FASE 1 + FASE 2 COMPLETE**: Scaffold verification + deep investigation (4 "bugs" = false positives)
 > - **DESCOBERTA CHOCANTE**: Scaffold estava 100% funcional (problema era projeto criado incorretamente)
@@ -194,6 +237,15 @@ a-default-project/
   - Implementação mapeada em IMP-01 a IMP-10 no TODO.md
 
 ### Technical Documentation
+- **[docs/TEMPLATE_DRIFT_DETECTION.md](TEMPLATE_DRIFT_DETECTION.md)** - 🆕 Template versioning, drift detection & visual diff (IMP-65 Fase 1+2)
+  - Problem: Templates don't auto-update after project creation
+  - Solution: Version tracking in YAML frontmatter
+  - Command: `scaffold.py check-templates` (text and JSON output)
+  - Understanding drift types (outdated, missing, breaking changes)
+  - Version tracking in `.scaffold-state.yaml`
+  - Automation and CI/CD integration
+  - Roadmap: Phase 2 (diff), Phase 3 (merge), Phase 4 (monitoring)
+
 - **[docs/MAKEFILE.md](MAKEFILE.md)** - Complete Makefile guide
   - All commands reference (40+ commands)
   - Prerequisites
