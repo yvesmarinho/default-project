@@ -163,8 +163,12 @@ class SessionIndexer:
             parts = re.split(r'\n---\n\n### ', content)
 
             for part in parts:
-                if not part.strip() or part.startswith('#'):
-                    continue  # Skip header
+                if not part.strip():
+                    continue  # Skip empty parts
+
+                # Skip document-level headers (# or ##), but NOT activity headers (###)
+                if part.startswith('# ') or part.startswith('## '):
+                    continue
 
                 # Ensure part starts with title (remove leading ---)
                 part = part.lstrip('-\n')
@@ -176,9 +180,9 @@ class SessionIndexer:
                     blocks.append(block)
         else:
             # Legacy format - try to extract activities
-            # Look for ### headers as activity boundaries
-            activity_pattern = r'\n### ([^\n]+)'
-            matches = list(re.finditer(activity_pattern, content))
+            # Look for ### headers as activity boundaries (including at start of file)
+            activity_pattern = r'(?:^|\n)(### [^\n]+)'
+            matches = list(re.finditer(activity_pattern, content, re.MULTILINE))
 
             for i, match in enumerate(matches):
                 start = match.start()
