@@ -1,6 +1,6 @@
 ---
 description: Layer 1 (Business) workflow - Generate objetivo.yaml via interview OR clarify existing spec.md by asking targeted questions. Two modes - objetivo generation (if no objetivo.yaml exists) or spec clarification (if spec.md exists).
-handoffs: 
+handoffs:
   - label: Build Constitution
     agent: speckit.constitution
     prompt: Analyze objetivo.yaml and update constitution.md with project principles
@@ -29,7 +29,7 @@ This agent operates in TWO distinct modes based on feature artifacts:
 - Goal: Interview user to elicit business context and generate objetivo.yaml
 - Output: objetivo.yaml with business problem, value, personas, critical journeys, initial decisions
 
-**Mode 2: spec.md Clarification (Layer 2: Product)**  
+**Mode 2: spec.md Clarification (Layer 2: Product)**
 - Triggered when: objetivo.yaml exists but spec.md needs clarification
 - Goal: Detect and reduce ambiguity or missing decision points in spec.md
 - Output: Updated spec.md with clarifications integrated
@@ -63,16 +63,16 @@ Execution steps (Mode 1):
      - Quem são os stakeholders principais?
      - Qual o impacto se não resolvermos?
      - Quais restrições de negócio existem (orçamento, prazo, compliance)?
-   
+
    - **Valor** (2-3 questions):
      - Quais objetivos estratégicos esta feature atende?
      - Quais métricas de sucesso são críticas? (ex: "Taxa de adoção >= 80% em 3 meses")
-   
+
    - **Produto** (3-4 questions):
      - Quem são os usuários principais? (personas)
      - Quais as jornadas críticas? (priorizar P1 vs P2 vs P3)
      - Qual a visão de alto nível? (1-2 frases)
-   
+
    - **Decisões** (1-2 questions):
      - Alguma decisão técnica/arquitetural já foi tomada? (ex: cloud provider, build vs buy)
 
@@ -87,35 +87,35 @@ Execution steps (Mode 1):
        - Multiple-choice questions:
          ```
          **Recommended:** [Option X] - [1-2 sentence reasoning]
-         
+
          | Option | Description |
          |--------|-------------|
          | A | [Description] |
          | B | [Description] |
          | C | [Description] |
          | Short | Provide custom answer (<=10 words) |
-         
+
          You can reply with option letter, "yes"/"recommended" to accept recommendation, or custom answer.
          ```
        - Open-ended questions (requires synthesis):
          ```
          **Suggested:** [Your proposed answer] - [brief reasoning]
-         
+
          Format: Short answer (<=20 words for single-line, <=100 words for multi-line).
          You can accept suggestion ("yes"/"suggested") or provide your own answer.
          ```
-   
+
    - After user answers:
      - If "yes"/"recommended"/"suggested", use your stated recommendation
      - Otherwise, validate answer is reasonable
      - Record answer in working memory (do NOT write to disk yet)
      - Move to next question
-   
+
    - Stop when:
      - All critical questions answered (can skip low-priority if user signals "done"/"skip"), OR
      - User signals completion ("done", "enough", "that's all"), OR
      - 10 questions asked
-   
+
    - Allow user to provide multi-line answers for complex questions (problema.descricao, visao_alto_nivel)
 
 5. Generate objetivo.yaml from template:
@@ -136,7 +136,7 @@ Execution steps (Mode 1):
      - `perguntas_abertas` → questions NOT answered (if any remain)
      - `metadata.owner`, `metadata.tech_lead`, `metadata.team` → from user input or "TBD"
      - `metadata.tags` → infer from problem domain (ex: ["devops", "automation"])
-  
+
    - Remove example comments
    - Keep YAML structure clean and valid
 
@@ -158,7 +158,7 @@ Execution steps (Mode 1):
      - Number of success metrics
      - Number of initial decisions captured
      - Number of open questions remaining
-   
+
    - Next steps:
      - If perguntas_abertas is NOT empty, recommend running `/speckit.clarify` again after researching answers
      - If perguntas_abertas is empty, recommend `/speckit.constitution --from-objetivo` to generate/update principles

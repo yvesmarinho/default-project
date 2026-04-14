@@ -878,9 +878,9 @@ cp docs/templates/FEATURE_SPEC_TEMPLATE.md \
 _PROJECT_CREATION_SUMMARY = """\
 # 📋 Resumo de Criação do Projeto
 
-**Projeto**: `{{PROJECT_NAME}}`  
-**Título**: {{PROJECT_TITLE}}  
-**Criado em**: {{CREATED_AT}}  
+**Projeto**: `{{PROJECT_NAME}}`
+**Título**: {{PROJECT_TITLE}}
+**Criado em**: {{CREATED_AT}}
 **Template**: Enterprise Default Project Template v1.0.0
 
 ---
@@ -2227,11 +2227,11 @@ def generate_project_creation_summary(config: ProjectConfig) -> CreatedItem:
     Ref: IMP-63 — Feature documentada em docs/lembrete.md
     """
     summary_path = config.project_path / "docs" / "PROJECT_CREATION_SUMMARY.md"
-    
+
     if summary_path.exists():
         log.info("⏭️  já existe: %s", summary_path.name)
         return CreatedItem(path=summary_path, kind="file", status="skipped")
-    
+
     # Construir seção de profiles aplicados
     profiles = []
     # Adicionar profile padrão do domínio
@@ -2248,7 +2248,7 @@ def generate_project_creation_summary(config: ProjectConfig) -> CreatedItem:
             profiles.extend(extra)
         elif isinstance(config.extra_profiles, list):
             profiles.extend(config.extra_profiles)
-    
+
     # Remover duplicatas mantendo ordem
     seen = set()
     unique_profiles = []
@@ -2256,24 +2256,24 @@ def generate_project_creation_summary(config: ProjectConfig) -> CreatedItem:
         if p not in seen:
             seen.add(p)
             unique_profiles.append(p)
-    
+
     if unique_profiles:
         profiles_section = "**Profiles aplicados:**\n"
         for profile in unique_profiles:
             profiles_section += f"- ✅ `{profile}`\n"
     else:
         profiles_section = "*Nenhum profile específico aplicado.*\n"
-    
+
     # Seção de remote Git (se configurado)
     git_remote_section = ""
     if config.github_repo:
         git_remote_section = f"\n- Remote: `origin` → {config.github_repo}"
-    
+
     # Aplicar placeholders
     content = _apply_placeholders(_PROJECT_CREATION_SUMMARY, config)
     content = content.replace("{profiles_section}", profiles_section)
     content = content.replace("{git_remote_section}", git_remote_section)
-    
+
     return _write_file(summary_path, content)
 
 
@@ -2312,6 +2312,8 @@ def write_scaffold_state(
     o projeto foi criado.
 
     O arquivo é SEMPRE sobrescrito (não é idempotente como os demais).
+
+    IMP-65 Fase 1: Agora também armazena template_versions para tracking de drift.
     """
     from datetime import datetime, timezone
 
@@ -2336,6 +2338,20 @@ def write_scaffold_state(
         if p not in merged_profiles:
             merged_profiles.append(p)
 
+    # IMP-65 Fase 1: Scan current template versions
+    template_versions = {}
+    template_dir = config.project_path / ".specify" / "templates"
+    if template_dir.exists():
+        try:
+            from . import template_version
+            templates = template_version.scan_templates(template_dir)
+            template_versions = {
+                name: info.version
+                for name, info in templates.items()
+            }
+        except Exception as exc:
+            log.warning("⚠️  Failed to scan template versions: %s", exc)
+
     state: dict = {
         "scaffold_version": "1.0.0",
         "created_at": original_created_at,
@@ -2353,6 +2369,7 @@ def write_scaffold_state(
             "shared_dir": str(config.shared_dir),
         },
         "profiles_applied": merged_profiles,
+        "template_versions": template_versions,  # IMP-65 Fase 1
     }
 
     try:

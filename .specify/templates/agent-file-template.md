@@ -1,3 +1,9 @@
+---
+template_version: "1.0.0"
+last_updated: "2026-04-14"
+breaking_changes: false
+---
+
 # [PROJECT NAME] Development Guidelines
 
 Auto-generated from all feature plans. Last updated: [DATE]

@@ -80,7 +80,7 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 7. MCP script: scripts/load-mcp.sh
     console.print("  [blue]🔑 Gerando load-mcp.sh...[/blue]")
     results.append(project.generate_load_mcp(cfg))
-    
+
     # 7b. Project Creation Summary (IMP-63) - resumo de criação
     console.print("  [blue]📋 Gerando resumo de criação do projeto...[/blue]")
     results.append(project.generate_project_creation_summary(cfg))
@@ -92,11 +92,11 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 9. GitHub Security Files (BUG-06 fix)
     console.print("  [blue]🔒 Gerando arquivos de segurança GitHub...[/blue]")
     results.extend(project.generate_github_security_files(cfg))
-    
+
     # 10. Commit inicial (IMP-62) - após TODOS os arquivos estarem prontos
     console.print("  [blue]💾 Criando commit inicial...[/blue]")
     results.append(git.create_initial_commit(cfg))
-    
+
     # 11. Tag scaffold-v* (IMP-62)
     console.print("  [blue]🏷️  Criando tag de versão scaffold...[/blue]")
     results.append(git.tag_scaffold(cfg, version="1.0.0"))

@@ -1,5 +1,57 @@
 # Alterações necessárias
 
+1 - adicionar dominio: DBA expert profissional, SQL expert developer, Spec-Driven Development expert
+2 - PDCA workflow
+
+---
+
+## proximas fases
+
+Opção B (P2): IMP-55 — Sistema CHAT-*.md
+- Prioridade: P2 (Média)
+- Estimativa: 1 semana
+- Objetivo: Sistema de captura de conversas CHAT-*.md para memória
+- Escopo:
+  - Interceptar conversas do Copilot
+  - Estruturar em CHAT-YYYY-MM-DD-HHmm.md
+  - Indexar no Session Search
+  - Integrar com memória ativa/passiva
+
+Opção C (Immediate): Dogfooding IMP-53
+- Prioridade: Teste prático
+- Estimativa: 30min - 1h
+- Objetivo: Usar o próprio IMP-53 para criar objetivo.yaml dele mesmo (meta-teste)
+- Escopo:
+  - Executar speckit.clarify Mode 1 para IMP-53
+  - Gerar objetivo.yaml respondendo as perguntas
+  - Validar que o template funciona na prática
+  - Identificar gaps/melhorias
+
+---
+
+## ✅ Processado em 2026-04-14 — Template Synchronization System
+
+**Issue criada**: **[IMP-65]** Template Synchronization System
+**Problema identificado**: "Template Drift" — projetos não recebem updates de templates quando upstream evolui
+**Discussão**: Session 2026-04-14 — proteção de customizações vs recebimento de melhorias
+
+**Solução proposta** (4 fases, 256h total):
+- ✅ Fase 1 (P0, 16h): Versionamento + `scaffold.py check-templates` - detecta drift
+- ✅ Fase 2 (P1, 40h): `scaffold.py diff-template` - diff assistido com backup
+- ✅ Fase 3 (P1, 80h): Three-way merge automático (git merge-file)
+- ✅ Fase 4 (P2, 120h): Templates modulares (blocos reutilizáveis)
+
+**Impacto**:
+- Projetos receberão melhorias de templates sem perder customizações
+- Correções de bugs propagarão automaticamente
+- Consistência entre projetos mantida ao longo do tempo
+
+**Arquivos atualizados**:
+- `docs/TODO.md` — Issue IMP-65 adicionada (itens recentes + tabela resumo)
+- `docs/SESSIONS/2026-04-14/DAILY_ACTIVITIES_2026-04-14.md` — Activity 002 documentada
+
+---
+
 ## ✅ Processado em 2026-04-07 — Análise de Gaps do Scaffold
 
 **Debate gerado**: [`docs/SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md`](SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md)
@@ -253,7 +305,7 @@ python scripts/scaffold.py --new --ci \
   - ✅ Recursos de segurança documentados
   - ✅ Agentes SpecKit listados (11 agentes + 3 prompts)
   - ✅ Convenções do projeto (commits, branches, docs)
-  - **Implementação**: 
+  - **Implementação**:
     - Template `_PROJECT_CREATION_SUMMARY` em project.py (linhas 876-1225, ~350 linhas)
     - Função `generate_project_creation_summary()` (70 linhas)
     - Fix: DOMAIN_DEFAULT_PROFILES é dict[str, str], use append() não extend()

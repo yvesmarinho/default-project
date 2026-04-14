@@ -227,7 +227,7 @@ if neither exists → Error: run /speckit.specify first
 ## User Scenarios & Testing *(mandatory)*
 ```
 
-**Impact**: 
+**Impact**:
 - `spec.md` now has **explicit link** to business context via `objetivo.yaml`
 - Agents generating `spec.md` (e.g., `speckit.specify`) can auto-populate Business Context section
 - Reviewers can trace requirements back to business value

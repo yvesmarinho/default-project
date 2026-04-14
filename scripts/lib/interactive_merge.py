@@ -247,22 +247,22 @@ def apply_resolution(
     # Find and replace the conflict region
     # We need to find the first occurrence of the conflict pattern
     lines = merged_content.split("\n")
-    
+
     # Search for conflict markers
     start_idx = None
     end_idx = None
-    
+
     for i, line in enumerate(lines):
         if line.startswith("<<<<<<< LOCAL") and start_idx is None:
             start_idx = i
         elif line.startswith(">>>>>>> UPSTREAM") and start_idx is not None and end_idx is None:
             end_idx = i
             break
-    
+
     if start_idx is None or end_idx is None:
         log.warning("Could not find conflict markers in content")
         return merged_content
-    
+
     # Replace conflict region (from start marker to end marker inclusive) with resolved content
     new_lines = (
         lines[:start_idx] +
