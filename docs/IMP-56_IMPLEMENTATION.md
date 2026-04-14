@@ -1,7 +1,7 @@
 # IMP-56: Quality Gates Validation
 
-**Status**: ✅ CONCLUÍDO  
-**Data**: 2026-04-14  
+**Status**: ✅ CONCLUÍDO
+**Data**: 2026-04-14
 **Duração**: ~3 horas (estimate: TBD, actual ongoing)
 
 ---
@@ -63,7 +63,7 @@ Sistema de **Quality Gates** em 3 níveis:
 
 #### 1. JSON Schema: `objetivo-schema.json` (418 linhas)
 
-**Localização**: `.specify/schemas/objetivo-schema.json`  
+**Localização**: `.specify/schemas/objetivo-schema.json`
 **Propósito**: Validação estrutural e de tipos para objetivo.yaml (Layer 1: Business)
 
 **Validações implementadas**:
@@ -90,7 +90,7 @@ Sistema de **Quality Gates** em 3 níveis:
 
 #### 2. Validation Engine: `spec_validate.py` (615 linhas)
 
-**Localização**: `scripts/lib/spec_validate.py`  
+**Localização**: `scripts/lib/spec_validate.py`
 **Propósito**: Implementa 19 quality gates em 3 layer transitions
 
 **Classes principais**:
@@ -125,13 +125,13 @@ class ValidationResult:
     errors: List[ValidationIssue]
     warnings: List[ValidationIssue]
     infos: List[ValidationIssue]
-    
+
     def summary() -> str        # "✅ PASSED" ou "❌ FAILED (N errors)"
     def detailed_report() -> str  # Relatório completo
 
 class SpecValidator:
     def validate_layer_transition(from_layer, to_layer) -> ValidationResult
-    
+
     # 3 validators privados (um por transição):
     def _validate_business_to_product(result)
     def _validate_product_to_architecture(result)
@@ -214,7 +214,7 @@ python -m scripts.lib.spec_validate .specify/specs/IMP-53 architecture implement
 
 #### 3. Agent: `speckit.validate.agent.md` (450 linhas)
 
-**Localização**: `.github/agents/speckit.validate.agent.md`  
+**Localização**: `.github/agents/speckit.validate.agent.md`
 **Propósito**: Orchestrator que executa validation engine e oferece handoffs
 
 **3 Validation Modes**:
@@ -275,7 +275,7 @@ ERRORS (blocking):
   ❌ objetivo-placeholders (Line N/A)
      Placeholder tokens found: [FEATURE_NAME], [BUSINESS_PROBLEM]
      💡 Suggestion: Run /speckit.clarify Mode 2 to replace placeholders
-  
+
   ❌ objetivo-no-metrics (Line N/A)
      No success metrics defined in negocio.valor.metricas_sucesso
      💡 Suggestion: Add at least 1 measurable success metric
@@ -368,7 +368,7 @@ Next Steps:
 }
 ```
 
-**Cobertura**: 100% dos campos de objetivo.yaml  
+**Cobertura**: 100% dos campos de objetivo.yaml
 **Compatibilidade**: JSON Schema Draft-07 (VSCode, Ajv, jsonschema Python)
 
 ---
@@ -381,7 +381,7 @@ Next Steps:
 def _validate_business_to_product(self, result: ValidationResult) -> None:
     """L1→L2: 8 quality gates"""
     layer = Layer.BUSINESS
-    
+
     # Gate 1: Arquivo existe
     if not self.objetivo_file.exists():
         result.add_issue(ValidationIssue(
@@ -392,7 +392,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
             suggestion="Run /speckit.clarify Mode 1 to create objetivo.yaml"
         ))
         return
-    
+
     # Gate 2: YAML válido
     try:
         with open(self.objetivo_file) as f:
@@ -406,7 +406,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
             file=str(self.objetivo_file)
         ))
         return
-    
+
     # Gate 3: JSON Schema compliance
     if self.objetivo_schema and Draft7Validator:
         try:
@@ -420,7 +420,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
                 file=str(self.objetivo_file),
                 suggestion=f"Check field: {'.'.join(str(p) for p in e.path)}"
             ))
-    
+
     # Gate 4: Sem [PLACEHOLDERS]
     with open(self.objetivo_file) as f:
         content = f.read()
@@ -433,7 +433,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
             message=f"Placeholder tokens found: {', '.join(f'[{p}]' for p in set(placeholders))}",
             suggestion="Run /speckit.clarify Mode 2 to replace placeholders"
         ))
-    
+
     # Gate 5: Métricas de sucesso
     metricas = objetivo_data.get("negocio", {}).get("valor", {}).get("metricas_sucesso", [])
     if not metricas:
@@ -444,7 +444,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
             message="No success metrics defined in negocio.valor.metricas_sucesso",
             suggestion="Add at least 1 measurable success metric"
         ))
-    
+
     # Gate 6: Personas (warning)
     personas = objetivo_data.get("produto", {}).get("personas", [])
     if not personas:
@@ -455,7 +455,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
             message="No personas defined in produto.personas",
             suggestion="Define at least 1 target persona"
         ))
-    
+
     # Gate 7: Visão de produto concisa (warning)
     visao = objetivo_data.get("produto", {}).get("visao_alto_nivel", "")
     sentence_count = len([s for s in visao.split('.') if s.strip()])
@@ -467,7 +467,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
             message=f"Product vision has {sentence_count} sentences (recommended: ≤3)",
             suggestion="Condense vision to 1-3 sentences for clarity"
         ))
-    
+
     # Gate 8: Prioridades P1/P2/P3
     jornadas = objetivo_data.get("produto", {}).get("jornadas_criticas", [])
     for j in jornadas:
@@ -481,7 +481,7 @@ def _validate_business_to_product(self, result: ValidationResult) -> None:
                 file=str(self.objetivo_file),
                 suggestion="Use P1 (MVP), P2 (v1.0), or P3 (future)"
             ))
-    
+
     # INFO: MVP scope
     p1_count = sum(1 for j in jornadas if j.get("priority") == "P1")
     result.add_issue(ValidationIssue(
@@ -788,7 +788,7 @@ graph TD
 ```python
 if not critical_field:
     result.add_issue(severity=Severity.ERROR, ...)  # Bloqueia
-    
+
 if not recommended_field:
     result.add_issue(severity=Severity.WARNING, ...)  # Permite com aviso
 
@@ -908,13 +908,13 @@ def minimal_objetivo_yaml():
    ```bash
    # Criar .specify/specs/IMP-56/objetivo.yaml (se não existe)
    /speckit.clarify "Quality Gates Validation system"
-   
+
    # Validar L1→L2
    /speckit.validate "validate business product"
-   
+
    # Se passed, criar spec.md
    /speckit.specify
-   
+
    # Validar L2→L3
    /speckit.validate "validate product architecture"
    ```
@@ -1009,7 +1009,7 @@ def minimal_objetivo_yaml():
      objetivo-no-personas:
        severity: WARNING  # Default
        override: ERROR    # Force personas para este projeto
-     
+
      plan-no-adrs:
        severity: WARNING  # Default
        override: INFO     # Relaxar para prototypes
@@ -1045,6 +1045,6 @@ IMP-56 **Quality Gates Validation** estabelece fundação sólida para garantir 
 
 ---
 
-**Fim do documento IMP-56_IMPLEMENTATION.md**  
-**Versão**: 1.0  
+**Fim do documento IMP-56_IMPLEMENTATION.md**
+**Versão**: 1.0
 **Última atualização**: 2026-04-14

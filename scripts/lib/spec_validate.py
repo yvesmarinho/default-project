@@ -553,12 +553,12 @@ class SpecValidator:
             try:
                 with open(self.objetivo_file) as f:
                     objetivo_data = yaml.safe_load(f)
-                
+
                 decisoes_iniciais = objetivo_data.get("decisoes_iniciais", [])
             except Exception:
                 # If we can't load objetivo.yaml, skip this check
                 decisoes_iniciais = []
-            
+
             if decisoes_iniciais:
                 # Check if ADRs reference any decisoes_iniciais
                 decisao_ids = [d.get("id") for d in decisoes_iniciais if d.get("id")]

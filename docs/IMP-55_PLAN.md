@@ -1,8 +1,8 @@
 # IMP-55: Sistema de Captura CHAT-*.md
 
-**Status**: 🔵 EM PROGRESSO  
-**Prioridade**: P2 (Média)  
-**Data Início**: 2026-04-14  
+**Status**: 🔵 EM PROGRESSO
+**Prioridade**: P2 (Média)
+**Data Início**: 2026-04-14
 **Estimativa**: 1 semana (40h)
 
 ---
@@ -78,8 +78,8 @@ template_version: 1.0.0
 
 # CHAT — 2026-04-14 14:30 — IMP-55 Sistema CHAT
 
-**Session ID**: abc123def456  
-**Duration**: 1h 15min  
+**Session ID**: abc123def456
+**Duration**: 1h 15min
 **Context**: Implementação do sistema de captura de conversas
 
 ---
@@ -121,24 +121,24 @@ Entendi! Vou criar o plano de implementação para o sistema de captura de conve
 ```python
 class ChatCapture:
     """Captura conversas do GitHub Copilot"""
-    
+
     def __init__(self, session_dir: Path):
         self.session_dir = session_dir
         self.chat_dir = session_dir / "CHATS"
-    
+
     def capture_from_transcript(self, transcript_path: Path) -> Path:
         """
         Lê transcript do VS Code, converte para CHAT-*.md
-        
-        Transcript path: 
+
+        Transcript path:
         ~/.config/Code - Insiders/User/workspaceStorage/.../GitHub.copilot-chat/transcripts/*.jsonl
         """
         pass
-    
+
     def format_chat_message(self, msg: dict) -> str:
         """Formata mensagem em markdown canônico"""
         pass
-    
+
     def extract_metadata(self, transcript: list) -> dict:
         """Extrai metadata: topics, participants, duration"""
         pass
@@ -151,13 +151,13 @@ class SessionSearcher:
     def search(self, query: str, scope: str = "all") -> List[SearchResult]:
         """
         scope: "sessions" | "docs" | "specs" | "chats" | "all"
-        
+
         NEW: "chats" scope
         """
         if scope == "chats":
             return self._search_chats(query)
         # existing code...
-    
+
     def _search_chats(self, query: str) -> List[SearchResult]:
         """Busca em CHAT-*.md files"""
         pass
@@ -274,8 +274,8 @@ class SessionSearcher:
 
 ### Risco 1: Transcript API instável
 
-**Probabilidade**: Média  
-**Impacto**: Alto (bloqueia captura automática)  
+**Probabilidade**: Média
+**Impacto**: Alto (bloqueia captura automática)
 **Mitigação**:
 - Fallback: manual capture via copy-paste
 - Monitorar VS Code API changes
@@ -283,8 +283,8 @@ class SessionSearcher:
 
 ### Risco 2: Conversas muito longas (>100k chars)
 
-**Probabilidade**: Baixa  
-**Impacto**: Médio (performance search)  
+**Probabilidade**: Baixa
+**Impacto**: Médio (performance search)
 **Mitigação**:
 - Split em múltiplos arquivos: `CHAT-YYYY-MM-DD-HHmm-part1.md`
 - Limit FTS5 snippet length
@@ -292,8 +292,8 @@ class SessionSearcher:
 
 ### Risco 3: Privacidade (credenciais em conversas)
 
-**Probabilidade**: Alta  
-**Impacto**: Crítico (leak de secrets)  
+**Probabilidade**: Alta
+**Impacto**: Crítico (leak de secrets)
 **Mitigação**:
 - Scan com `.gitleaks-session-docs.toml` (já existente)
 - Warning se detectar patterns de credencial
@@ -336,5 +336,5 @@ class SessionSearcher:
 
 ---
 
-**Fim do plano IMP-55**  
+**Fim do plano IMP-55**
 **Próximo**: Investigar Transcript API e criar objetivo.yaml

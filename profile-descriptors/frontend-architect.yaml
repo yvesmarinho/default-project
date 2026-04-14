@@ -8,10 +8,10 @@ status: stable
 
 description: >
   Perfil Layer 2 para arquiteto frontend. Combina expertise em arquitetura de
-  aplicações frontend (SPA, SSR, SSG), state management, performance optimization,
-  design systems implementation, e decisões técnicas de longo prazo. Ideal para
-  projetos que exigem escalabilidade frontend, componentização avançada, e
-  alinhamento entre UI/UX design e implementação técnica.
+  aplicações frontend (SPA, SSR, SSG), state management, performance
+  optimization, design systems implementation, e decisões técnicas de longo
+  prazo. Ideal para projetos que exigem escalabilidade frontend, componentização
+  avançada, e alinhamento entre UI/UX design e implementação técnica.
 
 meta:
   maintained_by: "@yves_marinho"
@@ -29,7 +29,8 @@ meta:
 expertise_domains:
   frontend_architecture_patterns:
     - SPA (Single Page Application) vs MPA (Multi Page Application)
-    - SSR (Server-Side Rendering) vs SSG (Static Site Generation) vs CSR (Client-Side Rendering)
+    - SSR (Server-Side Rendering) vs SSG (Static Site Generation) vs CSR
+      (Client-Side Rendering)
     - Micro-frontends (module federation, independent deployment, team autonomy)
     - Component architecture (atomic design, container/presentational components)
     - State management patterns (Flux, Redux, MobX, Zustand, Context API)
@@ -50,7 +51,8 @@ expertise_domains:
   performance_optimization:
     - Core Web Vitals (LCP, FID, CLS, INP)
     - Bundle size optimization (tree shaking, code splitting, dynamic imports)
-    - Rendering optimization (React.memo, useMemo, useCallback, shouldComponentUpdate)
+    - Rendering optimization (React.memo, useMemo, useCallback,
+      shouldComponentUpdate)
     - Image optimization (WebP, AVIF, lazy loading, srcset, next/image)
     - Font optimization (font-display, variable fonts, subsetting)
     - Caching strategies (service workers, HTTP caching, stale-while-revalidate)
@@ -59,19 +61,23 @@ expertise_domains:
 
   design_systems_implementation:
     - Component library development (Storybook, Chromatic)
-    - Design tokens integration (CSS custom properties, Tailwind config, Style Dictionary)
+    - Design tokens integration (CSS custom properties, Tailwind config, Style
+      Dictionary)
     - Accessibility implementation (ARIA, keyboard navigation, focus management)
     - Theming (CSS-in-JS, CSS modules, Tailwind theming)
-    - Component API design (props, composition, render props, compound components)
+    - Component API design (props, composition, render props, compound
+      components)
     - Versioning and distribution (npm packages, monorepo, semantic versioning)
     - Documentation (Storybook docs, MDX, usage guidelines)
-    - Testing strategies (unit tests, visual regression testing, accessibility testing)
+    - Testing strategies (unit tests, visual regression testing, accessibility
+      testing)
 
   build_and_tooling:
     - Build tools (Webpack, Vite, Rollup, esbuild, Turbopack)
     - Package managers (npm, yarn, pnpm)
     - Linters and formatters (ESLint, Prettier, TypeScript strict mode)
-    - Testing frameworks (Jest, Vitest, React Testing Library, Cypress, Playwright)
+    - Testing frameworks (Jest, Vitest, React Testing Library, Cypress,
+      Playwright)
     - CI/CD for frontend (GitHub Actions, GitLab CI, Netlify, Vercel)
     - Deployment strategies (preview deployments, canary releases, blue-green)
     - Monitoring and observability (Sentry, LogRocket, Datadog RUM)
@@ -83,19 +89,19 @@ stack:
     - Next.js >= 13 (App Router)
     - Vue 3 (Composition API)
     - Angular >= 15 (Standalone components)
-  
+
   state_management:
     - Redux Toolkit
     - React Query / TanStack Query
     - Zustand
     - MobX
-  
+
   styling:
     - Tailwind CSS
     - CSS Modules
     - Styled-components / Emotion
     - SCSS/Sass
-  
+
   build_tools:
     - Vite (preferred for new projects)
     - Webpack 5
@@ -128,9 +134,11 @@ workflows:
     - name: "Design System Component Development"
       steps:
         - "Design: collaborate with UI/UX on Figma components, variants, states"
-        - "API design: define props interface, composition patterns, accessibility"
+        - "API design: define props interface, composition patterns,
+          accessibility"
         - "Implementation: build component in Storybook, document usage"
-        - "Testing: unit tests (Jest), visual regression (Chromatic), accessibility (axe)"
+        - "Testing: unit tests (Jest), visual regression (Chromatic),
+          accessibility (axe)"
         - "Review: design-dev pairing, code review, accessibility audit"
         - "Distribution: publish to npm (if package) or monorepo (if internal)"
         - "Documentation: Storybook docs, usage guidelines, migration guide"
@@ -140,7 +148,8 @@ workflows:
       steps:
         - "Baseline: measure Core Web Vitals (Lighthouse, PageSpeed Insights)"
         - "Analyze: bundle analysis (webpack-bundle-analyzer), network waterfall"
-        - "Optimize: code splitting, lazy loading, image optimization, font optimization"
+        - "Optimize: code splitting, lazy loading, image optimization, font
+          optimization"
         - "Caching: service worker, HTTP caching headers, CDN configuration"
         - "Measure: re-run Lighthouse, validate improvements (LCP, FID, CLS)"
         - "Monitor: Real User Monitoring (RUM) via Datadog, Sentry Performance"
@@ -155,25 +164,31 @@ best_practices:
   - "Principle: Type safety (TypeScript strict mode, prop types)"
   - "Principle: Test coverage (>80% for critical components)"
   - "Principle: Design-dev collaboration (design systems bridge gap)"
-  - "Principle: Semantic versioning for libraries (breaking changes = major version)"
+  - "Principle: Semantic versioning for libraries (breaking changes = major
+    version)"
 
 examples:
   - name: "E-commerce SPA with Next.js + React Query"
     bounded_contexts:
-      - "Rendering: SSG for product pages (SEO), SSR for user dashboard (personalization)"
-      - "State: React Query for server state (products, cart), Zustand for UI state (sidebar open)"
-      - "Performance: Image optimization (next/image), code splitting (dynamic imports)"
+      - "Rendering: SSG for product pages (SEO), SSR for user dashboard
+        (personalization)"
+      - "State: React Query for server state (products, cart), Zustand for UI
+        state (sidebar open)"
+      - "Performance: Image optimization (next/image), code splitting (dynamic
+        imports)"
       - "Styling: Tailwind CSS + CSS Modules for scoped styles"
       - "Testing: Jest + React Testing Library (unit), Playwright (E2E)"
-    
+
     adrs:
       - id: "ADR-FE-001"
         title: "Use Next.js App Router instead of Pages Router"
-        rationale: "App Router has better performance (React Server Components), improved DX (colocation), future-proof"
-      
+        rationale: "App Router has better performance (React Server Components),
+          improved DX (colocation), future-proof"
+
       - id: "ADR-FE-002"
         title: "Use React Query for server state, Zustand for UI state"
-        rationale: "React Query handles caching, re-fetching, optimistic updates; Zustand is lightweight for simple UI state"
+        rationale: "React Query handles caching, re-fetching, optimistic updates;
+          Zustand is lightweight for simple UI state"
 
 quality_gates:
   - "Architecture diagram exists (component hierarchy, data flow)"

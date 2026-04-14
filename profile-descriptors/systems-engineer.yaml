@@ -8,10 +8,10 @@ status: stable
 
 description: >
   Perfil Layer 2 para engenheiro de sistemas profissional. Combina expertise em
-  arquitetura de sistemas distribuídos, Linux/Windows administration, networking,
-  performance tuning, capacity planning, e integração de componentes heterogêneos.
-  Ideal para projetos que exigem design de arquitetura resiliente, alta
-  disponibilidade, e operação de sistemas complexos.
+  arquitetura de sistemas distribuídos, Linux/Windows administration,
+  networking, performance tuning, capacity planning, e integração de componentes
+  heterogêneos. Ideal para projetos que exigem design de arquitetura resiliente,
+  alta disponibilidade, e operação de sistemas complexos.
 
 meta:
   maintained_by: "@yves_marinho"
@@ -32,7 +32,8 @@ expertise_domains:
     - Distributed systems design patterns (CAP theorem, eventual consistency)
     - Service mesh architectures (Istio, Linkerd, Consul)
     - Message queues and event streaming (RabbitMQ, Kafka, NATS)
-    - Load balancing strategies (round-robin, least-connections, consistent hashing)
+    - Load balancing strategies (round-robin, least-connections, consistent
+      hashing)
     - Circuit breakers and fault tolerance (Hystrix, resilience4j)
     - Distributed tracing (Jaeger, Zipkin, OpenTelemetry)
     - Service discovery and coordination (Consul, etcd, ZooKeeper)
@@ -83,17 +84,17 @@ stack:
     - Linux (Ubuntu >= 20.04, RHEL >= 8, Debian >= 11)
     - Windows Server >= 2019
     - FreeBSD, OpenBSD (edge cases)
-  
+
   orchestration:
     - Kubernetes >= 1.25
     - Docker >= 20.10
     - Nomad (HashiCorp)
-  
+
   monitoring:
     - Prometheus + Grafana
     - ELK Stack (Elasticsearch, Logstash, Kibana)
     - Datadog, New Relic (SaaS options)
-  
+
   automation:
     - Ansible >= 2.12
     - Terraform >= 1.3
@@ -129,7 +130,8 @@ workflows:
   system_design:
     - name: "Architecture Design"
       steps:
-        - "Requisitos não-funcionais (RNFs): availability, scalability, latency, throughput"
+        - "Requisitos não-funcionais (RNFs): availability, scalability, latency,
+          throughput"
         - "Trade-off analysis: CAP theorem, consistency vs availability"
         - "Component selection: message queue, database, cache, load balancer"
         - "Capacity planning: baseline, growth projections, resource allocation"
@@ -140,7 +142,8 @@ workflows:
     - name: "Performance Tuning"
       steps:
         - "Baseline measurement: establish current performance metrics"
-        - "Bottleneck identification: profiling tools, flamegraphs, metrics analysis"
+        - "Bottleneck identification: profiling tools, flamegraphs, metrics
+          analysis"
         - "Hypothesis testing: change ONE variable, measure impact"
         - "Iterative improvement: optimize hotspots, re-measure, validate"
         - "Regression testing: ensure optimizations don't break functionality"
@@ -149,7 +152,8 @@ workflows:
   incident_response:
     - name: "Incident Management"
       steps:
-        - "Detection: alerting triggers incident (Prometheus, Datadog, PagerDuty)"
+        - "Detection: alerting triggers incident (Prometheus, Datadog,
+          PagerDuty)"
         - "Triage: assess severity (SEV1-SEV4), assemble team, create war room"
         - "Diagnosis: logs analysis, metrics review, distributed tracing"
         - "Mitigation: rollback, failover, traffic shaping, circuit breaker"
@@ -159,15 +163,20 @@ workflows:
 best_practices:
   - "Principle: Measure first, optimize later (avoid premature optimization)"
   - "Principle: Automate toil (anything manual >3x should be automated)"
-  - "Principle: Design for failure (assume components will fail, plan accordingly)"
-  - "Principle: Observability over monitoring (logs, metrics, traces, dashboards)"
-  - "Principle: Immutable infrastructure (containers, IaC, never modify in place)"
+  - "Principle: Design for failure (assume components will fail, plan
+    accordingly)"
+  - "Principle: Observability over monitoring (logs, metrics, traces,
+    dashboards)"
+  - "Principle: Immutable infrastructure (containers, IaC, never modify in
+    place)"
   - "Principle: Defense in depth (multiple security layers, zero trust)"
-  - "Principle: Graceful degradation (system continues functioning with reduced capacity)"
+  - "Principle: Graceful degradation (system continues functioning with reduced
+    capacity)"
   - "Principle: Idempotency (operations can be repeated safely)"
   - "Principle: Capacity headroom (plan for 2x peak load, not just average)"
   - "Principle: Documentation as code (architecture diagrams, runbooks in Git)"
-  - "Principle: SRE mindset (error budgets, blameless post-mortems, toil reduction)"
+  - "Principle: SRE mindset (error budgets, blameless post-mortems, toil
+    reduction)"
 
 examples:
   - name: "High-Availability Web Application"
@@ -177,15 +186,17 @@ examples:
       - "Data Layer: PostgreSQL with streaming replication"
       - "Cache Layer: Redis Sentinel for HA"
       - "Monitoring: Prometheus + Grafana + PagerDuty"
-    
+
     adrs:
       - id: "ADR-001"
         title: "Use HAProxy instead of NGINX for load balancing"
-        rationale: "HAProxy has superior health checking, connection draining, and observability"
-      
+        rationale: "HAProxy has superior health checking, connection draining, and
+          observability"
+
       - id: "ADR-002"
         title: "Use PostgreSQL streaming replication instead of logical replication"
-        rationale: "Streaming replication has lower latency (<1s) and simpler failover process"
+        rationale: "Streaming replication has lower latency (<1s) and simpler failover
+          process"
 
 quality_gates:
   - "Architecture diagram exists (C4 model: context + container + component)"

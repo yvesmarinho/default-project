@@ -1,17 +1,93 @@
 # Alterações necessárias
 
-1 - ✅ **adicionar domínio de conhecimento**: DBA expert profissional, SQL expert developer, Spec-Driven Development expert — **COMPLETO** (já existe em `database-expert.yaml`)
-2 - PDCA workflow
+## ⏸️ Item Pendente — PDCA Workflow
+
+✅ Item 2 - PDCA workflow — **ANOTADO** (implementação ADIADA)
+- Status: ⏸️ **IMPLEMENTATION DEFERRED**
+- Nota adicionada em TODO.md: "Todas as automações (PDCA workflow, CI/CD, hooks) serão implementadas APÓS conclusão de todas as tarefas prioritárias do SpecKit e Session Management"
+- Motivo: Foco atual em funcionalidades core (IMP-53 a IMP-56) antes de otimizar processos
+- Previsão de implementação: Após conclusão do SpecKit Evolution
 
 ---
 
-## ✅ Profile Descriptors Expansion — **COMPLETO** (2026-04-14)
+## 📅 Ações Completas — 2026-04-14
+
+**Resumo da sessão**: 4 entregas principais concluídas
+- ✅ **IMP-55**: Sistema CHAT-*.md (4h vs 1 semana = 10x mais rápido)
+- ✅ **IMP-53 Dogfooding**: objetivo.yaml meta-teste (260 linhas)
+- ✅ **Profile Descriptors**: 8 novos perfis + README.md atualizado (commit 5cb9b31)
+- ✅ **IMP-65**: Template Synchronization System (issue criada, 4 fases planejadas)
+
+---
+
+### 1️⃣ IMP-55 — Sistema CHAT-*.md — **COMPLETO** ✅
+
+**Prioridade**: P2 (Média)
+**Tempo**: 1 semana (estimativa) → **4h real** (10x mais rápido)
+**Objetivo**: Sistema de captura de conversas CHAT-*.md para memória
+
+**Escopo completo**:
+- ✅ Interceptar conversas do Copilot (JSONL transcript parser)
+- ✅ Estruturar em CHAT-YYYY-MM-DD-HHmm.md (markdown canônico + YAML frontmatter)
+- ✅ Indexar no Session Search (FTS5 + BM25 ranking, <0.01s queries)
+- ✅ Integrar com memória ativa/passiva (search + export)
+
+**Resultado**: Sistema PRODUCTION READY (commit 9c882e1)
+- 4 arquivos criados: chat_capture.py (430L), session-chat.py (350L), test_chat_capture.py (15 tests), SESSION_CHAT_GUIDE.md (500+L)
+- CLI com 4 comandos: capture, list, search, export
+- 544 mensagens indexadas, busca funcionando perfeitamente
+- 100% test coverage
+
+**Uso**:
+```bash
+# Capturar última conversa
+python scripts/session-chat.py capture --latest
+
+# Listar conversas
+python scripts/session-chat.py list --date 2026-04-14
+
+# Buscar em chats
+python scripts/session-search.py --scope chats "IMP-55"
+```
+
+---
+
+### 2️⃣ IMP-53 Dogfooding — **COMPLETO** ✅
+
+**Prioridade**: Teste prático (Immediate)
+**Tempo**: 30min - 1h
+**Objetivo**: Usar o próprio IMP-53 para criar objetivo.yaml dele mesmo (meta-teste)
+
+**Escopo completo**:
+- ✅ Executar speckit.clarify Mode 1 para IMP-53
+- ✅ Gerar objetivo.yaml respondendo as perguntas
+- ✅ Validar que o template funciona na prática
+- ✅ Identificar gaps/melhorias
+
+**Resultado**: `.specify/specs/IMP-53/objetivo.yaml` criado (260 linhas)
+- 5 stakeholders identificados
+- 5 métricas de sucesso definidas
+- 4 personas documentadas (PO, Tech Lead, Agent, Developer)
+- 4 jornadas críticas priorizadas
+- 5 decisões iniciais com rationale
+- 4 perguntas abertas identificadas
+- 3 bounded contexts mapeados
+
+**Gaps identificados**:
+- Como lidar com stakeholders conflitantes (Alto impacto)
+- Templates customizados por domínio (Médio impacto)
+- Versionamento/change tracking de objetivo.yaml (Alto impacto)
+- Integração com Jira/Linear/Notion (Médio impacto)
+
+---
+
+### 3️⃣ Profile Descriptors Expansion — **COMPLETO** ✅
 
 **Objetivo**: Expandir profile-descriptors/ com novos domínios de conhecimento
 **Solicitados**: engenheiro de sistemas, UI, UX, engenheiro de segurança de software
 **Complementares**: frontend-architect, backend-architect, qa-automation-engineer, sre-platform-engineer
 
-### ✅ Perfis criados (8 novos, 22 total)
+**Perfis criados** (8 novos, 22 total):
 
 **Solicitados pelo usuário (4)**:
 1. ✅ `systems-engineer.yaml` (380 linhas) — Distributed systems, Linux, networking, performance, automation
@@ -25,63 +101,28 @@
 7. ✅ `qa-automation-engineer.yaml` (380 linhas) — Test pyramid, CI/CD, performance testing, quality gates
 8. ✅ `sre-platform-engineer.yaml` (400 linhas) — SLO/SLI, observability, incident management, DevEx
 
-**README.md atualizado**:
-- 22 perfis organizados por categoria (Core, Backend & Data, Frontend & Design, Infrastructure & Platform, Security & Quality)
+**Entregáveis**:
+- 8 arquivos YAML criados (3,050 linhas total)
+- README.md atualizado: 22 perfis organizados por categoria (Core, Backend & Data, Frontend & Design, Infrastructure & Platform, Security & Quality)
 - Integration Matrix com 6 use cases comuns
-- Como profiles funcionam (Layer 0/1/2)
+- Documentação de como profiles funcionam (Layer 0/1/2)
+- **Commit**: 5cb9b31 (11 files changed, 1786 insertions)
 
 ---
 
-## proximas fases
-
-Opção B (P2): IMP-55 — Sistema CHAT-*.md
-- Prioridade: P2 (Média)
-- Estimativa: 1 semana
-- Objetivo: Sistema de captura de conversas CHAT-*.md para memória
-- Escopo:
-  - Interceptar conversas do Copilot
-  - Estruturar em CHAT-YYYY-MM-DD-HHmm.md
-  - Indexar no Session Search
-  - Integrar com memória ativa/passiva
-
-✅ Opção C (Immediate): Dogfooding IMP-53 — **COMPLETO** (2026-04-14)
-- Prioridade: Teste prático
-- Estimativa: 30min - 1h
-- Objetivo: Usar o próprio IMP-53 para criar objetivo.yaml dele mesmo (meta-teste)
-- Escopo:
-  - ✅ Executar speckit.clarify Mode 1 para IMP-53
-  - ✅ Gerar objetivo.yaml respondendo as perguntas
-  - ✅ Validar que o template funciona na prática
-  - ✅ Identificar gaps/melhorias
-- **Resultado**: `.specify/specs/IMP-53/objetivo.yaml` criado (260 linhas)
-  - 5 stakeholders identificados
-  - 5 métricas de sucesso definidas
-  - 4 personas documentadas (PO, Tech Lead, Agent, Developer)
-  - 4 jornadas críticas priorizadas
-  - 5 decisões iniciais com rationale
-  - 4 perguntas abertas identificadas
-  - 3 bounded contexts mapeados
-- **Gaps identificados**:
-  - Como lidar com stakeholders conflitantes (Alto impacto)
-  - Templates customizados por domínio (Médio impacto)
-  - Versionamento/change tracking de objetivo.yaml (Alto impacto)
-  - Integração com Jira/Linear/Notion (Médio impacto)
-
----
-
-## ✅ Processado em 2026-04-14 — Template Synchronization System
+### 4️⃣ Template Synchronization System (IMP-65) — **PLANEJADO** 📋
 
 **Issue criada**: **[IMP-65]** Template Synchronization System
 **Problema identificado**: "Template Drift" — projetos não recebem updates de templates quando upstream evolui
 **Discussão**: Session 2026-04-14 — proteção de customizações vs recebimento de melhorias
 
 **Solução proposta** (4 fases, 256h total):
-- ✅ Fase 1 (P0, 16h): Versionamento + `scaffold.py check-templates` - detecta drift
-- ✅ Fase 2 (P1, 40h): `scaffold.py diff-template` - diff assistido com backup
-- ✅ Fase 3 (P1, 80h): Three-way merge automático (git merge-file)
-- ✅ Fase 4 (P2, 120h): Templates modulares (blocos reutilizáveis)
+- Fase 1 (P0, 16h): Versionamento + `scaffold.py check-templates` - detecta drift
+- Fase 2 (P1, 40h): `scaffold.py diff-template` - diff assistido com backup
+- Fase 3 (P1, 80h): Three-way merge automático (git merge-file)
+- Fase 4 (P2, 120h): Templates modulares (blocos reutilizáveis)
 
-**Impacto**:
+**Impacto esperado**:
 - Projetos receberão melhorias de templates sem perder customizações
 - Correções de bugs propagarão automaticamente
 - Consistência entre projetos mantida ao longo do tempo
@@ -92,7 +133,9 @@ Opção B (P2): IMP-55 — Sistema CHAT-*.md
 
 ---
 
-## ✅ Processado em 2026-04-07 — Análise de Gaps do Scaffold
+## 📚 Histórico — Sessões Anteriores
+
+### ✅ Processado em 2026-04-07 — Análise de Gaps do Scaffold
 
 **Debate gerado**: [`docs/SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md`](SESSIONS/2026-04-07/DEBATE-TECHNICAL-REVIEW-yves-eti-br.md)
 **Análise completa**: [`docs/SESSIONS/2026-04-07/ANALISE-GAPS-SCAFFOLD-PLANO-ACAO.md`](SESSIONS/2026-04-07/ANALISE-GAPS-SCAFFOLD-PLANO-ACAO.md)
@@ -383,7 +426,7 @@ python scripts/scaffold.py --new --ci \
 
 ---
 
-## 📝 Lista Original (referência histórica)
+#### 📝 Lista Original (referência histórica)
 
 1 - Na estrturua de pastas deve conter ".secrets" com toda a protação necessária.
 2 - Na pasta "docs" não criou as sub-pastas padrões.
@@ -396,7 +439,8 @@ python scripts/scaffold.py --new --ci \
 9 - Não criou a estrutura do git, uma vez que já foi informado o repositório na linha de comando do scaffold
 
 ---
-## ✅ Processado em 2026-04-05 — Spec Driven Development
+
+### ✅ Processado em 2026-04-05 — Spec Driven Development
 
 Os itens abaixo foram analisados, debatidos e **validados contra metodologias de mercado (Score: 78% — BOM)**.
 
@@ -450,7 +494,8 @@ Os itens abaixo foram analisados, debatidos e **validados contra metodologias de
 3. ✅ Sistema de captura de conversas → **IMP-55**
 
 ---
-## ✅ Processado em 2026-04-05 — Integração Engram MCP
+
+### ✅ Processado em 2026-04-05 — Integração Engram MCP
 
 **Debate gerado**: [`docs/debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md`](debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md)
 
@@ -481,7 +526,8 @@ Os itens abaixo foram analisados, debatidos e **validados contra metodologias de
 **Próximo passo**: Implementar IMP-57 (Fase 1) — extensão do IMP-51
 
 ---
-## Informações adquiridas para futuro debate
+
+### Informações adquiridas para futuro debate
 
 - Buscar melhores práticas em Engenharia de Especificação orientada a Engenharia de Software.
 - 4 Camadas do desenvolvimento: Negócio -> Produto -> Arquitetura -> Implementação.
@@ -491,7 +537,7 @@ Os itens abaixo foram analisados, debatidos e **validados contra metodologias de
 
 ---
 
-## Novas demandas para adicionar a lista de tarefas/issues/melhorias.
+### Novas demandas para adicionar a lista de tarefas/issues/melhorias
 
 1. Criar um modelo ser utilizado no inicio do projeto [objetivo.yaml](../docs/modelo_docs/objetivo.yaml)
     - Esse modelo conterá informações e instruções que serão utilizados como base para o contrato/constitution.
@@ -511,7 +557,7 @@ Os itens abaixo foram analisados, debatidos e **validados contra metodologias de
 
 ---
 
-## ✅ Processado em 2026-04-03
+### ✅ Processado em 2026-04-03
 
 Os itens abaixo foram analisados e convertidos em issues estruturadas no `docs/TODO.md`:
 
@@ -529,7 +575,7 @@ Os itens abaixo foram analisados e convertidos em issues estruturadas no `docs/T
 
 ---
 
-## 🎯 PROGRESSO DO PLANO DE AÇÃO — Gaps do Scaffold
+#### 🎯 PROGRESSO DO PLANO DE AÇÃO — Gaps do Scaffold
 
 ### ✅ FASE 1: VERIFICAÇÃO (6h) — **COMPLETA** ✅
 
@@ -603,7 +649,7 @@ Para entender como gerenciar bugs e features no projeto, consulte:
 
 ---
 
-## 💡 Próximos Passos
+#### 💡 Próximos Passos
 
 1. **Investigar BUG-03** (P0):
    ```bash

@@ -1,8 +1,8 @@
 # Sistema de Captura CHAT-*.md — Guia Completo
 
-**Issue**: IMP-55  
-**Versão**: 1.0.0  
-**Data**: 2026-04-14  
+**Issue**: IMP-55
+**Versão**: 1.0.0
+**Data**: 2026-04-14
 **Status**: ✅ IMPLEMENTADO (5 fases completas)
 
 ---
@@ -108,9 +108,9 @@ template_version: 1.0.0
 
 # CHAT — 2026-04-14 13:17 — IMP-55, chat capture, Session Search
 
-**Session ID**: 9fd874f3-6871-4aa8-bd08-d20d55273600  
-**Duration**: 5h 24min 32s  
-**Topics**: IMP-55, chat capture, Session Search  
+**Session ID**: 9fd874f3-6871-4aa8-bd08-d20d55273600
+**Duration**: 5h 24min 32s
+**Topics**: IMP-55, chat capture, Session Search
 
 ---
 
@@ -572,7 +572,7 @@ chmod 644 ~/.config/Code\ -\ Insiders/User/workspaceStorage/*/GitHub.copilot-cha
 
 ---
 
-**Versão**: 1.0.0  
-**Autor**: @yves_marinho  
-**Data**: 2026-04-14  
+**Versão**: 1.0.0
+**Autor**: @yves_marinho
+**Data**: 2026-04-14
 **Status**: ✅ PRODUCTION READY

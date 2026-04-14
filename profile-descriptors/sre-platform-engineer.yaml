@@ -93,23 +93,23 @@ stack:
     - Kubernetes >= 1.25
     - Helm >= 3.10
     - ArgoCD, Flux (GitOps)
-  
+
   observability:
     - Prometheus + Grafana
     - Loki (logs)
     - Jaeger or Tempo (traces)
     - OpenTelemetry (unified instrumentation)
-  
+
   iac:
     - Terraform >= 1.3
     - Pulumi
     - Crossplane (Kubernetes-native IaC)
-  
+
   ci_cd:
     - GitHub Actions
     - GitLab CI
     - ArgoCD (GitOps deployments)
-  
+
   incident_management:
     - PagerDuty
     - Opsgenie
@@ -190,12 +190,12 @@ examples:
       - "Automation: Terraform for IaC, Ansible for config, CI/CD with GitHub Actions"
       - "Capacity: 2x peak load capacity (Black Friday spike handling), autoscaling enabled"
       - "Platform: Internal developer portal (Backstage), golden paths for microservices"
-    
+
     adrs:
       - id: "ADR-SRE-001"
         title: "Target 99.9% availability, not 99.99%"
         rationale: "99.99% requires significant investment (multi-region, complex failover), 99.9% balances reliability with cost and innovation speed"
-      
+
       - id: "ADR-SRE-002"
         title: "Use error budgets to gate deployments"
         rationale: "If error budget exhausted, freeze non-critical deployments, focus on reliability; prevents accumulating reliability debt"

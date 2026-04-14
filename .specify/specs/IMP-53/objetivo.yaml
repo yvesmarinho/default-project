@@ -20,15 +20,15 @@ negocio:
       Equipes de desenvolvimento pulam a fase de discovery de negócio e começam
       direto com especificações técnicas, resultando em retrabalho quando
       requisitos mudam ou quando a solução não atende necessidades reais dos
-      stakeholders. 
-      
+      stakeholders.
+
       Estimamos que 30-40% do tempo de desenvolvimento é desperdiçado refinando
       specs mal fundamentadas porque o "WHY" (objetivo de negócio) não foi
       claramente estabelecido antes do "HOW" (implementação técnica).
 
     impacto_atual: |
       Sem um processo estruturado de captura de objetivos de negócio:
-      
+
       - 30-40% do tempo de desenvolvimento é desperdiçado em retrabalho
       - Specs técnicas são escritas sem fundamento business claro
       - Requisitos mudam frequentemente (>30% de change rate)

@@ -95,19 +95,19 @@ stack:
     - Node.js >= 18 (Express, NestJS, Fastify)
     - Go >= 1.20 (Gin, Echo, gRPC)
     - Java >= 17 (Spring Boot, Micronaut)
-  
+
   databases:
     - PostgreSQL >= 14 (relational)
     - MongoDB >= 6 (document)
     - Redis >= 7 (cache, pub/sub)
     - Elasticsearch >= 8 (search)
-  
+
   message_queues:
     - RabbitMQ >= 3.11
     - Apache Kafka >= 3.4
     - AWS SQS/SNS
     - Redis Streams
-  
+
   api_frameworks:
     - FastAPI (Python, async, OpenAPI)
     - NestJS (Node.js, TypeScript, decorators)
@@ -180,12 +180,12 @@ examples:
       - "Payment Service: Go + gRPC (payment processing, external API integration)"
       - "Notification Service: Python + RabbitMQ (async email/SMS notifications)"
       - "Cache: Redis (product catalog, user sessions)"
-    
+
     adrs:
       - id: "ADR-BE-001"
         title: "Use RabbitMQ for async order processing instead of synchronous calls"
         rationale: "Decouple services, improve resilience (order placed even if notification fails), handle traffic spikes"
-      
+
       - id: "ADR-BE-002"
         title: "Use PostgreSQL for orders, MongoDB for inventory"
         rationale: "Orders require strong consistency (ACID transactions); inventory can tolerate eventual consistency for better write performance"
