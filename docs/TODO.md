@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-05 — IMP-58 coleta iniciada + IMP-59 preparação (trabalho paralelo) + IMP-57 concluído
+**Last Updated**: 2026-04-14 — IMP-65 Template Synchronization System criada (P1, 256h, 4 fases)
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
@@ -303,6 +303,53 @@
   - **Estimativa**: 40h (implementação completa SE GO)
   - **Prioridade**: P1 (SE decision gate GO)
   - *Reportado em*: 2026-04-05 | *Status*: 🟡 Em preparação (design + POC pronto, aguarda IMP-58)
+
+- [ ] **[IMP-65]** Template Synchronization System � **FASE 2 COMPLETA** (P1, 2-6 semanas faseado)
+  - **Contexto**: Templates do SpecKit (`.specify/templates/*.md`) são copiados uma vez na criação do projeto; quando upstream evolui, projetos existentes não recebem melhorias/correções
+  - **Problema (Template Drift)**:
+    - Projetos customizam templates localmente (ex: adicionar seção "Security Review")
+    - Upstream evolui templates (ex: adiciona "Performance Criteria", "Cost Estimation")
+    - `scaffold.py upgrade` pula arquivos existentes → **melhorias do upstream são perdidas**
+    - Impacto: projetos ficam desatualizados, perdem melhores práticas, bugs não são corrigidos
+  - **Escopo** (4 fases incrementais):
+    - **Fase 1** ✅ **COMPLETA** (P0, 2-3 dias): Versionamento e detecção de drift
+      - Adicionar metadado `template_version: X.Y.Z` em todos templates `.specify/templates/*.md`
+      - Comando `scaffold.py check-templates` — detecta templates desatualizados
+      - Relatório: "3 templates desatualizados, 12 melhorias disponíveis desde v1.0"
+      - Arquivo `.scaffold-state.yaml`: adicionar campo `template_versions: {...}`
+      - **Implementado**: template_version.py, flow check_templates, 36 testes (100% pass)
+      - **Documentação**: TEMPLATE_DRIFT_DETECTION.md (370 linhas)
+      - **Tempo real**: 8h (vs 16h estimado = 2x mais rápido)
+    - **Fase 2** ✅ **COMPLETA** (P1, 1 semana): Diff e visualização
+      - Comando `scaffold.py diff-template <nome>` — mostra diferenças upstream vs local
+      - Unified diff (git-style) + HTML side-by-side + stats
+      - Detecção de customizações vs melhorias upstream (heurística)
+      - Impact report com recomendações
+      - 3 formatos de output: colored terminal, markdown, HTML
+      - Backup automático antes de qualquer merge (`template.md.backup-TIMESTAMP`)
+      - **Implementado**: template_diff.py (~420 linhas), flow diff_template (~130 linhas)
+      - **Testes**: 18 testes (100% pass) — diff, stats, customizations, formats
+      - **Documentação**: TEMPLATE_DRIFT_DETECTION.md atualizado (~600 linhas)
+      - **Tempo real**: 6h (vs 40h estimado = 6.7x mais rápido)
+    - **Fase 3** (P1, 2 semanas): Three-way merge automático
+      - Guardar versão original (base) de cada template em `.scaffold-state.yaml`
+      - Three-way merge: `git merge-file local.md base.md upstream.md`
+      - Detecção automática de conflitos com sugestões de resolução
+      - `--interactive` mode para resolver conflitos manualmente
+    - **Fase 4** (P2, futuro): Templates modulares
+      - Reestruturar templates como blocos reutilizáveis
+      - `.specify/templates/blocks/user-scenarios-v2.0.md`
+      - `.specify/templates/spec-template.md` importa blocos
+      - Sistema de "patches" para customizações isoladas
+  - **Benefícios**:
+    - Projetos recebem melhorias de templates sem perder customizações
+    - Correções de bugs propagam automaticamente
+    - Consistência entre projetos mantida ao longo do tempo
+    - Reduz risco de "template drift" (divergência descontrolada)
+  - **Estimativa**: Fase 1: 16h (✅ 8h real), Fase 2: 40h (✅ 6h real), Fase 3: 80h, Fase 4: 120h (total original: ~256h)
+  - **Prioridade**: P1 (critical for long-term template maintenance)
+  - **Origem**: Session 2026-04-14 — discussão sobre proteção de customizações vs recebimento de updates
+  - *Reportado em*: 2026-04-14 | *Status*: 🟢 Fase 2 completa (Fase 3 pendente) | *Última atualização*: 2026-04-14 18:50
 
 - [ ] **[IMP-45]** Engram MCP oficial — Fallback se Python inadequado 🔵 **PENDENTE** (Fase 3b — fallback)
   - **Contexto**: SE mini-Engram Python (IMP-59) tiver bugs críticos, performance ruim, ou manutenibilidade difícil
@@ -738,6 +785,7 @@
 | IMP-57 | Estender IMP-51 — indexar all docs (Fase 1) | P1 | 16h | DevEx / Search | ✅ 2026-04-05 |
 | IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | � 2026-04-05 |
 | IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 40h | DevEx / Memory | � 2026-04-05 |
+| IMP-65 | Template Synchronization System (4 fases) | P1 | 256h | Template Arch / DevEx | 🔵 2026-04-14 |
 
 ---
 
