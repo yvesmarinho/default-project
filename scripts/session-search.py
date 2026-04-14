@@ -157,7 +157,7 @@ def main():
     parser.add_argument(
         "--scope",
         type=str,
-        choices=["sessions", "docs", "specs", "all"],
+        choices=["sessions", "docs", "specs", "chats", "all"],
         help="Filter by document type (sessions, docs, specs, or all)",
     )
 

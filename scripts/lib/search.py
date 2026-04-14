@@ -516,11 +516,44 @@ class SessionIndexer:
         print(f"\n{CYAN}Summary:{RESET} {files_indexed} files, {sections_indexed} sections indexed")
         return (files_indexed, sections_indexed)
 
+    def index_chats(self, sessions_dir: Path | str = "docs/SESSIONS") -> Tuple[int, int]:
+        """Index CHAT-*.md conversation files (IMP-55).
+
+        Args:
+            sessions_dir: Path to docs/SESSIONS directory (default: "docs/SESSIONS")
+
+        Returns:
+            (files_indexed, messages_indexed)
+        """
+        sessions_dir = Path(sessions_dir)
+
+        files_indexed = 0
+        messages_indexed = 0
+
+        # Find all CHAT-*.md files
+        chat_files = list(sessions_dir.glob("*/CHAT-*.md"))
+
+        print(f"{BLUE}Indexing {len(chat_files)} chat conversation files...{RESET}")
+
+        for file_path in sorted(chat_files):
+            try:
+                sections_count = self.index_markdown_document(file_path, document_type="chats")
+                files_indexed += 1
+                messages_indexed += sections_count
+                print(f"{GREEN}✓{RESET} {file_path.parent.name}/{file_path.name} ({sections_count} messages)")
+            except Exception as e:
+                print(f"{RED}✗{RESET} {file_path}: {e}")
+
+        self._update_metadata(files_indexed, messages_indexed)
+
+        print(f"\n{CYAN}Summary:{RESET} {files_indexed} files, {messages_indexed} messages indexed")
+        return (files_indexed, messages_indexed)
+
     def index_by_scope(self, scope: str = "all", force_rebuild: bool = False) -> Tuple[int, int]:
         """Index documents by scope.
 
         Args:
-            scope: One of "sessions", "docs", "specs", "all"
+            scope: One of "sessions", "docs", "specs", "chats", "all"
             force_rebuild: If True, clear existing index first
 
         Returns:
@@ -544,6 +577,11 @@ class SessionIndexer:
 
         if scope in ["specs", "all"]:
             files, blocks = self.index_specs(".specify")
+            total_files += files
+            total_blocks += blocks
+
+        if scope in ["chats", "all"]:
+            files, blocks = self.index_chats("docs/SESSIONS")
             total_files += files
             total_blocks += blocks
 
