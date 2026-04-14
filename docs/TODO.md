@@ -331,11 +331,18 @@
       - **Testes**: 18 testes (100% pass) — diff, stats, customizations, formats
       - **Documentação**: TEMPLATE_DRIFT_DETECTION.md atualizado (~600 linhas)
       - **Tempo real**: 6h (vs 40h estimado = 6.7x mais rápido)
-    - **Fase 3** (P1, 2 semanas): Three-way merge automático
+    - **Fase 3** ✅ **COMPLETA** (P1, 2 semanas): Three-way merge automático
       - Guardar versão original (base) de cada template em `.scaffold-state.yaml`
       - Three-way merge: `git merge-file local.md base.md upstream.md`
       - Detecção automática de conflitos com sugestões de resolução
-      - `--interactive` mode para resolver conflitos manualmente
+      - Modos: `--auto` (sem conflitos), `--force` (com conflitos), `--dry-run` (preview)
+      - `--interactive` mode para resolver conflitos manualmente (Fase 3.1 futuro)
+      - **Implementado**: template_merge.py (~440 linhas), flow merge_template (~200 linhas)
+      - **Extensões**: template_version.py +3 funções (save/load/save_all bases)
+      - **State**: `.scaffold-state.yaml` agora tem campo `template_bases`
+      - **Testes**: 16 testes (100% pass) — merge, conflicts, backup, base storage
+      - **Documentação**: TEMPLATE_DRIFT_DETECTION.md (~900 linhas)
+      - **Tempo real**: 8h (vs 80h estimado = 10x mais rápido)
     - **Fase 4** (P2, futuro): Templates modulares
       - Reestruturar templates como blocos reutilizáveis
       - `.specify/templates/blocks/user-scenarios-v2.0.md`
@@ -346,10 +353,10 @@
     - Correções de bugs propagam automaticamente
     - Consistência entre projetos mantida ao longo do tempo
     - Reduz risco de "template drift" (divergência descontrolada)
-  - **Estimativa**: Fase 1: 16h (✅ 8h real), Fase 2: 40h (✅ 6h real), Fase 3: 80h, Fase 4: 120h (total original: ~256h)
+  - **Estimativa**: Fase 1: 16h (✅ 8h real), Fase 2: 40h (✅ 6h real), Fase 3: 80h (✅ 8h real), Fase 4: 120h (total original: ~256h)
   - **Prioridade**: P1 (critical for long-term template maintenance)
   - **Origem**: Session 2026-04-14 — discussão sobre proteção de customizações vs recebimento de updates
-  - *Reportado em*: 2026-04-14 | *Status*: 🟢 Fase 2 completa (Fase 3 pendente) | *Última atualização*: 2026-04-14 18:50
+  - *Reportado em*: 2026-04-14 | *Status*: 🟢 Fase 3 completa (Fase 3.1 e 4 pendentes) | *Última atualização*: 2026-04-14 19:35
 
 - [ ] **[IMP-45]** Engram MCP oficial — Fallback se Python inadequado 🔵 **PENDENTE** (Fase 3b — fallback)
   - **Contexto**: SE mini-Engram Python (IMP-59) tiver bugs críticos, performance ruim, ou manutenibilidade difícil
