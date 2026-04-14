@@ -343,6 +343,16 @@
       - **Testes**: 16 testes (100% pass) — merge, conflicts, backup, base storage
       - **Documentação**: TEMPLATE_DRIFT_DETECTION.md (~900 linhas)
       - **Tempo real**: 8h (vs 80h estimado = 10x mais rápido)
+    - **Fase 3.1** ✅ **COMPLETA** (P1, 1 semana): Interactive Conflict Resolution
+      - `--interactive` mode para resolver conflitos passo a passo
+      - Side-by-side diff viewer com Rich console UI
+      - Opções de resolução: local, upstream, both, edit, skip
+      - Validação automática e progress tracking
+      - **Implementado**: interactive_merge.py (~370 linhas)
+      - **Integração**: merge_template.py flow atualizado
+      - **Testes**: 18 testes (100% pass) — resolution, validation, edge cases
+      - **Documentação**: TEMPLATE_DRIFT_DETECTION.md atualizado (~1100 linhas)
+      - **Tempo real**: 3h (vs 30h estimado = 10x mais rápido)
     - **Fase 4** (P2, futuro): Templates modulares
       - Reestruturar templates como blocos reutilizáveis
       - `.specify/templates/blocks/user-scenarios-v2.0.md`
@@ -353,10 +363,10 @@
     - Correções de bugs propagam automaticamente
     - Consistência entre projetos mantida ao longo do tempo
     - Reduz risco de "template drift" (divergência descontrolada)
-  - **Estimativa**: Fase 1: 16h (✅ 8h real), Fase 2: 40h (✅ 6h real), Fase 3: 80h (✅ 8h real), Fase 4: 120h (total original: ~256h)
+  - **Estimativa**: Fase 1: 16h (✅ 8h real), Fase 2: 40h (✅ 6h real), Fase 3: 80h (✅ 8h real), Fase 3.1: 30h (✅ 3h real), Fase 4: 120h (total original: ~286h)
   - **Prioridade**: P1 (critical for long-term template maintenance)
   - **Origem**: Session 2026-04-14 — discussão sobre proteção de customizações vs recebimento de updates
-  - *Reportado em*: 2026-04-14 | *Status*: 🟢 Fase 3 completa (Fase 3.1 e 4 pendentes) | *Última atualização*: 2026-04-14 19:35
+  - *Reportado em*: 2026-04-14 | *Status*: 🟢 Fase 3.1 completa (Fase 4 pendente) | *Última atualização*: 2026-04-14 20:15
 
 - [ ] **[IMP-45]** Engram MCP oficial — Fallback se Python inadequado 🔵 **PENDENTE** (Fase 3b — fallback)
   - **Contexto**: SE mini-Engram Python (IMP-59) tiver bugs críticos, performance ruim, ou manutenibilidade difícil
