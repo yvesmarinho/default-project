@@ -26,16 +26,16 @@ negocio:
   problema:
     descricao: |
       [Descreva o problema de negócio que estamos resolvendo]
-      
+
       Exemplo: "Equipes de DevOps gastam 2-3 horas configurando deploys manualmente,
       com alta taxa de erros (15%) devido a configurações inconsistentes."
-    
+
     impacto_atual: |
       [O que acontece se não resolvermos este problema?]
-      
+
       Exemplo: "Sem automação, tempo de deploy aumenta em 50%, custos operacionais
       sobem R$ 30k/mês, e downtime médio sobe de 2min para 30min."
-    
+
     stakeholders:
       - "[STAKEHOLDER_1]"
       # Exemplo: "DevOps Engineers (usuários diretos)"
@@ -50,20 +50,20 @@ negocio:
       - "[STRATEGIC_OBJECTIVE_2]"
       # Exemplo: "Reduzir tempo médio de deploy de 2h para 15min"
       # Adicione mais objetivos conforme necessário
-    
+
     metricas_sucesso:
       - metric: "[METRIC_NAME_1]"
         target: "[TARGET_VALUE_1]"
         # Exemplo:
         #   metric: "Taxa de adoção"
         #   target: "80% da equipe em 3 meses"
-      
+
       - metric: "[METRIC_NAME_2]"
         target: "[TARGET_VALUE_2]"
         # Exemplo:
         #   metric: "Tempo médio de deploy"
         #   target: "<= 15 minutos (vs 2h atual)"
-      
+
       # Adicione mais métricas conforme necessário
 
   contexto:
@@ -73,14 +73,14 @@ negocio:
       - "[CONSTRAINT_2]"
       # Exemplo: "Deadline regulatório: 2026-12-31"
       # Adicione mais restrições conforme necessário
-    
+
     premissas:
       - "[ASSUMPTION_1]"
       # Exemplo: "Usuários têm acesso à internet estável (>=10 Mbps)"
       - "[ASSUMPTION_2]"
       # Exemplo: "Integração com sistema legado X está disponível via API REST"
       # Adicione mais premissas conforme necessário
-    
+
     bounded_contexts:
       # OPCIONAL: Para features complexas, identifique bounded contexts (DDD)
       # Se não aplicável, deixe como lista vazia: []
@@ -93,11 +93,11 @@ negocio:
 produto:
   visao_alto_nivel: |
     [Em 1-2 frases, o que este produto/feature entrega?]
-    
+
     Exemplo: "Sistema automatizado de deploy que permite equipes DevOps
     configurar e executar deploys via interface web/CLI, com rollback automático
     em caso de falha, reduzindo tempo de 2h para 15min e taxa de erro de 15% para <1%."
-  
+
   personas:
     - name: "[PERSONA_NAME_1]"
       needs: "[USER_NEEDS_1]"
@@ -106,7 +106,7 @@ produto:
       #   name: "DevOps Engineer"
       #   needs: "Automatizar deploys repetitivos sem configuração manual"
       #   pain_points: "Configuração manual é propensa a erros e consome 2-3h por deploy"
-    
+
     - name: "[PERSONA_NAME_2]"
       needs: "[USER_NEEDS_2]"
       pain_points: "[PAIN_POINTS_2]"
@@ -114,7 +114,7 @@ produto:
       #   name: "SRE/Platform Admin"
       #   needs: "Visibilidade de deploys em produção e rollback rápido em falhas"
       #   pain_points: "Downtime médio de 30min quando deploy falha devido a rollback manual"
-    
+
     # Adicione mais personas conforme necessário
 
   jornadas_criticas:
@@ -125,7 +125,7 @@ produto:
       #   journey: "Deploy de nova feature em produção"
       #   priority: "P1"
       #   value: "Reduz tempo de 2h para 15min e taxa de erro de 15% para <1%"
-    
+
     - journey: "[USER_JOURNEY_2]"
       priority: "[P1|P2|P3]"
       value: "[VALUE_PROPOSITION_2]"
@@ -133,7 +133,7 @@ produto:
       #   journey: "Rollback automático em caso de falha de deploy"
       #   priority: "P1"
       #   value: "Reduz downtime de 30min para 2min com rollback automático"
-    
+
     # Adicione mais jornadas conforme necessário
     # P1 = Crítico (MVP), P2 = Importante, P3 = Desejável
 
@@ -145,7 +145,7 @@ decisoes_iniciais:
     #   id: "D-01"
     #   question: "Construir solução própria ou comprar SaaS?"
     #   decision: "Construir (justificativa: requisitos específicos de integração com sistema legado não atendidos por SaaS existentes)"
-  
+
   # Adicione mais decisões conforme necessário
   # Se nenhuma decisão foi tomada ainda, remova esta seção ou deixe lista vazia: []
 
@@ -155,13 +155,13 @@ perguntas_abertas:
     # Exemplo:
     #   question: "Como lidar com multi-tenancy? Deployment isolado por tenant ou compartilhado?"
     #   impact: "Alto - afeta arquitetura de dados e segurança"
-  
+
   - question: "[OPEN_QUESTION_2]"
     impact: "[Alto|Médio|Baixo]"
     # Exemplo:
     #   question: "Suporte a quais idiomas na UI? Apenas PT-BR ou PT-BR + EN?"
     #   impact: "Médio - afeta UI e mensagens de validação"
-  
+
   # Adicione mais perguntas conforme necessário
   # Se todas perguntas foram resolvidas, deixe lista vazia: []
 
@@ -173,7 +173,7 @@ metadata:
     - "[TAG1]"
     - "[TAG2]"
     # Exemplo: ["automation", "devops", "deployment", "ci-cd"]
-  
+
   template_version: "1.0.0"
   last_updated: "[YYYY-MM-DD]"
 

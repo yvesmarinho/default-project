@@ -40,10 +40,10 @@ def merge_result_with_conflicts():
     """Sample MergeResult with conflicts."""
     merged_content = textwrap.dedent("""
         # Template Header
-        
+
         ## Section 1
         Normal content here.
-        
+
         ## Section 2
         <<<<<<< LOCAL
         Local customization:
@@ -57,7 +57,7 @@ def merge_result_with_conflicts():
         - Performance criteria
         - Cost estimation
         >>>>>>> UPSTREAM
-        
+
         ## Section 3
         More normal content.
     """).strip()
@@ -275,10 +275,10 @@ class TestValidation:
         """Test validation with no remaining conflicts."""
         clean_content = textwrap.dedent("""
             # Template
-            
+
             ## Section 1
             All conflicts resolved.
-            
+
             ## Section 2
             No markers present.
         """)
@@ -291,7 +291,7 @@ class TestValidation:
         """Test validation with remaining conflict markers."""
         content_with_markers = textwrap.dedent("""
             # Template
-            
+
             <<<<<<< LOCAL
             Unresolved conflict
             =======

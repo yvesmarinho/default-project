@@ -221,15 +221,15 @@ def flow_merge_template(args: argparse.Namespace) -> int:
     if interactive:
         # Interactive mode: prompt user for each conflict
         console.print("\n🔧 Interactive conflict resolution", style="cyan")
-        
+
         resolved_content, all_resolved = interactive_merge.resolve_conflicts_interactively(
             merge_result
         )
-        
+
         if not resolved_content:
             console.print("[yellow]Resolution cancelled[/yellow]")
             return 1
-        
+
         # Validate resolution
         is_valid, errors = interactive_merge.validate_resolution(resolved_content)
         if not is_valid:
@@ -238,14 +238,14 @@ def flow_merge_template(args: argparse.Namespace) -> int:
                 console.print(f"  • {error}", style="red")
             console.print("\n[yellow]💡 Some conflicts remain - use --force to apply anyway[/yellow]")
             return 1
-        
+
         # Apply resolved content
         backup_path = template_merge.apply_merge_result(
             merged_content=resolved_content,
             target_path=local_path,
             create_backup_file=True,
         )
-        
+
         # Update base to new upstream version
         template_version.save_template_base(
             project_dir=target_dir,
@@ -253,13 +253,13 @@ def flow_merge_template(args: argparse.Namespace) -> int:
             version=upstream_ver,
             content=resolved_content,
         )
-        
+
         console.print(f"\n✅ Merge applied successfully", style="green")
         if backup_path:
             console.print(f"  Backup: {backup_path}", style="cyan")
         console.print(f"  Updated: {local_path}", style="cyan")
         console.print(f"  Version: {local_ver} → {upstream_ver}", style="cyan")
-        
+
         return 0 if all_resolved else 1
 
     console.print("\n💡 Resolution options:", style="cyan")

@@ -43,9 +43,9 @@ breaking_changes: false
   - Rationale (why we chose it - trade-offs, constraints)
   - Consequences (positive/negative impacts)
   - Alternatives Considered (what we rejected and why)
-  
+
   Reference decisions from objetivo.yaml → decisoes_iniciais if applicable.
-  
+
   For non-architectural features (e.g., simple bug fixes, UI tweaks), you can skip this section
   or add a note: "No architectural decisions required for this feature."
 -->

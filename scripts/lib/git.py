@@ -91,13 +91,13 @@ def init_repository(config: ProjectConfig) -> CreatedItem:
 def create_initial_commit(config: ProjectConfig) -> CreatedItem:
     """
     Cria commit inicial no repositório com todos os arquivos do scaffold.
-    
+
     - Adiciona todos os arquivos (git add -A)
     - Commit com mensagem padronizada
     - Retorna CreatedItem com status
     """
     target = config.project_path
-    
+
     if not is_git_repo(target):
         return CreatedItem(
             path=target / ".git",
@@ -105,7 +105,7 @@ def create_initial_commit(config: ProjectConfig) -> CreatedItem:
             status="skipped",
             message="repositório não inicializado",
         )
-    
+
     try:
         # git add -A
         subprocess.run(
@@ -115,7 +115,7 @@ def create_initial_commit(config: ProjectConfig) -> CreatedItem:
             capture_output=True,
             timeout=30,
         )
-        
+
         # Commit inicial
         commit_msg = f"chore: scaffold inicial do projeto {config.project_name}\n\nGerado pelo Enterprise Default Project Template v1.0.0"
         subprocess.run(
@@ -125,7 +125,7 @@ def create_initial_commit(config: ProjectConfig) -> CreatedItem:
             capture_output=True,
             timeout=30,
         )
-        
+
         return CreatedItem(
             path=target / ".git",
             kind="git",
@@ -153,17 +153,17 @@ def create_initial_commit(config: ProjectConfig) -> CreatedItem:
 def tag_scaffold(config: ProjectConfig, version: str = "1.0.0") -> CreatedItem:
     """
     Cria tag anotada scaffold-v{version} no repositório.
-    
+
     Args:
         config: Configuração do projeto
         version: Versão do scaffold (default: "1.0.0")
-    
+
     Returns:
         CreatedItem com status da operação
     """
     target = config.project_path
     tag_name = f"scaffold-v{version}"
-    
+
     if not is_git_repo(target):
         return CreatedItem(
             path=target / ".git",
@@ -171,7 +171,7 @@ def tag_scaffold(config: ProjectConfig, version: str = "1.0.0") -> CreatedItem:
             status="skipped",
             message="repositório não inicializado",
         )
-    
+
     try:
         # Tag anotada com mensagem
         tag_msg = f"Projeto criado com Enterprise Default Project Template v{version}"
@@ -182,7 +182,7 @@ def tag_scaffold(config: ProjectConfig, version: str = "1.0.0") -> CreatedItem:
             capture_output=True,
             timeout=10,
         )
-        
+
         return CreatedItem(
             path=target / ".git",
             kind="git",

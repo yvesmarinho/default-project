@@ -610,8 +610,8 @@ Lines 23-31 • Type: both_modified
 
 LOCAL (your changes)                    UPSTREAM (template updates)
 ────────────────────────────────────────────────────────────────────
-Brief description with custom          Brief description including  
-security notes.                         business value and success   
+Brief description with custom          Brief description including
+security notes.                         business value and success
                                         metrics.
 
 ┌──────────────────────────────────────────────────────────────────┐
