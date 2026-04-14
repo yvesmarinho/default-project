@@ -291,7 +291,7 @@ Template Diff: spec-template.md
 @@ -15,6 +15,18 @@
  ## Overview
  Brief description of the feature.
- 
+
 +## Performance Criteria
 +Define performance requirements:
 +- Response time
@@ -359,7 +359,7 @@ Generates structured markdown:
 @@ -15,6 +15,18 @@
  ## Overview
  Brief description of the feature.
- 
+
 +## Performance Criteria
 +Define performance requirements:
 +- Response time
@@ -497,7 +497,8 @@ python scripts/scaffold.py merge-template spec-template --auto
 # Force apply even with conflicts (manual resolution required)
 python scripts/scaffold.py merge-template spec-template --force
 
-# Interactive conflict resolution (coming soon in Phase 3.1)
+# Interactive conflict resolution (IMP-65 Phase 3.1)
+python scripts/scaffold.py merge-template spec-template --interactive
 python scripts/scaffold.py merge-template spec-template --interactive
 ```
 
@@ -550,7 +551,7 @@ To resolve conflicts:
 
 💡 Resolution options:
   --force        Apply merge with conflict markers (manual resolution)
-  --interactive  Interactive conflict resolution (coming soon)
+  --interactive  Interactive conflict resolution
   --dry-run      Preview merge without applying
 ```
 
@@ -590,6 +591,85 @@ Brief description including business value, success metrics, and custom security
 
 ## Technical Approach
 ```
+
+#### 4. Interactive Conflict Resolution (Phase 3.1)
+
+**IMP-65 Phase 3.1** — Step-by-step guided conflict resolution with side-by-side diff visualization.
+
+```bash
+$ python scripts/scaffold.py merge-template spec-template --interactive
+
+Merging template: spec-template.md...
+⚠️  1 conflict(s) detected
+
+Start interactive resolution? [Y/n]: y
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Conflict 1/1
+Lines 23-31 • Type: both_modified
+
+LOCAL (your changes)                    UPSTREAM (template updates)
+────────────────────────────────────────────────────────────────────
+Brief description with custom          Brief description including  
+security notes.                         business value and success   
+                                        metrics.
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 💡 Both versions modified this section.                          │
+│ Review carefully and choose the best content or combine both.    │
+└──────────────────────────────────────────────────────────────────┘
+
+Resolution options:
+  l  Keep LOCAL (your changes)
+  u  Accept UPSTREAM (template updates)
+  b  Keep BOTH (local first, then upstream)
+  e  Edit manually (open editor)
+  s  Skip (leave conflict marker for later)
+  ?  Show diff again
+
+Choose resolution [u]: b
+
+✅ Resolved as: BOTH
+
+Resolution Summary:
+  ✅ Resolved: 1/1
+
+🎉 All conflicts resolved!
+
+✅ Merge applied successfully
+  Backup: .specify/templates/spec-template.backup-20260414-200000.md
+  Updated: .specify/templates/spec-template.md
+  Version: 1.0.0 → 1.5.0
+```
+
+**Interactive Mode Features:**
+
+1. **Side-by-side diff visualization**: See local and upstream changes clearly
+2. **Conflict analysis**: Automatic suggestions based on conflict type
+3. **Multiple resolution options**:
+   - **Keep LOCAL** (`l`): Preserve your customization
+   - **Accept UPSTREAM** (`u`): Get new template features
+   - **Keep BOTH** (`b`): Combine both changes (local first)
+   - **Edit manually** (`e`): Type your own resolution
+   - **Skip** (`s`): Leave marker for later manual resolution
+4. **Preview and validation**: Automatic validation before applying
+5. **Progress tracking**: Track resolution across multiple conflicts
+6. **Automatic backup**: Safe rollback capability
+
+**When to use interactive mode:**
+
+- ✅ Complex conflicts requiring careful review
+- ✅ Need to combine parts from both versions
+- ✅ Want guided assistance during resolution
+- ✅ Multiple conflicts needing individual attention
+
+**When to use other modes:**
+
+- `--auto`: Clean merge with no conflicts (fastest, fully automatic)
+- `--force`: Apply with markers for later IDE-based resolution
+- `--dry-run`: Preview only, no changes applied
+
+---
 
 ### Prerequisites
 
@@ -653,7 +733,7 @@ python scripts/scaffold.py merge-template spec-template --auto
 
 ```bash
 # Your spec-template has custom "Security Review" section
-# Upstream adds "Performance Criteria" section 
+# Upstream adds "Performance Criteria" section
 # → Three-way merge combines both automatically
 
 python scripts/scaffold.py merge-template spec-template --auto
@@ -669,7 +749,7 @@ python scripts/scaffold.py merge-template spec-template --auto
 for template in spec-template plan-template tasks-template; do
   echo "Updating $template..."
   python scripts/scaffold.py merge-template "$template" --auto
-  
+
   if [ $? -ne 0 ]; then
     echo "⚠️ $template had conflicts - review manually"
   fi
@@ -715,14 +795,14 @@ git commit -m "chore: update SpecKit templates to latest upstream"
 
 ## Roadmap: Future Phases
 
-### Phase 3.1: Interactive Conflict Resolution
+### Phase 3.1: Interactive Conflict Resolution ✅ **COMPLETE**
 
 ```bash
-# Interactive resolution (planned)
+# Interactive resolution (implemented in Phase 3.1)
 python scripts/scaffold.py merge-template spec-template --interactive
 ```
 
-Will provide:
+Provides:
 - Step-by-step conflict resolution prompts
 - Side-by-side diff view
 - Accept local / upstream / both / edit options
@@ -770,7 +850,7 @@ ls .specify/templates/
 
 **Cause**: Project created before IMP-65 Fase 3 doesn't have template bases in `.scaffold-state.yaml`.
 
-**Solution**: 
+**Solution**:
 1. Review diff with `diff-template` to understand changes
 2. If template is unmodified, safe to copy upstream version directly
 3. If template has customizations, manually add base to state file
@@ -921,7 +1001,7 @@ python scripts/scaffold.py merge-template spec-template --auto
 
 ```bash
 # Your spec-template has custom "Security Review" section
-# Upstream adds "Performance Criteria" section 
+# Upstream adds "Performance Criteria" section
 # → Three-way merge combines both automatically
 
 python scripts/scaffold.py merge-template spec-template --auto
@@ -937,7 +1017,7 @@ python scripts/scaffold.py merge-template spec-template --auto
 for template in spec-template plan-template tasks-template; do
   echo "Updating $template..."
   python scripts/scaffold.py merge-template "$template" --auto
-  
+
   if [ $? -ne 0 ]; then
     echo "⚠️ $template had conflicts - review manually"
   fi
@@ -983,14 +1063,14 @@ git commit -m "chore: update SpecKit templates to latest upstream"
 
 ## Roadmap: Future Phases
 
-### Phase 3.1: Interactive Conflict Resolution
+### Phase 3.1: Interactive Conflict Resolution ✅ **COMPLETE**
 
 ```bash
-# Interactive resolution (planned)
+# Interactive resolution (implemented in Phase 3.1)
 python scripts/scaffold.py merge-template spec-template --interactive
 ```
 
-Will provide:
+Provides:
 - Step-by-step conflict resolution prompts
 - Side-by-side diff view
 - Accept local / upstream / both / edit options
@@ -1038,7 +1118,7 @@ ls .specify/templates/
 
 **Cause**: Project created before IMP-65 Fase 3 doesn't have template bases in `.scaffold-state.yaml`.
 
-**Solution**: 
+**Solution**:
 1. Review diff with `diff-template` to understand changes
 2. If template is unmodified, safe to copy upstream version directly
 3. If template has customizations, manually add base to state file

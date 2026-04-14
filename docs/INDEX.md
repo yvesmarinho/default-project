@@ -1,14 +1,48 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-14 18:45 — Session active: IMP-65 Fase 2 complete (template diff)
-**Project Status**: 🟢 Stable — Template drift detection + visual diff operational
-**Version**: 1.8.0
-**Last Session**: 2026-04-14 — ✅ IMP-65 Fase 2 COMPLETE (Template Diff & Visualization)
+**Last Updated**: 2026-04-14 20:15 — Session active: IMP-65 Fase 3.1 complete (interactive conflict resolution)
+**Project Status**: 🟢 Stable — Template system 100% complete (detect → diff → merge → interactive resolve)
+**Version**: 1.10.0
+**Last Session**: 2026-04-14 — ✅ IMP-65 Fase 3.1 COMPLETE (Interactive Conflict Resolution & Phase 3)
 
 ---
 
 > **✅ SESSION 2026-04-14 SUMMARY**
-> - **IMP-65 FASE 2 COMPLETE**: Template Diff & Visualization System
+> - **IMP-65 FASE 3.1 COMPLETE**: Interactive Conflict Resolution System
+> - **MÓDULOS CRIADOS**:
+>   - `scripts/lib/interactive_merge.py` (~370 linhas) — interactive UI com Rich console
+>   - Side-by-side diff viewer, conflict analysis, multiple resolution options
+>   - Progress tracking e validação automática
+> - **INTEGRAÇÃO**: `merge_template.py` flow — --interactive mode totalmente funcional
+> - **FUNCIONALIDADES**:
+>   - Side-by-side diff visualization (LOCAL vs UPSTREAM)
+>   - Opções de resolução: keep local, accept upstream, keep both, edit manual, skip
+>   - Análise automática de conflitos com sugestões contextuais
+>   - Validação automática antes de aplicar
+>   - Progress tracking com summary final
+>   - Backup automático antes de aplicar
+> - **TESTES**: 18 testes (100% passing) — resolution, validation, edge cases
+> - **DOCUMENTAÇÃO**: TEMPLATE_DRIFT_DETECTION.md atualizado (~1100 linhas)
+>   - Seção completa interactive mode (~100 linhas)
+>   - Roadmap atualizado: Phase 3.1 de "planned" → "COMPLETE"
+>   - Exemplos completos com workflow interativo
+> - **TRACKING**: Phase 3.1 implementation: 3h (vs 30h estimado = 10x mais rápido)
+> - **IMPACTO**: Template sync workflow agora 100% completo end-to-end
+>   - ✅ Detecção (check-templates)
+>   - ✅ Visualização (diff-template)
+>   - ✅ Merge automático (merge-template --auto)
+>   - ✅ Resolução interativa (merge-template --interactive)
+> - Git: Changes ready for commit
+> - Productividade total IMP-65 Fases 1-3.1: 25h real vs 166h estimado (6.6x mais rápido)
+>
+> **✅ SESSION 2026-04-14 (Fase 3)**
+> - **IMP-65 FASE 3 COMPLETE**: Template Merge & Three-Way Merge System (8h)
+> - **MÓDULOS**: template_merge.py, merge_template.py flow, 16 testes
+> - **COMANDO**: `scaffold.py merge-template` com git merge-file
+> - **DOCUMENTAÇÃO**: TEMPLATE_DRIFT_DETECTION.md (~900 linhas)
+>
+> **✅ SESSION 2026-04-14 (Fase 2)**
+> - **IMP-65 FASE 2 COMPLETE**: Template Diff & Visualization System (6h)
 > - **MÓDULOS CRIADOS**:
 >   - `scripts/lib/template_diff.py` (~420 linhas) — diff engine, customization detection
 >   - `scripts/lib/flows/diff_template.py` (~130 linhas) — CLI flow for diff-template
