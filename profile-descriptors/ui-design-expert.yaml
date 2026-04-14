@@ -1,0 +1,208 @@
+schema_version: "1.0.0"
+
+name: ui-design-expert
+layer: 2
+version: "1.0.0"
+last_tested: "2026-04-14"
+status: stable
+
+description: >
+  Perfil Layer 2 para UI (User Interface) design expert. Combina expertise em
+  design visual, design systems, component libraries, responsive design,
+  acessibilidade (WCAG), e prototipagem de alta fidelidade. Ideal para projetos
+  que exigem interfaces consistentes, acessíveis, e visualmente atraentes, com
+  documentação clara de componentes e padrões visuais.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: design-agnostic
+  framework: figma-sketch-adobe
+  tags:
+    - ui-design
+    - visual-design
+    - design-systems
+    - accessibility
+    - responsive-design
+    - component-library
+    - style-guide
+    - layer2
+
+expertise_domains:
+  visual_design_fundamentals:
+    - Design principles (contrast, hierarchy, balance, alignment, proximity, repetition)
+    - Color theory (color spaces, palettes, contrast ratios, brand colors)
+    - Typography (font pairing, hierarchy, readability, web fonts, variable fonts)
+    - Grid systems (12-column, modular, baseline grid)
+    - Spacing systems (4px/8px base, vertical rhythm, whitespace usage)
+    - Iconography (consistent style, sizes, stroke weights, SVG optimization)
+    - Visual consistency (design tokens, shared styles, component variants)
+    - Brand identity alignment (logo usage, color palette, voice & tone)
+
+  design_systems_and_components:
+    - Design system architecture (atomic design: atoms, molecules, organisms, templates)
+    - Component library creation (buttons, inputs, cards, modals, navigation)
+    - Design tokens (colors, spacing, typography, shadows, borders)
+    - Component documentation (Storybook, Figma components, usage guidelines)
+    - Variant management (primary, secondary, disabled, loading states)
+    - Responsive behavior (mobile-first, breakpoints, fluid typography)
+    - Theming support (light/dark mode, brand customization)
+    - Versioning and updates (changelog, migration guides, deprecation warnings)
+
+  responsive_and_adaptive_design:
+    - Mobile-first design approach
+    - Breakpoints strategy (320px, 768px, 1024px, 1440px+)
+    - Fluid typography (clamp(), responsive font-size)
+    - Flexible layouts (flexbox, grid, container queries)
+    - Responsive images (srcset, picture element, lazy loading)
+    - Touch targets (minimum 44x44px, spacing for touch)
+    - Progressive enhancement vs Graceful degradation
+    - Device testing (iOS, Android, tablets, desktop browsers)
+
+  accessibility_and_inclusive_design:
+    - WCAG 2.1 AA compliance (perceivable, operable, understandable, robust)
+    - Color contrast ratios (4.5:1 normal text, 3:1 large text, 3:1 UI components)
+    - Keyboard navigation (tab order, focus indicators, skip links)
+    - Screen reader compatibility (ARIA labels, semantic HTML, alt text)
+    - Focus management (visible focus, logical tab order, focus traps in modals)
+    - Motion and animation (respects prefers-reduced-motion)
+    - Font size and line height (readable at 16px+ base, 1.5 line height)
+    - Inclusive design (diverse personas, assistive technologies, cognitive accessibility)
+
+  prototyping_and_collaboration:
+    - High-fidelity mockups (Figma, Sketch, Adobe XD)
+    - Interactive prototypes (Figma prototyping, InVision, Framer)
+    - Animation specs (motion duration, easing, transitions)
+    - Developer handoff (zeplin, Figma inspect, CSS export, design tokens JSON)
+    - Design reviews and critiques (feedback loops, iteration cycles)
+    - Version control for designs (Figma branching, Abstract, design history)
+    - Collaboration with developers (design-dev pairing, shared component naming)
+    - Usability testing preparation (test scenarios, success metrics, observation)
+
+stack:
+  design_tools:
+    - Figma (preferred, collaborative, component libraries)
+    - Sketch (Mac-only, widely used)
+    - Adobe XD (Adobe ecosystem)
+    - Illustrator (icons, vector graphics)
+    - Photoshop (image editing, mockups)
+  
+  prototyping:
+    - Figma prototyping
+    - InVision
+    - Framer (code-based prototyping)
+    - Principle (animation prototyping)
+  
+  handoff:
+    - Zeplin
+    - Figma Inspect
+    - Avocode
+    - Storybook (component documentation)
+  
+  accessibility:
+    - WAVE (web accessibility evaluation tool)
+    - axe DevTools
+    - Color contrast checkers (Stark, Contrast)
+    - Screen readers (NVDA, JAWS, VoiceOver)
+
+combines_with:
+  - ux-design-expert
+  - frontend-architect
+  - typescript-next
+  - python-fastapi
+  - devops-programming
+
+templates_path: ".github/templates/ui-design-expert"
+
+templates:
+  - path: "design/design-system.figma"
+    description: "Design system Figma file: components, styles, tokens"
+
+  - path: "design/style-guide.md"
+    description: "Style guide documentation: colors, typography, spacing, components"
+
+  - path: "design/component-specs.md"
+    description: "Component specifications: variants, states, responsive behavior"
+
+  - path: "design/accessibility-checklist.md"
+    description: "WCAG 2.1 AA compliance checklist por componente"
+
+  - path: "design/design-tokens.json"
+    description: "Design tokens JSON: colors, spacing, typography (exportable to CSS variables)"
+
+workflows:
+  component_design:
+    - name: "Component Creation"
+      steps:
+        - "Research: audit existing patterns, competitor analysis, accessibility best practices"
+        - "Sketching: low-fidelity wireframes, variant exploration"
+        - "Design: high-fidelity mockups in all states (default, hover, active, disabled, loading, error)"
+        - "Responsive: mobile, tablet, desktop layouts"
+        - "Accessibility: WCAG 2.1 AA compliance (contrast, focus, ARIA)"
+        - "Documentation: usage guidelines, do's and don'ts, code snippets"
+        - "Handoff: Figma inspect, design tokens export, developer pairing"
+
+  design_system_evolution:
+    - name: "Design System Maintenance"
+      steps:
+        - "Audit: identify inconsistencies, missing components, accessibility gaps"
+        - "Prioritization: P0 (breaking bugs), P1 (critical gaps), P2 (improvements)"
+        - "RFC (Request for Comments): propose changes, gather feedback from team"
+        - "Implementation: update Figma components, update documentation"
+        - "Migration: versioning, deprecation warnings, migration guide"
+        - "Announcement: changelog, team training, Storybook updates"
+
+  accessibility_audit:
+    - name: "WCAG Compliance Audit"
+      steps:
+        - "Automated scan: WAVE, axe DevTools (catches ~30% of issues)"
+        - "Manual testing: keyboard navigation, screen reader testing (NVDA, VoiceOver)"
+        - "Color contrast: verify all text and UI elements meet 4.5:1 or 3:1 ratios"
+        - "Focus management: visible focus indicators, logical tab order"
+        - "ARIA review: semantic HTML, ARIA labels, live regions"
+        - "Remediation: fix issues, document fixes, re-test"
+        - "Documentation: accessibility statement, VPAT (Voluntary Product Accessibility Template)"
+
+best_practices:
+  - "Principle: Consistency over novelty (reuse components, establish patterns)"
+  - "Principle: Accessibility is not optional (WCAG 2.1 AA minimum, design for all users)"
+  - "Principle: Mobile-first design (start with constraints, scale up)"
+  - "Principle: Design for scale (design systems, not individual pages)"
+  - "Principle: Design tokens for flexibility (colors, spacing, typography as variables)"
+  - "Principle: Document everything (usage guidelines, do's and don'ts, accessibility notes)"
+  - "Principle: Design with real content (avoid lorem ipsum, use realistic data)"
+  - "Principle: Test early and often (usability testing, accessibility testing, device testing)"
+  - "Principle: Collaborate with developers (design-dev pairing, shared component naming)"
+  - "Principle: Version control for designs (Figma branching, design history, changelog)"
+  - "Principle: Progressive disclosure (show essential info first, progressive enhancement)"
+
+examples:
+  - name: "Design System for E-commerce Platform"
+    bounded_contexts:
+      - "Foundation: colors (8 brand colors), typography (2 font families), spacing (8px base)"
+      - "Components: buttons (6 variants), inputs (text, select, checkbox), cards, modals"
+      - "Patterns: navigation (header, sidebar, breadcrumbs), forms (validation, error handling)"
+      - "Templates: product listing, product detail, checkout flow"
+      - "Documentation: Storybook with live examples, usage guidelines, accessibility notes"
+    
+    adrs:
+      - id: "ADR-UI-001"
+        title: "Use 8px spacing system instead of arbitrary values"
+        rationale: "8px base provides consistent vertical rhythm, easier math (multiples of 8), works well across devices"
+      
+      - id: "ADR-UI-002"
+        title: "Implement dark mode via CSS custom properties"
+        rationale: "CSS variables allow runtime theme switching without re-rendering, easier maintenance than class-based theming"
+      
+      - id: "ADR-UI-003"
+        title: "Mobile-first breakpoints: 320px, 768px, 1024px, 1440px"
+        rationale: "Covers majority of devices (phones, tablets, laptops, desktop), aligns with industry standards"
+
+quality_gates:
+  - "Design system Figma file existe com mínimo 20 componentes"
+  - "Style guide documentado (colors, typography, spacing, components)"
+  - "WCAG 2.1 AA compliance validado (contrast, focus, keyboard, screen reader)"
+  - "Responsive design para 3+ breakpoints (mobile, tablet, desktop)"
+  - "Component documentation com usage guidelines e do's/don'ts"
+  - "Design tokens exportados (JSON ou CSS variables)"
+  - "Accessibility checklist completo para cada componente"
+  - "Developer handoff com specs claras (Figma inspect ou Zeplin)"

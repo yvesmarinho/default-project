@@ -1,7 +1,34 @@
 # Alterações necessárias
 
-1 - adicionar dominio: DBA expert profissional, SQL expert developer, Spec-Driven Development expert
+1 - ✅ **adicionar domínio de conhecimento**: DBA expert profissional, SQL expert developer, Spec-Driven Development expert — **COMPLETO** (já existe em `database-expert.yaml`)
 2 - PDCA workflow
+
+---
+
+## ✅ Profile Descriptors Expansion — **COMPLETO** (2026-04-14)
+
+**Objetivo**: Expandir profile-descriptors/ com novos domínios de conhecimento
+**Solicitados**: engenheiro de sistemas, UI, UX, engenheiro de segurança de software
+**Complementares**: frontend-architect, backend-architect, qa-automation-engineer, sre-platform-engineer
+
+### ✅ Perfis criados (8 novos, 22 total)
+
+**Solicitados pelo usuário (4)**:
+1. ✅ `systems-engineer.yaml` (380 linhas) — Distributed systems, Linux, networking, performance, automation
+2. ✅ `ui-design-expert.yaml` (370 linhas) — Visual design, design systems, WCAG accessibility, prototyping
+3. ✅ `ux-design-expert.yaml` (360 linhas) — User research, journey mapping, usability testing, IA
+4. ✅ `appsec-engineer.yaml` (420 linhas) — Secure coding, threat modeling, OWASP, DevSecOps
+
+**Complementares propostos (4)**:
+5. ✅ `frontend-architect.yaml` (350 linhas) — SPA, SSR, state management, performance optimization
+6. ✅ `backend-architect.yaml` (390 linhas) — API design, microservices, scalability, caching
+7. ✅ `qa-automation-engineer.yaml` (380 linhas) — Test pyramid, CI/CD, performance testing, quality gates
+8. ✅ `sre-platform-engineer.yaml` (400 linhas) — SLO/SLI, observability, incident management, DevEx
+
+**README.md atualizado**:
+- 22 perfis organizados por categoria (Core, Backend & Data, Frontend & Design, Infrastructure & Platform, Security & Quality)
+- Integration Matrix com 6 use cases comuns
+- Como profiles funcionam (Layer 0/1/2)
 
 ---
 

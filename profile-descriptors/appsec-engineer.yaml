@@ -1,0 +1,224 @@
+schema_version: "1.0.0"
+
+name: appsec-engineer
+layer: 2
+version: "1.0.0"
+last_tested: "2026-04-14"
+status: stable
+
+description: >
+  Perfil Layer 2 para Application Security (AppSec) Engineer. Combina expertise em
+  secure coding, threat modeling, vulnerability assessment, penetration testing,
+  security automation (DevSecOps), e compliance (OWASP, CWE, CVE). Ideal para
+  projetos que exigem segurança por design, code review focado em segurança, e
+  integração de security gates no CI/CD pipeline.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: security-agnostic
+  framework: owasp-cwe
+  tags:
+    - appsec
+    - secure-coding
+    - threat-modeling
+    - vulnerability-assessment
+    - penetration-testing
+    - devsecops
+    - owasp-top-10
+    - layer2
+
+expertise_domains:
+  secure_coding_practices:
+    - Input validation and sanitization (parameterized queries, output encoding)
+    - Authentication and authorization (OAuth2, OIDC, RBAC, ABAC, JWT best practices)
+    - Session management (secure cookies, CSRF tokens, session fixation prevention)
+    - Cryptography (TLS 1.3, AES-256, bcrypt for passwords, key management)
+    - Error handling (avoid leaking stack traces, sensitive data in errors)
+    - Logging and monitoring (SIEM integration, security events, log aggregation)
+    - Secrets management (HashiCorp Vault, AWS Secrets Manager, .env protection)
+    - Dependency management (SCA - Software Composition Analysis, SBOM)
+
+  owasp_and_vulnerability_knowledge:
+    - OWASP Top 10 (Injection, Broken Auth, XSS, Insecure Deserialization, etc.)
+    - CWE Top 25 (Common Weakness Enumeration, dangerous software errors)
+    - CVE tracking (Common Vulnerabilities and Exposures, vulnerability databases)
+    - SANS Top 25 (most dangerous software errors)
+    - Injection attacks (SQL injection, NoSQL injection, LDAP injection, command injection)
+    - Cross-Site Scripting (XSS: reflected, stored, DOM-based)
+    - Cross-Site Request Forgery (CSRF/XSRF)
+    - Broken access control (IDOR, path traversal, privilege escalation)
+    - Security misconfiguration (default credentials, verbose errors, open ports)
+    - XML External Entity (XXE) attacks
+
+  threat_modeling_and_risk_assessment:
+    - STRIDE methodology (Spoofing, Tampering, Repudiation, Info Disclosure, DoS, Elevation)
+    - PASTA (Process for Attack Simulation and Threat Analysis)
+    - Attack trees and attack surfaces
+    - Data flow diagrams (DFDs) for threat modeling
+    - Risk scoring (CVSS - Common Vulnerability Scoring System)
+    - Risk matrix (likelihood vs impact, P0-P3 prioritization)
+    - Security requirements elicitation (from business objectives)
+    - Abuse cases and misuse cases (negative scenarios)
+
+  penetration_testing_and_exploitation:
+    - Reconnaissance (OSINT, subdomain enumeration, port scanning)
+    - Vulnerability scanning (Nessus, OpenVAS, Qualys)
+    - Web application testing (Burp Suite, OWASP ZAP, SQLMap)
+    - Network penetration testing (Metasploit, Nmap, Wireshark)
+    - API security testing (Postman, Insomnia, authorization bypass)
+    - Exploitation techniques (reverse shells, privilege escalation, lateral movement)
+    - Social engineering testing (phishing simulations, awareness campaigns)
+    - Reporting and remediation guidance (executive summary, technical details, POC)
+
+  devsecops_and_automation:
+    - SAST (Static Application Security Testing: SonarQube, Checkmarx, Semgrep)
+    - DAST (Dynamic Application Security Testing: OWASP ZAP, Burp Suite Enterprise)
+    - SCA (Software Composition Analysis: Snyk, Dependabot, OWASP Dependency-Check)
+    - IAST (Interactive Application Security Testing: Contrast Security)
+    - Container scanning (Trivy, Clair, Anchore)
+    - IaC scanning (Terraform security, CloudFormation security, tfsec, Checkov)
+    - Secret scanning (GitLeaks, TruffleHog, GitHub Secret Scanning)
+    - CI/CD security gates (break build on high/critical vulnerabilities)
+
+  compliance_and_standards:
+    - OWASP ASVS (Application Security Verification Standard)
+    - NIST Cybersecurity Framework (Identify, Protect, Detect, Respond, Recover)
+    - PCI-DSS (Payment Card Industry Data Security Standard)
+    - GDPR/LGPD (data privacy, consent, data minimization, breach notification)
+    - SOC 2 Type II (security, availability, confidentiality controls)
+    - ISO 27001 (Information Security Management System)
+    - HIPAA (healthcare data protection, US regulation)
+    - CIS Benchmarks (Center for Internet Security, hardening guides)
+
+stack:
+  sast_tools:
+    - SonarQube (self-hosted, comprehensive)
+    - Semgrep (fast, OSS, customizable rules)
+    - Checkmarx, Fortify (enterprise options)
+  
+  dast_tools:
+    - OWASP ZAP (OSS, API security)
+    - Burp Suite Professional (web app testing)
+    - Nuclei (template-based vulnerability scanning)
+  
+  sca_tools:
+    - Snyk (OSS, container, IaC scanning)
+    - Dependabot (GitHub native)
+    - OWASP Dependency-Check (OSS)
+  
+  secrets_scanning:
+    - GitLeaks
+    - TruffleHog
+    - GitHub Advanced Security (secret scanning)
+  
+  penetration_testing:
+    - Burp Suite Professional
+    - Metasploit Framework
+    - Kali Linux (toolkit: nmap, sqlmap, nikto, dirb)
+
+combines_with:
+  - devops-security
+  - systems-engineer
+  - backend-architect
+  - sre-platform-engineer
+  - qa-automation-engineer
+
+templates_path: ".github/templates/appsec-engineer"
+
+templates:
+  - path: "security/threat-model-template.md"
+    description: "Threat model template: STRIDE analysis, attack trees, mitigations"
+
+  - path: "security/security-requirements.md"
+    description: "Security requirements checklist: authentication, encryption, logging, etc."
+
+  - path: "security/pentest-report-template.md"
+    description: "Penetration test report: executive summary, findings, POCs, recommendations"
+
+  - path: "security/secure-coding-checklist.md"
+    description: "Secure coding checklist: OWASP Top 10 prevention, input validation, etc."
+
+  - path: "security/incident-response-plan.md"
+    description: "Security incident response plan: detection, containment, eradication, recovery"
+
+workflows:
+  threat_modeling:
+    - name: "STRIDE Threat Modeling"
+      steps:
+        - "Diagram: create data flow diagram (DFD) showing components, data stores, trust boundaries"
+        - "Identify threats: apply STRIDE to each element (Spoofing, Tampering, Repudiation, etc.)"
+        - "Rank threats: use CVSS or risk matrix (likelihood vs impact)"
+        - "Mitigate: define security controls (prevention, detection, response)"
+        - "Validate: review with team, update architecture decision records (ADRs)"
+        - "Document: threat model document, mitigation tracking, periodic reviews"
+
+  secure_code_review:
+    - name: "Security-Focused Code Review"
+      steps:
+        - "Automated scan: run SAST tool (SonarQube, Semgrep) before manual review"
+        - "Focus areas: authentication, authorization, input validation, cryptography, error handling"
+        - "OWASP Top 10: check for injection, XSS, broken auth, insecure deserialization"
+        - "Secrets: verify no hardcoded secrets (API keys, passwords, tokens)"
+        - "Manual review: logic flaws, business logic bypass, race conditions"
+        - "Feedback: provide actionable recommendations, link to secure coding guidelines"
+        - "Re-review: verify fixes, ensure no new vulnerabilities introduced"
+
+  vulnerability_remediation:
+    - name: "Vulnerability Management Lifecycle"
+      steps:
+        - "Discovery: SAST + DAST + SCA scans identify vulnerabilities"
+        - "Triage: validate findings (remove false positives), assess severity (CVSS)"
+        - "Prioritize: risk-based prioritization (exploit availability, asset criticality)"
+        - "Remediate: fix code, patch dependencies, apply workarounds"
+        - "Verify: re-scan to confirm fix, regression testing"
+        - "Document: update vulnerability tracking, communicate to stakeholders"
+        - "KPIs: track MTTR (Mean Time To Remediate), vulnerability backlog trends"
+
+best_practices:
+  - "Principle: Security by design (threat modeling BEFORE coding, not after)"
+  - "Principle: Defense in depth (multiple security layers, assume breaches)"
+  - "Principle: Least privilege (minimum permissions needed, RBAC/ABAC)"
+  - "Principle: Zero trust (never trust, always verify, network segmentation)"
+  - "Principle: Fail securely (errors don't leak sensitive info, fail closed)"
+  - "Principle: Don't roll your own crypto (use vetted libraries: bcrypt, libsodium)"
+  - "Principle: Input validation (whitelist, not blacklist; validate server-side)"
+  - "Principle: Output encoding (context-aware escaping: HTML, JS, SQL, URL)"
+  - "Principle: Secrets never in code (environment variables, secrets managers)"
+  - "Principle: Logging ≠ monitoring (log security events, monitor for anomalies, SIEM)"
+  - "Principle: Patch dependencies (automate with Dependabot, monitor CVEs)"
+  - "Principle: Secure defaults (disable debug mode, remove default credentials)"
+
+examples:
+  - name: "REST API Security Baseline"
+    bounded_contexts:
+      - "Authentication: OAuth2 with PKCE, JWT tokens (15min expiry), refresh tokens"
+      - "Authorization: RBAC with granular permissions, API rate limiting (100 req/min)"
+      - "Input validation: JSON Schema validation, parameterized queries (prevent SQL injection)"
+      - "Encryption: TLS 1.3 in transit, AES-256-GCM at rest, bcrypt for passwords"
+      - "Logging: security events (login attempts, permission denials) to SIEM"
+      - "Monitoring: anomaly detection (unusual API usage patterns), alerting on P0 events"
+    
+    adrs:
+      - id: "ADR-SEC-001"
+        title: "Use OAuth2 with PKCE instead of basic auth"
+        rationale: "PKCE prevents authorization code interception attacks, industry best practice for SPAs and mobile apps"
+      
+      - id: "ADR-SEC-002"
+        title: "JWT tokens with 15-minute expiry + refresh tokens"
+        rationale: "Short-lived access tokens reduce blast radius if stolen, refresh tokens allow seamless UX"
+      
+      - id: "ADR-SEC-003"
+        title: "Rate limiting: 100 requests/minute per user"
+        rationale: "Prevents brute force attacks, DoS attacks, API abuse; 100 req/min balances security and UX"
+
+quality_gates:
+  - "Threat model exists: STRIDE analysis, attack trees, mitigations documented"
+  - "SAST scan passing: zero high/critical issues (P0/P1), <10 medium issues (P2)"
+  - "DAST scan passing: zero high/critical vulnerabilities in staging environment"
+  - "SCA scan passing: all dependencies patched, no known CVEs with CVSS >= 7.0"
+  - "Secrets scan passing: no hardcoded API keys, passwords, tokens detected"
+  - "Security requirements documented: authentication, encryption, logging, rate limiting"
+  - "Penetration test conducted: annual or before major releases, findings remediated"
+  - "Security training: developers completed secure coding training (OWASP Top 10)"
+  - "Incident response plan: security incidents have defined response procedures"
+  - "Compliance validated: PCI-DSS, GDPR/LGPD, SOC 2 controls verified (if applicable)"
