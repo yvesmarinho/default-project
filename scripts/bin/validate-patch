@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""
+Patch Validator CLI - IMP-65 Phase 4.3
+
+Validate patch files.
+
+Usage:
+    validate-patch <patch-path> [--verbose]
+
+Examples:
+    # Validate single patch
+    validate-patch .specify/templates/patches/spec-template/001-add-security.patch
+
+    # Validate with details
+    validate-patch .specify/templates/patches/spec-template/001-add-security.patch --verbose
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+# Add scripts to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from lib.template_patches import (
+    validate_patch_file,
+    load_patch,
+    PatchNotFoundError,
+    PatchValidationError,
+)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Validate patch files",
+        epilog="Part of IMP-65 Phase 4 - Modular Template System"
+    )
+
+    parser.add_argument(
+        "patch",
+        type=Path,
+        help="Path to patch file to validate"
+    )
+
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Show detailed validation results"
+    )
+
+    args = parser.parse_args()
+
+    try:
+        # Validate patch
+        is_valid, errors = validate_patch_file(args.patch)
+
+        if is_valid:
+            print(f"✅ Valid patch: {args.patch.name}")
+
+            if args.verbose:
+                # Load and show metadata
+                patch = load_patch(args.patch)
+                print(f"\n📋 Metadata:")
+                print(f"   Patch name: {patch.metadata.patch_name}")
+                print(f"   Version: {patch.metadata.patch_version}")
+                print(f"   Target template: {patch.metadata.target_template}")
+                if patch.metadata.target_block:
+                    print(f"   Target block: {patch.metadata.target_block}")
+                if patch.metadata.target_version:
+                    print(f"   Target version: {patch.metadata.target_version}")
+                print(f"   Created: {patch.metadata.created}")
+                print(f"   Description: {patch.metadata.description}")
+                if patch.metadata.author:
+                    print(f"   Author: {patch.metadata.author}")
+
+                print(f"\n🔧 Operations ({len(patch.operations)}):")
+                for i, op in enumerate(patch.operations, 1):
+                    print(f"   {i}. {op.operation_type.value.upper()}")
+                    print(f"      Anchor: '{op.anchor}'")
+                    if op.content:
+                        lines = op.content.count('\n') + 1
+                        print(f"      Content: {len(op.content)} chars, {lines} line(s)")
+
+            sys.exit(0)
+        else:
+            print(f"❌ Invalid patch: {args.patch.name}")
+            print(f"\nErrors ({len(errors)}):")
+            for error in errors:
+                print(f"   - {error}")
+            sys.exit(1)
+
+    except PatchNotFoundError as e:
+        print(f"❌ Error: {e}", file=sys.stderr)
+        sys.exit(2)
+
+    except PatchValidationError as e:
+        print(f"❌ Validation error: {e}", file=sys.stderr)
+        sys.exit(3)
+
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}", file=sys.stderr)
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(99)
+
+
+if __name__ == '__main__':
+    main()

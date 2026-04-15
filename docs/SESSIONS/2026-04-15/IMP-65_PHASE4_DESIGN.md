@@ -11,7 +11,7 @@
 
 Phase 4 transforms SpecKit templates from monolithic files into a modular block-based system. This enables:
 - **Granular versioning**: Update individual sections without touching entire templates
-- **Cleaner customizations**: Patches stored separately, not mixed with standard content  
+- **Cleaner customizations**: Patches stored separately, not mixed with standard content
 - **Better conflict resolution**: Merge happens at block level, not file level
 - **Reusability**: Share common blocks across multiple templates
 
@@ -140,14 +140,14 @@ author: "user@example.com"
 @@ After: User Scenarios & Testing *(mandatory)* @@
 +
 + ### Security Review Checklist
-+ 
++
 + All scenarios must pass security review before implementation:
 + - [ ] Input validation for all user inputs
 + - [ ] Authentication/authorization checks
 + - [ ] Data encryption (at rest and in transit)
 + - [ ] OWASP Top 10 mitigation
 + - [ ] Security logging for audit trail
-+ 
++
 @@ END @@
 ```
 

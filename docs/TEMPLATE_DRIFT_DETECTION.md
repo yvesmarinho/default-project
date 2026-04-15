@@ -1153,9 +1153,215 @@ diff -u .specify/templates/spec-template.md \
 
 ---
 
+## Modular Templates and Drift Detection
+
+**IMP-65 Phase 4** introduced a modular template system that fundamentally changes how drift is detected and managed.
+
+### Overview
+
+Instead of monolithic template files, the modular system uses:
+- **Blocks**: Reusable, versioned template sections (`.specify/blocks/`)
+- **Templates**: Composition files with `@include` directives
+- **Patches**: Project-specific customizations (`.specify/patches/`)
+
+### How Drift Detection Changes
+
+#### Traditional Monolithic Templates
+```
+spec-template.md (v1.0.0) → spec-template.md (v1.5.0)
+└─ Entire file comparison
+   └─ High risk of conflicts with customizations
+```
+
+#### Modular Templates
+```
+spec-template.md
+├─ @include blocks/user-scenarios-v1.0.md  → v2.0.md
+├─ @include blocks/success-criteria-v1.0.md → v1.0.md (unchanged)
+└─ Custom sections in .specify/patches/spec/001-custom.patch
+```
+
+**Benefits**:
+- **Granular drift**: Track changes per block, not per file
+- **Safer updates**: Update unchanged blocks automatically
+- **Custom preservation**: Patches separate from standard content
+- **Clearer conflicts**: Know exactly which block changed
+
+### Checking Block Drift
+
+```bash
+# Check all blocks in project
+./scripts/bin/list-patches .specify/patches/ --verbose
+
+# Validate block versions
+./scripts/bin/validate-block .specify/blocks/user-scenarios-v1.0.md --verbose
+
+# Compare block with upstream
+diff .specify/blocks/user-scenarios-v1.0.md \
+  /path/to/a-default-project/.specify/blocks/user-scenarios-v2.0.md
+```
+
+### Detecting Block Version Changes
+
+**In Template Files**:
+```markdown
+# Before
+@include blocks/user-scenarios-v1.0.md
+
+# After (upstream update)
+@include blocks/user-scenarios-v2.0.md
+```
+
+**Detection**:
+```bash
+# Show which blocks are included
+grep "@include" .specify/templates/spec-template.md
+
+# Compare with upstream
+diff <(grep "@include" .specify/templates/spec-template.md) \
+     <(grep "@include" /path/to/upstream/.specify/templates/spec-template.md)
+```
+
+### Upgrading to Modular System
+
+If your project uses traditional monolithic templates, migrate to the modular system:
+
+#### Step 1: Detect Customizations
+
+```bash
+# Analyze current template for customizations
+./scripts/bin/migrate-template .specify/templates/spec-template.md --dry-run --verbose
+```
+
+#### Step 2: Migrate Template
+
+```bash
+# Perform migration (creates patches for customizations)
+./scripts/bin/migrate-template .specify/templates/spec-template.md \
+  --guide migration-guide.md
+```
+
+**Creates**:
+- Backup in `.specify/migration-backups/`
+- Patches for custom sections in `.specify/patches/`
+- Migration guide documenting changes
+
+#### Step 3: Adopt Block System
+
+```bash
+# Extract standard sections as blocks
+mkdir -p .specify/blocks
+
+# Create blocks for common sections
+# (See MODULAR_TEMPLATES.md for details)
+
+# Update template to use @include directives
+# (Replaces content with references to blocks)
+```
+
+#### Step 4: Verify
+
+```bash
+# Compose template from blocks
+./scripts/bin/compose-template .specify/templates/spec-template.md .specify/ -o composed.md
+
+# Apply your custom patches
+./scripts/bin/apply-patches composed.md .specify/patches/ -t spec-template -o final.md
+
+# Compare with original
+diff .specify/templates/spec-template.md final.md
+```
+
+### Block Versioning Best Practices
+
+1. **Pin block versions in templates**:
+   ```markdown
+   @include blocks/user-scenarios-v1.0.md  ✅ Explicit version
+   @include blocks/user-scenarios.md        ❌ Ambiguous
+   ```
+
+2. **Track block updates in .scaffold-state.yaml**:
+   ```yaml
+   blocks:
+     user-scenarios:
+       current_version: "1.0.0"
+       upstream_version: "2.0.0"
+       last_checked: "2026-04-15"
+   ```
+
+3. **Use semantic versioning**:
+   - v1.0.0 → v1.1.0: Safe minor update (new features, backward compatible)
+   - v1.1.0 → v2.0.0: Breaking change (review required)
+
+4. **Document block changes**:
+   - Include CHANGELOG in block frontmatter
+   - Tag git commits with block version: `blocks/user-scenarios-v2.0.0`
+
+### Patch Drift Detection
+
+**Patches can become outdated** if upstream blocks change significantly.
+
+#### Detecting Patch Issues
+
+```bash
+# Validate patches still apply cleanly
+./scripts/bin/validate-patch .specify/patches/spec/001-custom.patch --verbose
+
+# Try applying patches to current composed template
+./scripts/bin/apply-patches composed.md .specify/patches/ -t spec --verbose
+```
+
+**Common Issues**:
+- **Anchor not found**: Upstream removed or renamed the section patch anchors to
+- **Duplicate content**: Patch adds content now in upstream block
+- **Conflicts**: Patch modifies content changed in upstream
+
+#### Fixing Outdated Patches
+
+1. **Update anchor** if section renamed:
+   ```markdown
+   # Before
+   @@ AFTER: ## User Scenarios
+   
+   # After (if upstream renamed section)
+   @@ AFTER: ## User Stories
+   ```
+
+2. **Remove patch** if content now in upstream:
+   ```bash
+   # If upstream added your custom content, delete patch
+   rm .specify/patches/spec/001-custom-feature.patch
+   ```
+
+3. **Regenerate patch** after block update:
+   ```bash
+   # Re-create patch based on new block version
+   # (Manual process - copy custom content, update operations)
+   ```
+
+### Future Enhancements
+
+**Planned for IMP-65 Phase 5** (not yet implemented):
+- `check-blocks` command: Detect outdated blocks in project
+- `upgrade-block` command: Safely upgrade block with conflict resolution
+- `patch-compat` command: Test patch compatibility with new block versions
+- Auto-migration of patches when blocks are upgraded
+
+### Migration Compatibility
+
+The modular system **coexists with traditional templates**:
+- Can use both monolithic and modular templates in same project
+- Drift detection works for both types
+- Migrate templates incrementally as needed
+
+**No forced migration** - traditional templates continue to work.
+
+---
+
 ## See Also
 
 - [IMP-65 Full Specification](TODO.md#imp-65) - Implementation plan for all 4 phases
+- [MODULAR_TEMPLATES.md](MODULAR_TEMPLATES.md) - Complete guide to modular template system
 - [TEMPLATE_USAGE.md](TEMPLATE_USAGE.md) - General template usage guide
 - [SCAFFOLD_GUIDE.md](SCAFFOLD_GUIDE.md) - Complete scaffold.py reference
 - [SpecKit Documentation](docs/copilot/) - Workflow automation guides

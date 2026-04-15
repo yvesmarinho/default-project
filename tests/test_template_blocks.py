@@ -96,7 +96,7 @@ number: 123
 Body content here.
 """
     metadata, body = parse_frontmatter(content)
-    
+
     assert metadata is not None
     assert metadata['key'] == 'value'
     assert metadata['number'] == 123
@@ -106,9 +106,9 @@ Body content here.
 def test_parse_frontmatter_no_frontmatter():
     """Test parsing content without frontmatter."""
     content = "Just regular content\nNo frontmatter here."
-    
+
     metadata, body = parse_frontmatter(content)
-    
+
     assert metadata is None
     assert body == content
 
@@ -121,7 +121,7 @@ invalid: yaml: broken
 
 Body
 """
-    
+
     with pytest.raises(BlockValidationError):
         parse_frontmatter(content)
 
@@ -134,7 +134,7 @@ def test_parse_frontmatter_empty():
 Body
 """
     metadata, body = parse_frontmatter(content)
-    
+
     assert metadata is None or metadata == {}
     assert 'Body' in body
 
@@ -153,9 +153,9 @@ def test_block_metadata_from_dict():
         'breaking_changes': False,
         'changelog': []
     }
-    
+
     meta = BlockMetadata.from_dict(data)
-    
+
     assert meta.block_name == 'test-block'
     assert meta.block_version == '1.0.0'
     assert meta.block_type == 'template_fragment'
@@ -173,7 +173,7 @@ def test_block_metadata_validate_valid():
         breaking_changes=False,
         changelog=[]
     )
-    
+
     errors = meta.validate()
     assert len(errors) == 0
 
@@ -190,7 +190,7 @@ def test_block_metadata_validate_missing_name():
         breaking_changes=False,
         changelog=[]
     )
-    
+
     errors = meta.validate()
     assert any('Missing block_name' in e for e in errors)
 
@@ -207,7 +207,7 @@ def test_block_metadata_validate_invalid_version():
         breaking_changes=False,
         changelog=[]
     )
-    
+
     errors = meta.validate()
     assert any('Invalid block_version' in e for e in errors)
 
@@ -224,7 +224,7 @@ def test_block_metadata_validate_invalid_block_type():
         breaking_changes=False,
         changelog=[]
     )
-    
+
     errors = meta.validate()
     assert any('Invalid block_type' in e for e in errors)
 
@@ -241,9 +241,9 @@ def test_template_metadata_from_dict():
             {'name': 'block1', 'version': '1.0.0', 'source': 'block1.md'}
         ]
     }
-    
+
     meta = TemplateMetadata.from_dict(data)
-    
+
     assert meta.template_version == '1.0.0'
     assert meta.template_type == 'composition'
     assert len(meta.blocks) == 1
@@ -257,7 +257,7 @@ def test_template_metadata_validate_valid():
         last_updated='2026-04-15',
         blocks=[]
     )
-    
+
     errors = meta.validate()
     assert len(errors) == 0
 
@@ -270,7 +270,7 @@ def test_template_metadata_validate_invalid_version():
         last_updated='2026-04-15',
         blocks=[]
     )
-    
+
     errors = meta.validate()
     assert any('Invalid template_version' in e for e in errors)
 
@@ -281,9 +281,9 @@ def test_load_block_success(temp_blocks_dir, sample_block_content):
     """Test loading a valid block file."""
     block_file = temp_blocks_dir / "test-block-v1.0.md"
     block_file.write_text(sample_block_content)
-    
+
     metadata, content = load_block(block_file)
-    
+
     assert metadata.block_name == 'test-block'
     assert metadata.block_version == '1.0.0'
     assert '## Test Block Content' in content
@@ -293,7 +293,7 @@ def test_load_block_success(temp_blocks_dir, sample_block_content):
 def test_load_block_not_found(temp_blocks_dir):
     """Test loading nonexistent block raises BlockNotFoundError."""
     block_file = temp_blocks_dir / "nonexistent.md"
-    
+
     with pytest.raises(BlockNotFoundError):
         load_block(block_file)
 
@@ -302,7 +302,7 @@ def test_load_block_missing_frontmatter(temp_blocks_dir):
     """Test loading block without frontmatter raises error."""
     block_file = temp_blocks_dir / "no-frontmatter.md"
     block_file.write_text("Just content, no frontmatter")
-    
+
     with pytest.raises(BlockValidationError, match="missing frontmatter"):
         load_block(block_file)
 
@@ -319,7 +319,7 @@ Content
 """
     block_file = temp_blocks_dir / "invalid.md"
     block_file.write_text(invalid_content)
-    
+
     with pytest.raises(BlockValidationError):
         load_block(block_file)
 
@@ -331,16 +331,16 @@ def test_compose_template_success(tmp_path, sample_block_content, sample_templat
     # Setup
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
-    
+
     block_file = blocks_dir / "test-block-v1.0.md"
     block_file.write_text(sample_block_content)
-    
+
     template_file = tmp_path / "template.md"
     template_file.write_text(sample_template_content)
-    
+
     # Compose
     result = compose_template(template_file, blocks_dir)
-    
+
     # Verify
     assert '## Test Block Content' in result
     assert 'This is test content.' in result
@@ -353,7 +353,7 @@ def test_compose_template_multiple_blocks(tmp_path):
     """Test composition with multiple blocks."""
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
-    
+
     # Create two blocks
     block1 = """---
 block_type: "template_fragment"
@@ -365,7 +365,7 @@ last_updated: "2026-04-15"
 ## Block 1
 Content 1
 """
-    
+
     block2 = """---
 block_type: "template_fragment"
 block_name: "block2"
@@ -376,10 +376,10 @@ last_updated: "2026-04-15"
 ## Block 2
 Content 2
 """
-    
+
     (blocks_dir / "block1-v1.0.md").write_text(block1)
     (blocks_dir / "block2-v1.0.md").write_text(block2)
-    
+
     # Create template with both blocks
     template = """---
 template_version: "1.0.0"
@@ -396,13 +396,13 @@ blocks:
 
 <!-- @include block2-v1.0.md -->
 """
-    
+
     template_file = tmp_path / "template.md"
     template_file.write_text(template)
-    
+
     # Compose
     result = compose_template(template_file, blocks_dir)
-    
+
     # Verify both blocks included
     assert '## Block 1' in result
     assert 'Content 1' in result
@@ -414,10 +414,10 @@ def test_compose_template_missing_block(tmp_path, sample_template_content):
     """Test composition fails when block is missing."""
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
-    
+
     template_file = tmp_path / "template.md"
     template_file.write_text(sample_template_content)
-    
+
     # Try to compose without creating the required block
     with pytest.raises(CompositionError, match="Cannot compose"):
         compose_template(template_file, blocks_dir)
@@ -432,16 +432,16 @@ This template has no frontmatter.
 ## Section 1
 Content here.
 """
-    
+
     template_file = tmp_path / "legacy.md"
     template_file.write_text(template_content)
-    
+
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
-    
+
     # Should return content as-is
     result = compose_template(template_file, blocks_dir)
-    
+
     assert result == template_content
 
 
@@ -455,16 +455,16 @@ last_updated: "2026-04-15"
 
 Content here.
 """
-    
+
     template_file = tmp_path / "template.md"
     template_file.write_text(template)
-    
+
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
-    
+
     # Should return as-is
     result = compose_template(template_file, blocks_dir)
-    
+
     assert 'Content here.' in result
 
 
@@ -474,9 +474,9 @@ def test_get_template_blocks(tmp_path, sample_template_content):
     """Test getting blocks list from template."""
     template_file = tmp_path / "template.md"
     template_file.write_text(sample_template_content)
-    
+
     blocks = get_template_blocks(template_file)
-    
+
     assert len(blocks) == 1
     assert blocks[0]['name'] == 'test-block'
     assert blocks[0]['version'] == '1.0.0'
@@ -486,18 +486,18 @@ def test_get_template_blocks_no_frontmatter(tmp_path):
     """Test getting blocks from template without frontmatter."""
     template_file = tmp_path / "template.md"
     template_file.write_text("No frontmatter")
-    
+
     blocks = get_template_blocks(template_file)
-    
+
     assert blocks == []
 
 
 def test_get_template_blocks_nonexistent(tmp_path):
     """Test getting blocks from nonexistent template."""
     template_file = tmp_path / "nonexistent.md"
-    
+
     blocks = get_template_blocks(template_file)
-    
+
     assert blocks == []
 
 
@@ -507,9 +507,9 @@ def test_validate_block_file_valid(temp_blocks_dir, sample_block_content):
     """Test validation of valid block file."""
     block_file = temp_blocks_dir / "test.md"
     block_file.write_text(sample_block_content)
-    
+
     is_valid, errors = validate_block_file(block_file)
-    
+
     assert is_valid
     assert len(errors) == 0
 
@@ -525,9 +525,9 @@ Content
 """
     block_file = temp_blocks_dir / "invalid.md"
     block_file.write_text(invalid_content)
-    
+
     is_valid, errors = validate_block_file(block_file)
-    
+
     assert not is_valid
     assert len(errors) > 0
 
@@ -535,9 +535,9 @@ Content
 def test_validate_block_file_not_found(temp_blocks_dir):
     """Test validation of nonexistent block file."""
     block_file = temp_blocks_dir / "nonexistent.md"
-    
+
     is_valid, errors = validate_block_file(block_file)
-    
+
     assert not is_valid
     assert len(errors) > 0
     assert 'not found' in errors[0].lower()
@@ -549,16 +549,16 @@ def test_compose_template_verbose_output(tmp_path, sample_block_content, sample_
     """Test verbose output during composition."""
     blocks_dir = tmp_path / "blocks"
     blocks_dir.mkdir()
-    
+
     block_file = blocks_dir / "test-block-v1.0.md"
     block_file.write_text(sample_block_content)
-    
+
     template_file = tmp_path / "template.md"
     template_file.write_text(sample_template_content)
-    
+
     # Compose with verbose=True
     compose_template(template_file, blocks_dir, verbose=True)
-    
+
     captured = capsys.readouterr()
     assert 'Composing template' in captured.out
     assert 'Loading block' in captured.out
@@ -576,7 +576,7 @@ def test_block_metadata_repr():
         breaking_changes=False,
         changelog=[]
     )
-    
+
     repr_str = repr(meta)
     assert 'test' in repr_str
     assert '1.0.0' in repr_str
@@ -590,7 +590,7 @@ def test_template_metadata_repr():
         last_updated='2026-04-15',
         blocks=[{}, {}]  # 2 blocks
     )
-    
+
     repr_str = repr(meta)
     assert '1.0.0' in repr_str
     assert '2 blocks' in repr_str

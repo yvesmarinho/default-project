@@ -59,7 +59,7 @@ author: "test@example.com"
 
 @@ After: ## User Scenarios @@
 + ## Security Review Checklist
-+ 
++
 + - [ ] Input validation
 + - [ ] Authentication checks
 @@ END @@
@@ -96,7 +96,7 @@ patch_version: "1.0.0"
 @@ END @@
 """
     metadata, body = parse_patch_frontmatter(content)
-    
+
     assert metadata is not None
     assert metadata['patch_name'] == 'test-patch'
     assert '@@ After' in body
@@ -105,9 +105,9 @@ patch_version: "1.0.0"
 def test_parse_patch_frontmatter_no_frontmatter():
     """Test parsing patch without frontmatter."""
     content = "No frontmatter here"
-    
+
     metadata, body = parse_patch_frontmatter(content)
-    
+
     assert metadata is None
     assert body == content
 
@@ -120,7 +120,7 @@ invalid: yaml: broken:
 
 Body
 """
-    
+
     with pytest.raises(PatchValidationError):
         parse_patch_frontmatter(content)
 
@@ -139,9 +139,9 @@ def test_patch_metadata_from_dict():
         'description': 'Test patch',
         'author': 'test@example.com'
     }
-    
+
     meta = PatchMetadata.from_dict(data)
-    
+
     assert meta.patch_name == 'test-patch'
     assert meta.patch_version == '1.0.0'
     assert meta.target_template == 'spec-template'
@@ -159,7 +159,7 @@ def test_patch_metadata_validate_valid():
         description='Test patch',
         author='test@example.com'
     )
-    
+
     errors = meta.validate()
     assert len(errors) == 0
 
@@ -176,7 +176,7 @@ def test_patch_metadata_validate_missing_name():
         description='Test',
         author=None
     )
-    
+
     errors = meta.validate()
     assert any('Missing patch_name' in e for e in errors)
 
@@ -193,7 +193,7 @@ def test_patch_metadata_validate_invalid_version():
         description='Test',
         author=None
     )
-    
+
     errors = meta.validate()
     assert any('Invalid patch_version' in e for e in errors)
 
@@ -210,7 +210,7 @@ def test_patch_metadata_repr():
         description='Test',
         author=None
     )
-    
+
     repr_str = repr(meta)
     assert 'test' in repr_str
     assert '1.0.0' in repr_str
@@ -227,9 +227,9 @@ def test_parse_patch_operations_insert_after():
 + Second line
 @@ END @@
 """
-    
+
     operations = parse_patch_operations(body)
-    
+
     assert len(operations) == 1
     assert operations[0].operation_type == PatchOperationType.INSERT_AFTER
     assert operations[0].anchor == '## Section'
@@ -243,9 +243,9 @@ def test_parse_patch_operations_insert_before():
 + New content
 @@ END @@
 """
-    
+
     operations = parse_patch_operations(body)
-    
+
     assert len(operations) == 1
     assert operations[0].operation_type == PatchOperationType.INSERT_BEFORE
 
@@ -257,9 +257,9 @@ def test_parse_patch_operations_replace():
 + New text
 @@ END @@
 """
-    
+
     operations = parse_patch_operations(body)
-    
+
     assert len(operations) == 1
     assert operations[0].operation_type == PatchOperationType.REPLACE
 
@@ -270,9 +270,9 @@ def test_parse_patch_operations_delete():
 @@ Delete: Line to remove @@
 @@ END @@
 """
-    
+
     operations = parse_patch_operations(body)
-    
+
     assert len(operations) == 1
     assert operations[0].operation_type == PatchOperationType.DELETE
 
@@ -288,9 +288,9 @@ def test_parse_patch_operations_multiple():
 + Content 2
 @@ END @@
 """
-    
+
     operations = parse_patch_operations(body)
-    
+
     assert len(operations) == 2
     assert operations[0].anchor == 'Section 1'
     assert operations[1].anchor == 'Section 2'
@@ -299,7 +299,7 @@ def test_parse_patch_operations_multiple():
 def test_parse_patch_operations_no_operations():
     """Test parsing fails when no operations found."""
     body = "Just plain text, no operations"
-    
+
     with pytest.raises(PatchValidationError, match="No patch operations found"):
         parse_patch_operations(body)
 
@@ -311,7 +311,7 @@ def test_parse_patch_operations_invalid_type():
 + Content
 @@ END @@
 """
-    
+
     with pytest.raises(PatchValidationError, match="Invalid operation type"):
         parse_patch_operations(body)
 
@@ -322,9 +322,9 @@ def test_load_patch_success(temp_patches_dir, sample_patch_content):
     """Test loading a valid patch file."""
     patch_file = temp_patches_dir / "001-test.patch"
     patch_file.write_text(sample_patch_content)
-    
+
     patch = load_patch(patch_file)
-    
+
     assert patch.metadata.patch_name == 'add-security-review'
     assert patch.metadata.patch_version == '1.0.0'
     assert len(patch.operations) == 1
@@ -334,7 +334,7 @@ def test_load_patch_success(temp_patches_dir, sample_patch_content):
 def test_load_patch_not_found(temp_patches_dir):
     """Test loading nonexistent patch raises error."""
     patch_file = temp_patches_dir / "nonexistent.patch"
-    
+
     with pytest.raises(PatchNotFoundError):
         load_patch(patch_file)
 
@@ -343,7 +343,7 @@ def test_load_patch_missing_frontmatter(temp_patches_dir):
     """Test loading patch without frontmatter raises error."""
     patch_file = temp_patches_dir / "no-frontmatter.patch"
     patch_file.write_text("@@ After: Test @@\n+ Content\n@@ END @@")
-    
+
     with pytest.raises(PatchValidationError, match="missing frontmatter"):
         load_patch(patch_file)
 
@@ -361,7 +361,7 @@ patch_version: "invalid"
 """
     patch_file = temp_patches_dir / "invalid.patch"
     patch_file.write_text(invalid_content)
-    
+
     with pytest.raises(PatchValidationError):
         load_patch(patch_file)
 
@@ -380,7 +380,7 @@ No operations here
 """
     patch_file = temp_patches_dir / "no-ops.patch"
     patch_file.write_text(content)
-    
+
     with pytest.raises(PatchValidationError, match="No patch operations"):
         load_patch(patch_file)
 
@@ -393,15 +393,15 @@ def test_apply_patch_operation_insert_after():
 
 Original content
 """
-    
+
     operation = PatchOperation(
         operation_type=PatchOperationType.INSERT_AFTER,
         anchor='## Section',
         content='New content'
     )
-    
+
     result, success = apply_patch_operation(content, operation)
-    
+
     assert success
     assert '## Section' in result
     assert 'New content' in result
@@ -414,15 +414,15 @@ def test_apply_patch_operation_insert_before():
 
 Original content
 """
-    
+
     operation = PatchOperation(
         operation_type=PatchOperationType.INSERT_BEFORE,
         anchor='## Section',
         content='New content'
     )
-    
+
     result, success = apply_patch_operation(content, operation)
-    
+
     assert success
     assert 'New content' in result
     assert result.index('New content') < result.index('## Section')
@@ -433,15 +433,15 @@ def test_apply_patch_operation_replace():
     content = """Old line
 Other content
 """
-    
+
     operation = PatchOperation(
         operation_type=PatchOperationType.REPLACE,
         anchor='Old line',
         content='New line'
     )
-    
+
     result, success = apply_patch_operation(content, operation)
-    
+
     assert success
     assert 'New line' in result
     assert 'Old line' not in result
@@ -453,15 +453,15 @@ def test_apply_patch_operation_delete():
 Line to delete
 Another line to keep
 """
-    
+
     operation = PatchOperation(
         operation_type=PatchOperationType.DELETE,
         anchor='Line to delete',
         content=''
     )
-    
+
     result, success = apply_patch_operation(content, operation)
-    
+
     assert success
     assert 'Line to delete' not in result
     assert 'Line to keep' in result
@@ -470,13 +470,13 @@ Another line to keep
 def test_apply_patch_operation_anchor_not_found():
     """Test operation fails when anchor not found."""
     content = "Content without anchor"
-    
+
     operation = PatchOperation(
         operation_type=PatchOperationType.INSERT_AFTER,
         anchor='Nonexistent anchor',
         content='New content'
     )
-    
+
     with pytest.raises(PatchApplicationError, match="Anchor not found"):
         apply_patch_operation(content, operation)
 
@@ -488,13 +488,13 @@ Content 1
 ## Section
 Content 2
 """
-    
+
     operation = PatchOperation(
         operation_type=PatchOperationType.INSERT_AFTER,
         anchor='## Section',
         content='New content'
     )
-    
+
     with pytest.raises(PatchConflictError, match="multiple locations"):
         apply_patch_operation(content, operation)
 
@@ -508,7 +508,7 @@ def test_apply_patch_single_operation(sample_template):
         anchor='## User Scenarios',
         content='## Security Review\n- [ ] Input validation'
     )
-    
+
     metadata = PatchMetadata(
         patch_name='test',
         patch_version='1.0.0',
@@ -519,15 +519,15 @@ def test_apply_patch_single_operation(sample_template):
         description='Test',
         author=None
     )
-    
+
     patch = Patch(
         metadata=metadata,
         operations=[operation],
         source_file=Path('/tmp/test.patch')
     )
-    
+
     result = apply_patch(sample_template, patch)
-    
+
     assert '## Security Review' in result
     assert 'Input validation' in result
 
@@ -546,7 +546,7 @@ def test_apply_patch_multiple_operations(sample_template):
             content='## Performance Criteria'
         )
     ]
-    
+
     metadata = PatchMetadata(
         patch_name='test',
         patch_version='1.0.0',
@@ -557,15 +557,15 @@ def test_apply_patch_multiple_operations(sample_template):
         description='Test',
         author=None
     )
-    
+
     patch = Patch(
         metadata=metadata,
         operations=operations,
         source_file=Path('/tmp/test.patch')
     )
-    
+
     result = apply_patch(sample_template, patch)
-    
+
     assert '## Security Review' in result
     assert '## Performance Criteria' in result
 
@@ -573,13 +573,13 @@ def test_apply_patch_multiple_operations(sample_template):
 def test_apply_patch_operation_failure():
     """Test patch application fails if operation fails."""
     content = "Content"
-    
+
     operation = PatchOperation(
         operation_type=PatchOperationType.INSERT_AFTER,
         anchor='Nonexistent',
         content='New'
     )
-    
+
     metadata = PatchMetadata(
         patch_name='test',
         patch_version='1.0.0',
@@ -590,13 +590,13 @@ def test_apply_patch_operation_failure():
         description='Test',
         author=None
     )
-    
+
     patch = Patch(
         metadata=metadata,
         operations=[operation],
         source_file=Path('/tmp/test.patch')
     )
-    
+
     with pytest.raises(PatchApplicationError):
         apply_patch(content, patch)
 
@@ -608,12 +608,12 @@ def test_apply_patches_single_patch(temp_patches_dir, sample_patch_content, samp
     # Create spec-template subdirectory
     template_dir = temp_patches_dir / "spec-template"
     template_dir.mkdir()
-    
+
     patch_file = template_dir / "001-security.patch"
     patch_file.write_text(sample_patch_content)
-    
+
     result = apply_patches(sample_template, temp_patches_dir, "spec-template")
-    
+
     assert '## Security Review Checklist' in result
 
 
@@ -621,7 +621,7 @@ def test_apply_patches_multiple_patches(temp_patches_dir, sample_template):
     """Test applying multiple patches in order."""
     template_dir = temp_patches_dir / "spec-template"
     template_dir.mkdir()
-    
+
     # Patch 1
     patch1 = """---
 patch_name: "patch1"
@@ -636,7 +636,7 @@ description: "Patch 1"
 @@ END @@
 """
     (template_dir / "001-patch1.patch").write_text(patch1)
-    
+
     # Patch 2
     patch2 = """---
 patch_name: "patch2"
@@ -651,9 +651,9 @@ description: "Patch 2"
 @@ END @@
 """
     (template_dir / "002-patch2.patch").write_text(patch2)
-    
+
     result = apply_patches(sample_template, temp_patches_dir, "spec-template")
-    
+
     assert '## Security Review' in result
     assert '## Performance' in result
 
@@ -661,10 +661,10 @@ description: "Patch 2"
 def test_apply_patches_no_patches_dir(sample_template, tmp_path):
     """Test applying patches when directory doesn't exist."""
     nonexistent = tmp_path / "nonexistent"
-    
+
     # Should return content unchanged
     result = apply_patches(sample_template, nonexistent)
-    
+
     assert result == sample_template
 
 
@@ -672,10 +672,10 @@ def test_apply_patches_no_patches(temp_patches_dir, sample_template):
     """Test applying patches when no patches exist."""
     template_dir = temp_patches_dir / "spec-template"
     template_dir.mkdir()
-    
+
     # Empty directory
     result = apply_patches(sample_template, temp_patches_dir, "spec-template")
-    
+
     assert result == sample_template
 
 
@@ -685,9 +685,9 @@ def test_validate_patch_file_valid(temp_patches_dir, sample_patch_content):
     """Test validation of valid patch file."""
     patch_file = temp_patches_dir / "test.patch"
     patch_file.write_text(sample_patch_content)
-    
+
     is_valid, errors = validate_patch_file(patch_file)
-    
+
     assert is_valid
     assert len(errors) == 0
 
@@ -704,9 +704,9 @@ patch_name: ""
 """
     patch_file = temp_patches_dir / "invalid.patch"
     patch_file.write_text(invalid_content)
-    
+
     is_valid, errors = validate_patch_file(patch_file)
-    
+
     assert not is_valid
     assert len(errors) > 0
 
@@ -714,9 +714,9 @@ patch_name: ""
 def test_validate_patch_file_not_found(temp_patches_dir):
     """Test validation of nonexistent patch file."""
     patch_file = temp_patches_dir / "nonexistent.patch"
-    
+
     is_valid, errors = validate_patch_file(patch_file)
-    
+
     assert not is_valid
     assert len(errors) > 0
 
@@ -727,9 +727,9 @@ def test_list_patches_empty(temp_patches_dir):
     """Test listing patches from empty directory."""
     template_dir = temp_patches_dir / "spec-template"
     template_dir.mkdir()
-    
+
     patches = list_patches(temp_patches_dir, "spec-template")
-    
+
     assert len(patches) == 0
 
 
@@ -737,12 +737,12 @@ def test_list_patches_multiple(temp_patches_dir, sample_patch_content):
     """Test listing multiple patches."""
     template_dir = temp_patches_dir / "spec-template"
     template_dir.mkdir()
-    
+
     (template_dir / "001-patch1.patch").write_text(sample_patch_content)
     (template_dir / "002-patch2.patch").write_text(sample_patch_content)
-    
+
     patches = list_patches(temp_patches_dir, "spec-template")
-    
+
     assert len(patches) == 2
     assert all(isinstance(p, Patch) for p in patches)
 
@@ -751,15 +751,15 @@ def test_list_patches_skips_invalid(temp_patches_dir, sample_patch_content):
     """Test list_patches skips invalid patches."""
     template_dir = temp_patches_dir / "spec-template"
     template_dir.mkdir()
-    
+
     # Valid patch
     (template_dir / "001-valid.patch").write_text(sample_patch_content)
-    
+
     # Invalid patch
     (template_dir / "002-invalid.patch").write_text("Invalid content")
-    
+
     patches = list_patches(temp_patches_dir, "spec-template")
-    
+
     # Should only return valid patch
     assert len(patches) == 1
     assert patches[0].metadata.patch_name == 'add-security-review'
@@ -768,5 +768,5 @@ def test_list_patches_skips_invalid(temp_patches_dir, sample_patch_content):
 def test_list_patches_nonexistent_dir(tmp_path):
     """Test listing patches from nonexistent directory."""
     patches = list_patches(tmp_path / "nonexistent", "spec-template")
-    
+
     assert len(patches) == 0
