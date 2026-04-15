@@ -1,7 +1,7 @@
 # Modular Templates System
 
-**Version**: 1.0.0  
-**Part of**: IMP-65 Phase 4 - Template Synchronization System  
+**Version**: 1.0.0
+**Part of**: IMP-65 Phase 4 - Template Synchronization System
 **Status**: Production Ready
 
 ---
@@ -952,8 +952,8 @@ compose-template templates/spec-custom.md .specify/
 
 This system is part of the Enterprise Default Project Template.
 
-**Questions?** See [docs/TROUBLESHOOTING.md](TROUBLESHOOTING.md)  
-**Issues?** Check [docs/ISSUE_MANAGEMENT_GUIDE.md](ISSUE_MANAGEMENT_GUIDE.md)  
+**Questions?** See [docs/TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+**Issues?** Check [docs/ISSUE_MANAGEMENT_GUIDE.md](ISSUE_MANAGEMENT_GUIDE.md)
 **Contributing?** See [CONVENTIONS.md](CONVENTIONS.md)
 
 ---

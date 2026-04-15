@@ -1322,7 +1322,7 @@ diff .specify/templates/spec-template.md final.md
    ```markdown
    # Before
    @@ AFTER: ## User Scenarios
-   
+
    # After (if upstream renamed section)
    @@ AFTER: ## User Stories
    ```
