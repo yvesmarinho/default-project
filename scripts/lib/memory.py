@@ -305,9 +305,12 @@ class MemoryStore:
             params.append(category)
 
         if tags:
-            tags_pattern = "|".join(tags)
-            sql_parts.append("AND m.tags REGEXP ?")
-            params.append(tags_pattern)
+            # Filter by tags using LIKE (SQLite doesn't have REGEXP by default)
+            tag_conditions = []
+            for tag in tags:
+                tag_conditions.append("m.tags LIKE ?")
+                params.append(f"%{tag}%")
+            sql_parts.append(f"AND ({' OR '.join(tag_conditions)})")
 
         sql_parts.append("ORDER BY score")
         sql_parts.append("LIMIT ?")
