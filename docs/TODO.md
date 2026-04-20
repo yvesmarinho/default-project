@@ -1,8 +1,20 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-15 — Session End: IMP-65 Phase 4 ✅ COMPLETE, Cross-Project Template Export ✅ VALIDATED
+**Last Updated**: 2026-04-20 — Session End: IMP-59 ✅ COMPLETE (Mini-Engram Memory System)
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
+
+---
+
+## 🎯 Próxima Sessão (2026-04-21+)
+
+- [ ] **Debate com especialistas**: Teste de atualização em projeto existente
+  - **Objetivo**: Validar sistema de template synchronization (IMP-65 Fase 4) em projeto real
+  - **Especialistas**: template-architect, session-manager, Platform Tooling Engineer, DevEx Engineer, AppSec Engineer
+  - **Escopo**: Simular upgrade de templates em projeto existente com customizações
+  - **Deliverables**: Relatório de teste, identificação de gaps, melhorias sugeridas
+  - **Prioridade**: P1 (pré-requisito para release template modular)
+  - **Estimativa**: 2-3h (debate + teste + documentação)
 
 ---
 
@@ -545,7 +557,7 @@
   - **Prioridade**: P1
   - *Reportado em*: 2026-04-05 | *Encerrado em*: 2026-04-20 | *Decisão*: GO para IMP-59
 
-- [ ] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas 🟢 **EM ANDAMENTO** (2026-04-20)
+- [x] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas ✅ **CONCLUÍDO** (2026-04-20)
   - **Contexto**: IMP-58 decision gate = GO ✅ (2026-04-20), implementar memória ativa em Python puro
   - **Objetivo**: RAG-like memory (mem_save, mem_search, mem_context) sem binário externo
   - **Escopo**:
@@ -1075,8 +1087,8 @@
 | IMP-55 | Sistema CHAT-*.md capture | P1 | 40h | DevEx / Memory | ✅ 2026-04-20 |
 | IMP-56 | speckit.validate quality gates | P1 | 3h | SpecKit / QA | ✅ 2026-04-14 |
 | IMP-57 | Estender IMP-51 — indexar all docs (Fase 1) | P1 | 16h | DevEx / Search | ✅ 2026-04-05 |
-| IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | � 2026-04-05 |
-| IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 40h | DevEx / Memory | � 2026-04-05 |
+| IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | ✅ 2026-04-05 |
+| IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 28h | DevEx / Memory | ✅ 2026-04-20 |
 | IMP-65 | Template Synchronization System (4 fases) | P1 | 256h | Template Arch / DevEx | 🔵 2026-04-14 |
 
 ---
