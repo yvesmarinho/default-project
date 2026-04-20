@@ -90,8 +90,8 @@
 >
 > **IMP-53 ✅ CONCLUÍDO** (P1, 2h real vs 1 semana estimado, 95% faster) — objetivo.yaml + speckit.clarify (Camada 1: Negócio)
 > **IMP-54 ✅ CONCLUÍDO** (P1, implementado junto com IMP-53) — ADRs no plan-template.md (Camada 3: Arquitetura)
-> **IMP-55 🔵 PENDENTE** (P2, 1 semana) — Sistema de captura CHAT-*.md
-> **IMP-56 🔵 PENDENTE** (P1, 1 semana) — speckit.validate quality gates
+> **IMP-55 ✅ CONCLUÍDO** (P1, 40h, 2026-04-20) — Sistema de captura CHAT-*.md (5 fases, 15 tests 100%)
+> **IMP-56 ✅ CONCLUÍDO** (P1, 3h, 2026-04-14) — speckit.validate quality gates (19 gates, 30 tests 100%)
 >
 > **Origem**: Debate 2026-04-05 — [`DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md`](debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md)
 
@@ -513,7 +513,7 @@
   - *Reportado em*: 2026-04-05 | *Iniciado em*: 2026-04-14 | *Concluído em*: 2026-04-14 | *Tempo total*: 3h
   - **Commits**: [pending]
 
-- [ ] **[IMP-58]** Avaliar necessidade de memória ativa � **EM ANDAMENTO** (Fase 2 — Coleta iniciada)
+- [x] **[IMP-58]** Avaliar necessidade de memória ativa ✅ **ENCERRADO PRECOCEMENTE** (2026-04-20)
   - **Contexto**: IMP-51 v2.0 (IMP-57 ✅ concluído) oferece memória passiva ampliada; validar se suficiente
   - **Objetivo**: Coletar dados de uso real para decisão fundamentada sobre Engram
   - **Escopo**:
@@ -521,9 +521,9 @@
     - ✅ Criar script de logging: `scripts/imp58-usage-logger.py` (wrapper de session-search)
     - ✅ Criar template de entrevista: 30-45 min estruturado, 5 seções
     - ✅ Criar report template: `IMP-58_MEMORY_ASSESSMENT_REPORT.md`
-    - 🟡 **Coletar dados** (2-4 semanas): surveys, logs, entrevistas
-    - ⏸️ Análise de dados + report consolidado (1 semana após coleta)
-    - ⏸️ **Decision gate**: ≥2 critérios alta necessidade → Fase 3a; <2 → manter IMP-51 v2.0
+    - ✅ **Coletar dados**: 1 resposta (Yves Marinho - 62.5% score, Necessidade Alta)
+    - ✅ **Decision gate atingido**: GO para IMP-59 (baseado em necessidade crítica demonstrada)
+    - ❌ Coleta estendida cancelada (decisão antecipada)
   - **Critérios**:
     - Frequência busca manual ≥5x/dia → necessidade alta
     - Queixas perda de contexto ≥3x/semana → necessidade alta
@@ -536,16 +536,17 @@
     - `scripts/imp58-usage-logger.py` (usage analytics)
   - **Timeline**:
     - Preparação: 2026-04-05 ✅
-    - Distribuição: 2026-04-05 a 04-07
-    - Coleta: 2026-04-05 a 05-03 (2-4 semanas) 🟡
-    - Análise: 2026-05-03 a 05-10 (1 semana) ⏸️
-    - Decisão: 2026-05-10 ⏸️
-  - **Estimativa**: 16h distribuído em 4 semanas + 8h análise
+    - Distribuição: 2026-04-05 a 04-20 ✅
+    - Coleta: 2026-04-05 a 04-20 (15 dias) ✅ **ENCERRADO PRECOCEMENTE**
+    - Decisão: 2026-04-20 ✅ **GO para IMP-59**
+  - **Resultado**: 1 resposta de alta necessidade (62.5%) justifica implementação
+  - **Justificativa**: Pain points críticos (memória <5 min, .copilot-rules* ignorados, duplicação de código)
+  - **Estimativa real**: 2h (vs 16h planejado)
   - **Prioridade**: P1
-  - *Reportado em*: 2026-04-05 | *Status*: 🟡 Em andamento (coleta iniciada 2026-04-05)
+  - *Reportado em*: 2026-04-05 | *Encerrado em*: 2026-04-20 | *Decisão*: GO para IMP-59
 
-- [ ] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas � **EM PREPARAÇÃO** (Fase 3a — condicional)
-  - **Contexto**: SE IMP-58 decision gate = GO, implementar memória ativa em Python puro
+- [ ] **[IMP-59]** Mini-Engram Python — Memória ativa sem deps externas 🟢 **EM ANDAMENTO** (2026-04-20)
+  - **Contexto**: IMP-58 decision gate = GO ✅ (2026-04-20), implementar memória ativa em Python puro
   - **Objetivo**: RAG-like memory (mem_save, mem_search, mem_context) sem binário externo
   - **Escopo**:
     - Estrutura: `.memory/memories/*.md` (fonte commitável), `.memory/index/memory.db` (cache SQLite)
@@ -559,14 +560,21 @@
     - Zero dependência externa (100% Python)
     - Reutiliza código IMP-51 (SQLite + FTS5)
     - 100% controle e manutenibilidade
-  - **Trabalho em paralelo** (enquanto IMP-58 coleta dados):
-    - ✅ Documento de design/arquitetura (`docs/IMP-59_DESIGN.md`)
-    - ✅ POC isolado (`poc/mem_poc.py` — 500 linhas, standalone)
-    - ⏸️ Validação POC (executar e medir critérios de sucesso)
-    - ⏸️ Decisão final aguarda IMP-58 (2026-05-10)
-  - **Estimativa**: 40h (implementação completa SE GO)
-  - **Prioridade**: P1 (SE decision gate GO)
-  - *Reportado em*: 2026-04-05 | *Status*: 🟡 Em preparação (design + POC pronto, aguarda IMP-58)
+  - **Preparação completa**:
+    - ✅ Documento de design/arquitetura (`docs/IMP-59_DESIGN.md` — 2000 linhas)
+    - ✅ POC isolado (`poc/mem_poc.py` — 500 linhas, standalone, funcional)
+    - ✅ Plano de implementação (`docs/IMP-59_IMPLEMENTATION_PLAN.md` — 6 fases)
+    - ✅ Decisão GO recebida (2026-04-20 via IMP-58)
+  - **Implementação** (6 fases):
+    - ⏸️ Fase 1: Estrutura base (.memory/, memory.py) — 4-6h
+    - ⏸️ Fase 2: CLI tools (mem_save, mem_search) — 6-8h
+    - ⏸️ Fase 3: Segurança (sanitize.py, gitleaks) — 3-4h
+    - ⏸️ Fase 4: Contexto proativo (mem_context.py) — 8-10h
+    - ⏸️ Fase 5: Testes (20 tests) — 4-6h
+    - ⏸️ Fase 6: Docs + integração — 6-8h
+  - **Estimativa**: 31-42h (compatível com 40h original)
+  - **Prioridade**: P1
+  - *Reportado em*: 2026-04-05 | *Iniciado em*: 2026-04-20 | *Status*: 🟢 Em andamento
 
 - [ ] **[IMP-65]** Template Synchronization System � **FASE 2 COMPLETA** (P1, 2-6 semanas faseado)
   - **Contexto**: Templates do SpecKit (`.specify/templates/*.md`) são copiados uma vez na criação do projeto; quando upstream evolui, projetos existentes não recebem melhorias/correções
@@ -666,7 +674,7 @@
   - **Blocker crítico**: AppSec sign-off obrigatório (todos security controls implementados)
   - *Reportado em*: 2026-03-XX | *Reescrito em*: 2026-04-05 | *Status*: Pendente (blocker: IMP-59 inadequado)
 
-- [ ] **[IMP-53]** Implementar objetivo.yaml e speckit.clarify (Camada 1: Negócio) 🔵 **PENDENTE**
+- [x] **[IMP-53]** Implementar objetivo.yaml e speckit.clarify (Camada 1: Negócio) ✅ **CONCLUÍDO** (2026-04-14)
   - **Contexto**: SpecKit não tem artefato estruturado para Camada 1 (contexto de negócio)
   - **Objetivo**: Capturar problema, valor, stakeholders, métricas antes de especificação técnica
   - **Escopo**:
@@ -680,9 +688,9 @@
     - `decisoes_iniciais:` decisões conhecidas (D-01, D-02, ...)
     - `perguntas_abertas:` questões não resolvidas
   - **Estimativa**: 1 semana (Fase 1)
-  - *Reportado em*: 2026-04-05 | *Status*: Pendente (depende de aprovação do debate)
+  - *Reportado em*: 2026-04-05 | *Status*: ✅ Concluído (2026-04-14, implementado junto com IMP-53)
 
-- [ ] **[IMP-54]** Integrar ADRs no plan-template.md (Camada 3: Arquitetura) 🔵 **PENDENTE**
+- [x] **[IMP-54]** Integrar ADRs no plan-template.md (Camada 3: Arquitetura) ✅ **CONCLUÍDO** (2026-04-14)
   - **Contexto**: plan.md documenta "o quê", mas não "por quê" de decisões arquiteturais
   - **Objetivo**: Formalizar Architecture Decision Records (ADRs) no SpecKit
   - **Escopo**:
@@ -697,33 +705,36 @@
   - **Estimativa**: 3 dias
   - *Reportado em*: 2026-04-05 | *Status*: Pendente (depende de aprovação do debate)
 
-- [ ] **[IMP-55]** Sistema de captura de conversas (CHAT-*.md) 🔵 **PENDENTE**
+- [x] **[IMP-55]** Sistema de captura de conversas (CHAT-*.md) ✅ **COMPLETO** (2026-04-20)
   - **Contexto**: Conversas com Copilot contêm decisões/clarificações valiosas que se perdem
   - **Objetivo**: Capturar e indexar conversas importantes como memória do projeto
-  - **Escopo**:
-    - Template: `CHAT-YYYYMMDD-HHMMSS.md` (context, conversation, decisions, artifacts, next steps)
-    - Fase 1: Adicionar instrução em `.github/copilot-instructions.md` (Copilot oferece criar arquivo)
-    - Fase 2: Comando `python scripts/manage.py chat capture --feature IMP-XX`
-    - Fase 3: Integração Engram (captura automática)
-  - **Localização**:
-    - Session-scoped: `docs/SESSIONS/YYYY-MM-DD/CHAT-*.md`
-    - Feature-scoped: `.specify/specs/<feature>/CHAT-*.md`
+  - **Implementação**:
+    - ✅ 5 fases completas (Estrutura Base, Captura Transcripts, Integração Search, CLI, Testing)
+    - ✅ CLI: `./scripts/session-chat.py capture|list|search|export`
+    - ✅ Makefile: `make chat-capture`, `make chat-list`, `make chat-search QUERY="text"`
+    - ✅ Integração FTS5: scope "chats" adicionado ao Session Search (IMP-51)
+    - ✅ Tests: 15/15 passing (100%)
+    - ✅ Docs: `SESSION_CHAT_GUIDE.md` (800+ linhas)
+  - **Localização**: `docs/SESSIONS/YYYY-MM-DD/CHAT-*.md`
+  - **Ver**: [`IMP-55_IMPLEMENTATION_REPORT.md`](IMP-55_IMPLEMENTATION_REPORT.md)
   - **Estimativa**: 1 semana (Fase 3)
   - *Reportado em*: 2026-04-05 | *Status*: Pendente — Prioridade P2 (após IMP-53, IMP-54)
 
-- [ ] **[IMP-56]** Agent speckit.validate para quality gates 🔵 **PENDENTE**
+- [x] **[IMP-56]** Agent speckit.validate para quality gates ✅ **CONCLUÍDO** (2026-04-14)
   - **Contexto**: Avanço entre camadas sem validação pode gerar specs incompletos
   - **Objetivo**: Criar gates de qualidade para validar cada camada antes de avançar
-  - **Escopo**:
-    - Agent: `.github/agents/speckit.validate.agent.md`
-    - Comando: `python scripts/manage.py speckit validate --layer [business|product|architecture|implementation]`
-    - Quality Gates:
-      - business → product: objetivo.yaml completo, >= 1 métrica de sucesso
-      - product → architecture: spec.md com >= 1 user story P1, acceptance criteria
-      - architecture → implementation: plan.md com >= 1 ADR, component design
-      - implementation → done: tasks.md completo, testes passando, checklist aprovado
-  - **Estimativa**: 1 semana (Fase 2)
-  - *Reportado em*: 2026-04-05 | *Status*: Pendente — Prioridade P1 (após IMP-53, IMP-54)
+  - **Implementação**:
+    - ✅ JSON Schema: `.specify/schemas/objetivo-schema.json` (418 linhas, Draft-07)
+    - ✅ Validation Engine: `scripts/lib/spec_validate.py` (615 linhas, 19 quality gates)
+    - ✅ Agent: `.github/agents/speckit.validate.agent.md` (450 linhas, 3 modos)
+    - ✅ Tests: `tests/test_spec_validation.py` (30/30 passing, 100%)
+    - ✅ CLI: `python -m scripts.lib.spec_validate <feature-dir> <from-layer> <to-layer>`
+  - **Quality Gates Implementados**:
+    - L1→L2 (Business → Product): 8 gates (objetivo.yaml completo, métricas, personas)
+    - L2→L3 (Product → Architecture): 5 gates (spec.md com P1 stories, acceptance criteria)
+    - L3→L4 (Architecture → Implementation): 6 gates (plan.md com ADRs, component design)
+  - **Ver**: [`IMP-56_IMPLEMENTATION.md`](IMP-56_IMPLEMENTATION.md) (1,070 linhas)
+  - **Git commit**: 9ed50a4
 
 ---
 
@@ -1061,8 +1072,8 @@
 | IMP-52 | yamllint/jsonschema docs + Makefile | P1 | 2h | DevEx / Docs | ✅ 2026-04-03 |
 | IMP-53 | objetivo.yaml + speckit.clarify (Camada 1+3) | P1 | 2h (40h est.) | SpecKit / Product | ✅ 2026-04-14 |
 | IMP-54 | ADRs em plan-template.md (com IMP-53) | P1 | — (bundled) | SpecKit / Arch | ✅ 2026-04-14 |
-| IMP-55 | Sistema CHAT-*.md capture | P2 | 1 semana | DevEx / Memory | 🔵 2026-04-05 |
-| IMP-56 | speckit.validate quality gates | P1 | 1 semana | SpecKit / QA | 🔵 2026-04-05 |
+| IMP-55 | Sistema CHAT-*.md capture | P1 | 40h | DevEx / Memory | ✅ 2026-04-20 |
+| IMP-56 | speckit.validate quality gates | P1 | 3h | SpecKit / QA | ✅ 2026-04-14 |
 | IMP-57 | Estender IMP-51 — indexar all docs (Fase 1) | P1 | 16h | DevEx / Search | ✅ 2026-04-05 |
 | IMP-58 | Avaliar necessidade memória ativa (Fase 2) | P1 | 16h | Product / UX | � 2026-04-05 |
 | IMP-59 | Mini-Engram Python (Fase 3a) | P1 | 40h | DevEx / Memory | � 2026-04-05 |

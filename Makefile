@@ -689,6 +689,29 @@ session-index-stats:
 	@echo "$(BLUE)📊 Session Index Statistics$(NC)"
 	@python scripts/session-index.py --stats
 
+## chat-capture: Capture latest Copilot conversation to CHAT-*.md
+chat-capture:
+	@echo "$(BLUE)💬 Capturing latest conversation...$(NC)"
+	@python scripts/session-chat.py capture --latest
+	@echo "$(GREEN)✅ Chat captured$(NC)"
+
+## chat-list: List all captured CHAT-*.md files
+chat-list:
+	@echo "$(BLUE)📋 Captured Conversations$(NC)"
+	@python scripts/session-chat.py list
+
+## chat-search: Search in captured conversations (use QUERY="text")
+chat-search:
+	@if [ -z "$(QUERY)" ]; then \
+		echo "$(RED)✗ Error: QUERY parameter is required$(NC)"; \
+		echo "$(YELLOW)Usage: make chat-search QUERY=\"your search text\"$(NC)"; \
+		echo "$(YELLOW)Examples:$(NC)"; \
+		echo "  make chat-search QUERY=\"IMP-55\""; \
+		echo "  make chat-search QUERY=\"debugging\""; \
+		exit 1; \
+	fi
+	@python scripts/session-chat.py search "$(QUERY)"
+
 ## clean: Remove generated files and directories
 clean:
 	@echo "$(BLUE)🧹 Cleaning project...$(NC)"

@@ -1,9 +1,13 @@
 # IMP-55: Sistema de Captura CHAT-*.md
 
-**Status**: 🔵 EM PROGRESSO
-**Prioridade**: P2 (Média)
+**Status**: ✅ COMPLETO
+**Prioridade**: P1 (Alta) — originalmente P2, elevada para P1
 **Data Início**: 2026-04-14
-**Estimativa**: 1 semana (40h)
+**Data Conclusão**: 2026-04-20
+**Tempo Real**: ~40h (conforme estimativa)
+**Qualidade**: 15/15 tests passing (100%)
+
+> **✅ IMPLEMENTAÇÃO COMPLETA** — Ver [IMP-55_IMPLEMENTATION_REPORT.md](IMP-55_IMPLEMENTATION_REPORT.md) para detalhes
 
 ---
 
