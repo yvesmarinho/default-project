@@ -23,7 +23,7 @@ def test_extract_keywords_basic():
     """Test basic keyword extraction."""
     text = "feat(imp-59): Add memory context system"
     keywords = extract_keywords(text)
-    
+
     assert "memory" in keywords
     assert "context" in keywords
     assert "system" in keywords
@@ -35,7 +35,7 @@ def test_extract_keywords_branch_name():
     """Test keyword extraction from branch names."""
     text = "018-copilot-instructions"
     keywords = extract_keywords(text)
-    
+
     # Should remove number prefix
     assert "018" not in keywords
     assert "copilot" in keywords
@@ -46,13 +46,13 @@ def test_extract_keywords_removes_stopwords():
     """Test that stopwords are removed."""
     text = "This is a test and it should be filtered"
     keywords = extract_keywords(text)
-    
+
     # Stopwords should be removed
     assert "this" not in keywords
     assert "is" not in keywords
     assert "and" not in keywords
     assert "should" not in keywords
-    
+
     # Real keywords should remain
     assert "test" in keywords
     assert "filtered" in keywords
@@ -61,7 +61,7 @@ def test_extract_keywords_removes_stopwords():
 def test_analyze_context_with_query():
     """Test context analysis with manual query."""
     sources = analyze_context(query="database migration")
-    
+
     assert len(sources) >= 1
     assert sources[0].type == "query"
     assert "database" in sources[0].value
@@ -72,7 +72,7 @@ def test_analyze_context_with_query():
 def test_analyze_context_with_task():
     """Test context analysis with task ID."""
     sources = analyze_context(task="IMP-60", branch="main", commits=[])
-    
+
     task_source = next((s for s in sources if s.type == "task"), None)
     assert task_source is not None
     assert task_source.value == "IMP-60"
@@ -82,7 +82,7 @@ def test_analyze_context_with_task():
 def test_analyze_context_with_branch():
     """Test context analysis with branch name."""
     sources = analyze_context(branch="feat/new-feature", commits=[])
-    
+
     branch_source = next((s for s in sources if s.type == "branch"), None)
     assert branch_source is not None
     assert "feat" in branch_source.value or "feature" in branch_source.value
@@ -96,7 +96,7 @@ def test_analyze_context_with_commits():
         "docs: Update API documentation",
     ]
     sources = analyze_context(branch="main", commits=commits)
-    
+
     commit_source = next((s for s in sources if s.type == "commit"), None)
     assert commit_source is not None
     assert "authentication" in commit_source.value or "security" in commit_source.value
@@ -105,7 +105,7 @@ def test_analyze_context_with_commits():
 def test_analyze_context_filters_main_branch():
     """Test that main/master branches are filtered out."""
     sources = analyze_context(branch="main", commits=[])
-    
+
     # Should not include "main" as a keyword
     branch_sources = [s for s in sources if s.type == "branch"]
     assert len(branch_sources) == 0
@@ -123,12 +123,12 @@ def test_calculate_relevance_title_match():
         score=-0.5,  # FTS5 score (negative = more relevant)
         snippet="How to migrate database schema",
     )
-    
+
     keywords = [("database", 1.0, "query"), ("migration", 1.0, "query")]
     sources = [ContextSource(type="query", value="database migration", weight=1.0)]
-    
+
     relevance, reasons = calculate_relevance(result, keywords, sources)
-    
+
     # Should have high relevance due to title matches
     assert relevance > 60  # Relaxed from 70 to allow for score variations
     assert any("Title matches" in r for r in reasons)
@@ -146,12 +146,12 @@ def test_calculate_relevance_tag_match():
         score=-0.5,
         snippet="",
     )
-    
+
     keywords = [("security", 1.0, "query"), ("jwt", 1.0, "query")]
     sources = [ContextSource(type="query", value="security jwt", weight=1.0)]
-    
+
     relevance, reasons = calculate_relevance(result, keywords, sources)
-    
+
     # Should have good relevance due to tag matches
     assert relevance >= 40  # Changed from > to >= to handle edge case
     assert any("Tags match" in r for r in reasons)
@@ -170,7 +170,7 @@ def test_calculate_relevance_recency_bonus():
         score=-0.5,
         snippet="",
     )
-    
+
     # Old memory (30 days ago)
     old_result = SearchResult(
         memory_id=2,
@@ -182,13 +182,13 @@ def test_calculate_relevance_recency_bonus():
         score=-0.5,
         snippet="",
     )
-    
+
     keywords = [("test", 1.0, "query")]
     sources = [ContextSource(type="query", value="test", weight=1.0)]
-    
+
     recent_rel, recent_reasons = calculate_relevance(recent_result, keywords, sources)
     old_rel, old_reasons = calculate_relevance(old_result, keywords, sources)
-    
+
     # Recent memory should have higher relevance
     assert recent_rel > old_rel
     assert any("Recently updated" in r for r in recent_reasons)
@@ -206,7 +206,7 @@ def test_calculate_relevance_category_bonus():
         score=-0.5,
         snippet="",
     )
-    
+
     team_result = SearchResult(
         memory_id=2,
         file_path=Path(".memory/memories/team/test.md"),
@@ -217,13 +217,13 @@ def test_calculate_relevance_category_bonus():
         score=-0.5,
         snippet="",
     )
-    
+
     keywords = [("test", 1.0, "query")]
     sources = [ContextSource(type="query", value="test", weight=1.0)]
-    
+
     project_rel, project_reasons = calculate_relevance(project_result, keywords, sources)
     team_rel, team_reasons = calculate_relevance(team_result, keywords, sources)
-    
+
     # Project should have higher bonus than team
     assert project_rel > team_rel
 
@@ -232,7 +232,7 @@ def test_search_with_context_empty_sources():
     """Test search with no context sources."""
     sources = []
     suggestions = search_with_context(sources, limit=5)
-    
+
     assert len(suggestions) == 0
 
 
@@ -248,15 +248,15 @@ def test_search_with_context_with_memories():
     )
     store.save(memory)
     store.close()
-    
+
     # Search with context
     sources = [ContextSource(type="query", value="test context", weight=1.0)]
     suggestions = search_with_context(sources, limit=5)
-    
+
     # Should find at least one suggestion
     assert len(suggestions) > 0
     assert any("Test Context Memory" in s.memory.title for s in suggestions)
-    
+
     # Verify suggestion structure
     assert suggestions[0].relevance >= 0
     assert suggestions[0].relevance <= 100
@@ -271,10 +271,10 @@ def test_cli_auto_mode():
         text=True,
         timeout=10,
     )
-    
+
     # Should succeed (even if no suggestions found)
     assert result.returncode == 0
-    
+
     # Should output valid JSON
     output = json.loads(result.stdout)
     assert "success" in output
@@ -290,9 +290,9 @@ def test_cli_query_mode():
         text=True,
         timeout=10,
     )
-    
+
     assert result.returncode == 0
-    
+
     output = json.loads(result.stdout)
     assert output["success"] is True
     assert len(output["context_sources"]) >= 1
@@ -307,9 +307,9 @@ def test_cli_task_mode():
         text=True,
         timeout=10,
     )
-    
+
     assert result.returncode == 0
-    
+
     output = json.loads(result.stdout)
     assert output["success"] is True
     # Should have task in context sources
@@ -326,6 +326,6 @@ def test_cli_error_no_mode():
         text=True,
         timeout=10,
     )
-    
+
     # Should fail with exit code 1
     assert result.returncode == 1

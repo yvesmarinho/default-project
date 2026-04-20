@@ -68,10 +68,10 @@ def sanitize(text: str, redact: bool = True) -> Tuple[str, List[str]]:
 
     Returns:
         Tuple of (sanitized_text, list_of_warnings)
-        
+
         sanitized_text: Text with secrets replaced/removed
         warnings: List of warning messages about what was found
-        
+
         Example:
         >>> sanitize("api_key: sk_live_abc123", redact=True)
         ("api_key: [REDACTED-api_key]", ["Found 1 potential api_key(s)"])
@@ -82,17 +82,17 @@ def sanitize(text: str, redact: bool = True) -> Tuple[str, List[str]]:
     for name, pattern in PATTERNS.items():
         # Find all matches in reverse order to preserve string indices
         matches = list(re.finditer(pattern, sanitized, re.IGNORECASE))
-        
+
         if matches:
             warnings.append(f"Found {len(matches)} potential {name}(s)")
-            
+
             # Process matches in reverse order to preserve indices during replacement
             for match in reversed(matches):
                 if redact:
                     replacement = f"[REDACTED-{name}]"
                 else:
                     replacement = ""
-                
+
                 sanitized = sanitized[:match.start()] + replacement + sanitized[match.end():]
 
     return sanitized, warnings
@@ -108,19 +108,19 @@ def validate_safe(text: str, allow_emails: bool = False, allow_ips: bool = False
 
     Returns:
         Tuple of (is_safe, list_of_issues)
-        
+
         is_safe: True if no secrets detected (or only allowed types)
         issues: List of detected secret types
-        
+
         Example:
         >>> validate_safe("Contact: user@example.com", allow_emails=True)
         (True, [])
-        
+
         >>> validate_safe("api_key: sk_live_abc123")
         (False, ["api_key"])
     """
     findings = detect_secrets(text)
-    
+
     # Filter out allowed types
     filtered_findings = []
     for pattern_name, value in findings:
@@ -129,11 +129,11 @@ def validate_safe(text: str, allow_emails: bool = False, allow_ips: bool = False
         if allow_ips and pattern_name == "ip_address":
             continue
         filtered_findings.append(pattern_name)
-    
+
     # Get unique pattern names
     issues = list(set(filtered_findings))
     is_safe = len(issues) == 0
-    
+
     return is_safe, issues
 
 
@@ -147,19 +147,19 @@ def get_security_report(text: str) -> str:
         Formatted security report string
     """
     findings = detect_secrets(text)
-    
+
     if not findings:
         return "✅ No potential secrets detected"
-    
+
     report = ["⚠️  Security Scan Results:", ""]
-    
+
     # Group by pattern type
     by_type = {}
     for pattern_name, value in findings:
         if pattern_name not in by_type:
             by_type[pattern_name] = []
         by_type[pattern_name].append(value)
-    
+
     for pattern_name, values in sorted(by_type.items()):
         report.append(f"  {pattern_name}: {len(values)} found")
         for value in values[:3]:  # Show max 3 examples
@@ -167,5 +167,5 @@ def get_security_report(text: str) -> str:
             report.append(f"    - {preview}")
         if len(values) > 3:
             report.append(f"    ... and {len(values) - 3} more")
-    
+
     return "\n".join(report)

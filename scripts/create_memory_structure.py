@@ -55,17 +55,17 @@ What are the implications?
 def create_structure():
     """Create .memory directory structure."""
     log.info("Creating .memory structure at %s", MEMORY_ROOT)
-    
+
     # Create directories
     for directory in DIRECTORIES:
         directory.mkdir(parents=True, exist_ok=True)
         log.info("✅ %s", directory.relative_to(PROJECT_ROOT))
-    
+
     # Create files
     for file_path, content in FILES.items():
         file_path.write_text(content)
         log.info("✅ %s", file_path.relative_to(PROJECT_ROOT))
-    
+
     log.info("✅ .memory structure created successfully")
 
 

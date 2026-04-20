@@ -302,7 +302,7 @@ Remover arquivos temporários gerados durante a sessão:
 
 ---
 
-<!-- 
+<!--
 ### Passo 10.5 — Salvar Aprendizados em Memória (OPCIONAL — IMP-59)
 
 **ATENÇÃO**: Este passo é opcional e requer que o Mini-Engram Memory System (IMP-59) esteja instalado.
@@ -345,7 +345,7 @@ python scripts/mem_save.py
 💾 Saving new memory to Mini-Engram
 
 Title: Redis para Rate Limiting de API
-Content (markdown): 
+Content (markdown):
 ---
 Decisão: usar Redis para rate limiting no API Gateway.
 

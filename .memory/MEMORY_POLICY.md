@@ -202,16 +202,16 @@ The `.git/hooks/pre-commit` script scans `.memory/memories/` for secrets before 
 
 if git diff --cached --name-only | grep -q '^\.memory/memories/'; then
     echo "🔍 Scanning memory files for secrets..."
-    
+
     # Use gitleaks
     gitleaks protect --staged --config .gitleaks-memory.toml --source .memory/memories/
-    
+
     if [ $? -ne 0 ]; then
         echo "❌ COMMIT BLOCKED: Secrets detected in .memory/memories/"
         echo "Remove secrets and try again."
         exit 1
     fi
-    
+
     echo "✅ No secrets detected"
 fi
 ```

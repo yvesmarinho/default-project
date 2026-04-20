@@ -442,7 +442,7 @@ Recommendation: Commit `.memory/memories/project/` and `.memory/memories/team/`,
 
 ### Q: How is this different from Engram official?
 
-**A**: 
+**A**:
 
 | Feature | Mini-Engram (IMP-59) | Engram Official (IMP-45) |
 |---------|---------------------|-------------------------|

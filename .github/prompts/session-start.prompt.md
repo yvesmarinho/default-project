@@ -104,7 +104,7 @@ git log --oneline -5   # últimos 5 commits
 
 ---
 
-<!-- 
+<!--
 ### Passo 5.5 — Verificar Memórias Relevantes (OPCIONAL — IMP-59)
 
 **ATENÇÃO**: Este passo é opcional e requer que o Mini-Engram Memory System (IMP-59) esteja instalado.

@@ -135,12 +135,12 @@ def auto_generate_title(content: str) -> str:
 
 def validate_content(content: str, title: str, allow_sanitize: bool = True) -> str:
     """Validate content for security issues.
-    
+
     Args:
         content: Memory content to validate
         title: Memory title
         allow_sanitize: If True, prompt user to sanitize if secrets detected
-        
+
     Returns:
         Validated (and potentially sanitized) content
     """
@@ -154,7 +154,7 @@ def validate_content(content: str, title: str, allow_sanitize: bool = True) -> s
 
     # Security scan: detect potential secrets/PII
     findings = detect_secrets(content)
-    
+
     if findings:
         # Display security report
         report = get_security_report(content)
@@ -163,24 +163,24 @@ def validate_content(content: str, title: str, allow_sanitize: bool = True) -> s
         log.warning("")
         log.warning("⚠️  SECURITY WARNING: Potential secrets/PII detected!")
         log.warning("")
-        
+
         if not allow_sanitize:
             log.error("❌ Cannot save memory with secrets. Please remove sensitive data.")
             sys.exit(1)
-        
+
         # Prompt user for action
         log.info("What would you like to do?")
         log.info("  1. Cancel save (review content manually)")
         log.info("  2. Sanitize content (auto-redact secrets)")
         log.info("  3. Save anyway (NOT RECOMMENDED - see MEMORY_POLICY.md)")
         log.info("")
-        
+
         try:
             choice = input("Enter choice (1-3): ").strip()
         except (KeyboardInterrupt, EOFError):
             log.info("\n❌ Cancelled by user")
             sys.exit(1)
-        
+
         if choice == "1":
             log.info("❌ Save cancelled. Please review and sanitize content manually.")
             sys.exit(0)
@@ -200,7 +200,7 @@ def validate_content(content: str, title: str, allow_sanitize: bool = True) -> s
         else:
             log.error("❌ Invalid choice. Cancelling save.")
             sys.exit(1)
-    
+
     return content
 
 

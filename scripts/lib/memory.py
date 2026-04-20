@@ -15,7 +15,7 @@ Classes:
 
 Usage:
     from scripts.lib.memory import MemoryStore
-    
+
     store = MemoryStore()
     store.save(
         title="API Authentication Pattern",
@@ -23,7 +23,7 @@ Usage:
         category="project",
         tags=["api", "security"]
     )
-    
+
     results = store.search("JWT authentication")
     for result in results:
         print(f"{result.title} (score: {result.score})")
@@ -216,10 +216,10 @@ class MemoryStore:
 
     def save(self, memory: Memory) -> int:
         """Save a memory to disk and index.
-        
+
         Args:
             memory: Memory object to save
-            
+
         Returns:
             int: Memory ID
         """
@@ -238,11 +238,11 @@ class MemoryStore:
         # Insert or update database
         cursor = self.conn.execute(
             """
-            INSERT OR REPLACE INTO memories 
+            INSERT OR REPLACE INTO memories
             (file_path, title, content, category, tags, created_at, updated_at, hash)
             VALUES (
-                ?, ?, ?, ?, ?, 
-                COALESCE((SELECT created_at FROM memories WHERE file_path = ?), ?), 
+                ?, ?, ?, ?, ?,
+                COALESCE((SELECT created_at FROM memories WHERE file_path = ?), ?),
                 ?, ?
             )
         """,
@@ -272,13 +272,13 @@ class MemoryStore:
         limit: int = 10,
     ) -> List[SearchResult]:
         """Search memories with FTS5 ranking.
-        
+
         Args:
             query: Search query (supports FTS5 syntax: AND, OR, NOT, NEAR, "phrase")
             category: Filter by category (project, team, sessions)
             tags: Filter by tags
             limit: Maximum number of results
-            
+
         Returns:
             List of SearchResult ordered by relevance
         """
@@ -357,7 +357,7 @@ class MemoryStore:
 
     def rebuild_index(self) -> int:
         """Rebuild index from markdown files (for recovery/migration).
-        
+
         Returns:
             int: Number of memories indexed
         """
