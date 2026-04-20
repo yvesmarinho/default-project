@@ -104,6 +104,48 @@ git log --oneline -5   # últimos 5 commits
 
 ---
 
+<!-- 
+### Passo 5.5 — Verificar Memórias Relevantes (OPCIONAL — IMP-59)
+
+**ATENÇÃO**: Este passo é opcional e requer que o Mini-Engram Memory System (IMP-59) esteja instalado.
+
+**Verificar disponibilidade**:
+```bash
+test -f scripts/mem_context.py && echo "✅ Mini-Engram disponível" || echo "⚠ Mini-Engram não instalado"
+```
+
+**Se disponível**, executar análise de contexto:
+```bash
+make memory-context
+# OU
+python scripts/mem_context.py --auto
+```
+
+**Resultado esperado**:
+```
+💡 Suggested Context for Current Session
+
+Based on: Branch: 060-mini-engram-python, Recent commits: ...
+
+[1] Memory Title (95% relevance)
+    Category: project | Updated: 2026-04-20
+    Why: Title matches; Tags match; Branch context
+    File: .memory/memories/project/2026-04-20__memory.md
+```
+
+**Ações**:
+1. Revisar as memórias sugeridas (top 3-5)
+2. Abrir arquivos relevantes em `.memory/memories/` se necessário
+3. Incorporar insights ao planejamento da sessão
+
+Se não houver memórias relevantes (score < 40%): continuar normalmente.
+
+**Resultado**: `✅ Memórias verificadas: [N] relevantes encontradas` ou `⚠ Mini-Engram não disponível (pular)`
+
+-->
+
+---
+
 ### Passo 6 — Criar Documentos de Sessão e Carregar Protocolo
 
 Criar os arquivos de sessão do dia (se ainda não existirem):

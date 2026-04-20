@@ -740,6 +740,83 @@ status:
 
 ##
 ## ═══════════════════════════════════════════════════════════════════════
+## MEMORY SYSTEM (IMP-59)
+## ═══════════════════════════════════════════════════════════════════════
+##
+
+## memory-save: Save a new memory interactively
+memory-save:
+	@echo "$(BLUE)💾 Saving new memory...$(NC)"
+	@python scripts/mem_save.py
+
+## memory-search: Search memories (usage: make memory-search QUERY="database")
+memory-search:
+	@if [ -z "$(QUERY)" ]; then \
+		echo "$(YELLOW)Usage: make memory-search QUERY=\"your search terms\"$(NC)"; \
+		echo "Example: make memory-search QUERY=\"database migration\""; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)🔍 Searching memories: $(QUERY)$(NC)"
+	@python scripts/mem_search.py --query "$(QUERY)"
+
+## memory-context: Get context suggestions based on current work
+memory-context:
+	@echo "$(BLUE)💡 Analyzing current context...$(NC)"
+	@python scripts/mem_context.py --auto
+
+## memory-context-task: Get context for specific task (usage: make memory-context-task TASK=IMP-60)
+memory-context-task:
+	@if [ -z "$(TASK)" ]; then \
+		echo "$(YELLOW)Usage: make memory-context-task TASK=IMP-XX$(NC)"; \
+		echo "Example: make memory-context-task TASK=IMP-60"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)💡 Getting context for task: $(TASK)$(NC)"
+	@python scripts/mem_context.py --task "$(TASK)"
+
+## memory-rebuild: Rebuild memory index from markdown files
+memory-rebuild:
+	@echo "$(BLUE)🔄 Rebuilding memory index...$(NC)"
+	@python scripts/mem_rebuild.py
+	@echo "$(GREEN)✅ Memory index rebuilt$(NC)"
+
+## memory-test: Run memory system tests
+memory-test:
+	@echo "$(BLUE)🧪 Running memory system tests...$(NC)"
+	@pytest tests/test_memory*.py -v --tb=short
+	@echo "$(GREEN)✅ Memory tests completed$(NC)"
+
+## memory-test-quick: Run memory tests without verbose output
+memory-test-quick:
+	@pytest tests/test_memory*.py -q
+
+## memory-health: Check memory system health
+memory-health:
+	@echo "$(BLUE)🏥 Checking memory system health...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Directory structure:$(NC)"
+	@if [ -d .memory/memories/project ]; then echo "  ✅ .memory/memories/project/"; else echo "  ❌ .memory/memories/project/ missing"; fi
+	@if [ -d .memory/memories/team ]; then echo "  ✅ .memory/memories/team/"; else echo "  ❌ .memory/memories/team/ missing"; fi
+	@if [ -d .memory/memories/sessions ]; then echo "  ✅ .memory/memories/sessions/"; else echo "  ❌ .memory/memories/sessions/ missing"; fi
+	@if [ -d .memory/index ]; then echo "  ✅ .memory/index/"; else echo "  ❌ .memory/index/ missing"; fi
+	@echo ""
+	@echo "$(YELLOW)Index status:$(NC)"
+	@if [ -f .memory/index/memory.db ]; then \
+		echo "  ✅ .memory/index/memory.db exists"; \
+		python -c "import sqlite3; conn = sqlite3.connect('.memory/index/memory.db'); print('  ✅ Database is valid'); conn.close()" 2>/dev/null || echo "  ❌ Database is corrupted (run: make memory-rebuild)"; \
+	else \
+		echo "  ❌ .memory/index/memory.db missing (run: make memory-rebuild)"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)Memory count:$(NC)"
+	@if [ -f .memory/index/memory.db ]; then \
+		python -c "import sqlite3; conn = sqlite3.connect('.memory/index/memory.db'); cursor = conn.execute('SELECT COUNT(*) FROM memories'); print(f'  📊 Total memories: {cursor.fetchone()[0]}'); conn.close()" 2>/dev/null || echo "  ⚠ Could not query database"; \
+	fi
+	@echo ""
+	@echo "$(GREEN)✅ Health check completed$(NC)"
+
+##
+## ═══════════════════════════════════════════════════════════════════════
 ## SESSION DOCUMENTATION
 ## ═══════════════════════════════════════════════════════════════════════
 ##

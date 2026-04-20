@@ -302,6 +302,82 @@ Remover arquivos temporários gerados durante a sessão:
 
 ---
 
+<!-- 
+### Passo 10.5 — Salvar Aprendizados em Memória (OPCIONAL — IMP-59)
+
+**ATENÇÃO**: Este passo é opcional e requer que o Mini-Engram Memory System (IMP-59) esteja instalado.
+
+**Verificar disponibilidade**:
+```bash
+test -f scripts/mem_save.py && echo "✅ Mini-Engram disponível" || echo "⚠ Mini-Engram não instalado"
+```
+
+**Critérios para salvar em memória** (salvar SE pelo menos um dos critérios for verdadeiro):
+
+1. ✅ **Decisão arquitetural importante** foi tomada nesta sessão
+2. ✅ **Padrão de código/configuração** foi estabelecido e deve ser reutilizado
+3. ✅ **Problema difícil foi resolvido** e a solução pode economizar tempo no futuro
+4. ✅ **Processo de equipe** foi documentado ou melhorado
+5. ✅ **Descoberta técnica relevante** que impacta o projeto
+
+**NÃO salvar** (já está em session docs):
+- ❌ Tarefas rotineiras (bug fixes triviais, typos)
+- ❌ Configurações específicas de uma única sessão
+- ❌ Detalhes já cobertos em DAILY_ACTIVITIES (session history já persiste isso)
+
+**Como decidir entre session docs vs memory**:
+| Tipo de informação | Session Docs | Mini-Engram |
+|-------------------|--------------|-------------|
+| "O que fiz hoje?" | ✅ DAILY_ACTIVITIES | ❌ |
+| "Por que decidi usar Redis?" | 🟡 DAILY_ACTIVITIES | ✅ Project Memory |
+| "Como configurar SSH SPA?" | ✅ SESSION_REPORT | ✅ Team Memory (se processo) |
+| "Bug fix do SQLite FTS5" | ✅ DAILY_ACTIVITIES | 🟡 Só se padrão reutilizável |
+
+**Se houver memórias para salvar**, executar:
+```bash
+make memory-save
+# OU
+python scripts/mem_save.py
+```
+
+**Exemplo interativo**:
+```
+💾 Saving new memory to Mini-Engram
+
+Title: Redis para Rate Limiting de API
+Content (markdown): 
+---
+Decisão: usar Redis para rate limiting no API Gateway.
+
+Rationale:
+- Performance: <1ms de latência para contadores
+- Atomicidade: INCR garante race-free counting
+- TTL nativo: expiração automática de janelas
+
+Implementação:
+```python
+limiter = redis.StrictRedis()
+key = f"ratelimit:{user_id}:{window}"
+limiter.incr(key)
+limiter.expire(key, 3600)  # 1h window
+```
+---
+
+Category (project/team/sessions): project
+Tags (comma-separated): redis,api,rate-limiting,performance
+```
+
+**Resultado**: `✅ Memory saved: .memory/memories/project/2026-04-20__redis-rate-limiting.md`
+
+**Resultado esperado**:
+- Se salvou: `✅ [N] memória(s) salva(s) no Mini-Engram`
+- Se não havia memórias relevantes: `⏭ Nenhuma memória nova para salvar (session docs já cobrem)`
+- Se Mini-Engram não disponível: `⏭ Mini-Engram não instalado (pular)`
+
+-->
+
+---
+
 ## ✅ Checklist de Encerramento
 
 ### Documentação

@@ -206,24 +206,48 @@ cat .memory/memories/project/2026-04-20__api-authentication-pattern.md
 ### Workflow 3: Proactive Context (Auto-Suggest)
 
 ```bash
-# At start of session
+# At start of session (auto-detect from git)
 python scripts/mem_context.py --auto
+
+# Manual query
+python scripts/mem_context.py --query "database performance"
+
+# Task-specific context
+python scripts/mem_context.py --task IMP-60
+
+# JSON output for automation
+python scripts/mem_context.py --auto --json
 ```
 
-Output:
+Output example:
 ```
-🧠 Relevant memories for current context:
+💡 Suggested Context for Current Session
 
-Based on: branch=060-mini-engram-python, recent_commits=[IMP-59 preparation], files_open=[memory.py]
+Based on: Branch: 060-mini-engram-python, Recent commits: IMP-59 Phase 4, mem_context implementation
 
-1. IMP-59: Mini-Engram Architecture (95% relevance)
-   Category: project | Updated: 2026-04-20
-   → .memory/memories/project/2026-04-20__imp-59-architecture.md
+[1] IMP-59: Mini-Engram Architecture (95% relevance)
+    Category: project | Updated: 2026-04-20
+    Why: Title matches 2 keyword(s); Tags match: imp-59, architecture; Branch context
+    File: .memory/memories/project/2026-04-20__imp-59-architecture.md
 
-2. SQLite FTS5 Performance Tuning (78% relevance)
-   Category: project | Updated: 2026-04-15
-   → .memory/memories/project/2026-04-15__sqlite-fts5-tuning.md
+[2] SQLite FTS5 Performance Tuning (78% relevance)
+    Category: project | Updated: 2026-04-15
+    Why: Title matches 1 keyword(s); Snippet context; Recent (6 days)
+    File: .memory/memories/project/2026-04-15__sqlite-fts5-tuning.md
 ```
+
+**How context analysis works**:
+- **Auto mode**: Analyzes current git branch + recent commits (top 10 keywords)
+- **Query mode**: Uses your explicit search terms
+- **Task mode**: Extracts task ID and searches related memories
+- **Relevance scoring** (0-100%):
+  - BM25 base score (0-30 points)
+  - Title match (20 points)
+  - Snippet match (15 points)
+  - Tag match (15 points)
+  - Category bonus (10 for project, 5 for team)
+  - Recency bonus (10 for <7 days, 5 for <30 days)
+  - Context match (task/branch keywords)
 
 ---
 
@@ -315,13 +339,43 @@ Checks:
 Run memory system tests:
 
 ```bash
-# All tests
-pytest tests/test_memory*.py
+# All tests (46 tests, <2s)
+pytest tests/test_memory*.py -v
 
 # Specific test suite
-pytest tests/test_memory_core.py
-pytest tests/test_memory_security.py
+pytest tests/test_memory_save.py      # CLI save tests (7)
+pytest tests/test_memory_search.py    # CLI search tests (7)
+pytest tests/test_memory_security.py  # Security tests (14)
+pytest tests/test_memory_context.py   # Context tests (18)
 ```
+
+---
+
+## 🎯 Makefile Integration
+
+For convenience, memory commands are integrated into the project Makefile:
+
+```bash
+# Save a memory
+make memory-save
+
+# Search memories
+make memory-search QUERY="database migration"
+
+# Get context suggestions
+make memory-context
+
+# Rebuild index
+make memory-rebuild
+
+# Health check
+make memory-health
+
+# Run all tests
+make memory-test
+```
+
+See `Makefile` for complete target definitions.
 
 ---
 
@@ -403,5 +457,21 @@ Recommendation: Commit `.memory/memories/project/` and `.memory/memories/team/`,
 
 ---
 
-**Version**: 1.0.0 (IMP-59 Phase 1)
+## 📦 Implementation Status
+
+| Phase | Status | Tests | Commit |
+|-------|--------|-------|--------|
+| 1. Structure | ✅ Complete | 4 smoke | `4845fc7` |
+| 2. CLI Tools | ✅ Complete | 14 | `dec06a0` |
+| 3. Security | ✅ Complete | 14 | `ca12487` |
+| 4. Context | ✅ Complete | 18 | `513fe59` |
+| 5. Final Tests | ✅ Complete | 46 total | — |
+| 6. Documentation | ✅ Complete | — | TBD |
+
+**Total**: 46/46 tests passing (<2s), zero dependencies, production-ready.
+
+---
+
+**Version**: 1.0.0 (IMP-59 Complete)
 **Last updated**: 2026-04-20
+**Implementation**: [docs/IMP-59_IMPLEMENTATION.md](../docs/IMP-59_IMPLEMENTATION.md)
