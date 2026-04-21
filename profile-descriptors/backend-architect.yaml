@@ -7,12 +7,11 @@ last_tested: "2026-04-14"
 status: stable
 
 description: >
-  Perfil Layer 2 para arquiteto backend. Combina expertise em arquitetura de APIs
-  (REST, GraphQL, gRPC), microservices vs monolith, database design, message queues,
-  caching strategies, e decisões de escalabilidade. Ideal para projetos que exigem
-  alta disponibilidade, throughput elevado, e evolução arquitet
-
-ural de longo prazo.
+  Perfil Layer 2 para arquiteto backend. Combina expertise em arquitetura de
+  APIs (REST, GraphQL, gRPC), microservices vs monolith, database design,
+  message queues, caching strategies, e decisões de escalabilidade. Ideal para
+  projetos que exigem alta disponibilidade, throughput elevado, e evolução
+  arquitetural de longo prazo.
 
 meta:
   maintained_by: "@yves_marinho"
@@ -30,18 +29,19 @@ meta:
 
 expertise_domains:
   api_design_and_protocols:
-    - REST API design (resource-oriented, HTTP verbs, status codes, HATEOAS)
+    - REST API design (resource-oriented, HTTP verbs, status codes, HATEOAS,
+      pagination, filtering, sorting)
     - GraphQL (schema design, resolvers, N+1 problem, DataLoader)
     - gRPC (protobuf, streaming, HTTP/2, service mesh integration)
     - WebSockets (real-time communication, Socket.IO, server-sent events)
     - Webhooks (event-driven integrations, retry logic, idempotency)
     - API versioning (URL versioning, header versioning, content negotiation)
-    status codes, pagination, filtering, sorting)
-    - API documentation (OpenAPI/Swagger, GraphQL introspection, Postman collections)
+    - API documentation (OpenAPI/Swagger, GraphQL introspection, Postman
+      collections)
 
   microservices_architecture:
     - Service decomposition (bounded contexts, DDD, cohesion vs coupling)
-    - Inter-service communication (sync: REST/gRPC, async: message queues)
+    - "Inter-service communication (sync: REST/gRPC, async: message queues)"
     - Service discovery (Consul, etcd, Kubernetes DNS)
     - API gateway (Kong, Tyk, AWS API Gateway, rate limiting, authentication)
     - Circuit breakers (Hystrix, resilience4j, prevent cascading failures)
@@ -50,7 +50,8 @@ expertise_domains:
     - Service mesh (Istio, Linkerd, traffic management, observability)
 
   database_design_and_optimization:
-    - Relational databases (PostgreSQL, MySQL, normalization, indexing, transactions)
+    - Relational databases (PostgreSQL, MySQL, normalization, indexing,
+      transactions)
     - NoSQL databases (MongoDB, Cassandra, DynamoDB, Redis, when to use each)
     - Database replication (master-slave, master-master, read replicas)
     - Sharding strategies (horizontal partitioning, consistent hashing)
@@ -60,7 +61,8 @@ expertise_domains:
     - Database migrations (Flyway, Liquibase, Alembic, zero-downtime migrations)
 
   caching_and_performance:
-    - Caching layers (CDN, reverse proxy, application cache, database query cache)
+    - Caching layers (CDN, reverse proxy, application cache, database query
+      cache)
     - Cache strategies (cache-aside, write-through, write-behind, read-through)
     - Cache invalidation (TTL, cache stampede prevention, stale-while-revalidate)
     - Redis patterns (pub/sub, sorted sets, HyperLogLog, Lua scripting)
@@ -76,12 +78,14 @@ expertise_domains:
     - Dead letter queues (DLQ, failed message handling, retry strategies)
     - Event streaming (Kafka, event sourcing, log compaction)
     - Task queues (Celery, Bull, async job processing, scheduled tasks)
-    - Backpressure and flow control (rate limiting consumers, queue depth monitoring)
+    - Backpressure and flow control (rate limiting consumers, queue depth
+      monitoring)
     - Message serialization (JSON, Protobuf, Avro, MessagePack)
 
   scalability_and_resilience:
     - Horizontal vs vertical scaling (when to scale out vs scale up)
-    - Load balancing algorithms (round-robin, least-connections, consistent hashing)
+    - Load balancing algorithms (round-robin, least-connections, consistent
+      hashing)
     - Autoscaling strategies (CPU-based, queue-depth-based, predictive)
     - Rate limiting (token bucket, leaky bucket, sliding window)
     - Retry strategies (exponential backoff, jitter, circuit breakers)
@@ -141,34 +145,45 @@ workflows:
     - name: "RESTful API Design"
       steps:
         - "Resource modeling: identify resources (nouns, not verbs)"
-        - "Endpoint design: HTTP verbs (GET, POST, PUT, PATCH, DELETE), URL structure"
+        - "Endpoint design: HTTP verbs (GET, POST, PUT, PATCH, DELETE), URL
+          structure"
         - "Request/response schemas: JSON Schema or Protobuf definitions"
         - "Error handling: standardized error responses, HTTP status codes"
         - "Versioning: API versioning strategy (URL or header-based)"
         - "Documentation: OpenAPI/Swagger spec, example requests/responses"
-        - "Security: authentication (OAuth2), authorization (RBAC), rate limiting"
+        - "Security: authentication (OAuth2), authorization (RBAC), rate
+          limiting"
 
   database_optimization:
     - name: "Database Performance Tuning"
       steps:
-        - "Baseline: measure current performance (query latency, throughput, connection pool usage)"
-        - "Identify slow queries: EXPLAIN ANALYZE, pg_stat_statements, slow query log"
-        - "Index optimization: add indexes for frequently queried columns, avoid over-indexing"
+        - "Baseline: measure current performance (query latency, throughput,
+          connection pool usage)"
+        - "Identify slow queries: EXPLAIN ANALYZE, pg_stat_statements, slow
+          query log"
+        - "Index optimization: add indexes for frequently queried columns, avoid
+          over-indexing"
         - "Query rewriting: optimize joins, subqueries, CTEs"
         - "Connection pooling: tune pool size, idle timeout, max connections"
-        - "Caching: implement query result caching, Redis for frequently accessed data"
-        - "Monitoring: set up alerts for slow queries, connection pool exhaustion"
+        - "Caching: implement query result caching, Redis for frequently
+          accessed data"
+        - "Monitoring: set up alerts for slow queries, connection pool
+          exhaustion"
 
 best_practices:
   - "Principle: API-first design (OpenAPI spec before implementation)"
   - "Principle: Idempotency (POST/PUT/DELETE can be retried safely)"
-  - "Principle: Pagination for large result sets (cursor-based preferred over offset)"
+  - "Principle: Pagination for large result sets (cursor-based preferred over
+    offset)"
   - "Principle: Rate limiting (protect from abuse, 100-1000 req/min per user)"
-  - "Principle: Graceful degradation (fallback to cached data when dependencies fail)"
+  - "Principle: Graceful degradation (fallback to cached data when dependencies
+    fail)"
   - "Principle: Database normalization (3NF for OLTP, denormalization for OLAP)"
   - "Principle: Connection pooling (reuse connections, tune pool size)"
-  - "Principle: Async processing for long-running tasks (message queues, task queues)"
-  - "Principle: Monitoring and alerting (latency, error rate, saturation, traffic)"
+  - "Principle: Async processing for long-running tasks (message queues, task
+    queues)"
+  - "Principle: Monitoring and alerting (latency, error rate, saturation,
+    traffic)"
   - "Principle: Versioned APIs (avoid breaking changes, deprecate gradually)"
 
 examples:
@@ -177,18 +192,21 @@ examples:
       - "API Gateway: Kong (rate limiting, authentication, routing)"
       - "Order Service: FastAPI + PostgreSQL (orders, order items)"
       - "Inventory Service: Node.js + MongoDB (stock levels, reservations)"
-      - "Payment Service: Go + gRPC (payment processing, external API integration)"
+      - "Payment Service: Go + gRPC (payment processing, external API
+        integration)"
       - "Notification Service: Python + RabbitMQ (async email/SMS notifications)"
       - "Cache: Redis (product catalog, user sessions)"
 
     adrs:
       - id: "ADR-BE-001"
         title: "Use RabbitMQ for async order processing instead of synchronous calls"
-        rationale: "Decouple services, improve resilience (order placed even if notification fails), handle traffic spikes"
+        rationale: "Decouple services, improve resilience (order placed even if
+          notification fails), handle traffic spikes"
 
       - id: "ADR-BE-002"
         title: "Use PostgreSQL for orders, MongoDB for inventory"
-        rationale: "Orders require strong consistency (ACID transactions); inventory can tolerate eventual consistency for better write performance"
+        rationale: "Orders require strong consistency (ACID transactions); inventory can
+          tolerate eventual consistency for better write performance"
 
 quality_gates:
   - "API design documented (OpenAPI/Swagger spec, versioning strategy)"

@@ -1,12 +1,6 @@
 # Alterações necessárias
 
-## ⏸️ Item Pendente — PDCA Workflow
-
-✅ Item 2 - PDCA workflow — **ANOTADO** (implementação ADIADA)
-- Status: ⏸️ **IMPLEMENTATION DEFERRED**
-- Nota adicionada em TODO.md: "Todas as automações (PDCA workflow, CI/CD, hooks) serão implementadas APÓS conclusão de todas as tarefas prioritárias do SpecKit e Session Management"
-- Motivo: Foco atual em funcionalidades core (IMP-53 a IMP-56) antes de otimizar processos
-- Previsão de implementação: Após conclusão do SpecKit Evolution
+- contabilização de tempo de trabalho de cada sessão.
 
 ---
 

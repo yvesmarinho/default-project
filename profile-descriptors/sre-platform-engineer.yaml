@@ -7,11 +7,11 @@ last_tested: "2026-04-14"
 status: stable
 
 description: >
-  Perfil Layer 2 para SRE (Site Reliability Engineering) / Platform Engineer. Combina
-  expertise em reliability, observability, incident management, automation, capacity
-  planning, e developer experience (DevEx). Ideal para projetos que exigem alta
-  disponibilidade (99.9%+), operação de sistemas em escala, e plataformas internas
-  (developer platforms, golden paths).
+  Perfil Layer 2 para SRE (Site Reliability Engineering) / Platform Engineer.
+  Combina expertise em reliability, observability, incident management,
+  automation, capacity planning, e developer experience (DevEx). Ideal para
+  projetos que exigem alta disponibilidade (99.9%+), operação de sistemas em
+  escala, e plataformas internas (developer platforms, golden paths).
 
 meta:
   maintained_by: "@yves_marinho"
@@ -42,34 +42,45 @@ expertise_domains:
     - Three pillars: logs, metrics, traces (Loki, Prometheus, Jaeger/Tempo)
     - Metrics collection (Prometheus, StatsD, OpenTelemetry)
     - Log aggregation (Loki, Elasticsearch, Splunk, Datadog)
-    - Distributed tracing (Jaeger, Zipkin, OpenTelemetry, trace context propagation)
+    - Distributed tracing (Jaeger, Zipkin, OpenTelemetry, trace context
+      propagation)
     - Alerting (Alertmanager, PagerDuty, Opsgenie, alert fatigue prevention)
     - Dashboards (Grafana, Datadog, observability as code, dashboard templates)
     - Real User Monitoring (RUM, Datadog, Sentry, Core Web Vitals)
-    - Synthetic monitoring (uptime checks, API health checks, Pingdom, UptimeRobot)
+    - Synthetic monitoring (uptime checks, API health checks, Pingdom,
+      UptimeRobot)
 
   incident_management:
-    - Incident command system (incident commander, communications lead, operations)
-    - Incident severity levels (SEV1: critical outage, SEV2: major, SEV3: minor, SEV4: cosmetic)
-    - On-call rotations (PagerDuty, Opsgenie, fair distribution, escalation policies)
+    - Incident command system (incident commander, communications lead,
+      operations)
+    - "Incident severity levels (SEV1: critical outage, SEV2: major, SEV3:
+      minor, SEV4: cosmetic)"
+    - On-call rotations (PagerDuty, Opsgenie, fair distribution, escalation
+      policies)
     - Runbooks (step-by-step resolution guides, automation opportunities)
     - Blameless post-mortems (5 Whys, timeline, root cause, action items)
-    - Incident response lifecycle (detection→triage→mitigation→resolution→post-mortem)
+    - "Incident response lifecycle
+      (detection→triage→mitigation→resolution→post-mortem)"
     - War rooms (Slack, Zoom, synchronized communication)
-    - Incident metrics (MTTD, MTTR, incident frequency, post-mortem completion rate)
+    - Incident metrics (MTTD, MTTR, incident frequency, post-mortem completion
+      rate)
 
   platform_engineering_and_devex:
     - Internal developer platforms (Backstage, Humanitec, self-service platforms)
-    - Golden paths (opinionated templates, scaffolding, best practices as default)
+    - Golden paths (opinionated templates, scaffolding, best practices as
+      default)
     - Developer portals (service catalog, documentation, runbooks, dashboards)
     - CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins, Tekton)
     - Infrastructure as Code (Terraform, Pulumi, CloudFormation, Crossplane)
-    - Kubernetes operator patterns (custom resources, controllers, reconciliation loops)
+    - Kubernetes operator patterns (custom resources, controllers,
+      reconciliation loops)
     - Platform APIs (REST APIs for provisioning, self-service, automation)
-    - Developer experience metrics (deployment frequency, lead time, change failure rate)
+    - Developer experience metrics (deployment frequency, lead time, change
+      failure rate)
 
   automation_and_toil_reduction:
-    - Toil definition (manual, repetitive, automatable, no enduring value, O(n) with service growth)
+    - Toil definition (manual, repetitive, automatable, no enduring value, O(n)
+      with service growth)
     - Runbook automation (convert manual steps to automation, Ansible playbooks)
     - Self-healing systems (auto-restart, auto-scale, auto-recover)
     - Infrastructure as Code (Terraform modules, reusable patterns)
@@ -79,14 +90,18 @@ expertise_domains:
     - Toil budgets (target: <50% toil, >50% engineering work)
 
   capacity_planning:
-    - Capacity forecasting (baseline, trend analysis, seasonality, growth projections)
-    - Resource utilization (CPU, memory, disk, network, target 70-80% utilization)
-    - Scaling strategies (horizontal: add nodes, vertical: bigger nodes, auto-scaling)
+    - Capacity forecasting (baseline, trend analysis, seasonality, growth
+      projections)
+    - Resource utilization (CPU, memory, disk, network, target 70-80%
+      utilization)
+    - "Scaling strategies (horizontal: add nodes, vertical: bigger nodes,
+      auto-scaling)"
     - Performance testing (load testing, stress testing, capacity validation)
-    - Cost optimization (rightsizing, reserved instances, spot instances, savings plans)
+    - Cost optimization (rightsizing, reserved instances, spot instances,
+      savings plans)
     - Capacity models (linear growth, exponential growth, step functions)
     - Headroom planning (plan for 2x peak load, cushion for unexpected spikes)
-    - Capacity alerts (warn at 75% utilization, critical at 90% utilization)
+    - "Capacity alerts (warn at 75% utilization, critical at 90% utilization)"
 
 stack:
   orchestration:
@@ -129,24 +144,30 @@ templates:
     description: "SLO definition: SLIs, targets, error budgets, alerting thresholds"
 
   - path: "sre/runbook-template.md"
-    description: "Runbook template: alert, symptoms, diagnosis steps, resolution, escalation"
+    description: "Runbook template: alert, symptoms, diagnosis steps, resolution,
+      escalation"
 
   - path: "sre/post-mortem-template.md"
     description: "Blameless post-mortem: timeline, root cause, action items, 5 Whys"
 
   - path: "sre/capacity-plan.md"
-    description: "Capacity plan: current utilization, growth projections, scaling thresholds"
+    description: "Capacity plan: current utilization, growth projections, scaling
+      thresholds"
 
 workflows:
   slo_definition:
     - name: "Define SLO and Error Budget"
       steps:
-        - "Select SLI: availability, latency, throughput, error rate (choose 1-3 SLIs)"
-        - "Set target: 99.9% availability (43.2 min downtime/month), p95 latency < 500ms"
-        - "Calculate error budget: 0.1% failure allowed = 43.2 min/month downtime"
+        - "Select SLI: availability, latency, throughput, error rate (choose 1-3
+          SLIs)"
+        - "Set target: 99.9% availability (43.2 min downtime/month), p95 latency
+          < 500ms"
+        - "Calculate error budget: 0.1% failure allowed = 43.2 min/month
+          downtime"
         - "Implement measurement: Prometheus queries, Grafana dashboards"
         - "Set up alerts: warn at 50% error budget consumption, critical at 90%"
-        - "Review quarterly: adjust targets based on business needs, user feedback"
+        - "Review quarterly: adjust targets based on business needs, user
+          feedback"
 
   incident_response:
     - name: "Incident Response Lifecycle"
@@ -154,30 +175,43 @@ workflows:
         - "Detection: alert fires (Prometheus → Alertmanager → PagerDuty)"
         - "Triage: assess severity (SEV1-SEV4), page on-call engineer"
         - "War room: create Slack channel, assign incident commander"
-        - "Mitigation: rollback, failover, traffic shaping (mitigate impact first)"
+        - "Mitigation: rollback, failover, traffic shaping (mitigate impact
+          first)"
         - "Resolution: root cause fix, testing, gradual rollout"
-        - "Post-mortem: blameless review (5 Whys, timeline, action items, share learnings)"
+        - "Post-mortem: blameless review (5 Whys, timeline, action items, share
+          learnings)"
 
   platform_golden_path:
     - name: "Create Golden Path for Service Deployment"
       steps:
         - "Template: create service template (FastAPI + PostgreSQL + Kubernetes)"
-        - "Scaffold: CLI tool to generate project structure (cookiecutter, yeoman)"
-        - "CI/CD: pre-configured pipelines (linting, testing, building, deploying)"
-        - "Observability: auto-instrumentation (Prometheus metrics, Loki logs, Jaeger traces)"
-        - "Documentation: README template, runbook template, architecture diagram"
+        - "Scaffold: CLI tool to generate project structure (cookiecutter,
+          yeoman)"
+        - "CI/CD: pre-configured pipelines (linting, testing, building,
+          deploying)"
+        - "Observability: auto-instrumentation (Prometheus metrics, Loki logs,
+          Jaeger traces)"
+        - "Documentation: README template, runbook template, architecture
+          diagram"
         - "Self-service: developers can deploy via platform portal or CLI"
-        - "Metrics: track adoption rate, time to first deploy, developer satisfaction"
+        - "Metrics: track adoption rate, time to first deploy, developer
+          satisfaction"
 
 best_practices:
-  - "Principle: Automate toil (manual work that scales with service growth should be automated)"
-  - "Principle: Error budgets drive innovation (if error budget remains, ship faster)"
+  - "Principle: Automate toil (manual work that scales with service growth
+    should be automated)"
+  - "Principle: Error budgets drive innovation (if error budget remains, ship
+    faster)"
   - "Principle: Blameless post-mortems (focus on systems, not individuals)"
   - "Principle: Observability over monitoring (understand why, not just what)"
-  - "Principle: SLOs, not SLAs (internal targets drive reliability, not customer contracts)"
-  - "Principle: Capacity planning: plan for 2x peak load (headroom for growth, spikes)"
-  - "Principle: Developer experience matters (golden paths, self-service, reduce friction)"
-  - "Principle: On-call should be sustainable (fair rotations, runbooks, automation)"
+  - "Principle: SLOs, not SLAs (internal targets drive reliability, not customer
+    contracts)"
+  - "Principle: Capacity planning: plan for 2x peak load (headroom for growth,
+    spikes)"
+  - "Principle: Developer experience matters (golden paths, self-service, reduce
+    friction)"
+  - "Principle: On-call should be sustainable (fair rotations, runbooks,
+    automation)"
   - "Principle: Measure everything (metrics, logs, traces, dashboards, alerts)"
   - "Principle: Chaos engineering (test failure scenarios proactively)"
 
@@ -185,20 +219,27 @@ examples:
   - name: "E-commerce Platform SRE Practices"
     bounded_contexts:
       - "SLO: 99.9% availability (43.2 min downtime/month), p95 latency < 500ms"
-      - "Observability: Prometheus + Grafana (metrics), Loki (logs), Jaeger (traces)"
-      - "Incidents: PagerDuty on-call, blameless post-mortems, 15 incidents/quarter"
-      - "Automation: Terraform for IaC, Ansible for config, CI/CD with GitHub Actions"
-      - "Capacity: 2x peak load capacity (Black Friday spike handling), autoscaling enabled"
-      - "Platform: Internal developer portal (Backstage), golden paths for microservices"
+      - "Observability: Prometheus + Grafana (metrics), Loki (logs), Jaeger
+        (traces)"
+      - "Incidents: PagerDuty on-call, blameless post-mortems, 15
+        incidents/quarter"
+      - "Automation: Terraform for IaC, Ansible for config, CI/CD with GitHub
+        Actions"
+      - "Capacity: 2x peak load capacity (Black Friday spike handling),
+        autoscaling enabled"
+      - "Platform: Internal developer portal (Backstage), golden paths for
+        microservices"
 
     adrs:
       - id: "ADR-SRE-001"
         title: "Target 99.9% availability, not 99.99%"
-        rationale: "99.99% requires significant investment (multi-region, complex failover), 99.9% balances reliability with cost and innovation speed"
+        rationale: "99.99% requires significant investment (multi-region, complex
+          failover), 99.9% balances reliability with cost and innovation speed"
 
       - id: "ADR-SRE-002"
         title: "Use error budgets to gate deployments"
-        rationale: "If error budget exhausted, freeze non-critical deployments, focus on reliability; prevents accumulating reliability debt"
+        rationale: "If error budget exhausted, freeze non-critical deployments, focus on
+          reliability; prevents accumulating reliability debt"
 
 quality_gates:
   - "SLOs defined: 1-3 SLIs with targets (availability, latency, error rate)"
@@ -206,6 +247,8 @@ quality_gates:
   - "Alerting: critical alerts route to PagerDuty, non-critical to Slack"
   - "Runbooks: top 10 alerts have documented runbooks with resolution steps"
   - "Post-mortems: all SEV1/SEV2 incidents have post-mortem within 5 days"
-  - "Capacity plan: documented with 2-year growth projections, scaling thresholds"
+  - "Capacity plan: documented with 2-year growth projections, scaling
+    thresholds"
   - "Automation: >=50% of time spent on engineering (toil <50%)"
-  - "On-call: fair rotation, <2 pages per night average, escalation policy defined"
+  - "On-call: fair rotation, <2 pages per night average, escalation policy
+    defined"
