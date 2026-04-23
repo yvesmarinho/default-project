@@ -1,5 +1,5 @@
 ---
-template_version: "1.5.0"
+template_version: "2.2.0"
 last_updated: "2026-04-23"
 breaking_changes: false
 ---
@@ -66,6 +66,22 @@ breaking_changes: false
 - **Memory**: < [X]MB per instance
 - **CPU**: < [X]% average utilization
 - **Storage**: Data growth < [X]GB per month
+
+### Accessibility Criteria
+
+- **WCAG Compliance**: Meet WCAG 2.1 Level AA standards
+- **Keyboard Navigation**: All features accessible via keyboard
+- **Screen Readers**: Compatible with NVDA, JAWS, VoiceOver
+- **Color Contrast**: Minimum 4.5:1 for normal text, 3:1 for large text
+- **Focus Indicators**: Visible focus indicators on all interactive elements
+
+### Monitoring & Observability
+
+- **Metrics**: Key performance indicators tracked (response time, error rate, throughput)
+- **Logging**: Structured logging with correlation IDs for distributed tracing
+- **Alerting**: Automated alerts for SLO violations and error spikes
+- **Dashboards**: Real-time visibility into system health and business metrics
+- **Distributed Tracing**: End-to-end request tracking across services
 
 ---
 
@@ -153,11 +169,14 @@ breaking_changes: false
 - **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-006**: System MUST encrypt sensitive data at rest
+- **FR-007**: System MUST validate all user inputs against injection attacks
+- **FR-008**: System MUST implement rate limiting on public APIs
 
 *Example of marking unclear requirements:*
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-009**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
+- **FR-010**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
 ### Key Entities *(include if feature involves data)*
 

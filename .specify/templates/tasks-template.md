@@ -1,7 +1,11 @@
 ---
-template_version: "1.0.0"
-last_updated: "2026-04-14"
-breaking_changes: false
+template_version: "2.0.0"
+last_updated: "2026-04-23"
+breaking_changes: true
+breaking_change_notes: |
+  - Removed "Legacy Task Format" section
+  - All tasks must use new Phase-based organization
+  - Migration: Convert old task lists to Phase 1-3 structure
 description: "Task list template for feature implementation"
 ---
 

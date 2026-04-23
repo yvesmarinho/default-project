@@ -1,6 +1,6 @@
 ---
-template_version: "1.0.0"
-last_updated: "2026-04-14"
+template_version: "1.2.0"
+last_updated: "2026-04-23"
 breaking_changes: false
 ---
 
@@ -18,20 +18,26 @@ breaking_changes: false
 ## Technical Context
 
 <!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
+  Capture the technical environment and constraints for this feature.
+  Include language, frameworks, deployment target, and performance requirements.
 -->
+
+### Stack & Infrastructure
 
 **Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
 **Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Database**: [if applicable, e.g., PostgreSQL 15, MongoDB 7, SQLite or N/A]
+**Testing Framework**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
+**CI/CD Pipeline**: [e.g., GitHub Actions, GitLab CI, Jenkins or NEEDS CLARIFICATION]
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM, Docker or NEEDS CLARIFICATION]
 **Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]
+
+### Performance & Scale
+
 **Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
 **Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Monitoring**: [e.g., Prometheus, Datadog, Application Insights or NEEDS CLARIFICATION]
 
 ## Architecture Decision Records *(mandatory for architectural features)*
 
