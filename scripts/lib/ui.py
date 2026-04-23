@@ -168,7 +168,8 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
             f"--name inválido: '{name}'. Use apenas letras minúsculas, números e hífens."
         )
 
-    target_dir = Path(overrides["target_dir"]).expanduser() if overrides.get("target_dir") else get_default_target_dir()
+    # BUG-02 fix: resolve() garante caminho absoluto independente do CWD
+    target_dir = Path(overrides["target_dir"]).expanduser().resolve() if overrides.get("target_dir") else get_default_target_dir().resolve()
 
     # Validar conflito de diretório (BUG-01)
     is_valid, error_msg = _validate_directory_conflict(name, target_dir)
@@ -182,7 +183,7 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         domain=domain,
         language=language,
         github_repo=overrides.get("repo") or None,
-        shared_dir=Path(overrides["shared_dir"]).expanduser() if overrides.get("shared_dir") else get_default_shared_dir(),
+        shared_dir=Path(overrides["shared_dir"]).expanduser().resolve() if overrides.get("shared_dir") else get_default_shared_dir().resolve(),
         target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_parse_extra_profiles(overrides.get("extra_profiles") or "domain-only", domain),
@@ -248,7 +249,8 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         default=str(defaults.get("target_dir") or get_default_target_dir()),
     ).strip()
 
-    target_dir = Path(target_dir_str).expanduser()
+    # BUG-02 fix: resolve() garante caminho absoluto independente do CWD
+    target_dir = Path(target_dir_str).expanduser().resolve()
 
     # Validar conflito de diretório (BUG-01)
     is_valid, error_msg = _validate_directory_conflict(name, target_dir)
@@ -263,7 +265,7 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         domain=domain,
         language=language,
         github_repo=github_repo,
-        shared_dir=Path(shared_dir_str).expanduser(),
+        shared_dir=Path(shared_dir_str).expanduser().resolve(),
         target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_collect_extra_profiles(domain),

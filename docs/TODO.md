@@ -1,20 +1,12 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-21 — Session End: IMP-65 ✅ Analysis COMPLETE (Template Synchronization Validation)
+**Last Updated**: 2026-04-23 — Session Active: BUG-02 ✅ FIXED (Path Resolution)
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
 ---
 
-## 🎯 Próxima Sessão (2026-04-22+)
-
-- [ ] **BUG-02 (P0)**: Fix compose command path resolution
-  - **Problema**: Files created in wrong directory when compose run from project subdirectory
-  - **Localização**: `scripts/lib/flows/compose.py` — target_dir resolution
-  - **Solução**: Use `Path(output).resolve()` for absolute path resolution
-  - **Prioridade**: P0 (blocker for production release)
-  - **Estimativa**: 30-45 min (includes tests)
-  - **Impacto**: Prevents data loss, enables reliable production deployment
+## 🎯 Próxima Sessão (2026-04-23+)
 
 - [ ] **IMP-65 Real-World Test (P0)**: Execute remaining 7 test scenarios
   - **Objetivo**: Complete validation of template synchronization system
@@ -28,7 +20,7 @@
     - Scenario 8: Validation gates
   - **Prioridade**: P0 (prerequisite for production release)
   - **Estimativa**: 3-4h (test execution + validation + documentation)
-  - **Pré-requisito**: BUG-02 fix complete
+  - **Status**: Ready to proceed (BUG-02 blocker removed)
 
 - [ ] **IMP-65 P1 Gaps**: Production hygiene improvements
   - **Objetivo**: CI/CD integration, audit trail, quality gates
@@ -36,6 +28,24 @@
   - **Prioridade**: P1 (production hygiene, Week 2-3)
   - **Estimativa**: 18-23h total
   - **Deliverables**: CI/CD automation, audit logs, automated gates
+
+---
+
+## ✅ CONCLUÍDO — Sessão 2026-04-23
+
+- [x] **BUG-02 (P0)**: Fix compose command path resolution
+  - **Status**: ✅ COMPLETE (2026-04-23)
+  - **Problema**: Files created in wrong directory when compose run from project subdirectory
+  - **Causa Raiz**: `target_dir` and `shared_dir` in `scripts/lib/ui.py` lacked `.resolve()` call
+  - **Solução**: Added `.resolve()` to 4 path processing locations
+  - **Code Changes**: 
+    - `_collect_ci()` — target_dir and shared_dir (lines ~171, ~186)
+    - `_collect_interactive()` — target_dir and shared_dir (lines ~251, ~267)
+  - **Test Coverage**: 7 comprehensive test cases in `tests/test_bug02_path_resolution.py`
+  - **Test Results**: ✅ 7/7 tests PASSED (100%)
+  - **Time**: ~40 min (vs 30-45 min estimated)
+  - **Impact**: Production blocker removed ✅
+  - **Documentation**: docs/SESSIONS/2026-04-23/BUG-02_IMPLEMENTATION.md
 
 ---
 
