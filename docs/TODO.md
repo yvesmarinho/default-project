@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-23 — Session Active: BUG-02 ✅ FIXED (Path Resolution)
+**Last Updated**: 2026-04-23 — Session Active: BUG-03 ✅ FIXED, IMP-65 Scenario 1 ✅ PASSED
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
@@ -11,16 +11,16 @@
 - [ ] **IMP-65 Real-World Test (P0)**: Execute remaining 7 test scenarios
   - **Objetivo**: Complete validation of template synchronization system
   - **Cenários Pendentes**: 2-8 from IMP-65_TEST_STRATEGY.md
-    - Scenario 2: Conflict resolution
-    - Scenario 3: Breaking changes
-    - Scenario 4: Custom blocks
-    - Scenario 5: Multi-profile merge
-    - Scenario 6: Migration from legacy
-    - Scenario 7: Rollback procedures
-    - Scenario 8: Validation gates
+    - Scenario 2: Conflict resolution (interactive merge)
+    - Scenario 3: Breaking changes handling
+    - Scenario 4: Multiple templates update
+    - Scenario 5: Missing base template
+    - Scenario 6: Security customizations preservation
+    - Scenario 7: Backup/rollback procedures
+    - Scenario 8: Dry-run preview mode
+  - **Status Atual**: Scenario 1 ✅ PASSED, BUG-03 blocker removed
   - **Prioridade**: P0 (prerequisite for production release)
-  - **Estimativa**: 3-4h (test execution + validation + documentation)
-  - **Status**: Ready to proceed (BUG-02 blocker removed)
+  - **Estimativa**: 3-5h (test execution + validation + documentation)
 
 - [ ] **IMP-65 P1 Gaps**: Production hygiene improvements
   - **Objetivo**: CI/CD integration, audit trail, quality gates
@@ -33,12 +33,43 @@
 
 ## ✅ CONCLUÍDO — Sessão 2026-04-23
 
+- [x] **BUG-03 (P0)**: Fix compose missing template_bases initialization
+  - **Status**: ✅ COMPLETE (2026-04-23)
+  - **Problema**: compose.py doesn't save template_bases to .scaffold-state.yaml
+  - **Causa Raiz**: Missing template content collection in write_scaffold_state()
+  - **Solução Implementada**: (2 changes in scripts/lib/project.py)
+    1. Collect template bases in memory during template scan
+    2. Include template_bases in state dict before writing
+  - **Design Pattern**: In-memory collection → atomic write (vs. separate file operation)
+  - **Test Coverage**: 5 comprehensive tests in `tests/test_bug03_template_bases_initialization.py`
+  - **Test Results**: ✅ 5/5 tests PASSED + 48/48 regression tests PASSED
+  - **Time**: ~45 min (implementation + testing + documentation)
+  - **Impact**: Merge functionality now works out-of-the-box ✅
+  - **Documentation**:
+    - BUG-03_TEMPLATE_BASES_MISSING.md (problem analysis)
+    - BUG-03_FIX_IMPLEMENTATION.md (fix details)
+
+- [x] **IMP-65 Scenario 1**: Clean Merge (Independent Changes)
+  - **Status**: ✅ PASSED (2026-04-23)
+  - **Test Objective**: Verify clean merge of upstream template updates without conflicts
+  - **Test Actions**:
+    - Created drift: spec-template.md 1.0.0 → 1.5.0 (added Performance Criteria section)
+    - `check-templates`: ✅ Detected drift correctly
+    - `diff-template`: ✅ Showed +33/-0/~2 changes accurately
+    - `merge-template --auto`: ✅ Clean merge after BUG-03 workaround
+    - Post-merge validation: ✅ No drift remaining
+  - **Blocker Discovered**: BUG-03 (template_bases missing) → Fixed same session
+  - **Workaround Applied**: `tmp/populate_template_bases.py` (temporary)
+  - **Artifacts**: Backup created, version updated, new content merged
+  - **Time**: ~15 min (with workaround)
+  - **Documentation**: IMP-65_SCENARIO_1_REPORT.md
+
 - [x] **BUG-02 (P0)**: Fix compose command path resolution
   - **Status**: ✅ COMPLETE (2026-04-23)
   - **Problema**: Files created in wrong directory when compose run from project subdirectory
   - **Causa Raiz**: `target_dir` and `shared_dir` in `scripts/lib/ui.py` lacked `.resolve()` call
   - **Solução**: Added `.resolve()` to 4 path processing locations
-  - **Code Changes**: 
+  - **Code Changes**:
     - `_collect_ci()` — target_dir and shared_dir (lines ~171, ~186)
     - `_collect_interactive()` — target_dir and shared_dir (lines ~251, ~267)
   - **Test Coverage**: 7 comprehensive test cases in `tests/test_bug02_path_resolution.py`

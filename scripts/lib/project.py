@@ -2339,7 +2339,9 @@ def write_scaffold_state(
             merged_profiles.append(p)
 
     # IMP-65 Fase 1: Scan current template versions
+    # BUG-03 FIX: Also collect template bases for merge tracking (IMP-65 Phase 3)
     template_versions = {}
+    template_bases = {}
     template_dir = config.project_path / ".specify" / "templates"
     if template_dir.exists():
         try:
@@ -2349,6 +2351,14 @@ def write_scaffold_state(
                 name: info.version
                 for name, info in templates.items()
             }
+
+            # Collect base content for three-way merge support
+            for name, info in templates.items():
+                content = info.path.read_text(encoding="utf-8")
+                template_bases[name] = {
+                    "version": info.version,
+                    "content": content,
+                }
         except Exception as exc:
             log.warning("⚠️  Failed to scan template versions: %s", exc)
 
@@ -2370,6 +2380,7 @@ def write_scaffold_state(
         },
         "profiles_applied": merged_profiles,
         "template_versions": template_versions,  # IMP-65 Fase 1
+        "template_bases": template_bases,        # BUG-03 FIX: IMP-65 Phase 3
     }
 
     try:

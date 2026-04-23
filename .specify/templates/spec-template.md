@@ -1,6 +1,6 @@
 ---
-template_version: "1.0.0"
-last_updated: "2026-04-14"
+template_version: "1.5.0"
+last_updated: "2026-04-23"
 breaking_changes: false
 ---
 
@@ -33,6 +33,39 @@ breaking_changes: false
 **Critical Journeys**: [Pulled from objetivo.yaml → produto.jornadas_criticas - P1 only]
 
 **Initial Decisions**: [Pulled from objetivo.yaml → decisoes_iniciais]
+
+---
+
+## Performance Criteria *(added in v1.5.0)*
+
+<!--
+  Define non-functional performance requirements for this feature.
+  These should be measurable and testable.
+-->
+
+### Response Time Requirements
+
+- **API Endpoints**: p95 < 200ms, p99 < 500ms
+- **Page Load**: Initial render < 1s, interactive < 2s
+- **Background Jobs**: Complete within [X] minutes/hours
+
+### Throughput & Scalability
+
+- **Peak Load**: Handle [X] requests/second sustained
+- **Concurrent Users**: Support [X] simultaneous users
+- **Data Volume**: Process [X] records without degradation
+
+### Availability & Reliability
+
+- **Uptime SLO**: 99.9% availability (43.2 min downtime/month max)
+- **Error Rate**: < 0.1% failed requests
+- **Recovery Time**: < 5 minutes for service restart
+
+### Resource Constraints
+
+- **Memory**: < [X]MB per instance
+- **CPU**: < [X]% average utilization
+- **Storage**: Data growth < [X]GB per month
 
 ---
 

@@ -1,6 +1,11 @@
 # Alterações necessárias
 
 - contabilização de tempo de trabalho de cada sessão.
+- todos os projetos criados estão carregando o profile "Default", quando deveria utilizar o próprio.
+
+
+---
+## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
 
 ---
 
