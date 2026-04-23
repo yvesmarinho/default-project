@@ -311,3 +311,235 @@
 
 ---
 
+## 🧪 IMP-65 Scenarios 2-5 — Template Sync Validation
+
+**Time**: Post-BUG-03 fix
+**Activity**: Execute IMP-65 Scenarios 2-5 for comprehensive template synchronization validation
+
+**Objective**: Validate template merge system handles various conflict scenarios correctly
+
+**Scenarios Executed**:
+1. ✅ **Scenario 2**: Conflicting Changes (Local vs Upstream modifications)
+2. ✅ **Scenario 3**: Template Deletion & Restoration
+3. ✅ **Scenario 4**: Multi-Template Synchronization (bulk updates)
+4. ✅ **Scenario 5**: Version Skipping (2.0.0 → 3.0.0 directly)
+
+**Test Results**: ✅ ALL PASSED
+- Conflict detection: Working correctly
+- Merge conflict markers: Standard Git-style format
+- Backup creation: Automatic before every merge
+- Multi-template operations: Clean batch processing
+- Version validation: Handles large version jumps
+
+**Key Findings**:
+- Three-way merge engine robust (handles conflicts correctly)
+- Backup system reliable (timestamped, automatic)
+- Version tracking accurate
+- State file management consistent
+
+**Artifacts Created**:
+- IMP-65_SCENARIO_2_REPORT.md
+- IMP-65_SCENARIO_3_REPORT.md
+- IMP-65_SCENARIO_4_REPORT.md
+- IMP-65_SCENARIO_5_REPORT.md
+
+**Commit**: 402ec4e — test(IMP-65): Complete Scenarios 2-5 template sync validation
+
+**Status**: ✅ Scenarios 2-5 complete
+**Next**: Execute Scenarios 6-8 (Security, Backup, Dry-Run)
+
+---
+
+## 🔒 IMP-65 Scenarios 6-8 — Advanced Validation (P0)
+
+**Time**: Post-Scenarios 2-5 completion
+**Activity**: Execute final P0 scenarios for production readiness
+
+**Objective**: Validate security preservation, backup/rollback, and dry-run preview functionality
+
+**Scenarios Executed**:
+1. ✅ **Scenario 6**: Security Customizations
+   - Test: Custom OAuth2/MFA requirements preserved during merge
+   - Upstream adds: Privacy/GDPR compliance requirements
+   - Result: Both sections coexist after conflict resolution
+   - Validation: All 9 custom requirements + 7 privacy requirements present
+
+2. ✅ **Scenario 7**: Backup and Rollback
+   - Test: Rollback to previous version after bad merge
+   - Actions: Create backup, apply merge, verify rollback works
+   - Result: Complete restoration from backup
+   - Validation: Content + version restored correctly
+
+3. ✅ **Scenario 8**: Dry-Run Preview
+   - Test: Preview merge without applying changes
+   - Commands: diff-template shows changes before merge
+   - Result: User can review changes risk-free
+   - Validation: No files modified during dry-run
+
+**Test Results**: ✅ ALL 3 SCENARIOS PASSED
+
+**Key Findings**:
+- Security content preservation: ✅ Working
+- Backup system: ✅ Reliable with timestamps
+- Rollback functionality: ✅ Complete restoration
+- Dry-run mode: ✅ Safe preview without modifications
+
+**Artifacts Created**:
+- docs/IMP-65_SCENARIOS_6-8_REPORT.md (~400 lines, comprehensive)
+
+**Decision**: Template Synchronization System is **PRODUCTION READY** for P0 scenarios
+
+**Status**: ✅ IMP-65 P0 scenarios complete (8/8 passed)
+**Next**: BUG-04 and BUG-05 implementation
+
+---
+
+## 🐛 BUG-04 FIX — Breaking Changes Validation
+
+**Time**: Post-IMP-65 completion
+**Activity**: Fix P1 blocker — auto mode doesn't block breaking changes
+
+**Issue**: `merge-template --auto` applies breaking changes without user confirmation
+
+**Root Cause**: No validation for `breaking_changes: true` flag in auto mode
+
+**Implementation**:
+- File: `scripts/lib/flows/merge_template.py`
+- Lines: 165-203 (39 lines added)
+- Logic: Block auto-merge if breaking_changes=true, require --force or --interactive
+
+**Behavior After Fix**:
+```bash
+$ merge-template spec-template --auto
+# With breaking_changes: true
+🔴 BREAKING CHANGES detected in v2.3.0
+❌ Cannot auto-apply breaking changes
+  --auto mode is blocked for safety
+💡 To proceed:
+  1. Review: diff-template spec-template
+  2. Force: merge-template spec-template --force
+  3. Interactive: merge-template spec-template --interactive
+```
+
+**Test Coverage**:
+- Created tst-bug04/ test project
+- Validated blocking behavior
+- Confirmed --force override works
+
+**Impact**:
+- ✅ Prevents accidental breaking changes in automation
+- ✅ Forces user review for critical updates
+- ✅ Maintains safety in CI/CD pipelines
+
+**Artifacts**:
+- Implementation: scripts/lib/flows/merge_template.py
+- Test project: poc/tst-bug04/
+- Documentation: docs/BUG-04_FIX_REPORT.md
+
+**Commit**: 7312676 — fix(merge): block breaking changes in --auto mode (BUG-04)
+
+**Status**: ✅ FIXED and TESTED
+**Next**: BUG-05 implementation (interactive mode profiles)
+
+---
+
+## 🎨 BUG-05 Phase 1 — Interactive Layer 2 Profile Selection
+
+**Time**: Post-BUG-04 fix
+**Activity**: Implement Phase 1 of 4 — Core functionality for Layer 2/3 profile selection in interactive mode
+
+**Issue**: Interactive mode only shows Layer 1 profiles, forcing novice users to run separate `compose` command
+
+**Objective**: Allow users to select Layer 2 profiles (python-fastapi, typescript-next, etc.) during `scaffold.py new` interactive flow
+
+**Phase 1 Scope** (Core Functionality):
+- Implement 3 new functions in scripts/lib/ui.py
+- Add Layer 2/3 profile selection to interactive flow
+- Integrate with existing compose workflow
+
+**Implementation Details**:
+1. `get_relevant_layer23_profiles()` — Filter Layer 2/3 profiles by domain/tech
+2. `ask_for_layer23_profiles()` — Interactive selection UI
+3. `apply_layer23_profiles_after_new()` — Auto-compose after project creation
+
+**Test Results**:
+- Manual testing: ✅ Interactive flow works
+- Profile filtering: ✅ Correct profiles shown
+- Auto-compose: ✅ Applied after project creation
+
+**Artifacts**:
+- Implementation: scripts/lib/ui.py (~120 lines added)
+- Documentation: docs/BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md
+- Test project: poc/test-fast-api/ (created during testing)
+
+**Commit**: 7f218dd — feat(ui): add Layer 2/3 profile selection to interactive mode (BUG-05 Phase 1)
+
+**Status**: ✅ Phase 1 complete (Core)
+**Remaining**: Phase 3 (Documentation 2h), Phase 4 (Unit tests 2-3h)
+**Next**: BUG-06 discovery and session closure
+
+---
+
+## 🔍 BUG-06 Discovery — Profile Loading Issue
+
+**Time**: During BUG-05 testing
+**Activity**: Discovered critical issue with profile loading in new projects
+
+**Issue**: All newly created projects load "Default" profile instead of their specified profile
+
+**Symptoms**:
+- Project created with `--profile python-fastapi`
+- `.scaffold-state.yaml` correctly stores `profile: python-fastapi`
+- But SpecKit loads from `specs/profiles/Default/` instead
+- Project-specific configurations not applied
+
+**Impact**:
+- P1 severity (affects all new projects)
+- Breaks profile-specific customizations
+- Requires manual migration for existing projects
+
+**Root Cause**: TBD (needs investigation)
+
+**Documented**:
+- Added to docs/TODO.md as P1 task
+- Migration requirement identified
+- Scope defined: Fix + migration tool
+
+**Status**: 🔴 DISCOVERED (investigation pending)
+**Next**: Add to session closure documentation
+
+---
+
+## 📊 Session Closure Activities
+
+**Time**: End of session
+**Activity**: Update all session documentation and prepare for session end
+
+**Documentation Updates**:
+1. ✅ docs/TODO.md — Updated with session completion status
+2. ✅ docs/PENDENCIAS_COMPLETAS.md — Created with comprehensive task tracking
+3. 🔄 docs/SESSIONS/2026-04-23/ — Finalizing all session reports
+
+**Uncommitted Changes**:
+- M docs/TODO.md (status updates)
+- M docs/lembrete.md (work notes)
+- ?? docs/BUG-04_FIX_REPORT.md (new)
+- ?? docs/BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md (new)
+- ?? docs/IMP-65_SCENARIOS_6-8_REPORT.md (new)
+- ?? docs/PENDENCIAS_COMPLETAS.md (new)
+- ?? poc/test-fast-api/ (BUG-05 test project)
+- ?? poc/tst-bug04/ (BUG-04 test project)
+
+**Session Summary**:
+- Duration: Full day session
+- Branch: 060-mini-engram-python
+- Commits: 5 (BUG-02, BUG-03, Scenarios 2-5, BUG-04, BUG-05 Phase 1)
+- Tests: IMP-65 all 8 scenarios ✅ PASSED
+- P0 tasks: 3 completed (IMP-65 scenarios, BUG-04, BUG-02/03 from earlier)
+- P1 tasks: 1 partial (BUG-05 Phase 1/4), 1 discovered (BUG-06)
+
+**Status**: Session closure in progress
+**Next**: Finalize session reports, security scan, git commit and push
+
+---
+

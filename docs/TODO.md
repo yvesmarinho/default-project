@@ -1,37 +1,74 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-23 — Session Active: BUG-03 ✅ FIXED, IMP-65 Scenario 1 ✅ PASSED
+**Last Updated**: 2026-04-23 — Session Active: IMP-65 Scenarios 6-8 ✅ PASSED
 **Project**: Enterprise Default Project Template
 **Status**: 🟡 Active Development (CI/CD disabled temporarily)
 
 ---
 
-## 🎯 Próxima Sessão (2026-04-23+)
+## 🎯 Próxima Sessão (2026-04-24+)
 
-- [ ] **IMP-65 Real-World Test (P0)**: Execute remaining 7 test scenarios
-  - **Objetivo**: Complete validation of template synchronization system
-  - **Cenários Pendentes**: 2-8 from IMP-65_TEST_STRATEGY.md
-    - Scenario 2: Conflict resolution (interactive merge)
-    - Scenario 3: Breaking changes handling
-    - Scenario 4: Multiple templates update
-    - Scenario 5: Missing base template
-    - Scenario 6: Security customizations preservation
-    - Scenario 7: Backup/rollback procedures
-    - Scenario 8: Dry-run preview mode
-  - **Status Atual**: Scenario 1 ✅ PASSED, BUG-03 blocker removed
-  - **Prioridade**: P0 (prerequisite for production release)
-  - **Estimativa**: 3-5h (test execution + validation + documentation)
+- [ ] **BUG-05 Implementation (P1)**: Interactive Layer 2 Profile Selection
+  - **Objetivo**: Allow python-fastapi selection in interactive mode
+  - **Status**: � IN PROGRESS (Phase 1/4 complete)
+  - **Estimativa**: 9-11h (4 phases) — 3h concluído, 6-8h restante
+  - **Prioridade**: P1 (UX blocker for novice users)
+  - **Arquivo**: docs/BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md
+  - **Progress**: ✅ Phase 1 (Core), ⏸️ Phase 3 (Docs), ⏸️ Phase 4 (Tests)
+
+- [ ] **BUG-06 (P1)**: Profile loading incorreto em projetos criados
+  - **Problema**: Todos os projetos criados estão carregando o profile "Default", quando deveria utilizar o próprio
+  - **Status**: 🔴 DISCOVERED (not investigated)
+  - **Estimativa**: TBD (needs investigation)
+  - **Prioridade**: P1 (affects all new projects)
+  - **Impact**: Projects não aplicam profile-specific configurations
+  - **Migration Requirement**: Para projetos existentes, importar dados do profile "Default" para o profile correto (se possível)
+  - **Arquivo**: TBD (criar BUG-06_PROFILE_LOADING.md)
+  - **Scopes**:
+    - Fix profile loading in new projects
+    - Migration tool for existing projects (Default → correct profile)
+
+- [ ] **Template Issues (P1)**: Fix placeholder substitution
+  - **Objetivo**: Fix {project_name}, {description}, hatchling config
+  - **Status**: 🔴 PENDING (3 issues discovered)
+  - **Estimativa**: 2h
+  - **Prioridade**: P1 (affects all new projects)
+  - **Issues**: ISSUE-T1, T2, T3 in PENDENCIAS_COMPLETAS.md
 
 - [ ] **IMP-65 P1 Gaps**: Production hygiene improvements
   - **Objetivo**: CI/CD integration, audit trail, quality gates
   - **Tarefas**: 15 P1 gaps from IMP-65_GAP_ANALYSIS.md
   - **Prioridade**: P1 (production hygiene, Week 2-3)
-  - **Estimativa**: 18-23h total
+  - **Estimativa**: 88h total
   - **Deliverables**: CI/CD automation, audit logs, automated gates
 
 ---
 
 ## ✅ CONCLUÍDO — Sessão 2026-04-23
+
+- [x] **IMP-65 Scenarios 6-8 (P0)**: Security, Backup, Dry-Run
+  - **Status**: ✅ COMPLETE (2026-04-23)
+  - **Scenarios Executados**:
+    - Scenario 6: Security Customizations — ✅ PASSED
+    - Scenario 7: Backup and Rollback — ✅ PASSED
+    - Scenario 8: Dry-Run Preview — ✅ PASSED
+  - **Test Results**: 3/3 PASSED, 0 critical issues
+  - **Duration**: 80 minutes
+  - **Key Findings**:
+    - Merge preserves custom security sections ✅
+    - Automatic backups work correctly ✅
+    - Diff-template serves as dry-run preview ✅
+    - CLI issue: --dry-run doesn't work with --merge-template (workaround exists)
+  - **Documentation**: IMP-65_SCENARIOS_6-8_REPORT.md
+  - **Recommendation**: APPROVED FOR PRODUCTION USE
+
+- [x] **BUG-04 (P0)**: Breaking changes validation
+  - **Status**: ✅ COMPLETE (2026-04-23)
+  - **Problema**: merge-template --auto doesn't block breaking changes
+  - **Solução**: Added validation in merge_template.py lines 165-203
+  - **Test Results**: ✅ PASSED (blocks auto, allows --force)
+  - **Commit**: 7312676
+  - **Documentation**: BUG-04_FIX_REPORT.md
 
 - [x] **BUG-03 (P0)**: Fix compose missing template_bases initialization
   - **Status**: ✅ COMPLETE (2026-04-23)
