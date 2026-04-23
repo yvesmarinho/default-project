@@ -7,6 +7,7 @@ Parte do scripts/scaffold.py — Enterprise Default Project Template.
 from __future__ import annotations
 
 import re
+import yaml
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -268,61 +269,301 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         shared_dir=Path(shared_dir_str).expanduser().resolve(),
         target_dir=target_dir,
         created_at=_iso_now(),
-        extra_profiles=_collect_extra_profiles(domain),
+        extra_profiles=_collect_extra_profiles(domain, language),
     )
 
 
-def _collect_extra_profiles(domain: str) -> list[str]:
+def _get_profile_description(profile_name: str) -> str:
     """
-    Pergunta [8]: quais perfis adicionais além do perfil do domínio principal.
+    Retorna descrição curta do perfil para exibição no modo interativo.
 
-    Opções:
+    Args:
+        profile_name: Nome do perfil (ex: "python-fastapi")
+
+    Returns:
+        Descrição curta (ex: "REST API com FastAPI")
+    """
+    descriptions = {
+        # Python
+        "python-fastapi": "REST API com FastAPI",
+        "python-flask": "Web app com Flask",
+        # TypeScript/JavaScript
+        "typescript-next": "Frontend com Next.js",
+        # Infrastructure
+        "terraform-aws": "Infraestrutura AWS com Terraform",
+        "k8s-helm": "Deploy Kubernetes com Helm",
+        # Database
+        "database-expert": "Modelagem e otimização de BD",
+        # Data
+        "data-warehouse-dbt": "Data warehouse com dbt",
+        # Security
+        "lgpd-baseline": "Compliance LGPD",
+        "soc2-baseline": "Compliance SOC2",
+        # Architecture
+        "backend-architect": "Arquitetura backend",
+        "frontend-architect": "Arquitetura frontend",
+        # Quality
+        "qa-automation-engineer": "Automação de QA",
+        # Design
+        "ux-design-expert": "Design de experiência",
+        "ui-design-expert": "Design de interface",
+    }
+    return descriptions.get(profile_name, "")
+
+
+def _get_compatible_layer2_profiles(domain: str, language: str) -> list[str]:
+    """
+    Retorna perfis de tecnologia compatíveis (Layer 2/3) com domain + language.
+
+    Lê profile-descriptors/*.yaml e filtra por compatibilidade.
+    Exclui perfis Layer 1 (já em ALL_SELECTABLE_PROFILES) e transversais.
+
+    Suporta dois formatos de descriptor:
+    - Format 1: requires: ["domain == programming", "language == python"]
+    - Format 2: meta: { language: typescript, tags: [web, ...] }
+
+    Args:
+        domain: Domínio do projeto (programming, infrastructure, analysis)
+        language: Linguagem principal (python, typescript, go, other)
+
+    Returns:
+        Lista de nomes de perfis compatíveis
+        (ex: ["python-fastapi", "terraform-aws", "k8s-helm"])
+    """
+    profiles = []
+    descriptors_dir = (
+        Path(__file__).parent.parent.parent / "profile-descriptors"
+    )
+
+    if not descriptors_dir.exists():
+        return []
+
+    for yaml_file in sorted(descriptors_dir.glob("*.yaml")):
+        # Pular perfis Layer 1 (domain base profiles)
+        if yaml_file.stem in ALL_SELECTABLE_PROFILES:
+            continue
+
+        # Pular perfis transversais (sempre incluídos automaticamente)
+        if yaml_file.stem in SPECKIT_TRANSVERSAL_PROFILES:
+            continue
+
+        try:
+            with open(yaml_file, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+
+            if not data:
+                continue
+
+            domain_ok = False
+            language_ok = False
+
+            # Format 1: requires ("domain ==...", "language ==...")
+            if "requires" in data:
+                requires = data.get("requires", [])
+                # Verificar se tem o formato antigo
+                has_domain_check = any(
+                    "domain ==" in req for req in requires
+                )
+                has_language_check = any(
+                    "language ==" in req for req in requires
+                )
+
+                if has_domain_check or has_language_check:
+                    # Formato antigo detectado
+                    domain_ok = any(
+                        f"domain == {domain}" in req for req in requires
+                    )
+                    language_ok = any(
+                        f"language == {language}" in req for req in requires
+                    )
+
+            # Format 2: meta (dict estruturado) - sempre processar se presente
+            if "meta" in data and not (domain_ok and language_ok):
+                meta = data.get("meta", {})
+                # Verificar language no meta
+                meta_lang = meta.get("language")
+                # language: any significa compatível com qualquer linguagem
+                if meta_lang == "any":
+                    language_ok = True
+                elif meta_lang == language:
+                    language_ok = True
+                # Mapear aliases comuns
+                elif meta_lang == "hcl" and language in ["terraform", "other"]:
+                    language_ok = True
+                elif meta_lang == "yaml" and language in [
+                    "kubernetes", "other"
+                ]:
+                    language_ok = True
+
+                # Inferir domain a partir de tags ou context
+                # programming: web, api, cli
+                # infrastructure: iac, cloud, k8s
+                # analysis: data, etl, analytics
+                tags = meta.get("tags", [])
+                if domain == "programming":
+                    if any(t in tags for t in ["web", "api", "cli", "app"]):
+                        domain_ok = True
+                elif domain == "infrastructure":
+                    infra_tags = [
+                        "iac", "cloud", "k8s", "terraform",
+                        "kubernetes", "infrastructure"
+                    ]
+                    if any(t in tags for t in infra_tags):
+                        domain_ok = True
+                elif domain == "analysis":
+                    analysis_tags = ["data", "etl", "analytics", "dbt"]
+                    if any(t in tags for t in analysis_tags):
+                        domain_ok = True
+
+            if domain_ok and language_ok:
+                profiles.append(yaml_file.stem)
+
+        except (yaml.YAMLError, OSError, KeyError):
+            # Ignorar arquivos inválidos silenciosamente
+            continue
+
+    return profiles
+
+
+def _select_layer2_profile(domain: str, language: str) -> str | None:
+    """
+    Selecionar perfil de código específico (Layer 2) no modo interativo.
+
+    Mostra apenas perfis compatíveis com domain + language.
+    Pergunta [9] do fluxo interativo.
+
+    Args:
+        domain: Domínio do projeto
+        language: Linguagem principal
+
+    Returns:
+        Nome do perfil selecionado ou None se usuário escolheu "nenhum"
+    """
+    available = _get_compatible_layer2_profiles(domain, language)
+
+    if not available:
+        # Sem perfis Layer 2 disponíveis para esta combinação
+        return None
+
+    console.print(
+        "\n  [cyan][9] Adicionar perfil de código específico?[/cyan]"
+    )
+    console.print(
+        "      [bold cyan][1][/bold cyan]  Não, apenas estrutura base  "
+        "[dim](default)[/dim]"
+    )
+
+    for idx, profile in enumerate(available, start=2):
+        desc = _get_profile_description(profile)
+        desc_str = f" [dim]({desc})[/dim]" if desc else ""
+        console.print(
+            f"      [bold cyan][{idx}][/bold cyan]  {profile}{desc_str}"
+        )
+
+    console.print()
+
+    choices = ["1"] + [str(i) for i in range(2, len(available) + 2)]
+    choice = Prompt.ask(
+        "      Escolha",
+        choices=choices,
+        default="1",
+        show_choices=False
+    )
+
+    if choice == "1":
+        return None
+
+    # Converter escolha para índice do array
+    idx = int(choice) - 2
+    return available[idx]
+
+
+def _collect_extra_profiles(domain: str, language: str) -> list[str]:
+    """
+    Pergunta [8]: quais perfis Layer 1 adicionais além do domínio principal.
+    Pergunta [9]: perfil Layer 2 código específico
+                  (python-fastapi, typescript-next, etc.)
+
+    Opções [8]:
       [1] Apenas meu domínio — só o perfil principal (default)
       [2] Todos disponíveis  — todos os perfis selecionáveis
       [3] Selecionar         — escolha individual por número
 
     devops-security é sempre incluído (D-20) e não aparece nesta escolha.
+
+    Args:
+        domain: Domínio do projeto (programming, infrastructure, analysis)
+        language: Linguagem principal (python, typescript, etc.)
+
+    Returns:
+        Lista combinada de perfis Layer 1 + Layer 2
     """
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(domain, f"devops-{domain}")
-    # Perfis que podem ser selecionados extras (excluindo o do domínio atual)
-    available_extras = [p for p in ALL_SELECTABLE_PROFILES if p != domain_profile]
+    # Perfis extras (excluindo o do domínio atual)
+    available_extras = [
+        p for p in ALL_SELECTABLE_PROFILES if p != domain_profile
+    ]
 
     console.print(
-        f"\n  [cyan][8] Perfis adicionais além de [bold]{domain_profile}[/bold]?[/cyan]"
+        f"\n  [cyan][8] Perfis adicionais além de "
+        f"[bold]{domain_profile}[/bold]?[/cyan]"
     )
-    console.print("      [dim]devops-security incluído sempre — não aparece aqui[/dim]")
-    console.print(f"      [bold cyan][1][/bold cyan]  Apenas meu domínio ({domain_profile})  [dim](default)[/dim]")
+    console.print(
+        "      [dim]devops-security incluído sempre — "
+        "não aparece aqui[/dim]"
+    )
+    console.print(
+        f"      [bold cyan][1][/bold cyan]  "
+        f"Apenas meu domínio ({domain_profile})  [dim](default)[/dim]"
+    )
     console.print("      [bold cyan][2][/bold cyan]  Todos disponíveis")
-    console.print("      [bold cyan][3][/bold cyan]  Selecionar individualmente")
+    console.print(
+        "      [bold cyan][3][/bold cyan]  Selecionar individualmente"
+    )
     console.print()
 
-    mode = Prompt.ask("      Escolha", choices=["1", "2", "3"], default="1", show_choices=False)
+    mode = Prompt.ask(
+        "      Escolha",
+        choices=["1", "2", "3"],
+        default="1",
+        show_choices=False
+    )
+
+    layer1_profiles: list[str] = []
 
     if mode == "1":
-        return []
+        layer1_profiles = []
+    elif mode == "2":
+        layer1_profiles = list(available_extras)
+    else:
+        # mode == "3": seleção individual
+        console.print("\n      Perfis disponíveis:")
+        for idx, profile in enumerate(available_extras, start=1):
+            console.print(f"        [bold cyan][{idx}][/bold cyan]  {profile}")
+        console.print()
 
-    if mode == "2":
-        return list(available_extras)
+        raw = Prompt.ask(
+            "      Números separados por vírgula [dim](ex: 1,2)[/dim] ou "
+            "Enter para nenhum",
+            default="",
+        ).strip()
+        if raw:
+            for part in raw.split(","):
+                part = part.strip()
+                if part.isdigit():
+                    idx = int(part) - 1
+                    if 0 <= idx < len(available_extras):
+                        layer1_profiles.append(available_extras[idx])
 
-    # mode == "3": seleção individual
-    console.print("\n      Perfis disponíveis:")
-    for idx, profile in enumerate(available_extras, start=1):
-        console.print(f"        [bold cyan][{idx}][/bold cyan]  {profile}")
-    console.print()
+    # Pergunta [9]: Selecionar perfil Layer 2 (código específico)
+    layer2_profile = _select_layer2_profile(domain, language)
 
-    selected: list[str] = []
-    raw = Prompt.ask(
-        "      Números separados por vírgula [dim](ex: 1,2)[/dim] ou Enter para nenhum",
-        default="",
-    ).strip()
-    if raw:
-        for part in raw.split(","):
-            part = part.strip()
-            if part.isdigit():
-                idx = int(part) - 1
-                if 0 <= idx < len(available_extras):
-                    selected.append(available_extras[idx])
-    return selected
+    # Combinar Layer 1 + Layer 2
+    result = list(layer1_profiles)
+    if layer2_profile:
+        result.append(layer2_profile)
+
+    return result
 
 
 def _parse_extra_profiles(value: str, domain: str) -> list[str]:
