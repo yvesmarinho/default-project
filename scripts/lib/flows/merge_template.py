@@ -161,6 +161,43 @@ def flow_merge_template(args: argparse.Namespace) -> int:
     if not merge_result.has_conflicts:
         console.print("✅ Merge completed cleanly (no conflicts)", style="green")
 
+        # -------------------------------------------------------------------
+        # BUG-04 FIX: Block breaking changes in --auto mode
+        # -------------------------------------------------------------------
+        if upstream_version_info.breaking_changes and auto and not force:
+            console.print(
+                f"\n🔴 BREAKING CHANGES detected in v{upstream_ver}",
+                style="red bold"
+            )
+
+            console.print(
+                "\n❌ Cannot auto-apply breaking changes",
+                style="red"
+            )
+            console.print(
+                "  --auto mode is blocked for safety",
+                style="yellow"
+            )
+            console.print("\n💡 To proceed:", style="cyan")
+
+            tpl_name = template_name.replace('.md', '')
+            console.print(
+                f"  1. Review changes: "
+                f"scaffold.py diff-template {tpl_name}",
+                style="cyan"
+            )
+            console.print(
+                f"  2. Apply with force: "
+                f"scaffold.py merge-template {tpl_name} --force",
+                style="cyan"
+            )
+            console.print(
+                f"  3. Apply interactively: "
+                f"scaffold.py merge-template {tpl_name} --interactive",
+                style="cyan"
+            )
+            return 1
+
         if dry_run:
             console.print("\n📋 Merged content preview:")
             console.print("─" * 80)
