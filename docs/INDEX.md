@@ -1,12 +1,56 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-23 — Session 2026-04-23 Complete (IMP-65 Production Ready)
+**Last Updated**: 2026-04-27 — Session 2026-04-27 Complete (BUG-06 + Template Issues Fixed)
 **Project Status**: 🟢 Stable — Template Sync System PRODUCTION READY (8/8 scenarios ✅)
-**Version**: 1.15.2
-**Last Session**: 2026-04-23 — ✅ IMP-65 Scenarios 6-8 + BUG-04/05 Implementation
+**Version**: 1.15.3
+**Last Session**: 2026-04-27 — ✅ BUG-06 Profile Loading Fix + Template Issues (T1, T2, T3)
 
 ---
 
+> **📂 DOCUMENTATION REORGANIZATION (2026-04-27)**
+> - **📁 New Structure**: Documentation reorganized into logical folders for easier navigation
+> - **Categories**: bugs/, implementations/, guides/, reference/, planning/, templates/, github-copilot/
+> - **Files Moved**: 54 files reorganized from root to categorized subfolders
+> - **Benefits**: Faster searches, clearer organization, better maintenance
+> - **See**: "Documentation Index" section below for complete catalog
+
+---
+
+> **✅ SESSION 2026-04-27 SUMMARY (BUG-06 + Template Issues Fixed)**
+> - **BUG-06 FIXED**: Profile Loading — All profile prompts now load correctly in new projects
+>   - Root cause: Files had `layer2-` / `layer3-` prefix but `_copy_domain_profile()` searched for exact match
+>   - Solution: Renamed 5 prompt files to match profile descriptor names
+>   - Impact: SpecKit now correctly loads profile-specific context (python-fastapi, k8s-helm, etc.)
+>   - Docs: [bugs/BUG-06_PROFILE_LOADING.md](bugs/BUG-06_PROFILE_LOADING.md) (~450 lines)
+> - **TEMPLATE ISSUES FIXED** (ISSUE-T1, T2, T3):
+>   - **T1**: Placeholder {project_name} now substituted in templates ✅
+>   - **T2**: Placeholder {description} now substituted in templates ✅
+>   - **T3**: Hatchling configuration added to pyproject.toml ✅
+>   - Implementation: New `_apply_template_placeholders()` method in ProfileComposer
+>   - Supports: Both `{xxx}` and `{{XXX}}` placeholder formats
+>   - Applies to: Text files (.md, .yaml, .toml, .json, .py, .sh)
+>   - Docs: [SESSIONS/2026-04-27/IMPLEMENTATION_REPORT_ISSUES_T1_T2_T3.md](SESSIONS/2026-04-27/IMPLEMENTATION_REPORT_ISSUES_T1_T2_T3.md) (~550 lines)
+> - **DOCUMENTATION REORGANIZED**:
+>   - 54 files moved from docs/ root to organized subfolders
+>   - New structure: bugs/, implementations/, guides/, reference/, planning/, templates/, github-copilot/
+>   - Benefits: Faster searches, clearer navigation, better maintenance
+>   - INDEX.md updated to reflect new structure
+> - **COMMITS CREATED**: 1 during session
+>   - 1b94196 — fix(templates): placeholder substitution + hatchling config (ISSUE-T1, T2, T3)
+> - **TEST RESULTS**:
+>   - Composer tests: 17/18 ✅ PASSING (94%)
+>   - Pre-existing failure: data-pipeline-airflow profile (unrelated)
+> - **SESSION METRICS**:
+>   - Duration: ~5h
+>   - Documentation: ~1750 lines created (6 documents)
+>   - Implementation: ~35 lines (composer +32, pyproject.toml +3)
+>   - Files reorganized: 54 files moved to subfolders
+> - **IMPACT**: Projects now work out-of-the-box with correct profile context
+>   - ✅ Profile prompts load correctly
+>   - ✅ Placeholders substituted automatically
+>   - ✅ Python projects installable immediately after creation
+>   - ✅ Documentation easier to find and navigate
+>
 > **✅ SESSION 2026-04-23 SUMMARY (IMP-65 Production Ready)**
 > - **IMP-65 PRODUCTION READY**: Template Synchronization System validated end-to-end (8/8 scenarios ✅)
 > - **OBJETIVO**: Complete P0 validation scenarios + critical bug fixes for production release
@@ -572,269 +616,338 @@ a-default-project/
 
 ## 📚 Documentation Index
 
-### Main Documentation
-- **[README.md](../README.md)** - Main project documentation
-  - Overview and objectives
-  - Features and architecture
-  - Getting started guide
-  - Configuration management
-  - Development workflow
-  - Testing strategy
-  - CI/CD integration
-  - Security best practices
+### 📂 Documentation Organization
 
-### Template Documentation
-- **[docs/TEMPLATE_USAGE.md](TEMPLATE_USAGE.md)** - ⭐ Complete template guide
-  - How to use this template
-  - Automatic initialization
-  - Manual setup
-  - Configuration management
-  - Troubleshooting
-  - Checklist
+**New Structure (2026-04-27)**: Documentation reorganized into logical categories for easier navigation.
 
-### Copilot / Speckit Strategy
-- **[docs/copilot/DOMAIN-PROFILES-STRATEGY.md](copilot/DOMAIN-PROFILES-STRATEGY.md)** - ⭐ Templates adaptáveis por domínio DevOps
-  - Arquitetura de três camadas (Foundation / Domain Profile / Context Injection)
-  - Diferença entre os três modos: programação, infraestrutura, análise
-  - Como o Speckit + MCP amplifica cada modo
-  - Estrutura de arquivos proposta
+```
+docs/
+├── INDEX.md                    # This file - complete documentation catalog
+├── bugs/                       # Bug reports and investigations
+├── implementations/            # Implementation reports (IMP-XX)
+├── guides/                     # How-to guides and procedures
+│   └── ansible/               # Ansible-specific documentation
+├── reference/                  # Reference documentation
+├── planning/                   # Project planning and tracking
+├── templates/                  # Template system documentation
+├── github-copilot/            # GitHub Copilot resources
+├── copilot/                   # Copilot strategy and profiles
+├── debates/                   # Architectural debates and decisions
+└── SESSIONS/                  # Session documentation (YYYY-MM-DD/)
+```
 
-- **[docs/copilot/DOMAIN-PROFILES-DECISIONS.md](copilot/DOMAIN-PROFILES-DECISIONS.md)** - Questões e decisões
-  - 🟢 **19 decisões completamente resolvidas (D-01 a D-19)**
-  - Implementação mapeada em IMP-01 a IMP-10 no TODO.md
+---
 
-### Technical Documentation
-- **[docs/TEMPLATE_DRIFT_DETECTION.md](TEMPLATE_DRIFT_DETECTION.md)** - 🆕 Template versioning, diff & three-way merge (IMP-65 Fases 1-3)
-  - Problem: Templates don't auto-update after project creation
-  - Solution: Version tracking in YAML frontmatter
-  - Command: `scaffold.py check-templates` (text and JSON output)
-  - Understanding drift types (outdated, missing, breaking changes)
-  - Version tracking in `.scaffold-state.yaml`
-  - Automation and CI/CD integration
-  - Roadmap: Phase 2 (diff), Phase 3 (merge), Phase 4 (monitoring)
+### 🐛 Bug Reports & Fixes
 
-- **[docs/MAKEFILE.md](MAKEFILE.md)** - Complete Makefile guide
-  - All commands reference (40+ commands)
-  - Prerequisites
-  - Quick start
+**Location**: [`bugs/`](bugs/)
+
+- **[BUG-04_FIX_REPORT.md](bugs/BUG-04_FIX_REPORT.md)** - Breaking changes validation in auto mode
+  - Problem: Template merge accepted breaking changes without user confirmation
+  - Solution: Block breaking changes in `--auto` mode, require interactive mode
+  - Status: ✅ FIXED (Session 2026-04-23)
+  
+- **[BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md](bugs/BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md)** - Interactive profile selection
+  - Problem: Interactive mode only offered Layer 1 profiles
+  - Solution: Added Layer 2/3 profile selection UI
+  - Status: 🟡 Phase 1/4 complete (Session 2026-04-23)
+  
+- **[BUG-06_PROFILE_LOADING.md](bugs/BUG-06_PROFILE_LOADING.md)** - ⭐ Profile loading incorrect
+  - Problem: New projects loaded "Default" profile instead of selected profile
+  - Root cause: Profile prompt files had `layer2-` prefix but code searched without prefix
+  - Solution: Renamed 5 prompt files to match profile descriptor names
+  - Status: ✅ FIXED (Session 2026-04-27)
+  - Impact: SpecKit now correctly loads profile-specific context
+
+---
+
+### 🚀 Implementation Reports
+
+**Location**: [`implementations/`](implementations/)
+
+- **[IMP-53_IMPLEMENTATION.md](implementations/IMP-53_IMPLEMENTATION.md)** - 4-Layer Spec Driven Development
+  - Layer 1 (Business): objetivo.yaml via speckit.clarify
+  - Complete workflow: Business → Product → Architecture → Implementation
+  - Status: ✅ COMPLETE (2026-04-14)
+
+- **[IMP-55_IMPLEMENTATION_REPORT.md](implementations/IMP-55_IMPLEMENTATION_REPORT.md)** - CHAT capture system
+  - Status: 🟡 PARTIAL (P2 priority)
+
+- **[IMP-55_PLAN.md](implementations/IMP-55_PLAN.md)** - Implementation plan for CHAT system
+
+- **[IMP-56_IMPLEMENTATION.md](implementations/IMP-56_IMPLEMENTATION.md)** - ⭐ Quality Gates Validation
+  - 19 quality gates for Layer transitions (L1→L2, L2→L3, L3→L4)
+  - JSON Schema validation + domain-specific rules
+  - `speckit.validate` agent with auto-remediation
+  - Status: ✅ COMPLETE (2026-04-14)
+
+- **[IMP-56_STATUS_VERIFICATION.md](implementations/IMP-56_STATUS_VERIFICATION.md)** - Verification report
+
+- **[IMP-57_IMPLEMENTATION.md](implementations/IMP-57_IMPLEMENTATION.md)** - ⭐ Session Search v2.0
+  - Multi-scope indexing (sessions + docs + specs)
+  - Full-text search with SQLite FTS5
+  - Status: ✅ COMPLETE (2026-04-14)
+
+- **[IMP-58_INTERVIEW_TEMPLATE.md](implementations/IMP-58_INTERVIEW_TEMPLATE.md)** - Memory assessment framework
+- **[IMP-58_MEMORY_ASSESSMENT_REPORT.md](implementations/IMP-58_MEMORY_ASSESSMENT_REPORT.md)** - Assessment results
+- **[IMP-58_MEMORY_ASSESSMENT_SURVEY.md](implementations/IMP-58_MEMORY_ASSESSMENT_SURVEY.md)** - Survey questions
+- **[IMP-58_README.md](implementations/IMP-58_README.md)** - Overview
+- **[IMP-58_SURVEY_yves_marinho.md](implementations/IMP-58_SURVEY_yves_marinho.md)** - User responses
+
+- **[IMP-59_DESIGN.md](implementations/IMP-59_DESIGN.md)** - Mini-Engram Memory System design
+- **[IMP-59_IMPLEMENTATION.md](implementations/IMP-59_IMPLEMENTATION.md)** - ⭐ Mini-Engram implementation
+  - Zero-dependency persistent memory for GitHub Copilot
+  - SQLite FTS5 with BM25 ranking
+  - CLI tools: mem_save, mem_search, mem_context
+  - Status: ✅ COMPLETE (2026-04-20)
+- **[IMP-59_IMPLEMENTATION_PLAN.md](implementations/IMP-59_IMPLEMENTATION_PLAN.md)** - Implementation roadmap
+
+- **[IMP-65_SCENARIOS_6-8_REPORT.md](implementations/IMP-65_SCENARIOS_6-8_REPORT.md)** - Template sync validation
+  - Scenarios: Security customizations, Backup/Rollback, Dry-run preview
+  - Status: ✅ ALL PASSED (8/8 scenarios complete)
+
+---
+
+### 📖 How-To Guides & Procedures
+
+**Location**: [`guides/`](guides/)
+
+#### General Guides
+
+- **[CI-CD-RESTORATION-GUIDE.md](guides/CI-CD-RESTORATION-GUIDE.md)** - 🔴 CI/CD restoration procedures
+  - Complete guide to restore temporarily removed workflows
+  - Snapshot: ci-template.yml + security-scan.yml
+  - Timeline: 15-30 minutes to restore
+  - Last known state: FULLY FUNCTIONAL (commit dce227b)
+
+- **[CREDENTIAL_ROTATION.md](guides/CREDENTIAL_ROTATION.md)** - ⭐ Credential rotation procedures
+  - Rotation policy for 7 credential types
+  - Bash scripts for each credential type
+  - Compliance: SOC2, ISO27001, LGPD
+
+- **[ISSUE_MANAGEMENT_GUIDE.md](guides/ISSUE_MANAGEMENT_GUIDE.md)** - GitHub issue workflow
+
+- **[MAKEFILE.md](guides/MAKEFILE.md)** - ⭐ Complete Makefile reference
+  - 40+ commands documented
+  - Quick start guide
   - Workflow examples
   - Troubleshooting
-  - Customization
 
-- **[docs/SHARED_CONFIGS_SOLUTION.md](SHARED_CONFIGS_SOLUTION.md)** - Shared configs architecture
-  - Problem analysis (duplication across projects)
-  - Solution approaches (symlinks, submodules, sync)
-  - Implementation guide
-  - Automation scripts
-  - Benefits and metrics
+- **[MIGRATION-GUIDE.md](guides/MIGRATION-GUIDE.md)** - Project migration procedures
 
-- **[docs/CI-CD-RESTORATION-GUIDE.md](CI-CD-RESTORATION-GUIDE.md)** - 🔴 Guia completo de restauração CI/CD
-  - Contexto da remoção temporária (2026-03-31)
-  - Roteiro de restauração (3 passos, 30 minutos)
-  - Estado dos workflows no momento da remoção (TOTALMENTE FUNCIONAIS)
-  - Snapshot completo: ci-template.yml + security-scan.yml
-  - Riscos durante período sem CI/CD
-  - Checklist de restauração
+- **[MOLECULE_TESTING_GUIDE.md](guides/MOLECULE_TESTING_GUIDE.md)** - ⭐ Testing Ansible roles
+  - Complete Molecule setup and usage
+  - Writing tests with Testinfra
+  - CI/CD integration examples
+  - Driver comparison (Docker, Vagrant, cloud)
 
-- **[WORKFLOWS_REMOVED_TEMPORARILY.md](../WORKFLOWS_REMOVED_TEMPORARILY.md)** - 🔴 Aviso público workflows
-  - Por que workflows foram removidos
-  - O que isso significa para desenvolvedores/usuários
-  - Restauração rápida (15 minutos)
-  - Riscos e mitigações
+- **[NEW_PROJECT_COMMAND.md](guides/NEW_PROJECT_COMMAND.md)** - Creating new projects
 
-### Security Documentation
-- **[docs/ANSIBLE_VAULT_GUIDE.md](ANSIBLE_VAULT_GUIDE.md)** - ⭐ Complete Ansible Vault reference
-  - Why use Ansible Vault (security benefits, compliance)
-  - Initial configuration (.vault_pass setup, ansible.cfg)
-  - Recommended structure (vault.yml + vars.yml pattern)
-  - All essential commands (create, edit, view, encrypt, decrypt, rekey)
-  - Playbook integration and best practices
-  - Troubleshooting and CI/CD integration
-  - Security checklist and compliance (SOC2, ISO27001, LGPD)
+- **[README_BEST_PRACTICES.md](guides/README_BEST_PRACTICES.md)** - README documentation standards
 
-- **[docs/CREDENTIAL_ROTATION.md](CREDENTIAL_ROTATION.md)** - ⭐ Credential rotation procedures
-  - Rotation policy (7 credential types with defined frequencies)
-  - Immediate rotation triggers
-  - Complete rotation procedures with bash scripts
-  - Audit system and logging
-  - Tool recommendations (1Password, HashiCorp Vault, AWS Secrets Manager)
-  - Compliance mapping (SOC2, ISO27001, LGPD)
+- **[SECURITY_SESSION_DOCS.md](guides/SECURITY_SESSION_DOCS.md)** - Security in session documentation
+  - PII/secrets detection
+  - Gitleaks configuration
+  - Session file validation
 
-### Automation & Configuration Management
-- **[docs/ANSIBLE_BEST_PRACTICES.md](ANSIBLE_BEST_PRACTICES.md)** - ⭐ Comprehensive Ansible guide
-  - Core principles (idempotency, declarative design, module hierarchy, DRY)
-  - Project structure (recommended directory layout, file naming conventions)
-  - Inventory management (static, dynamic, best practices)
-  - Playbook design (basic structure, conditionals, loops, tags)
-  - Role development (structure, defaults, tasks, handlers, templates, meta)
-  - Variable management (precedence hierarchy, naming, organization, vault)
-  - Security best practices (Ansible Vault, privilege escalation, input validation)
-  - Testing and validation (syntax check, ansible-lint, dry run, Molecule)
-  - Performance optimization (facts, pipelining, caching, parallelism)
-  - Error handling (failed_when, ignore_errors, block/rescue/always)
-  - Documentation standards (playbook headers, role README)
-  - CI/CD integration (GitHub Actions, GitLab CI examples)
+- **[SESSION_CHAT_GUIDE.md](guides/SESSION_CHAT_GUIDE.md)** - GitHub Copilot chat workflow
 
-- **[docs/MOLECULE_TESTING_GUIDE.md](MOLECULE_TESTING_GUIDE.md)** - ⭐ Testing Ansible roles with Molecule
-  - What is Molecule (features, benefits, use cases)
-  - Installation requirements (Python 3.8+, Docker, Ansible)
-  - Quick start (initialize role, directory structure, run tests)
-  - Project structure (molecule.yml, converge.yml, prepare.yml, verify.yml, tests/)
-  - Configuration (platform configs, multiple platforms matrix, custom Dockerfile)
-  - Testing workflow (complete test sequence, manual steps, development workflow)
-  - Writing tests (Testinfra examples: file/package/service/socket/process tests)
-  - Drivers comparison (Docker, Podman, Vagrant, EC2, GCE)
-  - Scenarios (multiple scenarios, examples for default/SSL/cluster)
-  - CI/CD integration (GitHub Actions matrix, GitLab CI parallel)
-  - Best practices (pre-built images, idempotence testing, test organization)
-  - Troubleshooting (Docker issues, Testinfra imports, idempotence failures)
+- **[SESSION_DOCS_ADOPTION.md](guides/SESSION_DOCS_ADOPTION.md)** - Session documentation adoption guide
 
-- **[docs/ANSIBLE_PLAYBOOK_TEMPLATES.md](ANSIBLE_PLAYBOOK_TEMPLATES.md)** - ⭐ Ready-to-use playbook patterns
-  - Docker management (installation, compose deployment, cleanup, health check)
-  - Database operations (PostgreSQL backup/restore, MySQL management)
-  - Application deployment (zero-downtime deployment, blue-green deployment)
-  - Backup and restore (comprehensive system backup)
-  - Monitoring and health checks (comprehensive health check)
-  - Maintenance operations (system update and reboot)
-  - Security operations (security hardening)
-  - Network configuration
+- **[SESSION_DOCS_STYLE_GUIDE.md](guides/SESSION_DOCS_STYLE_GUIDE.md)** - Documentation style standards
 
-- **[.github/templates/ansible/](../.github/templates/ansible/)** - ⭐ Production-ready playbook examples
-  - `README.md` - Template usage guide and customization tips
-  - `deploy-app.yml` - Zero-downtime application deployment
-  - `docker-deploy.yml` - Docker Compose stack deployment
-  - `health-check-system.yml` - Comprehensive system health check
-  - `backup-database.yml` - PostgreSQL database backup with rotation
+- **[SESSION_SEARCH_GUIDE.md](guides/SESSION_SEARCH_GUIDE.md)** - Searching session documentation
 
-### Testing Documentation
-- **[docs/TESTING_GUIDE.md](TESTING_GUIDE.md)** - ⭐ Complete testing guide
-  - Overview of testing infrastructure (pytest, coverage, mocking)
-  - Quick start and basic commands
-  - Test organization and directory structure
-  - Writing tests (patterns, assertions, fixtures)
-  - Running tests (selection, parallel execution, markers)
-  - Code coverage configuration and targets (≥80%)
-  - Test markers (unit, integration, smoke, security, slow)
-  - Built-in and custom fixtures from conftest.py
-  - Mocking strategies (unittest.mock, pytest-mock)
-  - Best practices (isolation, descriptive names, AAA pattern)
-  - CI/CD integration with GitHub Actions
-  - Troubleshooting common issues
-
-- **[tests/test_example.py](../tests/test_example.py)** - Example test patterns
-  - Unit test examples with proper structure
-  - Fixture usage demonstrations
-  - Mocking and patching patterns
-  - Parametrized tests
-  - Integration test examples
-  - Performance testing with benchmarks
-  - Security test patterns
-
-- **[tests/conftest.py](../tests/conftest.py)** - Shared test fixtures
-  - Common fixtures (temp_file, mock_env, mock_subprocess)
-  - Benchmark timer for performance tests
-  - Test isolation fixtures
-  - Logging capture utilities
-
-- **[pytest.ini](../pytest.ini)** - Pytest configuration
-  - Test discovery settings
+- **[TESTING_GUIDE.md](guides/TESTING_GUIDE.md)** - ⭐ Complete testing guide
+  - Pytest infrastructure
+  - Test organization
   - Coverage configuration (≥80% target)
-  - Test markers definition
-  - Output formatting
+  - CI/CD integration
 
-### Session Documentation
-- **[docs/SESSIONS/2026-01-27/](SESSIONS/2026-01-27/)** - Phase 1: Foundation
-  - SESSION_RECOVERY - Complete session details
-  - SESSION_REPORT - Progress and metrics
-  - FINAL_STATUS - Final completion status
+- **[TESTING_SHELL_SCRIPTS.md](guides/TESTING_SHELL_SCRIPTS.md)** - Shell script testing
 
-- **[docs/SESSIONS/2026-01-28/](SESSIONS/2026-01-28/)** - Phase 2: Testing & Template
-  - SESSION_RECOVERY - Context reload
-  - TODAY_ACTIVITIES - Detailed timeline
-  - Makefile tests (11 commands, 100% success)
+- **[TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md)** - Common issues and solutions
 
-- **[docs/SESSIONS/2026-02-27/](SESSIONS/2026-02-27/)** - Sessão: Domain Profiles Strategy (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-02-27/SESSION_RECOVERY_2026-02-27.md) — Recuperação de contexto e regras
-  - [TODAY_ACTIVITIES](SESSIONS/2026-02-27/TODAY_ACTIVITIES_2026-02-27.md) — Atividades do início
-  - [DAILY_ACTIVITIES](SESSIONS/2026-02-27/DAILY_ACTIVITIES_2026-02-27.md) — Log detalhado completo
-  - [SESSION_REPORT](SESSIONS/2026-02-27/SESSION_REPORT_2026-02-27.md) — Relatório e artefatos
-  - [FINAL_STATUS](SESSIONS/2026-02-27/FINAL_STATUS_2026-02-27.md) — Status final 🏁
+- **[Scaffold - projetos semelhantes.md](guides/Scaffold%20-%20projetos%20semelhantes.md)** - Similar projects analysis
 
-- **[docs/SESSIONS/2026-03-16/](SESSIONS/2026-03-16/)** - Sessão: fix(security) Dependabot + fix(session-start) MCP (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-16/SESSION_RECOVERY_2026-03-16.md) — Contexto recuperado de 2026-03-14
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-16/DAILY_ACTIVITIES_2026-03-16.md) — Log detalhado completo
-  - [FINAL_STATUS](SESSIONS/2026-03-16/FINAL_STATUS_2026-03-16.md) — Status final 🏁
+#### Ansible Guides
 
-- **[docs/SESSIONS/2026-03-20/](SESSIONS/2026-03-20/)** - Sessão: Session Manager Agent v1.0.0 (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-20/SESSION_RECOVERY_2026-03-20.md) — Contexto recuperado de 2026-03-16
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-20/DAILY_ACTIVITIES_2026-03-20.md) — Log detalhado completo
-  - [SESSION_REPORT](SESSIONS/2026-03-20/SESSION_REPORT_2026-03-20.md) — Relatório técnico
-  - [FINAL_STATUS](SESSIONS/2026-03-20/FINAL_STATUS_2026-03-20.md) — Status final 🏁
+**Location**: [`guides/ansible/`](guides/ansible/)
 
-- **[docs/SESSIONS/2026-03-21/](SESSIONS/2026-03-21/)** - Sessão: Bug Fix + Documentação (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-21/SESSION_RECOVERY_2026-03-21.md) — Contexto recuperado de 2026-03-20
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-21/DAILY_ACTIVITIES_2026-03-21.md) — Log detalhado (3 atividades)
-  - [SCAFFOLD_UPGRADE_PROCESS](SESSIONS/2026-03-21/SCAFFOLD_UPGRADE_PROCESS.md) — ⭐ Documentação completa do processo de upgrade
-  - **Destaques**:
-    - 🐛 Bug fix crítico: padrão glob de agentes corrigido (`speckit.*` → `*`)
-    - 📝 Documentação: processo completo de `scaffold.py upgrade` (270+ linhas)
+- **[ANSIBLE_BEST_PRACTICES.md](guides/ansible/ANSIBLE_BEST_PRACTICES.md)** - ⭐ Comprehensive Ansible guide
+  - Core principles (idempotency, DRY, modules)
+  - Project structure and conventions
+  - Role development
+  - Variable management
+  - Security best practices
+  - Testing with Molecule
+  - Performance optimization
+  - CI/CD integration
 
-- **[docs/SESSIONS/2026-03-23/](SESSIONS/2026-03-23/)** - Sessão: Upgrade Example + Documentation (em andamento)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-23/SESSION_RECOVERY_2026-03-23.md) — Contexto recuperado de 2026-03-21
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-23/DAILY_ACTIVITIES_2026-03-23.md) — Log detalhado (3 atividades)
-  - [SESSION_REPORT](SESSIONS/2026-03-23/SESSION_REPORT_2026-03-23.md) — Relatório técnico
-  - [UPGRADE_EXAMPLE_ENTERPRISE_PYTHON_ANALYSIS](SESSIONS/2026-03-23/UPGRADE_EXAMPLE_ENTERPRISE_PYTHON_ANALYSIS.md) — ⭐ Exemplo prático de upgrade de projeto legacy
-  - [BUG_ANALYSIS_UPGRADE_NESTED_FOLDER](SESSIONS/2026-03-23/BUG_ANALYSIS_UPGRADE_NESTED_FOLDER.md) — 🐛 Análise de bug crítico no upgrade
-  - **Destaques**:
-    - 📚 Documentação: exemplo completo de upgrade com projeto real (450+ linhas)
+- **[ANSIBLE_PLAYBOOK_TEMPLATES.md](guides/ansible/ANSIBLE_PLAYBOOK_TEMPLATES.md)** - ⭐ Ready-to-use playbooks
+  - Docker management
+  - Database operations (PostgreSQL, MySQL)
+  - Zero-downtime deployment
+  - Backup and restore
+  - Health checks
+  - Security hardening
 
-- **[docs/SESSIONS/2026-03-29/](SESSIONS/2026-03-29/)** - Sessão: IMP-47 + IMP-48 Implementation (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-29/SESSION_RECOVERY_2026-03-29.md) — Contexto recuperado de 2026-03-23
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-29/DAILY_ACTIVITIES_2026-03-29.md) — Log detalhado (10+ atividades)
-  - [SESSION_REPORT](SESSIONS/2026-03-29/SESSION_REPORT_2026-03-29.md) — Relatório técnico completo
-  - [FINAL_STATUS](SESSIONS/2026-03-29/FINAL_STATUS_2026-03-29.md) — Status final 🏁
-  - [DEBATE_INCREMENTAL_DOCUMENTATION](SESSIONS/2026-03-29/DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md) — ⭐ Debate arquitetural multi-perspectiva (1,050+ linhas)
-  - **Destaques**:
-    - ✅ IMP-47: Fixed nested folder bug in scaffold upgrade (7/7 tests passed)
-    - ✅ IMP-48: Session documentation foundation (500+ lines lib, 36/36 tests passed)
-    - 📊 ROI 3.5x: 280h/year saved vs 80h maintenance
-    - 🎯 IMPs 49-51 created (22h roadmap defined)
-    - 🔍 Análise: comparação session manager v0.x → v1.1.0
-    - 🐛 Bug crítico identificado: upgrade cria pasta aninhada do projeto
-    - 🔧 Análise técnica: causa raiz + 4 soluções propostas (600+ linhas)
-    - ✅ Workaround aplicado: pasta aninhada removida com sucesso
-    - ✅ Criado: `.scaffold-state.yaml` para enterprise-python-analysis
+- **[ANSIBLE_VAULT_GUIDE.md](guides/ansible/ANSIBLE_VAULT_GUIDE.md)** - ⭐ Complete Vault reference
+  - Initial configuration
+  - Recommended structure (vault.yml + vars.yml)
+  - Essential commands
+  - Playbook integration
+  - CI/CD integration
+  - Compliance (SOC2, ISO27001, LGPD)
 
-- **[docs/SESSIONS/2026-03-30/](SESSIONS/2026-03-30/)** - Sessão: Security Scanner Configuration (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-30/SESSION_RECOVERY_2026-03-30.md) — Contexto recuperado de 2026-03-29
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-30/DAILY_ACTIVITIES_2026-03-30.md) — Log detalhado
-  - [FINAL_STATUS](SESSIONS/2026-03-30/FINAL_STATUS_2026-03-30.md) — Status final 🏁
-  - **Destaques**:
-    - ✅ Configuração GitGuardian: path exclusions para test files
-    - ✅ Atualização Gitleaks: allowlist expandida (patterns + paths)
-    - ✅ Testes de sanitização: valores realistas sem falsos positivos
-    - ✅ Proteção mantida: código de produção (`src/`, `scripts/`)
+---
 
-- **[docs/SESSIONS/2026-03-31/](SESSIONS/2026-03-31/)** - Sessão: CI/CD Emergency Fixes + Strategic Removal (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-31/SESSION_RECOVERY_2026-03-31.md) — Contexto recuperado de 2026-03-30
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-31/DAILY_ACTIVITIES_2026-03-31.md) — Log detalhado completo (6 atividades)
-  - [SESSION_REPORT](SESSIONS/2026-03-31/SESSION_REPORT_2026-03-31.md) — Relatório técnico e decisão estratégica
-  - [FINAL_STATUS](SESSIONS/2026-03-31/FINAL_STATUS_2026-03-31.md) — Status final 🏁
-  - [ERROR_REPORT](SESSIONS/2026-03-31/ERROR_REPORT_2026-03-31.md) — Análise de 58+ workflow failures
-  - [DEPENDABOT_PRS_ANALYSIS](SESSIONS/2026-03-31/DEPENDABOT_PRS_ANALYSIS_2026-03-31.md) — Análise de 13 PRs pendentes
-  - [DEBATE_REMOCAO_TEMPORARIA_CI_CD](SESSIONS/2026-03-31/DEBATE_REMOCAO_TEMPORARIA_CI_CD_2026-03-31.md) — ⭐ Debate multi-agent (Template Architect vs Session Manager)
-  - [DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES](SESSIONS/2026-03-31/DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES_2026-03-31.md) — Consolidação de posições
-  - **Destaques**:
-    - ✅ P0 fixes: pytest-cov + pyyaml (3 correções críticas)
-    - ✅ P1 fixes: security action pinning (supply chain hardening)
-    - ✅ P2 improvements: pytest refactor + workflow consolidation
-    - ✅ Dependabot: 13 PRs analyzed, 4 actioned (1 closed, 2 merged, 1 blocked)
-    - ✅ Issue #14 created: Airflow 3.x Migration Plan (Q2 2026)
-    - ⚠️ **Decisão estratégica**: workflows removidos temporariamente (commit 33e40a3)
-    - 📚 **Documentação completa**: CI-CD-RESTORATION-GUIDE.md (15 min restoration)
-    - 🔄 **Workflows preservados**: commit dce227b (TOTALMENTE FUNCIONAIS)
-    - 🎯 **Foco mudado**: IMPs 49-51 (documentação incremental)
-    - 📊 **Métricas**: 7 commits, 20+ files, ~2,400+ LOC
+### 📚 Reference Documentation
+
+**Location**: [`reference/`](reference/)
+
+- **[COMPATIBILITY-MATRIX.md](reference/COMPATIBILITY-MATRIX.md)** - Version compatibility matrix
+
+- **[CONVENTIONS.md](reference/CONVENTIONS.md)** - Code and naming conventions
+
+- **[DEPRECATION-POLICY.md](reference/DEPRECATION-POLICY.md)** - Deprecation guidelines
+
+- **[PROJECT-KNOWLEDGE-MAP.md](reference/PROJECT-KNOWLEDGE-MAP.md)** - Project knowledge graph
+
+- **[INTEGRACAO-SPECKIT-SUPORPOWER-MVP.md](reference/INTEGRACAO-SPECKIT-SUPORPOWER-MVP.md)** - SpecKit integration specs
+
+---
+
+### 📅 Planning & Tracking
+
+**Location**: [`planning/`](planning/)
+
+- **[TODO.md](planning/TODO.md)** - ⭐ Current task list
+  - Active tasks and priorities
+  - Implementation roadmap
+  - Recent completions
+
+- **[PENDENCIAS_COMPLETAS.md](planning/PENDENCIAS_COMPLETAS.md)** - Completed tasks archive
+
+- **[TODAY_ACTIVITIES.md](planning/TODAY_ACTIVITIES.md)** - Daily activity log
+
+- **[lembrete.md](planning/lembrete.md)** - Quick reminders and notes
+
+---
+
+### 📋 Template System Documentation
+
+**Location**: [`templates/`](templates/)
+
+- **[MODULAR_TEMPLATES.md](templates/MODULAR_TEMPLATES.md)** - ⭐ Modular template system
+  - Block composition with @include directives
+  - Patch system for customizations
+  - Migration from monolithic to modular
+  - CLI tools: compose-template, apply-patches
+  - Status: ✅ COMPLETE (IMP-65 Phase 4)
+
+- **[TEMPLATE_DRIFT_DETECTION.md](templates/TEMPLATE_DRIFT_DETECTION.md)** - ⭐ Template versioning & sync
+  - Version tracking in YAML frontmatter
+  - Drift detection: `scaffold.py check-templates`
+  - Three-way merge system
+  - Interactive conflict resolution
+  - Status: ✅ COMPLETE (IMP-65 Phases 1-3)
+
+- **[TEMPLATE_USAGE.md](templates/TEMPLATE_USAGE.md)** - ⭐ How to use this template
+  - Quick start guide
+  - Automatic initialization
+  - Manual setup
+  - Troubleshooting
+
+- **[TEMPLATE-VERSIONS.md](templates/TEMPLATE-VERSIONS.md)** - Template version history
+
+---
+
+### 🤖 GitHub Copilot Resources
+
+**Location**: [`github-copilot/`](github-copilot/)
+
+- **[GitHub Copilot - Default Porject Template Skills.md](github-copilot/GitHub%20Copilot%20-%20Default%20Porject%20Template%20Skills.md)** - Custom skills for this template
+
+- **[GitHub Copilot - Engram how to.md](github-copilot/GitHub%20Copilot%20-%20Engram%20how%20to.md)** - Engram memory system guide
+
+- **[GITHUB-COPILOT-AGENTS-RESOURCES.md](github-copilot/GITHUB-COPILOT-AGENTS-RESOURCES.md)** - Agent development resources
+
+---
+
+### 🎯 Copilot Strategy & Domain Profiles
+
+**Location**: [`copilot/`](copilot/)
+
+- **[DOMAIN-PROFILES-STRATEGY.md](copilot/DOMAIN-PROFILES-STRATEGY.md)** - ⭐ Three-layer architecture
+  - Foundation / Domain Profile / Context Injection
+  - Three modes: Programming, Infrastructure, Analysis
+  - SpecKit + MCP integration
+
+- **[DOMAIN-PROFILES-DECISIONS.md](copilot/DOMAIN-PROFILES-DECISIONS.md)** - Design decisions
+  - 19 decisions fully resolved (D-01 to D-19)
+  - Implementation mapping (IMP-01 to IMP-10)
+
+- **[PROFILE-DESCRIPTOR-SCHEMA.md](copilot/PROFILE-DESCRIPTOR-SCHEMA.md)** - Profile descriptor spec
+
+- **[DOMAIN-ANALYSIS.md](copilot/DOMAIN-ANALYSIS.md)** - Domain analysis documentation
+- **[DOMAIN-INFRASTRUCTURE.md](copilot/DOMAIN-INFRASTRUCTURE.md)** - Infrastructure domain
+- **[DOMAIN-PROGRAMMING.md](copilot/DOMAIN-PROGRAMMING.md)** - Programming domain
+
+---
+
+### 💬 Architectural Debates
+
+**Location**: [`debates/`](debates/)
+
+- **[ANALISE_4_CAMADAS_VS_MERCADO_2026-04-05.md](debates/ANALISE_4_CAMADAS_VS_MERCADO_2026-04-05.md)** - 4-layer SDD analysis
+
+- **[DEBATE_ENGRAM_INTEGRATION_2026-04-05.md](debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md)** - Engram integration debate
+
+- **[DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md](debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md)** - Spec-driven development approach
+
+---
+
+### 📂 Session Documentation
+
+**Location**: [`SESSIONS/YYYY-MM-DD/`](SESSIONS/)
+
+Complete session history with detailed documentation for each development session. Each session folder contains:
+
+- `SESSION_RECOVERY_*.md` - Context recovery from previous session
+- `DAILY_ACTIVITIES_*.md` - Detailed activity timeline
+- `SESSION_REPORT_*.md` - Technical summary and artifacts
+- `FINAL_STATUS_*.md` - Final status and metrics
+
+**Recent Sessions**:
+
+- **[2026-04-27/](SESSIONS/2026-04-27/)** - ⭐ BUG-06 + Template Issues Fix
+  - BUG-06: Profile loading corrected (5 files renamed)
+  - Template Issues: Placeholder substitution + hatchling config
+  - Documentation reorganization (54 files moved)
+  - Status: ✅ Complete (~5h, 17/18 tests passing)
+
+- **[2026-04-23/](SESSIONS/2026-04-23/)** - IMP-65 Production Ready
+  - Scenarios 6-8 validated (8/8 passing)
+  - BUG-04, BUG-05 Phase 1 complete
+  - Template sync system production-ready
+
+- **[2026-04-21/](SESSIONS/2026-04-21/)** - IMP-65 Comprehensive Analysis
+  - 6-perspective system analysis
+  - Real-world testing
+  - Gap analysis (36 gaps identified)
+
+- **[2026-04-20/](SESSIONS/2026-04-20/)** - IMP-59 Mini-Engram Complete
+  - Zero-dependency memory system
+  - SQLite FTS5 integration
+  - 46/46 tests passing
+
+- **[2026-04-15/](SESSIONS/2026-04-15/)** - IMP-65 Phase 4 Modular Templates
+  - Block composition engine
+  - Patch system
+  - 94/94 tests passing
+
+**See**: [SESSIONS/](SESSIONS/) for complete chronological history (25+ sessions documented)
 
 ---
 

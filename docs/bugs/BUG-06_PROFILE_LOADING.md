@@ -238,17 +238,17 @@ def _copy_domain_profile(
            src_root / ".github" / "prompts" / "domain" / f"layer3-{profile_name}.prompt.md",
            src_root / ".github" / "prompts" / "domain" / f"{profile_name}.prompt.md",
        ]
-       
+
        src_file = None
        for candidate in src_candidates:
            if candidate.exists():
                src_file = candidate
                break
-       
+
        if not src_file:
            errors.append(f"Profile prompt not found: {profile_name}")
            return CreatedItem(...)
-       
+
        # Destino sempre sem prefix
        dst_file = base / ".github" / "prompts" / "domain" / f"{profile_name}.prompt.md"
        ...

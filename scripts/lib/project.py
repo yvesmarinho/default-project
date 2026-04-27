@@ -18,6 +18,7 @@ from .config import (
     CreatedItem,
     ProjectConfig,
 )
+from . import vscode
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -1252,80 +1253,6 @@ clean:
 mcp:
 	@bash scripts/load-mcp.sh"""
 
-_CODE_WORKSPACE = """\
-{
-  "folders": [
-    {
-      "path": "."
-    }
-  ],
-  "settings": {
-    "editor.formatOnSave": true,
-    "editor.rulers": [88, 120],
-    "files.trimTrailingWhitespace": true,
-    "files.insertFinalNewline": true
-  },
-  "tasks": {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "make: install-deps",
-        "type": "shell",
-        "command": "make install-deps",
-        "group": "build",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: dev",
-        "type": "shell",
-        "command": "make dev",
-        "group": { "kind": "build", "isDefault": true },
-        "problemMatcher": []
-      },
-      {
-        "label": "make: build",
-        "type": "shell",
-        "command": "make build",
-        "group": "build",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: test",
-        "type": "shell",
-        "command": "make test",
-        "group": { "kind": "test", "isDefault": true },
-        "problemMatcher": []
-      },
-      {
-        "label": "make: lint",
-        "type": "shell",
-        "command": "make lint",
-        "group": "test",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: format",
-        "type": "shell",
-        "command": "make format",
-        "group": "build",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: clean",
-        "type": "shell",
-        "command": "make clean",
-        "group": "build",
-        "problemMatcher": []
-      }
-    ]
-  },
-  "launch": {
-    "version": "0.2.0",
-    "configurations": []
-  }
-}
-"""
-
 # ---------------------------------------------------------------------------
 # Templates de segurança GitHub (BUG-06)
 # ---------------------------------------------------------------------------
@@ -1671,16 +1598,9 @@ def create_structure(config: ProjectConfig) -> list[CreatedItem]:
                 path=file_path, kind="file", status="error", message=str(e),
             ))
 
-    # 3. [nome].code-workspace (nome dinâmico)
-    ws_path = base / f"{config.project_name}.code-workspace"
-    if ws_path.exists():
-        results.append(CreatedItem(path=ws_path, kind="file", status="skipped"))
-    else:
-        try:
-            ws_path.write_text(_CODE_WORKSPACE, encoding="utf-8")
-            results.append(CreatedItem(path=ws_path, kind="file", status="created"))
-        except OSError as e:
-            results.append(CreatedItem(path=ws_path, kind="file", status="error", message=str(e)))
+    # 3. [nome].code-workspace (nome dinâmico) - agora com MCP integrado
+    ws_result = vscode.generate_workspace(config)
+    results.append(ws_result)
 
     return results
 

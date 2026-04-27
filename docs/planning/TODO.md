@@ -6,34 +6,15 @@
 
 ---
 
-## 🎯 Próxima Sessão (2026-04-24+)
+## 🎯 Próxima Sessão (2026-04-28+)
 
 - [ ] **BUG-05 Implementation (P1)**: Interactive Layer 2 Profile Selection
   - **Objetivo**: Allow python-fastapi selection in interactive mode
-  - **Status**: � IN PROGRESS (Phase 1/4 complete)
+  - **Status**: 🟡 IN PROGRESS (Phase 1/4 complete)
   - **Estimativa**: 9-11h (4 phases) — 3h concluído, 6-8h restante
   - **Prioridade**: P1 (UX blocker for novice users)
   - **Arquivo**: docs/BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md
   - **Progress**: ✅ Phase 1 (Core), ⏸️ Phase 3 (Docs), ⏸️ Phase 4 (Tests)
-
-- [ ] **BUG-06 (P1)**: Profile loading incorreto em projetos criados
-  - **Problema**: Todos os projetos criados estão carregando o profile "Default", quando deveria utilizar o próprio
-  - **Status**: 🔴 DISCOVERED (not investigated)
-  - **Estimativa**: TBD (needs investigation)
-  - **Prioridade**: P1 (affects all new projects)
-  - **Impact**: Projects não aplicam profile-specific configurations
-  - **Migration Requirement**: Para projetos existentes, importar dados do profile "Default" para o profile correto (se possível)
-  - **Arquivo**: TBD (criar BUG-06_PROFILE_LOADING.md)
-  - **Scopes**:
-    - Fix profile loading in new projects
-    - Migration tool for existing projects (Default → correct profile)
-
-- [ ] **Template Issues (P1)**: Fix placeholder substitution
-  - **Objetivo**: Fix {project_name}, {description}, hatchling config
-  - **Status**: 🔴 PENDING (3 issues discovered)
-  - **Estimativa**: 2h
-  - **Prioridade**: P1 (affects all new projects)
-  - **Issues**: ISSUE-T1, T2, T3 in PENDENCIAS_COMPLETAS.md
 
 - [ ] **IMP-65 P1 Gaps**: Production hygiene improvements
   - **Objetivo**: CI/CD integration, audit trail, quality gates
@@ -41,6 +22,40 @@
   - **Prioridade**: P1 (production hygiene, Week 2-3)
   - **Estimativa**: 88h total
   - **Deliverables**: CI/CD automation, audit logs, automated gates
+
+---
+
+## ✅ CONCLUÍDO — Sessão 2026-04-27
+
+- [x] **Template Issues (P1)**: Fix placeholder substitution
+  - **Status**: ✅ COMPLETE (2026-04-27)
+  - **Issues Corrigidos**: ISSUE-T1, T2, T3
+  - **Tempo**: ~1h 30min
+  - **Mudanças**:
+    - ISSUE-T1, T2: Placeholder substitution em composer
+    - ISSUE-T3: Hatchling configuration em pyproject.toml
+  - **Arquivos Modificados**:
+    - scripts/lib/composer.py (+32 linhas)
+    - .github/templates/python-fastapi/pyproject.toml (+3 linhas)
+  - **Tests**: 17/18 passing em test_smoke_composer.py
+  - **Commit**: 1b94196
+  - **Documentação**: docs/SESSIONS/2026-04-27/IMPLEMENTATION_REPORT_ISSUES_T1_T2_T3.md
+
+- [x] **BUG-06 (P1)**: Profile loading incorreto em projetos criados
+  - **Status**: ✅ COMPLETE (2026-04-27)
+  - **Problema**: Profile prompt files com prefixo layer2-/layer3- não encontrados por _copy_domain_profile()
+  - **Root Cause**: Inconsistência de nomenclatura (descriptor: `python-fastapi`, arquivo: `layer2-python-fastapi.prompt.md`)
+  - **Solução**: Renomeados 5 arquivos de prompt para remover prefixo layer
+  - **Arquivos Renomeados**:
+    - layer2-python-fastapi.prompt.md → python-fastapi.prompt.md
+    - layer2-python-flask.prompt.md → python-flask.prompt.md
+    - layer2-typescript-next.prompt.md → typescript-next.prompt.md
+    - layer3-k8s-helm.prompt.md → k8s-helm.prompt.md
+    - layer3-terraform-aws.prompt.md → terraform-aws.prompt.md
+  - **Impact**: _copy_domain_profile() agora encontra arquivos corretos
+  - **Tempo**: ~30min (análise + implementação)
+  - **Commit**: 1b94196 (co-fix com Template Issues)
+  - **Documentação**: docs/BUG-06_PROFILE_LOADING.md
 
 ---
 

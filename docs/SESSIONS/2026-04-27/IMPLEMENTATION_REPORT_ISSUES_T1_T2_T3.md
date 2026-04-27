@@ -50,7 +50,7 @@
    def _apply_template_placeholders(self, content: str, cfg: ProjectConfig) -> str:
        """
        Substitui placeholders em templates de perfis.
-       
+
        Suporta dois formatos:
        - {xxx}: formato simples (usado em templates Layer 2/3)
        - {{XXX}}: formato double-brace (usado em templates core)
@@ -150,7 +150,7 @@ uv run scripts/scaffold.py new --compose python-fastapi \
    - `description = "{description}"` in `pyproject.toml` ❌
 2. `pip install -e .` failed with `ValueError: Missing packages` ❌
 
-**User Impact**: 
+**User Impact**:
 - Projects not installable
 - Metadata incorrect
 - Manual fix required for every project

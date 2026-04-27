@@ -323,7 +323,7 @@ class ProfileComposer:
             # Copia com substituição de placeholders
             try:
                 dest_path.parent.mkdir(parents=True, exist_ok=True)
-                
+
                 # Arquivos de texto: aplicar substituição de placeholders
                 text_extensions = {".md", ".yaml", ".yml", ".toml", ".txt", ".json", ".py", ".sh", ".env"}
                 if dest_path.suffix in text_extensions or dest_path.name.startswith(".env"):
@@ -338,7 +338,7 @@ class ProfileComposer:
                 else:
                     # Arquivos binários: copiar diretamente
                     shutil.copy2(src_path, dest_path)
-                
+
                 items.append(CreatedItem(path=dest_path, kind="file", status="created"))
             except OSError as exc:
                 items.append(
@@ -356,7 +356,7 @@ class ProfileComposer:
     def _apply_template_placeholders(self, content: str, cfg: ProjectConfig) -> str:
         """
         Substitui placeholders em templates de perfis.
-        
+
         Suporta dois formatos:
         - {xxx}: formato simples (usado em templates Layer 2/3)
         - {{XXX}}: formato double-brace (usado em templates core)

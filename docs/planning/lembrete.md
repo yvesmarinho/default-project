@@ -1,7 +1,12 @@
 # Alterações necessárias
 
 - contabilização de tempo de trabalho de cada sessão.
-
+- Analisar as informações dos sites abaixo para fazer as devidas atualizações.
+  - [Github Copilot Instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
+  - [Agent Skills in VS Vode](https://code.visualstudio.com/docs/copilot/customization/agent-skills) para melhorar a atuação dos agentes.
+  - [Custom Agents ](https://code.visualstudio.com/docs/copilot/customization/custom-agents)
+  - [manage MCP servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers) habilitar Github MCP para acesso aos repositórios.
+  - [Awesome Copilot](https://github.com/github/awesome-copilot), importar todos os códigos que torner o template de projeto mais completo.
 
 
 ---
