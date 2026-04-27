@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-27 — Session 2026-04-27 Complete (BUG-06 + Template Issues Fixed)
+**Last Updated**: 2026-04-27 — Session 2026-04-27 Complete (BUG-06 + BUG-07 + Template Issues Fixed)
 **Project Status**: 🟢 Stable — Template Sync System PRODUCTION READY (8/8 scenarios ✅)
-**Version**: 1.15.3
-**Last Session**: 2026-04-27 — ✅ BUG-06 Profile Loading Fix + Template Issues (T1, T2, T3)
+**Version**: 1.15.4
+**Last Session**: 2026-04-27 — ✅ BUG-06 Profile Loading + BUG-07 Workspace MCP + Template Issues (T1, T2, T3)
 
 ---
 
@@ -16,12 +16,18 @@
 
 ---
 
-> **✅ SESSION 2026-04-27 SUMMARY (BUG-06 + Template Issues Fixed)**
+> **✅ SESSION 2026-04-27 SUMMARY (BUG-06 + BUG-07 + Template Issues Fixed)**
 > - **BUG-06 FIXED**: Profile Loading — All profile prompts now load correctly in new projects
 >   - Root cause: Files had `layer2-` / `layer3-` prefix but `_copy_domain_profile()` searched for exact match
 >   - Solution: Renamed 5 prompt files to match profile descriptor names
 >   - Impact: SpecKit now correctly loads profile-specific context (python-fastapi, k8s-helm, etc.)
 >   - Docs: [bugs/BUG-06_PROFILE_LOADING.md](bugs/BUG-06_PROFILE_LOADING.md) (~450 lines)
+> - **BUG-07 FIXED** (Critical): Workspace MCP Configuration — VS Code now loads correct MCP servers
+>   - Root cause: `.code-workspace` file used static template without MCP servers
+>   - Problem: VS Code prioritizes workspace settings over `.vscode/mcp.json`
+>   - Solution: Added `generate_workspace()` function to dynamically generate workspace files with MCP
+>   - Impact: All new projects get correct MCP configuration (memory, sequential-thinking, filesystem, github)
+>   - Docs: [bugs/BUG-07_WORKSPACE_MCP_FIX.md](bugs/BUG-07_WORKSPACE_MCP_FIX.md) (~200 lines)
 > - **TEMPLATE ISSUES FIXED** (ISSUE-T1, T2, T3):
 >   - **T1**: Placeholder {project_name} now substituted in templates ✅
 >   - **T2**: Placeholder {description} now substituted in templates ✅
@@ -35,18 +41,21 @@
 >   - New structure: bugs/, implementations/, guides/, reference/, planning/, templates/, github-copilot/
 >   - Benefits: Faster searches, clearer navigation, better maintenance
 >   - INDEX.md updated to reflect new structure
-> - **COMMITS CREATED**: 1 during session
+> - **COMMITS CREATED**: 2 during session
 >   - 1b94196 — fix(templates): placeholder substitution + hatchling config (ISSUE-T1, T2, T3)
+>   - fe13e44 — fix(workspace): add dynamic MCP server configuration (BUG-07)
 > - **TEST RESULTS**:
 >   - Composer tests: 17/18 ✅ PASSING (94%)
+>   - Workspace generation: ✅ Validated manually (MCP section present)
 >   - Pre-existing failure: data-pipeline-airflow profile (unrelated)
 > - **SESSION METRICS**:
->   - Duration: ~5h
->   - Documentation: ~1750 lines created (6 documents)
->   - Implementation: ~35 lines (composer +32, pyproject.toml +3)
+>   - Duration: ~6h
+>   - Documentation: ~2000 lines created (7 documents)
+>   - Implementation: ~150 lines (vscode.py +100, project.py -150, composer +32, pyproject.toml +3)
 >   - Files reorganized: 54 files moved to subfolders
-> - **IMPACT**: Projects now work out-of-the-box with correct profile context
+> - **IMPACT**: Projects now work out-of-the-box with correct profile context AND MCP configuration
 >   - ✅ Profile prompts load correctly
+>   - ✅ MCP servers load correctly (workspace file + .vscode/mcp.json)
 >   - ✅ Placeholders substituted automatically
 >   - ✅ Python projects installable immediately after creation
 >   - ✅ Documentation easier to find and navigate
@@ -658,6 +667,13 @@ docs/
   - Solution: Renamed 5 prompt files to match profile descriptor names
   - Status: ✅ FIXED (Session 2026-04-27)
   - Impact: SpecKit now correctly loads profile-specific context
+  
+- **[BUG-07_WORKSPACE_MCP_FIX.md](bugs/BUG-07_WORKSPACE_MCP_FIX.md)** - ⭐ Workspace file missing MCP configuration
+  - Problem: VS Code loaded wrong MCP servers when opening via workspace file
+  - Root cause: `.code-workspace` file used static template without MCP servers section
+  - Solution: Added `generate_workspace()` function to dynamically generate workspace files with MCP
+  - Status: ✅ FIXED (Session 2026-04-27)
+  - Impact: All new projects get correct MCP configuration (memory, sequential-thinking, filesystem, github)
 
 ---
 
