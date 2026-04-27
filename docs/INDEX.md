@@ -1,21 +1,56 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-27 — Session 2026-04-27 Complete (BUG-06 + BUG-07 + Template Issues Fixed)
-**Project Status**: 🟢 Stable — Template Sync System PRODUCTION READY (8/8 scenarios ✅)
-**Version**: 1.15.4
-**Last Session**: 2026-04-27 — ✅ BUG-06 Profile Loading + BUG-07 Workspace MCP + Template Issues (T1, T2, T3)
+**Last Updated**: 2026-04-27 — Session 2026-04-27 Complete (Spec 066 Fase 1 at 80%)
+**Project Status**: 🟢 Stable — Spec 066 objetivo.yaml v2.0 Validated (Fase 2 Ready)
+**Version**: 1.16.0
+**Last Session**: 2026-04-27 — ✅ Spec 066 Fase 1 Complete (4/5 tasks) + Template Enhancements
 
 ---
 
-> **📂 DOCUMENTATION REORGANIZATION (2026-04-27)**
-> - **📁 New Structure**: Documentation reorganized into logical folders for easier navigation
-> - **Categories**: bugs/, implementations/, guides/, reference/, planning/, templates/, github-copilot/
-> - **Files Moved**: 54 files reorganized from root to categorized subfolders
-> - **Benefits**: Faster searches, clearer organization, better maintenance
-> - **See**: "Documentation Index" section below for complete catalog
-
----
-
+> **✅ SESSION 2026-04-27 SUMMARY (Spec 066 Fase 1 Validation Complete)**
+> - **Spec 066 - Fase 1**: objetivo.yaml v2.0 template validation complete at 80% (4/5 tasks)
+>   - T001: Python FastAPI POC conversion (850 lines) — backend-api domain ✅
+>   - T002: K8s Helm POC conversion (680 lines) — deployment-chart domain ✅
+>   - T003: Terraform AWS POC conversion (780 lines) — infrastructure-code domain ✅
+>   - T004: Edge cases documentation (667 lines) — 10 cases identified with solutions ✅
+>   - T005: User testing (OPTIONAL) — deferred to optional status ⏸️
+>   - EXTRA: Template improvements (inline comments, P0/P1/P2 markers, clean template) ✅
+> - **Format Validation**: Markdown Híbrido proven across 3 diverse domains
+>   - Backend API: FastAPI + PostgreSQL + Redis architecture
+>   - Infrastructure: Kubernetes + Helm deployment charts
+>   - Cloud IaC: AWS + Terraform infrastructure code
+> - **Key Learnings**:
+>   - Realistic line count: 500-900 lines (not 300 estimated)
+>   - YAML inline comments significantly improve usability
+>   - Priority markers (P0/P1/P2) help users focus on essential content
+>   - Clean template separation (base vs. examples) reduces confusion
+>   - Format works equally well across backend, infrastructure, and cloud domains
+> - **Deliverables Created**:
+>   - 3 POC conversions: [poc/objetivo-v2-{python-fastapi,k8s-helm,terraform-aws}.md](../poc/)
+>   - Edge cases analysis: [docs/debates/VALIDACAO-FASE1-EDGE-CASES.md](debates/VALIDACAO-FASE1-EDGE-CASES.md)
+>   - Clean template: [poc/objetivo-v2-template-base.md](../poc/objetivo-v2-template-base.md)
+>   - Enhanced template: [specs/066-objetivo-yaml-v2/objetivo.yaml](../specs/066-objetivo-yaml-v2/objetivo.yaml)
+> - **Commits Created**: 3 commits during session
+>   - c7684d3 — feat(specs/066): complete Fase 1 validation - T001, T002, T003
+>   - f8c8612 — feat(specs/066): complete T004 - Fase 1 edge cases documentation
+>   - 7513e64 — feat(specs/066): apply high-priority improvements from T004 edge cases
+> - **Session Metrics**:
+>   - Duration: ~9h (full day)
+>   - Total lines: 2,878 insertions (5 files created, 1 modified)
+>   - Documentation: ~2,000 lines session docs
+>   - Edge cases: 10 identified with solutions
+>   - Improvements: 5 priority high applied to template
+> - **Impact**: 
+>   - ✅ objetivo.yaml v2.0 format validated and production-ready
+>   - ✅ Fase 2 unblocked (parser implementation can start)
+>   - ✅ Template enhanced with inline guidance for users
+>   - ✅ Realistic expectations set for document length
+>   - ✅ Edge cases documented to prevent future issues
+> - **Next Priorities**:
+>   - Fase 2 - T006: Create objetivo_parser.py (8-12h)
+>   - OPTIONAL - T005: User testing (2-3h, low priority)
+>   - Continue BUG-05 or IMP-65 P1 Gaps as needed
+>
 > **✅ SESSION 2026-04-27 SUMMARY (BUG-06 + BUG-07 + Template Issues Fixed)**
 > - **BUG-06 FIXED**: Profile Loading — All profile prompts now load correctly in new projects
 >   - Root cause: Files had `layer2-` / `layer3-` prefix but `_copy_domain_profile()` searched for exact match
@@ -655,19 +690,19 @@ docs/
   - Problem: Template merge accepted breaking changes without user confirmation
   - Solution: Block breaking changes in `--auto` mode, require interactive mode
   - Status: ✅ FIXED (Session 2026-04-23)
-  
+
 - **[BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md](bugs/BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md)** - Interactive profile selection
   - Problem: Interactive mode only offered Layer 1 profiles
   - Solution: Added Layer 2/3 profile selection UI
   - Status: 🟡 Phase 1/4 complete (Session 2026-04-23)
-  
+
 - **[BUG-06_PROFILE_LOADING.md](bugs/BUG-06_PROFILE_LOADING.md)** - ⭐ Profile loading incorrect
   - Problem: New projects loaded "Default" profile instead of selected profile
   - Root cause: Profile prompt files had `layer2-` prefix but code searched without prefix
   - Solution: Renamed 5 prompt files to match profile descriptor names
   - Status: ✅ FIXED (Session 2026-04-27)
   - Impact: SpecKit now correctly loads profile-specific context
-  
+
 - **[BUG-07_WORKSPACE_MCP_FIX.md](bugs/BUG-07_WORKSPACE_MCP_FIX.md)** - ⭐ Workspace file missing MCP configuration
   - Problem: VS Code loaded wrong MCP servers when opening via workspace file
   - Root cause: `.code-workspace` file used static template without MCP servers section
