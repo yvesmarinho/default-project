@@ -320,10 +320,25 @@ class ProfileComposer:
                 items.append(CreatedItem(path=dest_path, kind="file", status="skipped"))
                 continue
 
-            # Copia
+            # Copia com substituição de placeholders
             try:
                 dest_path.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src_path, dest_path)
+                
+                # Arquivos de texto: aplicar substituição de placeholders
+                text_extensions = {".md", ".yaml", ".yml", ".toml", ".txt", ".json", ".py", ".sh", ".env"}
+                if dest_path.suffix in text_extensions or dest_path.name.startswith(".env"):
+                    try:
+                        content = src_path.read_text(encoding="utf-8")
+                        # Substituir placeholders no formato {xxx} e {{XXX}}
+                        content = self._apply_template_placeholders(content, cfg)
+                        dest_path.write_text(content, encoding="utf-8")
+                    except (UnicodeDecodeError, OSError):
+                        # Fallback: copiar binário se falhar leitura como texto
+                        shutil.copy2(src_path, dest_path)
+                else:
+                    # Arquivos binários: copiar diretamente
+                    shutil.copy2(src_path, dest_path)
+                
                 items.append(CreatedItem(path=dest_path, kind="file", status="created"))
             except OSError as exc:
                 items.append(
@@ -337,6 +352,34 @@ class ProfileComposer:
                 return items, f"Erro ao copiar '{dest_rel}': {exc}"
 
         return items, None
+
+    def _apply_template_placeholders(self, content: str, cfg: ProjectConfig) -> str:
+        """
+        Substitui placeholders em templates de perfis.
+        
+        Suporta dois formatos:
+        - {xxx}: formato simples (usado em templates Layer 2/3)
+        - {{XXX}}: formato double-brace (usado em templates core)
+        """
+        replacements = {
+            # Formato simples {xxx}
+            "{project_name}": cfg.project_name,
+            "{description}": cfg.description,
+            "{domain}": cfg.domain,
+            "{language}": cfg.language,
+            "{github_repo}": cfg.github_repo or "",
+            # Formato double-brace {{XXX}}
+            "{{PROJECT_NAME}}": cfg.project_name,
+            "{{PROJECT_TITLE}}": cfg.project_title,
+            "{{PROJECT_DESCRIPTION}}": cfg.description,
+            "{{CREATED_AT}}": cfg.created_at,
+            "{{DOMAIN}}": cfg.domain,
+            "{{LANGUAGE}}": cfg.language,
+            "{{GITHUB_REPO}}": cfg.github_repo or "",
+        }
+        for placeholder, value in replacements.items():
+            content = content.replace(placeholder, value)
+        return content
 
     def _rollback(self, items: list[CreatedItem]) -> list[Path]:
         """Remove todos os arquivos com status='created' (desfaz a composição)."""

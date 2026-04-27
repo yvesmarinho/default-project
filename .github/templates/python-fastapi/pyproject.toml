@@ -26,6 +26,9 @@ dev = [
     "pip-audit>=2.7",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
