@@ -1,30 +1,36 @@
 ---
-version: "2.0"
+version: "2.0"  # Formato: objetivo.yaml v2.0 (Markdown Híbrido)
 project:
-  name: "objetivo-yaml-v2"
-  title: "objetivo.yaml v2.0 — Human-Readable Format"
-  type: "developer-tooling"
-  domain: "programming"
-  language: "python"
+  name: "objetivo-yaml-v2"  # ID único (kebab-case)
+  title: "objetivo.yaml v2.0 — Human-Readable Format"  # Nome legível
+  type: "developer-tooling"  # Comum: backend-api, frontend-spa, cli-tool, library, deployment-chart, infrastructure-code
+  domain: "programming"  # Options: programming, infrastructure, data-engineering
+  language: "python"  # Linguagem principal (python, typescript, go, hcl, etc)
 
-created_at: "2026-04-27"
-created_by: "yves_marinho"
+created_at: "2026-04-27"  # Data de criação (YYYY-MM-DD)
+created_by: "yves_marinho"  # Autor/responsável
 
 generation:
-  profiles_auto_detect: true
-  validate_on_save: true
-  generate_spec_on_change: false
+  profiles_auto_detect: true  # Auto-detecta profiles baseado em domain/language
+  validate_on_save: true  # Valida quando arquivo é salvo (VS Code)
+  generate_spec_on_change: false  # Auto-gera objetivo-spec.yaml ao salvar (futuro)
 
 validation:
-  level: "strict"
-  fail_on_warning: false
-  require_p0: true
-  require_p1: false
+  level: "strict"  # Options: strict (bloqueia erros), permissive (warns), off
+  fail_on_warning: false  # Se true, warnings são tratados como erros
+  require_p0: true  # P0 obrigatório (seções 1-3)
+  require_p1: false  # P1 opcional (seções 4-5)
 ---
 
 # 🎯 Objetivo: objetivo.yaml v2.0 — Human-Readable Format
 
-## 1️⃣ O que este projeto faz?
+<!-- Progressive Disclosure:
+     P0 (essencial): Seções 1-3 — Obrigatório
+     P1 (contextual): Seções 4-5 — Recomendado
+     P2 (avançado): Seções 6-9 — Opcional
+-->
+
+## 1️⃣ O que este projeto faz? <!-- P0 - Essencial -->
 
 **Em uma frase**: Redesenha o formato objetivo.yaml para ser legível e fácil de preencher por desenvolvedores de todos os níveis (iniciante → avançado), reduzindo tempo de preenchimento em 75% e taxa de erro em 89%.
 
@@ -37,7 +43,7 @@ validation:
 
 ---
 
-## 2️⃣ Qual problema resolve?
+## 2️⃣ Qual problema resolve? <!-- P0 - Essencial -->
 
 ### Problema Atual (v1.0)
 
@@ -69,7 +75,7 @@ Taxa de abandono (1ª tentativa) | 42% | <10% | **-76%**
 
 ---
 
-## 3️⃣ Escopo do Projeto
+## 3️⃣ Escopo do Projeto <!-- P0 - Essencial -->
 
 ### Incluído ✅
 
@@ -111,7 +117,7 @@ Taxa de abandono (1ª tentativa) | 42% | <10% | **-76%**
 
 ---
 
-## 4️⃣ Restrições e Requisitos Não-Funcionais
+## 4️⃣ Restrições e Requisitos Não-Funcionais <!-- P1 - Contextual -->
 
 ### Performance
 
@@ -147,7 +153,17 @@ Taxa de abandono (1ª tentativa) | 42% | <10% | **-76%**
 
 ---
 
-## 5️⃣ Regras de Negócio
+## 5️⃣ Regras de Negócio <!-- P1 - Contextual -->
+
+<!-- Organize como:
+     ### Regra #1: Nome Descritivo
+     **Cenário**: Quando X acontece...
+     **Validações**:
+     - ✅ Item válido
+     - ❌ Item inválido
+     **Output esperado**: Exemplo concreto (JSON, YAML, etc)
+     Máximo 5 regras, 1-2 exemplos de código por regra
+-->
 
 ### Regra #1: Progressive Disclosure (P0 → P1 → P2)
 
@@ -245,16 +261,16 @@ scaffold.py objetivo-migrate
 Erro #1: Seção P0 obrigatória vazia
    Localização: linha 15-18
    Seção: ## 1️⃣ O que este projeto faz?
-   
+
    ❌ Encontrado:
    15 | ## 1️⃣ O que este projeto faz?
-   16 | 
-   17 | **Em uma frase**: 
+   16 |
+   17 | **Em uma frase**:
    18 |
-   
+
    ✅ Esperado:
    **Em uma frase**: API REST para gerenciar usuários e autenticação JWT
-   
+
    💡 Dica: Descreva em 1 frase clara o que o projeto faz.
        Exemplo: "Migra dados entre instâncias Chatwoot mantendo integridade referencial"
 ```
@@ -287,7 +303,11 @@ Erro #1: Seção P0 obrigatória vazia
 
 ---
 
-## 6️⃣ Estrutura de Pastas
+## 6️⃣ Estrutura de Pastas <!-- P2 - Avançado -->
+
+<!-- Use comentários # inline para explicar o propósito de cada arquivo.
+     Alinhe comentários multi-linha para melhor legibilidade.
+-->
 
 ```
 specs/066-objetivo-yaml-v2/
@@ -362,7 +382,7 @@ docs/
 
 ---
 
-## 7️⃣ Tecnologias e Ferramentas
+## 7️⃣ Tecnologias e Ferramentas <!-- P2 - Avançado -->
 
 ### Core Stack
 
@@ -397,7 +417,14 @@ docs/
 
 ---
 
-## 8️⃣ Próximos Passos
+## 8️⃣ Próximos Passos <!-- P2 - Avançado -->
+
+<!-- Organize por Fases com tempo estimado:
+     ### Fase 1: Nome da Fase (tempo estimado)
+     **Grupo de tarefas**:
+     - [ ] Tarefa 1
+     - [ ] Tarefa 2
+-->
 
 ### Fase 1: Validação (2 dias) — **PRIORIDADE IMEDIATA**
 
@@ -463,7 +490,15 @@ docs/
 
 ---
 
-## 9️⃣ Contexto Adicional
+## 9️⃣ Contexto Adicional <!-- P2 - Avançado -->
+
+<!-- Sub-headers sugeridas:
+     ### Histórico do Projeto
+     ### Arquitetura de Referência
+     ### Decisões de Design (Por que X em vez de Y?)
+     ### Referências Externas
+     ### Meta-Observação
+-->
 
 ### Histórico do Problema
 
@@ -524,4 +559,5 @@ docs/
 - ✅ Linguagem conversacional (não técnica demais)
 
 **Tempo de preenchimento**: ~45 min (para feature complexa com 5 user stories, 6 ADRs, 39 tasks)
+**Target de linhas**: ~500 linhas para projetos reais (não 300 — validado em T001-T003)
 **Taxa de erro estimada**: 0% (preenchido por quem desenhou o formato 😉)
