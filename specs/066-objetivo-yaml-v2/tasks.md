@@ -73,27 +73,27 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### US3 - Parser Core (Day 3-4)
 
-- [ ] T006 [US3] Criar `scripts/lib/objetivo_parser.py` com estrutura base
+- [x] T006 [US3] Criar `scripts/lib/objetivo_parser.py` com estrutura base
   - Classes: `ObjetivoV2Parser`, `ParsedObjetivo` (dataclass)
   - Methods stub: `parse()`, `_parse_frontmatter()`, `_parse_sections()`
   - Imports: `yaml`, `re`, `pathlib`, `dataclasses`
   - Target: ~100 linhas inicial
 
-- [ ] T007 [US3] Implementar `_parse_frontmatter()` em `objetivo_parser.py`
+- [x] T007 [US3] Implementar `_parse_frontmatter()` em `objetivo_parser.py`
   - Extrair bloco YAML entre `---` delimiters
   - Parse com `yaml.safe_load()`
   - Validar campos obrigatórios: `version`, `project.name`
   - Return dict com metadados
   - Target: ~80 linhas
 
-- [ ] T008 [US3] Implementar `_parse_sections()` em `objetivo_parser.py`
+- [x] T008 [US3] Implementar `_parse_sections()` em `objetivo_parser.py`
   - Regex para extrair seções: `## 1️⃣`, `## 2️⃣`, etc
   - Return dict: `{1: content, 2: content, ...}`
   - Handle seções P0/P1/P2
   - Handle seções opcionais vazias
   - Target: ~120 linhas
 
-- [ ] T009 [US3] Implementar `parse()` método principal em `objetivo_parser.py`
+- [x] T009 [US3] Implementar `parse()` método principal em `objetivo_parser.py`
   - Read file
   - Call `_parse_frontmatter()`
   - Call `_parse_sections()`
@@ -101,7 +101,7 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Handle file not found, invalid YAML, etc
   - Target: ~60 linhas
 
-- [ ] T010 [P] [US3] Criar testes unitários em `tests/test_objetivo_parser.py`
+- [x] T010 [P] [US3] Criar testes unitários em `tests/test_objetivo_parser.py`
   - Test parse valid objetivo.yaml v2.0 (happy path)
   - Test parse frontmatter only (no sections)
   - Test parse sections only (no frontmatter)
@@ -118,12 +118,12 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### US5 - Validador (Day 5)
 
-- [ ] T011 [US5] Criar `scripts/lib/objetivo_validator.py` com estrutura base
+- [x] T011 [US5] Criar `scripts/lib/objetivo_validator.py` com estrutura base
   - Classes: `ObjetivoValidator`, `ValidationError` (dataclass)
   - Methods stub: `validate()`, `_validate_p0()`, `_validate_frontmatter()`
   - Target: ~80 linhas inicial
 
-- [ ] T012 [US5] Implementar `_validate_frontmatter()` em `objetivo_validator.py`
+- [x] T012 [US5] Implementar `_validate_frontmatter()` em `objetivo_validator.py`
   - Validar `version == "2.0"`
   - Validar `project.name` presente e não vazio
   - Validar `project.type` em lista permitida (backend-api, data-migration, etc)
@@ -131,14 +131,14 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Return lista de `ValidationError` com linha/coluna/mensagem
   - Target: ~60 linhas
 
-- [ ] T013 [US5] Implementar `_validate_p0()` em `objetivo_validator.py`
+- [x] T013 [US5] Implementar `_validate_p0()` em `objetivo_validator.py`
   - Validar seções 1️⃣, 2️⃣, 3️⃣ presentes
   - Validar seções não vazias (>10 caracteres cada)
   - Validar seção 3️⃣ tem pelo menos 1 item em "Incluído ✅"
   - Return lista de `ValidationError` com linha/seção/exemplo
   - Target: ~80 linhas
 
-- [ ] T014 [US5] Implementar `validate()` método principal em `objetivo_validator.py`
+- [x] T014 [US5] Implementar `validate()` método principal em `objetivo_validator.py`
   - Call `_validate_frontmatter()`
   - Call `_validate_p0()`
   - Optionally validate P1/P2 (warnings, not errors)
@@ -147,7 +147,7 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Return lista agregada de erros + warnings
   - Target: ~80 linhas
 
-- [ ] T015 [P] [US5] Criar testes unitários em `tests/test_objetivo_validator.py`
+- [x] T015 [P] [US5] Criar testes unitários em `tests/test_objetivo_validator.py`
   - Test validate valid objetivo.yaml → no errors
   - Test validate missing P0 section → error with line
   - Test validate empty P0 section → error with example
