@@ -86,7 +86,7 @@
   1. ✅ **P0-1: Real-World Test** (3-5h) — Already complete from 2026-04-23 session
      - 8/8 scenarios PASSED (Clean Merge, Selective Merge, Conflict Resolution, Breaking Changes, Version Bump Only, Template Drift Detection, Backup Verification, Dry-Run Preview)
      - Documented in: docs/SESSIONS/2026-04-23/, docs/implementations/IMP-65_SCENARIOS_6-8_REPORT.md
-  
+
   2. ✅ **P0-3: Migration Guide** (2h) — New deliverable
      - Comprehensive migration guide for pre-IMP-65 projects
      - 4 migration scenarios (Standard, Custom Templates, Missing Templates, No SpecKit)

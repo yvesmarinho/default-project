@@ -40,14 +40,14 @@
   - Markdown section parsing (## 1️⃣, ## 2️⃣, etc.)
   - ParsedObjetivo dataclass with convenience properties
   - Comprehensive error handling
-  
+
 - `scripts/lib/objetivo_validator.py` (277 lines)
   - Progressive disclosure validation (P0/P1/P2)
   - Frontmatter validation (version, project metadata)
   - P0 sections validation (1-3 required, non-empty)
   - Helpful error messages with examples
   - Strict/permissive modes
-  
+
 - `tests/test_objetivo_parser.py` (344 lines, 10 tests)
 - `tests/test_objetivo_validator.py` (396 lines, 8 tests)
 
@@ -65,7 +65,7 @@
   - Preview mode: generates objetivo.yaml.v2
   - Backup mode: saves objetivo.yaml.v1
   - Migration warnings tracking
-  
+
 - `tests/test_objetivo_migrator.py` (367 lines, 12 tests)
 
 **Metrics**:
@@ -104,7 +104,7 @@ scaffold.py objetivo-migrate --file objetivo.yaml
   - Multiline input: Enter-Enter to terminate
   - Rich formatting with print() fallback (zero hard dependencies)
   - Progressive disclosure: P0 (3 questions) → P1 (2 optional) → P2 (skip)
-  
+
 - `scripts/lib/flows/objetivo_init.py` (~70 lines)
 - `tests/test_objetivo_wizard.py` (~400 lines, 16 tests)
 - Updated `scripts/scaffold.py` with objetivo-init command
@@ -131,13 +131,13 @@ scaffold.py objetivo-init --template-only           # copy template
   - 6 troubleshooting scenarios
   - 6 FAQ entries
   - 2 complete examples
-  
+
 - Updated `README.md` (+65 lines)
   - objetivo.yaml v2.0 introduction
   - Quick example (user-auth-api)
   - CLI commands reference
   - Links to guides and specs
-  
+
 - `.specify/schemas/objetivo-spec-v1.0.json` (270 lines)
   - JSON Schema Draft 07 for objetivo-spec.yaml validation
   - Required fields: version, project, profiles

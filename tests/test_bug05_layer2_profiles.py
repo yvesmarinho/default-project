@@ -93,7 +93,7 @@ class TestGetCompatibleLayer2Profiles:
         # que é resolvido relativamente ao arquivo ui.py
         # Como é difícil mockar Path completamente, este teste valida
         # que a função não crasha ao encontrar YAMLs inválidos no diretório real
-        
+
         # Teste simplificado: verificar que não crasha com domain/language inválidos
         profiles = _get_compatible_layer2_profiles("programming", "python")
         assert isinstance(profiles, list)
@@ -103,15 +103,15 @@ class TestGetCompatibleLayer2Profiles:
         # Este teste valida o comportamento geral da função
         # Para testar com arquivos temporários, precisaríamos de um mock mais elaborado
         # ou um teste de integração que modifica profile-descriptors/
-        
+
         # Teste simplificado: verificar que a função executa sem erros
         # e retorna lista válida para diferentes linguagens
         profiles_py = _get_compatible_layer2_profiles("programming", "python")
         profiles_ts = _get_compatible_layer2_profiles("programming", "typescript")
-        
+
         assert isinstance(profiles_py, list)
         assert isinstance(profiles_ts, list)
-        
+
         # Se houver algum perfil universal, deve aparecer em ambas
         # (mas não podemos garantir sem criar arquivos reais)
 

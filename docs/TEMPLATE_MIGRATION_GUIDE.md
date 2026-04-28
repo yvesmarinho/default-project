@@ -2,7 +2,7 @@
 
 **Version**: 1.0
 **Last Updated**: 2026-04-28
-**Status**: Production Ready  
+**Status**: Production Ready
 **Audience**: Developers, Platform Engineers, DevOps
 
 ---
@@ -188,25 +188,25 @@ def migrate_template_bases(project_dir: Path):
     """Add template_bases to .scaffold-state.yaml."""
     state_file = project_dir / ".scaffold-state.yaml"
     templates_dir = project_dir / ".specify" / "templates"
-    
+
     # Load current state
     with open(state_file) as f:
         state = yaml.safe_load(f)
-    
+
     # Add template_bases if not present
     if "template_bases" not in state:
         state["template_bases"] = {}
-        
+
         # Read all templates
         for template_file in templates_dir.glob("*.md"):
             template_name = template_file.name
             content = template_file.read_text()
             state["template_bases"][template_name] = content
-        
+
         # Write back
         with open(state_file, "w") as f:
             yaml.dump(state, f, default_flow_style=False, sort_keys=False)
-        
+
         print(f"✅ Added {len(state['template_bases'])} template bases")
     else:
         print("⚠️ template_bases already exists")
@@ -353,7 +353,7 @@ if "template_bases" not in state:
 # For each template, choose base strategy
 for template_file in templates_dir.glob("*.md"):
     name = template_file.name
-    
+
     # OPTION 1: Use upstream as base (recommended for clean merges)
     upstream_file = upstream_dir / name
     if upstream_file.exists():
@@ -363,7 +363,7 @@ for template_file in templates_dir.glob("*.md"):
         # OPTION 2: Use current as base (preserves all customizations)
         base_content = template_file.read_text()
         print(f"⚠️ {name}: using current as base (no upstream found)")
-    
+
     state["template_bases"][name] = base_content
 
 # Save
@@ -537,16 +537,16 @@ from pathlib import Path
 
 def rollback_template(project_dir: Path, template_name: str):
     state_file = project_dir / ".scaffold-state.yaml"
-    
+
     with open(state_file) as f:
         state = yaml.safe_load(f)
-    
+
     if "template_bases" in state and template_name in state["template_bases"]:
         del state["template_bases"][template_name]
-        
+
         with open(state_file, "w") as f:
             yaml.dump(state, f, default_flow_style=False, sort_keys=False)
-        
+
         print(f"✅ Removed {template_name} from template_bases")
     else:
         print(f"❌ {template_name} not found in template_bases")
@@ -688,19 +688,19 @@ After successful migration:
 
 ## FAQ
 
-**Q: Can I migrate gradually (one template at a time)?**  
+**Q: Can I migrate gradually (one template at a time)?**
 A: Yes! Add templates to `template_bases` incrementally. Start with least-customized templates.
 
-**Q: What if upstream template has breaking changes?**  
+**Q: What if upstream template has breaking changes?**
 A: Breaking changes require explicit `--force` flag. System prevents accidental auto-merge.
 
-**Q: Can I use different base versions per template?**  
+**Q: Can I use different base versions per template?**
 A: Yes. Each template's base is independent. Mix old and new versions as needed.
 
-**Q: How do I migrate from IMP-65 back to manual management?**  
+**Q: How do I migrate from IMP-65 back to manual management?**
 A: Remove `template_bases` section from `.scaffold-state.yaml`. Templates return to manual-only updates.
 
-**Q: Does migration affect existing profiles?**  
+**Q: Does migration affect existing profiles?**
 A: No. Migration only affects template sync. Profiles remain unchanged.
 
 ---
