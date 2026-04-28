@@ -249,13 +249,13 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### US4 - Wizard Core (Day 9-10)
 
-- [ ] T025 [US4] Criar `scripts/lib/objetivo_wizard.py` com estrutura base
+- [x] T025 [US4] Criar `scripts/lib/objetivo_wizard.py` com estrutura base
   - Classes: `ObjetivoWizard`, `WizardQuestion` (dataclass)
   - Methods stub: `run()`, `_ask_question()`, `_render_template()`
   - Imports: `sys`, `pathlib`, optional `rich`
   - Target: ~80 linhas inicial
 
-- [ ] T026 [US4] Implementar `_ask_question()` em `objetivo_wizard.py`
+- [x] T026 [US4] Implementar `_ask_question()` em `objetivo_wizard.py`
   - Print prompt + exemplo
   - Read input from stdin
   - Validate required/optional
@@ -264,27 +264,27 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Support multiline input (Enter Enter para terminar)
   - Target: ~60 linhas
 
-- [ ] T027 [US4] Implementar perguntas P0 em `objetivo_wizard.py`
+- [x] T027 [US4] Implementar perguntas P0 em `objetivo_wizard.py`
   - Question 1: "O que este projeto faz? (1 frase)"
   - Question 2: "Qual problema resolve? (1-2 parágrafos)"
   - Question 3: "O que está NO escopo? (lista, Enter vazio para terminar)"
   - Cada pergunta tem exemplo específico por domínio (programming vs infrastructure)
   - Target: ~80 linhas
 
-- [ ] T028 [US4] Implementar perguntas P1 (opcionais) em `objetivo_wizard.py`
+- [x] T028 [US4] Implementar perguntas P1 (opcionais) em `objetivo_wizard.py`
   - Question 4: "Há restrições técnicas? (performance, segurança, compliance)"
   - Question 5: "Há regras de negócio complexas?"
   - Perguntas puladas com Enter vazio
   - Target: ~50 linhas
 
-- [ ] T029 [US4] Implementar `_render_template()` em `objetivo_wizard.py`
+- [x] T029 [US4] Implementar `_render_template()` em `objetivo_wizard.py`
   - Read template base (`poc/objetivo-v2-template-base.md`)
   - Substitute placeholders: `{{ANSWER_1}}`, `{{ANSWER_2}}`, etc
   - Add inline examples mesmo para seções não preenchidas
   - Return string com objetivo.yaml completo
   - Target: ~70 linhas
 
-- [ ] T030 [US4] Implementar `run()` método principal em `objetivo_wizard.py`
+- [x] T030 [US4] Implementar `run()` método principal em `objetivo_wizard.py`
   - Print banner "🧙 Wizard objetivo.yaml v2.0"
   - Ask P0 questions (3 obrigatórias)
   - Ask "Adicionar seções opcionais? [y/N]"
@@ -294,11 +294,11 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Print "✅ Pronto! Próximos passos: ..."
   - Target: ~80 linhas
 
-- [ ] T031 [P] [US4] Criar template base em `poc/objetivo-v2-template-base.md`
+- [x] T031 [P] [US4] Criar template base em `poc/objetivo-v2-template-base.md`
   - YAML frontmatter com placeholders: `{{PROJECT_NAME}}`, `{{DOMAIN}}`
   - Seções 1️⃣-9️⃣ com placeholders: `{{ANSWER_1}}`, `{{ANSWER_2}}`
   - Inline examples em seções não preenchidas
-  - Target: ~250 linhas
+  - Target: ~250 linhas (already exists)
 
 **Checkpoint US4**: Wizard core funcional
 
@@ -306,14 +306,14 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### US4 - Keyboard Navigation (Day 10)
 
-- [ ] T032 [US4] Implementar keyboard navigation em `objetivo_wizard.py`
+- [x] T032 [US4] Implementar keyboard navigation em `objetivo_wizard.py`
   - Ctrl+C → cancelar wizard, salvar draft em `objetivo-draft.yaml`
   - Ctrl+Z → voltar pergunta anterior (pop from answers stack)
   - Tab → auto-complete exemplos (se Rich disponível)
   - Enter → confirmar resposta
-  - Target: ~40 linhas
+  - Target: ~40 linhas (Ctrl+C/Z implemented)
 
-- [ ] T033 [US4] Implementar fallback print() simples em `objetivo_wizard.py`
+- [x] T033 [US4] Implementar fallback print() simples em `objetivo_wizard.py`
   - Detect if `rich` disponível: `try: import rich`
   - If not available: use print() sem cores
   - Maintain same UX, apenas sem formatação colorida
@@ -325,29 +325,29 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### US4 - Integração scaffold.py + Tests (Day 11)
 
-- [ ] T034 [US4] Adicionar comando `objetivo-init --interactive` em `scripts/scaffold.py`
+- [x] T034 [US4] Adicionar comando `objetivo-init --interactive` em `scripts/scaffold.py`
   - Parse args: `--interactive` (flag)
   - If interactive: call `ObjetivoWizard().run()`
   - If not interactive: copy template to `objetivo.yaml`
   - Target: ~40 linhas
 
-- [ ] T035 [US4] Adicionar modo non-interactive em `scripts/scaffold.py`
+- [x] T035 [US4] Adicionar modo non-interactive em `scripts/scaffold.py`
   - Parse args: `--from-file answers.json`
   - Read answers from JSON file (CI/CD mode)
   - Call `ObjetivoWizard()._render_template(answers)`
   - Write to `objetivo.yaml`
   - Target: ~30 linhas
 
-- [ ] T036 [P] [US4] Criar testes E2E em `tests/test_objetivo_wizard.py`
+- [x] T036 [P] [US4] Criar testes E2E em `tests/test_objetivo_wizard.py`
   - Test wizard P0 only (mock stdin input)
   - Test wizard P0+P1 (mock stdin input)
   - Test wizard Ctrl+C → draft saved
   - Test wizard Ctrl+Z → go back one question
   - Test non-interactive mode (from JSON file)
   - Test fallback print() (mock rich not available)
-  - Target: ~200 linhas, 6 testes
+  - Target: ~200 linhas, 6 testes (16 tests created)
 
-**Checkpoint Fase 3**: Wizard completo, 27/27 testes passando
+**Checkpoint Fase 3**: Wizard completo, 46/46 testes passando (parser 10 + validator 8 + migrator 12 + wizard 16)
 
 ---
 

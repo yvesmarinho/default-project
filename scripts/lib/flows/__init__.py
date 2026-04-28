@@ -12,6 +12,7 @@ from .merge_template import flow_merge_template
 from .new_profile import flow_new_profile
 from .new_project import flow_new_project
 from .objetivo_generate import flow_objetivo_generate
+from .objetivo_init import flow_objetivo_init
 from .objetivo_migrate import flow_objetivo_migrate
 from .objetivo_validate import flow_objetivo_validate
 from .publish import flow_publish
@@ -38,5 +39,6 @@ __all__ = [
     "flow_objetivo_validate",
     "flow_objetivo_generate",
     "flow_objetivo_migrate",
+    "flow_objetivo_init",
     "_load_descriptor",
 ]

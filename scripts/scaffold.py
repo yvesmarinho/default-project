@@ -62,6 +62,7 @@ _SUBCOMMAND_MAP: dict[str, list[str]] = {
     "new-profile":   ["--new-profile"],  # next positional arg becomes the value
     "infra":         ["--infra"],
     "release":       ["--release"],      # next positional arg becomes the value
+    "objetivo-init":     ["--objetivo-init"],
     "objetivo-validate": ["--objetivo-validate"],
     "objetivo-generate": ["--objetivo-generate"],
     "objetivo-migrate":  ["--objetivo-migrate"],
@@ -118,6 +119,7 @@ from lib.flows import (
     flow_new_profile,
     flow_new_project,
     flow_objetivo_generate,
+    flow_objetivo_init,
     flow_objetivo_migrate,
     flow_objetivo_validate,
     flow_publish,
@@ -282,6 +284,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="camada do novo perfil (usar com --new-profile): 1|2|3|4|layer2|layer3|layer4|transversal|core",
     )
     action_group.add_argument(
+        "--objetivo-init",
+        action="store_true",
+        dest="objetivo_init",
+        help="inicializa arquivo objetivo.yaml via wizard interativo ou template (ex: scaffold.py objetivo-init)",
+    )
+    action_group.add_argument(
         "--objetivo-validate",
         action="store_true",
         dest="objetivo_validate",
@@ -329,6 +337,18 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         default="objetivo.yaml",
         help="arquivo de entrada para objetivo-generate (default: objetivo.yaml)",
+    )
+    fields_group.add_argument(
+        "--from-file",
+        metavar="FILE",
+        dest="from_file",
+        help="arquivo JSON com respostas para objetivo-init (modo não-interativo)",
+    )
+    fields_group.add_argument(
+        "--template-only",
+        action="store_true",
+        dest="template_only",
+        help="copiar apenas o template sem wizard (objetivo-init)",
     )
     fields_group.add_argument(
         "--strict",
@@ -494,6 +514,10 @@ def main() -> int:
         if not getattr(args, "json_output", False):
             show_banner()
         return flow_generate_infra(args)
+
+    # --objetivo-init: initialize objetivo.yaml via wizard or template
+    if getattr(args, "objetivo_init", False):
+        return flow_objetivo_init(args)
 
     # --objetivo-validate: valida objetivo.yaml v2.0 e sai
     if getattr(args, "objetivo_validate", False):
