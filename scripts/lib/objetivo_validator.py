@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from typing import List, Tuple, Optional, Dict, Any
 import re
 
-from scripts.lib.objetivo_parser import ParsedObjetivo
+from .objetivo_parser import ParsedObjetivo
 
 
 @dataclass

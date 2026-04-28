@@ -110,10 +110,10 @@ class ObjetivoWizard:
         """Initialize the wizard.
 
         Args:
-            template_path: Path to template base (default: poc/objetivo-v2-template-base.md)
+            template_path: Path to template base (default: template-bases/objetivo-init-template.yaml)
         """
         self.template_path = template_path or (
-            Path(__file__).parent.parent.parent / "poc" / "objetivo-v2-template-base.md"
+            Path(__file__).parent.parent.parent / "template-bases" / "objetivo-init-template.yaml"
         )
         self.answers = WizardAnswers()
         self.answer_stack: list[tuple[WizardQuestion, str]] = []  # For Ctrl+Z (undo)
@@ -145,11 +145,11 @@ class ObjetivoWizard:
             id="q2_problem",
             section=2,
             priority="P0",
-            prompt="Qual problema resolve? (1-2 parágrafos sobre o problema atual)",
-            example="Equipes de DevOps gastam 2-3 horas configurando deploys manualmente, com alta taxa de erros (15%) devido a configurações inconsistentes. Sem automação, tempo de deploy aumenta em 50%, custos operacionais sobem R$ 30k/mês.",
+            prompt="Qual limitação/problema atual está sendo melhorado? (1-2 parágrafos)",
+            example="Sistema atual: deploys manuais levam 2-3h com 15% de erro. Performance degrada em 50%, custos operacionais +R$ 30k/mês. Falta automação e padronização.",
             placeholder="{{ANSWER_2}}",
             multiline=True,
-            required=True,
+            required=False,  # Condicional: apenas para projetos "update"
         ))
 
         questions.append(WizardQuestion(
@@ -184,6 +184,62 @@ class ObjetivoWizard:
             placeholder="{{ANSWER_5}}",
             multiline=True,
             required=False,
+        ))
+
+        # Campos adicionais para objetivo-init.yaml
+        questions.append(WizardQuestion(
+            id="q6_response",
+            section=6,
+            priority="P0",
+            prompt="Tipo de solução técnica (linguagem, framework, padrões)",
+            example="código python, com conexão PostgreSQL, usando SQLAlchemy e Alembic",
+            placeholder="{{RESPONSE}}",
+            multiline=False,
+            required=True,
+        ))
+
+        questions.append(WizardQuestion(
+            id="q7_docstyle",
+            section=7,
+            priority="P1",
+            prompt="Padrão de documentação (Enter vazio para pular)",
+            example="reStructuredText com Docstring e DocTest",
+            placeholder="{{DOCSTYLE}}",
+            multiline=False,
+            required=False,
+        ))
+
+        questions.append(WizardQuestion(
+            id="q8_infrastructure",
+            section=8,
+            priority="P1",
+            prompt="Infraestrutura necessária (servidores, DBs, containers)",
+            example="Servidor PostgreSQL em wfdb02.vya.digital\nAplicação em container Docker",
+            placeholder="{{INFRASTRUCTURE_1}}",
+            multiline=True,
+            required=False,
+        ))
+
+        questions.append(WizardQuestion(
+            id="q9_profiles",
+            section=9,
+            priority="P1",
+            prompt="Perfis/roles necessários (dba, devops, etc)",
+            example="dba_architect (expert)\npython_developer (senior)\ndevops_engineer (intermediate)",
+            placeholder="{{PROFILE_ROLE_1}}",
+            multiline=True,
+            required=False,
+        ))
+
+        questions.append(WizardQuestion(
+            id="q10_expected_outcome",
+            section=10,
+            priority="P0",
+            prompt="Resultados esperados mensuráveis",
+            example="100% dos dados migrados com zero erros de FK\nTempo de migração <2h\nZero exposição de dados sensíveis",
+            placeholder="{{EXPECTED_OUTCOME_1}}",
+            multiline=True,
+            required=True,
         ))
 
         return questions
@@ -272,7 +328,7 @@ class ObjetivoWizard:
             answers: WizardAnswers with collected data
 
         Returns:
-            Rendered objetivo.yaml content as string
+            Rendered objetivo-init.yaml content as string (YAML puro)
 
         Implementation in T029.
         """
@@ -282,46 +338,53 @@ class ObjetivoWizard:
 
         template = self.template_path.read_text(encoding='utf-8')
 
-        # Substitute frontmatter placeholders
-        template = template.replace('name: ""', f'name: "{answers.project_name}"')
-        template = template.replace('title: ""', f'title: "{answers.project_title}"')
-        template = template.replace('type: ""', f'type: "{answers.project_type}"')
-        template = template.replace('domain: ""', f'domain: "{answers.project_domain}"')
-        template = template.replace('language: ""', f'language: "{answers.project_language}"')
-        template = template.replace('created_at: ""', f'created_at: "{datetime.now().strftime("%Y-%m-%d")}"')
-        template = template.replace('created_by: ""', f'created_by: "{answers.created_by}"')
+        # Substitute metadados placeholders
+        template = template.replace('"{{PROJECT_NAME}}"', f'"{answers.project_name}"')
+        template = template.replace('{{PROJECT_NAME}}', answers.project_name)
 
-        # Substitute section placeholders
+        # Substitute section placeholders from answers dict
         for placeholder, value in answers.answers.items():
             if value:
-                template = template.replace(placeholder, value)
+                # Preserva aspas YAML para strings multiline
+                if '\n' in value:
+                    # For multiline YAML strings
+                    template = template.replace(f'"{placeholder}"', f'"{value}"')
+                    template = template.replace(placeholder, value)
+                else:
+                    template = template.replace(f'"{placeholder}"', f'"{value}"')
+                    template = template.replace(placeholder, value)
 
         return template
 
-    def run(self, output_path: Path = Path("objetivo.yaml")) -> int:
+    def run(self, output_path: Optional[Path] = None) -> int:
         """Run the wizard in interactive mode.
 
         Args:
-            output_path: Where to write the generated objetivo.yaml
+            output_path: Where to write the generated objetivo-init.yaml
+                        If None, uses CWD/objetivo-init.yaml
 
         Returns:
             Exit code: 0 if success, 1 if cancelled/error
 
         Implementation in T030.
         """
+        # Use CWD if no path provided (fix for ~./local/bin/scaffold issue)
+        if output_path is None:
+            output_path = Path.cwd() / "objetivo-init.yaml"
+
         try:
             # Print banner
             self._print("\n")
             if HAS_RICH and console:
                 console.print(Panel(
-                    "[bold cyan]🧙 Wizard objetivo.yaml v2.0[/bold cyan]\n\n"
-                    "Crie seu arquivo objetivo.yaml respondendo algumas perguntas.\n"
+                    "[bold cyan]🧙 Wizard objetivo-init.yaml v1.0[/bold cyan]\n\n"
+                    "Crie seu arquivo objetivo-init.yaml respondendo perguntas.\n"
                     "[dim]Ctrl+C: salvar draft | Ctrl+Z: voltar[/dim]",
                     border_style="cyan",
                     padding=(1, 2),
                 ))
             else:
-                self._print("\n🧙 Wizard objetivo.yaml v2.0\n")
+                self._print("\n🧙 Wizard objetivo-init.yaml v1.0\n")
                 self._print("Crie seu arquivo objetivo.yaml respondendo algumas perguntas.")
                 self._print("(Ctrl+C: salvar draft | Ctrl+Z: voltar)\n")
 
@@ -343,11 +406,23 @@ class ObjetivoWizard:
             self.answers.project_language = self._ask_simple("Linguagem principal", "python", required=True)
             self.answers.created_by = self._ask_simple("Criado por (seu nome ou username)", "devops-team", required=True)
 
+            # Ask project context (new vs update)
+            project_context = self._ask_choice(
+                "Este é um projeto novo ou atualização/melhoria?",
+                ["novo", "update"],
+                default="novo"
+            )
+
             # Ask P0 questions (required)
             self._print("\n[bold]Seções P0 (Essenciais - Obrigatório)[/bold]\n")
 
             p0_questions = [q for q in self.questions if q.priority == "P0"]
             for question in p0_questions:
+                # Skip "problem" question for new projects
+                if question.id == "q2_problem" and project_context == "novo":
+                    # Add default text for new projects
+                    self.answers.answers[question.placeholder] = "Projeto greenfield — não há sistema anterior a ser substituído."
+                    continue
                 try:
                     answer = self._ask_question(question)
                     if answer:
@@ -389,9 +464,9 @@ class ObjetivoWizard:
             self._print("\n[bold green]✅ Pronto![/bold green]\n")
             self._print(f"Arquivo criado: [cyan]{output_path}[/cyan]\n")
             self._print("[bold]Próximos passos:[/bold]")
-            self._print("  1. Revise e complete o arquivo objetivo.yaml")
-            self._print("  2. Valide: [cyan]scaffold.py objetivo-validate[/cyan]")
-            self._print("  3. Gere spec: [cyan]scaffold.py objetivo-generate[/cyan]\n")
+            self._print("  1. Revise e complete o arquivo objetivo-init.yaml")
+            self._print("  2. Valide: [cyan]scaffold objetivo-validate --file objetivo-init.yaml[/cyan]")
+            self._print("  3. Gere spec: [cyan]scaffold objetivo-generate --input objetivo-init.yaml[/cyan]\n")
 
             return 0
 
@@ -407,22 +482,27 @@ class ObjetivoWizard:
     def run_non_interactive(
         self,
         answers: WizardAnswers,
-        output_path: Path = Path("objetivo.yaml")
+        output_path: Optional[Path] = None
     ) -> int:
         """Run the wizard in non-interactive mode (from JSON file).
 
         Args:
             answers: Pre-filled WizardAnswers
-            output_path: Where to write the generated objetivo.yaml
+            output_path: Where to write the generated objetivo-init.yaml
+                        If None, uses CWD/objetivo-init.yaml
 
         Returns:
             Exit code: 0 if success, 1 if error
 
         Implementation in T035.
         """
+        # Use CWD if no path provided
+        if output_path is None:
+            output_path = Path.cwd() / "objetivo-init.yaml"
+
         try:
             self._print("\n🤖 Modo não-interativo\n")
-            self._print(f"Gerando objetivo.yaml de: {answers.project_name}\n")
+            self._print(f"Gerando objetivo-init.yaml de: {answers.project_name}\n")
 
             # Use provided answers
             self.answers = answers

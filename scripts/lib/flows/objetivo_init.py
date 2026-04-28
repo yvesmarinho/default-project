@@ -1,4 +1,4 @@
-"""flow_objetivo_init — inicializa arquivo objetivo.yaml via wizard ou template."""
+"""flow_objetivo_init — inicializa arquivo objetivo-init.yaml via wizard ou template."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from ..ui import console
 
 
 def flow_objetivo_init(args: argparse.Namespace) -> int:
-    """Inicializa arquivo objetivo.yaml.
+    """Inicializa arquivo objetivo-init.yaml.
 
     Modos:
     - Interactive (default): Run wizard interativo
@@ -23,12 +23,14 @@ def flow_objetivo_init(args: argparse.Namespace) -> int:
             - interactive: Interactive wizard mode (default True)
             - from_file: Path to JSON with answers (non-interactive mode)
             - template_only: Just copy template without wizard
-            - output: Output path (default: objetivo.yaml)
+            - output: Output path (default: objetivo-init.yaml)
 
     Returns:
         Exit code: 0 se sucesso, 1 se erro
     """
-    output_path = Path(getattr(args, "output", None) or "objetivo.yaml")
+    # Use CWD-relative path (fix for ~/.local/bin/scaffold wrapper issue)
+    output_filename = getattr(args, "output", None) or "objetivo-init.yaml"
+    output_path = Path.cwd() / output_filename
 
     # Check if file already exists
     if output_path.exists():
