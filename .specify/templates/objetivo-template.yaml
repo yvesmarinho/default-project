@@ -1,4 +1,3 @@
----
 # objetivo.yaml — Business Objective & Product Context
 # Template Version: 1.0.0
 # Created for: SpecKit Layer 1 (Business) workflow
@@ -14,7 +13,6 @@
 #   4. Agent speckit.specify uses objetivo.yaml + context → generates spec.md (Layer 2)
 #   5. Agent speckit.plan uses spec.md + decisoes_iniciais → generates plan.md + ADRs (Layer 3)
 #   6. Agent speckit.tasks uses plan.md → generates tasks.md (Layer 4)
----
 
 feature:
   id: "[FEATURE_ID]"

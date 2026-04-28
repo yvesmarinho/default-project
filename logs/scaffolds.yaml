@@ -1,0 +1,17 @@
+# Scaffold History Log
+# This file tracks all scaffold operations (project creations)
+# Auto-maintained by scripts/scaffold_logger.py
+
+scaffolds:
+  # Example entry (for demonstration):
+  - id: 1
+    timestamp: "2026-04-28T10:00:00Z"
+    project_name: "a-default-project"
+    template_version: "2.2.0"
+    profile: "base"
+    created_by: "yves_marinho"
+    path: "/home/yves_marinho/Documentos/DevOps/Vya-Jobs/a-default-project"
+    success: true
+    error_message: null
+    metadata: {}
+

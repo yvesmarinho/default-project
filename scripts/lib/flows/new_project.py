@@ -114,6 +114,26 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 9. Persiste estado do projeto para uso futuro pelo modo upgrade
     write_scaffold_state(cfg, profiles_applied=[])
 
+    # 10. Log scaffold operation (IMP-65-LITE)
+    try:
+        from pathlib import Path
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+        from scaffold_logger import ScaffoldLogger, get_current_user, get_template_version
+        
+        logger = ScaffoldLogger()
+        logger.log_scaffold(
+            project_name=cfg.project_name,
+            template_version=get_template_version(),
+            profile=cfg.language or "base",
+            created_by=get_current_user(),
+            path=str(cfg.project_path),
+            success=True
+        )
+    except Exception as e:
+        # Don't fail scaffold if logging fails
+        console.print(f"  [dim yellow]⚠️  Aviso: Falha ao registrar log: {e}[/dim yellow]")
+
     console.print(f"  [bold green]✅ Projeto '{cfg.project_name}' criado com sucesso![/bold green]\n")
     console.print(f"  [dim]Diretório: {cfg.project_path}[/dim]\n")
 
