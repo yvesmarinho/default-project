@@ -7,6 +7,7 @@ import argparse
 from .. import git, links, project, templates, vscode
 from ..project import write_scaffold_state
 from ..ui import collect_project_info, confirm_summary, console, print_final_summary
+from ..config import DOMAIN_DEFAULT_PROFILES, SPECKIT_TRANSVERSAL_PROFILES
 
 
 def flow_new_project(args: argparse.Namespace) -> int:
@@ -93,15 +94,21 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🔒 Gerando arquivos de segurança GitHub...[/blue]")
     results.extend(project.generate_github_security_files(cfg))
 
+    # 9b. Persiste estado do projeto ANTES do commit (BUG-#3 fix)
+    # Calcula profiles aplicados (BUG-#2 fix)
+    domain_profile = DOMAIN_DEFAULT_PROFILES.get(cfg.domain, f"devops-{cfg.domain}")
+    extras = cfg.extra_profiles or []
+    all_profiles = [domain_profile] + extras + SPECKIT_TRANSVERSAL_PROFILES
+    write_scaffold_state(cfg, profiles_applied=all_profiles)
+
     # 10. Commit inicial (IMP-62) - após TODOS os arquivos estarem prontos
+    # IMPORTANTE: .scaffold-state.yaml já foi criado acima, será incluído no commit
     console.print("  [blue]💾 Criando commit inicial...[/blue]")
     results.append(git.create_initial_commit(cfg))
 
     # 11. Tag scaffold-v* (IMP-62)
     console.print("  [blue]🏷️  Criando tag de versão scaffold...[/blue]")
     results.append(git.tag_scaffold(cfg, version="1.0.0"))
-    console.print("  [blue]🔒 Gerando arquivos de segurança GitHub...[/blue]")
-    results.extend(project.generate_github_security_files(cfg))
 
     # Resumo final
     print_final_summary(results)
@@ -110,9 +117,6 @@ def flow_new_project(args: argparse.Namespace) -> int:
     if errors:
         console.print(f"  [bold red]❌ {len(errors)} erro(s) durante a criação.[/bold red]\n")
         return 1
-
-    # 9. Persiste estado do projeto para uso futuro pelo modo upgrade
-    write_scaffold_state(cfg, profiles_applied=[])
 
     # 10. Log scaffold operation (IMP-65-LITE)
     try:
