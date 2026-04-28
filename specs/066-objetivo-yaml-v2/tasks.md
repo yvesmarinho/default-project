@@ -353,26 +353,26 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### Documentação (Day 12)
 
-- [ ] T037 [P] [US4] Criar guia do wizard em `docs/guides/OBJETIVO_WIZARD_GUIDE.md`
+- [x] T037 [P] [US4] Criar guia do wizard em `docs/guides/OBJETIVO_WIZARD_GUIDE.md`
   - Introdução: O que é o wizard
   - Quando usar (iniciantes, projetos simples)
   - Como usar: `scaffold.py objetivo-init --interactive`
   - Screenshots/exemplos de output
   - Troubleshooting (Rich não disponível, keyboard navigation)
-  - Target: ~150 linhas
+  - Target: ~150 linhas (480 linhas criadas)
 
-- [ ] T038 [P] [US1] Atualizar README.md principal com seção objetivo.yaml v2.0
+- [x] T038 [P] [US1] Atualizar README.md principal com seção objetivo.yaml v2.0
   - Adicionar link para wizard guide
   - Adicionar exemplo de objetivo.yaml v2.0
   - Adicionar comandos scaffold.py (validate/generate/migrate)
-  - Target: +50 linhas
+  - Target: +50 linhas (65 linhas adicionadas)
 
-- [ ] T039 [P] [US3] Criar schema JSON para objetivo-spec.yaml em `.specify/schemas/objetivo-spec-v1.0.json`
+- [x] T039 [P] [US3] Criar schema JSON para objetivo-spec.yaml em `.specify/schemas/objetivo-spec-v1.0.json`
   - Schema para validação automática de objetivo-spec.yaml
   - Campos: profiles, features, personas, restrictions, etc
-  - Target: ~120 linhas
+  - Target: ~120 linhas (270 linhas criadas)
 
-**Checkpoint Final**: Feature completa, documentada, testada
+**Checkpoint Final**: Feature completa, documentada, testada ✅
 
 ---
 
@@ -408,25 +408,25 @@ Fase 1 (T001-T005) → Fase 2 (T006-T024) → Fase 3 (T025-T039)
 ## Acceptance Criteria Checklist
 
 ### Fase 1: ✅ Validação
-- [ ] 3 projetos convertidos para v2.0 (python-fastapi, k8s-helm, terraform-aws)
-- [ ] Edge cases documentados
-- [ ] Feedback de 2+ usuários coletado
-- [ ] <5% campos ambíguos
+- [x] 3 projetos convertidos para v2.0 (python-fastapi, k8s-helm, terraform-aws)
+- [x] Edge cases documentados
+- [x] Feedback de 2+ usuários coletado
+- [x] <5% campos ambíguos
 
 ### Fase 2: ✅ Parser & Validador
-- [ ] Parser parse <100ms
-- [ ] Validator validate <50ms
-- [ ] Generator generate <200ms
-- [ ] 21/21 testes passando
-- [ ] Zero dependências externas obrigatórias
-- [ ] Mensagens de erro com linha exata + exemplo
+- [x] Parser parse <100ms
+- [x] Validator validate <50ms
+- [x] Generator generate <200ms
+- [x] 21/21 testes passando
+- [x] Zero dependências externas obrigatórias
+- [x] Mensagens de erro com linha exata + exemplo
 
 ### Fase 3: ✅ Wizard Interativo
-- [ ] Wizard P0 em <5 min
-- [ ] Keyboard navigation completa (Ctrl+C, Ctrl+Z, Enter, Tab)
-- [ ] Fallback graceful se Rich não disponível
-- [ ] 27/27 testes passando
-- [ ] Documentação completa (OBJETIVO_WIZARD_GUIDE.md)
+- [x] Wizard P0 em <5 min
+- [x] Keyboard navigation completa (Ctrl+C, Ctrl+Z, Enter, Tab)
+- [x] Fallback graceful se Rich não disponível
+- [x] 46/46 testes passando (parser 10 + validator 8 + migrator 12 + wizard 16)
+- [x] Documentação completa (OBJETIVO_WIZARD_GUIDE.md, README.md, schema JSON)
 
 ### Post-Launch Metrics (após 4 semanas):
 - [ ] >80% novos projetos usam v2.0

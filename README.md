@@ -77,6 +77,93 @@ python scripts/scaffold.py new --ci --name my-api --domain programming --languag
 
 ---
 
+## 🧙 Objetivo.yaml v2.0 — Human-Readable Project Definition
+
+Define your project goals and scope in a **human-readable format** using the new `objetivo.yaml` v2.0 specification.
+
+### What is objetivo.yaml v2.0?
+
+A **Markdown Híbrido** format (YAML frontmatter + numbered emoji sections) that combines:
+- ✅ Machine-readable metadata (project name, type, domain, language)
+- ✅ Human-readable descriptions (what, why, scope)
+- ✅ Progressive disclosure (P0 required → P1 recommended → P2 optional)
+
+### Quick Example
+
+```yaml
+---
+version: "2.0"
+project:
+  name: "user-auth-api"
+  title: "User Authentication API"
+  type: "backend-api"
+  domain: "programming"
+  language: "python"
+---
+
+## 1️⃣ O que este projeto faz?
+
+RESTful API for user authentication with JWT tokens and OAuth2 integration.
+
+## 2️⃣ Qual problema resolve?
+
+Current basic auth is insecure, 20% of accounts compromised monthly.
+
+## 3️⃣ Escopo do Projeto
+
+### ✅ Incluído
+- JWT authentication (P0)
+- OAuth2 Google/GitHub (P1)
+- 2FA via SMS (P2)
+
+### ❌ Excluído
+- Social login (Facebook, Twitter)
+- Biometric authentication
+```
+
+### Create objetivo.yaml with Interactive Wizard
+
+```bash
+# Interactive wizard (5-10 min)
+scaffold.py objetivo-init
+
+# Non-interactive (CI/CD)
+scaffold.py objetivo-init --from-file answers.json
+
+# Just copy template
+scaffold.py objetivo-init --template-only
+```
+
+### Validate and Generate Technical Spec
+
+```bash
+# Validate objetivo.yaml
+scaffold.py objetivo-validate
+
+# Generate technical YAML spec
+scaffold.py objetivo-generate
+# Output: objetivo-spec.yaml (profiles, features, personas auto-detected)
+
+# Use spec to create project
+scaffold.py new --config objetivo-spec.yaml
+```
+
+### Migrate from v1.0 to v2.0
+
+```bash
+# Migrate old formato (pure YAML) → new format (Markdown Híbrido)
+scaffold.py objetivo-migrate --file objetivo.yaml
+
+# Preview before overwrite
+scaffold.py objetivo-migrate --file objetivo.yaml --no-auto
+```
+
+📖 **Complete guide**: [docs/guides/OBJETIVO_WIZARD_GUIDE.md](docs/guides/OBJETIVO_WIZARD_GUIDE.md)  
+📋 **Specification**: [specs/066-objetivo-yaml-v2/spec.md](specs/066-objetivo-yaml-v2/spec.md)  
+🔀 **v1.0 vs v2.0 comparison**: [docs/debates/COMPARACAO-OBJETIVO-V1-V2.md](docs/debates/COMPARACAO-OBJETIVO-V1-V2.md)
+
+---
+
 ## ✨ Features
 
 ### 🏗️ Architecture & Design Patterns
