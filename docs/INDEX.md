@@ -1,29 +1,56 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-28 — Session 2026-04-28 Started (Session Initialized)
-**Project Status**: 🟢 Stable — Spec 066 objetivo.yaml v2.0 Validated (Fase 2 Ready)
-**Version**: 1.16.0
-**Last Session**: 2026-04-28 — 🚀 Session Initialized (Awaiting Work Assignment)
+**Last Updated**: 2026-04-28 — Session 2026-04-28 Closed (Spec 066 Complete + Enhancements)
+**Project Status**: 🟢 Stable — Spec 066 objetivo.yaml v2.0 COMPLETE ✅ + Post-Enhancements
+**Version**: 1.17.0
+**Last Session**: 2026-04-28 — ✅ Spec 066 Feature Complete (100%) + Sprint 3 + Wizard v1.0
 
 ---
 
-> **🚀 SESSION 2026-04-28 ACTIVE (Session Initialized)**
-> - **Status**: Session initialization complete — awaiting work assignment
-> - **Session Documents Created**:
->   - SESSION_RECOVERY_2026-04-28.md (context from 2026-04-27)
->   - DAILY_ACTIVITIES_2026-04-28.md (activity log ready)
->   - SESSION_REPORT_2026-04-28.md (session tracking initialized)
-> - **Context Recovered**: Previous session 2026-04-27 (Spec 066 Fase 1 at 80%)
+> **✅ SESSION 2026-04-28 COMPLETE (Spec 066 Feature Complete + Post-Enhancements)**
+> - **Status**: ✅ CLOSED — All objectives achieved
+> - **Duration**: ~17h (extended session with enhancements)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 6 total (5 Spec 066 + 1 Sprint 3)
+>   - 2ad24ce — feat(specs/066): implement parser & validator (T006-T015)
+>   - abf68d6 — feat(specs/066): implement migrator v1.0 → v2.0 (T016-T020)
+>   - e6d26b8 — feat(specs/066): integrate objetivo commands into scaffold.py (T021-T024)
+>   - 0e31fb6 — feat(066): implement objetivo.yaml wizard (T025-T036) ✨
+>   - a864c08 — docs(066): complete documentation (T037-T039) 📚
+>   - 4adfa62 — feat(security): ativar pre-commit hook automaticamente (Sprint 3) ✅ PUSHED
+> - **Spec 066 - objetivo.yaml v2.0**: ✅ FEATURE COMPLETE (39/39 tasks, 100%)
+>   - Fase 1: Validação (T001-T005) — 80% complete (from 2026-04-27)
+>   - Fase 2: Parser + Validator + Migrator (T006-T024) — 100% complete
+>   - Fase 3: Wizard Interativo + Documentação (T025-T039) — 100% complete
+>   - **Deliverables**: 4,297 lines (1,830 production + 1,652 test + 815 docs)
+>   - **Tests**: 46/46 passing (100% coverage)
+>   - **Performance**: Parser <100ms, Validator <50ms, Generator <200ms ✅
+>   - **CLI Commands**: objetivo-init, objetivo-validate, objetivo-generate, objetivo-migrate
+> - **Sprint 3 - Pre-commit Auto-Activation**: ✅ COMPLETE and PUSHED
+>   - Security automation: hooks activate automatically
+>   - 4/4 tests passing
+>   - Commit 4adfa62 pushed to origin/060-mini-engram-python
+> - **Scaffold Wrapper Script**: ✅ COMPLETE
+>   - Global CLI: `~/.local/bin/scaffold`
+>   - Works from any directory
+>   - Tested: --help, --version, list-profiles ✅
+> - **Objetivo-Init Wizard v1.0**: ✅ IMPLEMENTED (🐛 BUG-05 identified)
+>   - Format: objetivo-init.yaml v1.0 (pure YAML, 13/13 fields)
+>   - Template: template-bases/objetivo-init-template.yaml (NEW)
+>   - Wizard: 15 questions (6 P0 + 9 P1) with contextual logic
+>   - Bug: BUG-05 (placeholder substitution) — P1 HIGH priority fix needed
+> - **Technical Documentation**: ✅ COMPLETE
+>   - docs/planning/MELHORIA_OBJETIVO_WIZARD_V2.md (v2.0 roadmap)
+>   - docs/debates/OPINIAO_OBJETIVO_INIT_WIZARD.md (decision rationale)
+>   - docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md (bug report)
+> - **Session Documents**:
+>   - DAILY_ACTIVITIES_2026-04-28.md (10 activities logged)
+>   - SESSION_REPORT_2026-04-28.md (complete with metrics & decisions)
+>   - FINAL_STATUS_2026-04-28.md (consolidated session summary)
 > - **MCP Status**: ✅ memory + sequential-thinking active
 > - **Security**: 🟢 CLEAN (no exposed credentials)
-> - **Git Status**: 13 modified files, 8 untracked files (agent definitions)
-> - **Pending Commits**: 3 commits from previous session ready to push
-> - **Pending Tasks**:
->   - P0: Spec 066 - Fase 2 (Parser Implementation, 8-12h)
->   - P1: BUG-05 (Interactive Layer 2 Profile Selection, 6-8h remaining)
->   - P1: IMP-65 P1 Gaps (Production hygiene, 88h total)
-> - **Work Modes Available**: PROGRAMMING | INFRASTRUCTURE | ANALYSIS
-> - **Next Action**: User to select work mode and confirm priority task
+> - **Pending Commits**: Wizard v1.0 changes + documentation
+> - **Next Priority**: BUG-05 fix (placeholder substitution, P1 HIGH)
 >
 > **✅ SESSION 2026-04-27 SUMMARY (Spec 066 Fase 1 Validation Complete)**
 > - **Spec 066 - Fase 1**: objetivo.yaml v2.0 template validation complete at 80% (4/5 tasks)

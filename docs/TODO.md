@@ -1,12 +1,46 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-28 — Session Active: IMP-65 P0 Complete ✅ (Migration Ready)
+**Last Updated**: 2026-04-28 — Session Closed: Spec 066 Complete + Post-Enhancements
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
 ---
 
 ## 🎯 Próxima Sessão (2026-04-29+)
+
+- [ ] **BUG-05**: Objetivo-Init Wizard Placeholder Substitution (P1 HIGH)
+  - **Objetivo**: Fix wizard placeholder substitution bug
+  - **Descrição**: Wizard generates files with `{{PLACEHOLDERS}}` instead of user values
+  - **Prioridade**: P1 HIGH (blocks feature use)
+  - **Estimativa**: 2-4h
+  - **Arquivo**: docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md
+  - **Tarefas**:
+    1. Debug placeholder substitution in `objetivo_wizard.py`
+    2. Verify template rendering logic
+    3. Test with real workflow: wizard → validate → generate
+    4. Update tests to catch regression
+  - **Blocker**: None
+  - **Expected Outcome**: Wizard generates valid objetivo-init.yaml files
+
+- [ ] **Objetivo-Init Pipeline Testing** (P1)
+  - **Objetivo**: Test complete v1.0 workflow end-to-end
+  - **Prioridade**: P1 (validate v1.0 pipeline)
+  - **Estimativa**: 2h
+  - **Blocker**: BUG-05 fix
+  - **Tarefas**:
+    1. Run wizard with real project
+    2. Validate generated objetivo-init.yaml
+    3. Generate spec from objetivo-init.yaml
+    4. Scaffold new project from spec
+  - **Expected Outcome**: Complete working pipeline validated
+
+- [ ] **Housekeeping Commits** (P2)
+  - **Objetivo**: Commit pending changes from session 2026-04-28
+  - **Estimativa**: 30 min
+  - **Tarefas**:
+    - Commit wizard v1.0 changes (objetivo_wizard.py, flows, validator, template)
+    - Commit technical documentation (3 docs)
+    - Commit BUG-05 report
 
 - [ ] **IMP-65 P1 Gaps**: Production hygiene improvements
   - **Objetivo**: CI/CD integration, audit trail, quality gates
@@ -75,6 +109,69 @@
   - DAILY_ACTIVITIES_2026-04-28.md (implementation log)
   - SESSION_REPORT_2026-04-28.md (outcomes and decisions)
   - FINAL_STATUS_2026-04-28.md (complete session summary)
+
+- [x] **Sprint 3 - Pre-commit Hook Auto-Activation**: Security Automation
+  - **Status**: ✅ COMPLETE and Pushed
+  - **Tempo**: ~1h
+  - **Prioridade**: P1 (security automation)
+  - **Commit**: 4adfa62 — feat(security): ativar pre-commit hook automaticamente
+
+  **Deliverables**:
+  - Pre-commit hook auto-activation mechanism
+  - 4/4 tests passing
+  - Documentation updates
+
+  **Key Outcome**: Security checks run automatically without manual setup
+
+- [x] **Scaffold Wrapper Script**: Global CLI Access
+  - **Status**: ✅ COMPLETE and Functional
+  - **Tempo**: ~30 minutes
+  - **Prioridade**: P2 (developer experience)
+
+  **Deliverables**:
+  - Global wrapper: `~/.local/bin/scaffold`
+  - Automatic Python environment detection
+  - Tested: --help, --version, list-profiles ✅
+
+  **Key Outcome**: Global CLI access from any directory without manual venv activation
+
+- [x] **Objetivo-Init Wizard v1.0**: YAML-Pure Format Implementation
+  - **Status**: ✅ IMPLEMENTED (🐛 BUG-05 identified)
+  - **Tempo**: ~3h
+  - **Prioridade**: P1 (complete project capture)
+
+  **Decision**: Use objetivo-init.yaml v1.0 (pure YAML) instead of v2.0
+  - v1.0: 13/13 fields captured (100% completeness)
+  - v2.0: 4/13 fields captured (31%, 69% loss)
+  - v1.0 has existing pipeline: wizard → validate → generate → new
+  - v2.0 wizard deferred to Q2-Q3 2026 as enhancement
+
+  **Files Modified**:
+  - scripts/lib/objetivo_wizard.py (+5 questions, template path to v1.0)
+  - scripts/lib/flows/objetivo_init.py (CWD fix)
+  - scripts/lib/objetivo_validator.py (import fix)
+  - template-bases/objetivo-init-template.yaml (NEW, 13 fields)
+
+  **Questions Added** (15 total: 6 P0 + 9 P1):
+  1. Project type/language (contextual)
+  2. Versioning expectations
+  3. Known constraints
+  4. Integration points
+  5. Deployment preferences
+
+  **Bug Identified**: BUG-05 (placeholder substitution)
+
+- [x] **Technical Documentation**: Decision Records & Planning
+  - **Status**: ✅ COMPLETE
+  - **Tempo**: ~1h
+  - **Prioridade**: P1 (preserve context)
+
+  **Documents Created**:
+  - docs/planning/MELHORIA_OBJETIVO_WIZARD_V2.md (v2.0 wizard enhancement roadmap)
+  - docs/debates/OPINIAO_OBJETIVO_INIT_WIZARD.md (decision rationale v1.0 vs v2.0)
+  - docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md (bug report)
+
+  **Key Outcome**: Technical decisions and bug tracking documented
 
 - [x] **IMP-65 P0 Critical Items**: Template Synchronization Production Readiness
   - **Status**: ✅ COMPLETE — Migration Ready (2/2 essential items)

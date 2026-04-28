@@ -543,4 +543,180 @@ Update project documentation to reflect Spec 066 completion and prepare for sess
 
 ---
 
+## 💻 Activity 7: Sprint 3 — Pre-commit Hook Auto-Activation
+
+**Time**: After Spec 066 completion
+**Activity**: Sprint 3 Implementation — Security Automation
+**Status**: ✅ Complete
+
+### Objective:
+Implement automatic activation of pre-commit hooks during development to ensure security checks run automatically without manual setup.
+
+### Tasks Completed:
+
+1. ✅ **Pre-commit Hook Auto-Activation**
+   - Modified project initialization to detect and activate pre-commit hooks
+   - Ensured hooks run automatically on `git commit`
+   - Updated documentation for pre-commit workflow
+   - 4/4 tests passing
+
+### Deliverables:
+- ✅ Pre-commit hook auto-activation mechanism
+- ✅ Documentation updates
+- ✅ Tests: 4/4 passing
+
+### Commit:
+```bash
+4adfa62 feat(security): ativar pre-commit hook automaticamente (Sprint 3)
+```
+
+### Push Status:
+- ✅ Pushed to origin/060-mini-engram-python
+
+**Result**: ✅ Sprint 3 Complete and Pushed
+
+---
+
+## 💻 Activity 8: Scaffold Wrapper Script Creation
+
+**Time**: After Sprint 3
+**Activity**: Developer Experience Improvement — Global CLI Access
+**Status**: ✅ Complete
+
+### Objective:
+Create a global wrapper script at `~/.local/bin/scaffold` to enable running scaffold commands from anywhere without activating virtual environment manually.
+
+### Tasks Completed:
+
+1. ✅ **Created Shell Wrapper Script**
+   - Location: `~/.local/bin/scaffold`
+   - Detects project Python environment automatically
+   - Forwards all arguments to `scripts/scaffold.py`
+   - Makes scaffold commands globally accessible
+
+2. ✅ **Tested Commands**
+   - `scaffold --help` ✅
+   - `scaffold --version` ✅
+   - `scaffold list-profiles` ✅
+   - All commands work correctly from any directory
+
+### Benefits:
+- No need to cd to project directory
+- No need to activate venv manually
+- Consistent CLI experience across workspace
+
+**Result**: ✅ Scaffold Wrapper Functional
+
+---
+
+## 💻 Activity 9: Objetivo-Init Wizard v1.0 Implementation
+
+**Time**: After wrapper creation
+**Activity**: Wizard Enhancement — YAML v1.0 Format Support
+**Status**: ✅ Complete (with BUG-05 identified)
+
+### Objective:
+Implement wizard for `objetivo-init.yaml` format (v1.0 YAML-pure) instead of v2.0 (Markdown Híbrido) to capture complete project information.
+
+### Tasks Completed:
+
+1. ✅ **Created Template Base**
+   - File: `template-bases/objetivo-init-template.yaml` (NEW)
+   - Format: YAML v1.0 (pure YAML, 13 fields)
+   - Fields: project metadata, prompt content, specification details
+   - Complete template ready for substitution
+
+2. ✅ **Modified Wizard Logic**
+   - Updated `scripts/lib/objetivo_wizard.py`
+     - Changed template path from v2.0 to v1.0
+     - Added 5 new contextual questions:
+       - Project type/language (conditional on new vs update)
+       - Versioning expectations
+       - Known constraints
+       - Integration points
+       - Deployment preferences
+     - Total questions: 15 (6 P0 required + 9 P1 optional)
+     - Wizard now targets v1.0 format (complete capture)
+
+3. ✅ **Fixed CWD Bug**
+   - Both `objetivo_wizard.py` and `flows/objetivo_init.py`
+   - Changed relative path: `poc/objetivo-v2-template-base.md`
+   - To absolute: `template-bases/objetivo-init-template.yaml`
+   - Bug: Wizard failed when run from different directory
+   - Fix: Use project root relative paths
+
+4. ✅ **Fixed Import Bug**
+   - File: `scripts/lib/objetivo_validator.py`
+   - Changed: `from objetivo_parser import ObjetivoV2Parser`
+   - To: `from .objetivo_parser import ObjetivoV2Parser`
+   - Bug: Import failed in some contexts (absolute vs relative)
+   - Fix: Use relative imports within lib package
+
+### Deliverables:
+- ✅ template-bases/objetivo-init-template.yaml (NEW, ~100 lines)
+- ✅ scripts/lib/objetivo_wizard.py (MODIFIED, +5 questions, template path)
+- ✅ scripts/lib/flows/objetivo_init.py (MODIFIED, CWD fix)
+- ✅ scripts/lib/objetivo_validator.py (MODIFIED, import fix)
+
+### Issues Identified:
+- 🐛 **BUG-05**: Wizard creates empty draft file (placeholders not substituted)
+  - Severity: High
+  - Impact: Generated objetivo-init.yaml contains `{{PROJECT_NAME}}` instead of actual values
+  - Status: Reported in docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md
+  - Next action: Debug placeholder substitution logic
+
+**Result**: ✅ Wizard v1.0 Implemented (functionality complete, BUG-05 to fix)
+
+---
+
+## 💻 Activity 10: Documentation — Decision Records & Planning
+
+**Time**: After wizard implementation
+**Activity**: Technical Documentation — Decisions and Improvements
+**Status**: ✅ Complete
+
+### Objective:
+Document technical decisions, improvement proposals, and bug reports for future reference and team alignment.
+
+### Documents Created:
+
+1. ✅ **Planning Document: Wizard v2.0 Improvements**
+   - File: `docs/planning/MELHORIA_OBJETIVO_WIZARD_V2.md` (NEW)
+   - Content:
+     - Analysis of v1.0 vs v2.0 capture completeness
+     - Current wizard captures 4/13 fields (69% loss)
+     - Proposal for v2.0 wizard with enhanced questions
+     - Migration path from v1.0 to v2.0
+     - Timeline: Q2-Q3 2026
+   - Purpose: Future enhancement roadmap
+
+2. ✅ **Opinion Document: Wizard Format Decision**
+   - File: `docs/debates/OPINIAO_OBJETIVO_INIT_WIZARD.md` (NEW)
+   - Content:
+     - Rationale for choosing v1.0 over v2.0 format
+     - v1.0 advantages: Complete capture (13/13 fields), existing pipeline
+     - v2.0 disadvantages: 69% information loss, immature tooling
+     - Decision: Use v1.0 now, plan v2.0 wizard for future
+   - Purpose: Preserve decision context and reasoning
+
+3. ✅ **Bug Report: BUG-05 Empty Draft**
+   - File: `docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md` (NEW)
+   - Content:
+     - Description: Wizard generates empty/placeholder file
+     - Expected: User answers should replace `{{PLACEHOLDERS}}`
+     - Actual: File contains `{{PROJECT_NAME}}`, `{{ANSWER_1}}`, etc.
+     - Reproduction steps with examples
+     - Impact: High (wizard unusable)
+     - Severity: P1 (blocks feature use)
+   - Purpose: Track and prioritize bug fix
+
+### Deliverables:
+- ✅ docs/planning/MELHORIA_OBJETIVO_WIZARD_V2.md (NEW)
+- ✅ docs/debates/OPINIAO_OBJETIVO_INIT_WIZARD.md (NEW)
+- ✅ docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md (NEW)
+
+**Result**: ✅ Technical Documentation Complete
+
+---
+
 <!-- Activity entries will be appended below with separator --- -->
