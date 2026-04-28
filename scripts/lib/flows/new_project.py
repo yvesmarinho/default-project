@@ -45,10 +45,6 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("\n  [blue]📁 Criando estrutura...[/blue]")
     results.extend(project.create_structure(cfg))
 
-    # 1b. Proteção avançada de .secrets/ (IMP-60)
-    console.print("  [blue]🔒 Configurando segurança de .secrets/...[/blue]")
-    results.extend(project.setup_secrets_security(cfg))
-
     # 2. Symlinks .copilot-*
     console.print("  [blue]🔗 Configurando symlinks...[/blue]")
     results.extend(links.setup_symlinks(cfg))
@@ -89,6 +85,11 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 8. Git
     console.print("  [blue]🗃️  Inicializando repositório Git...[/blue]")
     results.append(git.init_repository(cfg))
+
+    # 8b. Proteção avançada de .secrets/ (IMP-60) + ativar pre-commit hook (BUG-#4 fix)
+    # IMPORTANTE: Chamado APÓS git.init_repository() para que .git/hooks/ exista
+    console.print("  [blue]🔒 Configurando segurança de .secrets/...[/blue]")
+    results.extend(project.setup_secrets_security(cfg))
 
     # 9. GitHub Security Files (BUG-06 fix)
     console.print("  [blue]🔒 Gerando arquivos de segurança GitHub...[/blue]")

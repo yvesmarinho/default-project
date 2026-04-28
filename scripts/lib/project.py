@@ -2063,19 +2063,42 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
                 message=".secrets/ ausente no .gitignore"
             ))
 
-    # 4. Informar sobre pre-commit hook (opcional)
+    # 4. Ativar pre-commit hook automaticamente (BUG-#4 fix)
     hook_template = base / ".git-hooks" / "pre-commit.secrets"
+    hook_target = base / ".git" / "hooks" / "pre-commit"
+
     if hook_template.exists():
-        log.info("💡 Pre-commit hook disponível")
-        log.info("   cp .git-hooks/pre-commit.secrets ")
-        log.info("      .git/hooks/pre-commit")
-        log.info("   chmod +x .git/hooks/pre-commit")
-        results.append(CreatedItem(
-            path=hook_template,
-            kind="file",
-            status="available",
-            message="pre-commit hook criado (ativar manualmente)"
-        ))
+        try:
+            # Verificar se .git/hooks/ existe
+            hooks_dir = base / ".git" / "hooks"
+            if not hooks_dir.exists():
+                log.warning("⚠️  .git/hooks/ não existe — pulando ativação de hook")
+                results.append(CreatedItem(
+                    path=hook_template,
+                    kind="file",
+                    status="available",
+                    message="hook disponível (sem .git/hooks/ para instalar)"
+                ))
+            else:
+                # Copiar hook template para .git/hooks/pre-commit
+                shutil.copy2(hook_template, hook_target)
+                hook_target.chmod(0o755)  # rwxr-xr-x
+
+                log.info("✅ Pre-commit hook ativado automaticamente")
+                results.append(CreatedItem(
+                    path=hook_target,
+                    kind="file",
+                    status="activated",
+                    message="pre-commit hook instalado em .git/hooks/"
+                ))
+        except Exception as e:
+            log.warning("⚠️  Falha ao ativar pre-commit hook: %s", e)
+            results.append(CreatedItem(
+                path=hook_template,
+                kind="file",
+                status="available",
+                message=f"hook disponível (ativação manual necessária): {e}"
+            ))
 
     return results
 

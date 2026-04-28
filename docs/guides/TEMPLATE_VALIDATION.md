@@ -823,6 +823,235 @@ python -m pytest tests/test_file_merge.py -v
 
 ---
 
+## Secrets Protection and Pre-Commit Hook
+
+**Version**: 1.0.0 (Bug fix: BUG-#4)
+**Implementation**: Sprint 3 — Security Enhancement
+**Date**: 2026-04-28
+
+### Overview
+
+The template includes an **automatic pre-commit hook** that prevents accidental commits of sensitive files to version control.
+
+**Key Features**:
+- 🔒 **Auto-activated**: Hook installed automatically during scaffold (no manual setup)
+- 🛡️ **Blocks secrets**: Prevents commits of `.secrets/`, `*.key`, `.env`, etc.
+- ⚙️ **Customizable**: Edit `.git-hooks/pre-commit.secrets` for project-specific patterns
+- 🚫 **Git-aware**: Only activated if `.git/hooks/` directory exists
+
+### How It Works
+
+#### Activation (Automatic)
+
+The hook is activated during scaffold execution:
+
+```bash
+# During scaffold (step 8b):
+📁 Criando estrutura...
+🗃️  Inicializando repositório Git...
+🔒 Configurando segurança de .secrets/...
+INFO ✅ Pre-commit hook ativado automaticamente  # ← BUG-#4 fix
+```
+
+**Before BUG-#4 fix**: Hook created but never activated (required manual `cp` command).
+**After BUG-#4 fix**: Hook automatically copied to `.git/hooks/pre-commit` with `chmod 755`.
+
+#### Hook Template Location
+
+- **Source**: `.git-hooks/pre-commit.secrets` (versioned template)
+- **Destination**: `.git/hooks/pre-commit` (active hook, not versioned)
+
+**Why separate?**
+- `.git-hooks/` → versioned, can be updated via `git pull`
+- `.git/hooks/` → local only (`.git/` in `.gitignore`)
+
+#### Protected Patterns (Default)
+
+The hook blocks commits of files matching:
+
+```bash
+# Critical patterns (from _PRE_COMMIT_SECRETS_HOOK constant)
+.secrets/          # All files in secrets directory
+*.key              # Private keys
+*.pem              # Certificates
+.env               # Environment variables
+*secret*           # Files with "secret" in name
+*password*         # Files with "password" in name
+*token*            # Files with "token" in name
+```
+
+### Usage Examples
+
+#### Normal Workflow (No Secrets)
+
+```bash
+# Create and commit normal files
+echo "# My API" > README.md
+git add README.md
+git commit -m "docs: add README"  # ✅ Allowed
+```
+
+#### Blocked Commit (Secrets Detected)
+
+```bash
+# Accidentally try to commit secret
+echo "API_KEY=secret123" > .secrets/config.env
+git add .secrets/config.env
+git commit -m "chore: add config"
+
+# Output:
+# ❌ BLOQUEADO: Arquivos sensíveis detectados
+# Arquivos bloqueados:
+#   .secrets/config.env
+#
+# Para ignorar este aviso (não recomendado):
+#   git commit --no-verify -m "..."
+```
+
+#### Customizing Patterns
+
+Edit `.git-hooks/pre-commit.secrets` to add project-specific patterns:
+
+```bash
+# Add custom pattern
+echo '*.credentials' >> .git-hooks/pre-commit.secrets
+
+# Re-activate hook (if needed)
+cp .git-hooks/pre-commit.secrets .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+### Troubleshooting
+
+#### Hook Not Working
+
+**Symptom**: Secrets committed without blocking.
+
+**Diagnosis**:
+```bash
+# Check hook exists and is executable
+ls -la .git/hooks/pre-commit
+# Expected: -rwxr-xr-x ... .git/hooks/pre-commit
+
+# Test hook manually
+.git/hooks/pre-commit
+```
+
+**Solution**:
+```bash
+# Re-activate hook
+cp .git-hooks/pre-commit.secrets .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+#### Hook Too Strict (False Positives)
+
+**Symptom**: Legitimate files blocked (e.g., `test_password_validation.py`).
+
+**Solution**: Edit `.git-hooks/pre-commit.secrets` to exclude specific patterns:
+
+```bash
+# Before (blocks all *password*)
+git commit test_password_validation.py  # ❌ Blocked
+
+# After (exclude tests/)
+# Edit .git-hooks/pre-commit.secrets:
+#   if [[ "$file" != tests/* ]]; then
+#       # check password pattern
+#   fi
+
+git commit test_password_validation.py  # ✅ Allowed
+```
+
+#### Bypass Hook (Emergency)
+
+**⚠️ USE WITH CAUTION** — Only for emergencies:
+
+```bash
+# Skip hook for single commit
+git commit --no-verify -m "emergency fix"
+
+# Disable hook permanently (NOT RECOMMENDED)
+rm .git/hooks/pre-commit
+```
+
+**Better approach**: Fix the issue properly and re-commit normally.
+
+### Technical Details
+
+#### Implementation
+
+**File**: `scripts/lib/project.py`
+**Function**: `setup_secrets_security()` (lines 1987-2102)
+
+```python
+# 4. Ativar pre-commit hook automaticamente (BUG-#4 fix)
+hook_template = base / ".git-hooks" / "pre-commit.secrets"
+hook_target = base / ".git" / "hooks" / "pre-commit"
+
+if hook_template.exists():
+    try:
+        hooks_dir = base / ".git" / "hooks"
+        if hooks_dir.exists():
+            shutil.copy2(hook_template, hook_target)
+            hook_target.chmod(0o755)  # rwxr-xr-x
+            log.info("✅ Pre-commit hook ativado automaticamente")
+        else:
+            log.warning("⚠️  .git/hooks/ não existe — pulando ativação de hook")
+    except Exception as e:
+        log.warning("⚠️  Falha ao ativar pre-commit hook: %s", e)
+```
+
+**Execution Order** (critical for BUG-#4 fix):
+
+1. **Step 1**: `create_structure()` → creates `.git-hooks/pre-commit.secrets`
+2. **Step 8**: `git.init_repository()` → creates `.git/hooks/` directory
+3. **Step 8b**: `setup_secrets_security()` → **activates hook** ✅
+
+**Before BUG-#4 fix**: `setup_secrets_security()` called before `git.init_repository()` → `.git/hooks/` didn't exist → hook not activated.
+
+#### Tests
+
+**Test Suite**: `tests/test_sprint3_precommit.py`
+
+```bash
+# Run tests
+pytest tests/test_sprint3_precommit.py -v
+
+# Expected output:
+# ✅ test_pre_commit_hook_content_in_constant PASSED
+# ✅ test_setup_secrets_security_activates_hook PASSED
+# ✅ test_hook_activation_without_git_hooks_dir PASSED
+# ✅ test_hook_activation_handles_copy_error PASSED
+```
+
+**Coverage**:
+- Hook template content validation
+- Automatic activation on scaffold
+- Graceful degradation (no .git/hooks/)
+- Error handling (permission denied)
+
+### Best Practices
+
+✅ **DO**:
+- Keep `.git-hooks/pre-commit.secrets` versioned
+- Review patterns regularly (add project-specific secrets)
+- Test hook with `git commit` (should block secrets)
+- Document custom patterns in `.git-hooks/README.md`
+
+❌ **DON'T**:
+- Delete `.git/hooks/pre-commit` (defeats purpose)
+- Use `--no-verify` habitually (security risk)
+- Store real secrets in tests (use fake values)
+- Commit `.git/hooks/` directory (local only)
+
+### Related Bugs
+
+- **BUG-#1**: `.gitignore` missing `.secrets/` → fixed by GitignoreMerger (Sprint 1)
+- **BUG-#4**: Pre-commit hook not activated → **fixed in Sprint 3** ✅
+
+---
+
 ## Next Steps
 
 - **P2 Enhancement**: Add email notifications for failed scaffolds
