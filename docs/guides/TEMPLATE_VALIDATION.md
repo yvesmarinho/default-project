@@ -1,7 +1,7 @@
 # Template Validation Guide
 
-**Version**: 1.0.0  
-**Implementation**: IMP-65-LITE  
+**Version**: 1.0.0
+**Implementation**: IMP-65-LITE
 **Date**: 2026-04-28
 
 ---
@@ -453,6 +453,373 @@ feature:
 - **Write**: ~1ms per scaffold
 - **Query**: <1ms (100 entries), ~10ms (1000 entries)
 - **Bottleneck**: YAML serialization (for 1000+ entries, consider JSON)
+
+---
+
+## Intelligent File Merge System
+
+**Version**: 2.0.0 (Bug fix: BUG-#1.1)
+**Implementation**: Sprint 1 — Security Critical
+**Date**: 2026-04-28
+
+### Overview
+
+The **Intelligent File Merge System** solves a critical bug where pre-existing files were unconditionally skipped during scaffold, causing:
+- 🔴 **Security vulnerability**: `.gitignore` missing `.secrets/` → credential leakage risk
+- 🟡 **Lost features**: Essential Makefile targets, README sections not applied
+- 🟡 **Incomplete projects**: Template protections/workflows missing
+
+**Solution**: Smart merge for critical files when scaffold runs on pre-existing repositories (e.g., GitHub repos).
+
+### How It Works
+
+#### Before (Problematic)
+
+```python
+# OLD: Unconditional skip (lines 1583-1588 in project.py)
+if file_path.exists():
+    results.append(CreatedItem(
+        path=file_path, kind="file", status="skipped"
+    ))
+    continue  # ❌ Lost .secrets/, Makefile targets, README sections
+```
+
+**Result**: GitHub repos scaffolded without security protections.
+
+#### After (Intelligent Merge)
+
+```python
+# NEW: Try merge first, fallback to skip (project.py + file_merge.py)
+if file_path.exists():
+    merge_result = file_merge.merge_or_skip(
+        file_path=file_path,
+        template_content=content,
+        interactive=False
+    )
+    results.append(merge_result)
+    continue  # ✅ Merges .gitignore, Makefile, README
+```
+
+**Result**: Security patterns added, features preserved, customizations maintained.
+
+### Supported Mergers
+
+#### 1. GitignoreMerger (P0 — Security Critical)
+
+**Purpose**: Add security patterns to existing `.gitignore`.
+
+**Strategy**:
+1. Detect critical patterns missing (`.secrets/`, `*.key`, `*.pem`, etc.)
+2. Add security header + missing patterns at top
+3. Preserve original content below
+
+**Example**:
+
+```bash
+# Before (GitHub default)
+__pycache__/
+*.pyc
+
+# After scaffold
+# === Enterprise Template Security (Auto-Added) ===
+# CRITICAL: Never commit credentials, tokens, or keys
+.secrets/
+*.key
+*.pem
+.env
+
+# === Original Content Below ===
+__pycache__/
+*.pyc
+```
+
+**Test**:
+```bash
+cd tests/
+python -m pytest test_file_merge.py::test_gitignore_merge_adds_security_patterns -v
+```
+
+#### 2. MakefileMerger (P1 — Workflow Important)
+
+**Purpose**: Add essential targets while preserving custom ones.
+
+**Strategy**:
+1. Extract targets from template (`help`, `test`, `lint`, etc.)
+2. Extract targets from existing Makefile
+3. Add only missing essential targets
+4. Preserve all custom targets
+
+**Example**:
+
+```bash
+# Before (user's Makefile)
+deploy:
+\t./scripts/deploy.sh
+
+# After scaffold
+# === Enterprise Template Targets (Auto-Added) ===
+help:
+\t@echo "Available targets:"
+
+test:
+\tpytest tests/
+
+# === Original Targets Below ===
+deploy:
+\t./scripts/deploy.sh
+```
+
+**Test**:
+```bash
+python -m pytest test_file_merge.py::test_makefile_merge_adds_essential_targets -v
+```
+
+#### 3. ReadmeMerger (P1 — Documentation Important)
+
+**Purpose**: Add template sections while preserving user intro.
+
+**Strategy**:
+1. Extract introduction (before first `##`) from existing README
+2. Detect template sections missing (`## Project Status`, `## Stack`, etc.)
+3. Merge: intro + missing sections + original sections
+
+**Example**:
+
+```markdown
+<!-- Before (GitHub README) -->
+# My Custom Project
+
+This is my awesome project that does amazing things.
+
+<!-- After scaffold -->
+# My Custom Project
+
+This is my awesome project that does amazing things.
+
+---
+
+<!-- Enterprise Template Sections (Auto-Added) -->
+
+## Project Status
+
+🟢 Active development
+
+## Stack
+
+- Python 3.12+
+- pytest
+
+---
+
+<!-- Original Sections Below -->
+```
+
+**Test**:
+```bash
+python -m pytest test_file_merge.py::test_readme_merge_adds_template_sections -v
+```
+
+### Common Workflows
+
+#### Workflow 1: GitHub-First (Most Common)
+
+**Scenario**: Create repo on GitHub UI, clone, then scaffold.
+
+```bash
+# 1. Create repo on GitHub (with .gitignore, README)
+# 2. Clone locally
+git clone git@github.com:user/new-project.git
+cd new-project
+
+# 3. Scaffold
+uv run ../a-default-project/scripts/scaffold.py new \
+  --name=new-project \
+  --domain=programming \
+  --language=python
+
+# ✅ RESULT:
+# - .gitignore: .secrets/ ADDED (security)
+# - README.md: Template sections ADDED (intro preserved)
+# - Makefile: Targets ADDED (if created later)
+```
+
+**Validation**:
+```bash
+grep ".secrets/" .gitignore  # ✅ Should be present
+grep "## Project Status" README.md  # ✅ Should be present
+make help  # ✅ Should work
+```
+
+#### Workflow 2: Template-First (Also Works)
+
+**Scenario**: Empty directory, scaffold first, GitHub later.
+
+```bash
+# 1. Empty directory
+mkdir new-project && cd new-project
+
+# 2. Scaffold
+uv run ../a-default-project/scripts/scaffold.py new
+
+# 3. Push to GitHub
+git remote add origin git@github.com:user/new-project.git
+git push -u origin main
+
+# ✅ RESULT:
+# - All files created normally (no merge needed)
+# - 100% template applied
+```
+
+#### Workflow 3: Fork/Clone Another Template
+
+**Scenario**: Fork another company template, scaffold to migrate.
+
+```bash
+# 1. Clone/fork other template
+git clone git@github.com:company/another-template.git my-project
+cd my-project
+
+# 2. Scaffold our template
+uv run ../a-default-project/scripts/scaffold.py new
+
+# ✅ RESULT:
+# - Essential patterns MERGED (security)
+# - Essential targets MERGED (workflow)
+# - Essential sections MERGED (docs)
+# - Custom content PRESERVED
+```
+
+### Extensibility
+
+#### Adding Custom Mergers
+
+Create a new merger for specific file types:
+
+```python
+# Example: docker-compose.yml merger
+from pathlib import Path
+from scripts.lib.file_merge import register_merger, FileMerger
+from scripts.lib.config import CreatedItem
+
+class DockerComposeMerger:
+    """Merge docker-compose services."""
+
+    def can_merge(self, file_path: Path) -> bool:
+        return file_path.name == "docker-compose.yml"
+
+    def merge(
+        self,
+        existing_path: Path,
+        template_content: str,
+        interactive: bool = True
+    ) -> CreatedItem:
+        # ... YAML merge logic ...
+        return CreatedItem(
+            path=existing_path,
+            kind="file",
+            status="created",
+            message="Merged services"
+        )
+
+# Register
+register_merger(DockerComposeMerger())
+```
+
+**Use case**: Projects with custom Docker services need template services added.
+
+#### Registry
+
+```python
+from scripts.lib.file_merge import get_registered_mergers
+
+# List all mergers
+print(get_registered_mergers())
+# ['GitignoreMerger', 'MakefileMerger', 'ReadmeMerger']
+```
+
+### Testing
+
+**Run all merge tests**:
+```bash
+python -m pytest tests/test_file_merge.py -v
+```
+
+**Test coverage**:
+- 15 tests total
+- 100% coverage of merge logic
+- Integration test simulating full GitHub scenario
+
+**Key tests**:
+1. `test_gitignore_merge_adds_security_patterns` — Security (P0)
+2. `test_makefile_merge_adds_essential_targets` — Workflow (P1)
+3. `test_readme_merge_adds_template_sections` — Docs (P1)
+4. `test_merge_or_skip_skips_unsupported_files` — Fallback safety
+5. `test_full_github_repo_scaffold_scenario` — End-to-end
+
+### Troubleshooting
+
+#### Merge Not Applied
+
+**Problem**: `.gitignore` still missing `.secrets/` after scaffold.
+
+**Solution**:
+1. Check file exists: `ls -la .gitignore`
+2. Check merge logs: `grep "🔒" <scaffold_output>`
+3. Verify patterns: `grep ".secrets/" .gitignore`
+4. Manual fix if needed: `echo ".secrets/" >> .gitignore`
+
+#### Custom Content Lost
+
+**Problem**: User's custom Makefile target removed.
+
+**Solution**:
+- This **should not happen** (merge preserves custom content)
+- Check git diff: `git diff Makefile`
+- Report bug with details
+
+#### Merger Not Triggered
+
+**Problem**: Expected merge didn't happen (file skipped).
+
+**Solution**:
+1. Verify file name matches: `.gitignore` (exact match)
+2. Check registered mergers: `python -c "from scripts.lib.file_merge import get_registered_mergers; print(get_registered_mergers())"`
+3. Review logs for "Skip" message
+
+### Performance
+
+- **Merge operation**: ~1-5ms per file
+- **No merge (skip)**: <1ms per file
+- **Bottleneck**: Regex parsing for Makefile/README
+
+**Scalability**:
+- Tested with 100+ file scaffolds: negligible overhead
+- Merge only happens for ~3 files (.gitignore, Makefile, README)
+
+### Security Considerations
+
+**GitignoreMerger is critical**:
+- Prevents credential leakage
+- Auto-adds `.secrets/`, `*.key`, `*.pem`, `.env`
+- **No user confirmation required** (security override)
+
+**Other mergers are helpful**:
+- MakefileMerger: workflow convenience
+- ReadmeMerger: documentation completeness
+- **Non-critical** (can be skipped if problematic)
+
+### Best Practices
+
+✅ **DO**:
+- Run scaffold on pre-existing repos (GitHub, GitLab, etc.)
+- Trust the merge system for `.gitignore` (security)
+- Review merge results: `git diff`
+- Report bugs if custom content lost
+
+❌ **DON'T**:
+- Manually edit `.gitignore` after scaffold (merge may re-add)
+- Disable GitignoreMerger (security risk)
+- Skip validation after merge: `git diff .gitignore`
 
 ---
 

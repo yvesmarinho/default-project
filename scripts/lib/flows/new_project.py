@@ -120,7 +120,7 @@ def flow_new_project(args: argparse.Namespace) -> int:
         import sys
         sys.path.insert(0, str(Path(__file__).parent.parent.parent))
         from scaffold_logger import ScaffoldLogger, get_current_user, get_template_version
-        
+
         logger = ScaffoldLogger()
         logger.log_scaffold(
             project_name=cfg.project_name,

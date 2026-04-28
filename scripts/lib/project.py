@@ -19,6 +19,7 @@ from .config import (
     ProjectConfig,
 )
 from . import vscode
+from . import file_merge
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -1581,9 +1582,15 @@ def create_structure(config: ProjectConfig) -> list[CreatedItem]:
     for file_rel, template in FILES_TO_CREATE:
         file_path = base / file_rel
         if file_path.exists():
-            results.append(CreatedItem(
-                path=file_path, kind="file", status="skipped",
-            ))
+            # NOVO: Tentar merge inteligente ao invés de skip incondicional
+            # Fix: BUG-#1.1 (P0 sistêmico - arquivos críticos não mesclados)
+            content = _prepare_content(template, file_rel, config)
+            merge_result = file_merge.merge_or_skip(
+                file_path=file_path,
+                template_content=content,
+                interactive=False  # Modo CI (não interativo por padrão)
+            )
+            results.append(merge_result)
             continue
         try:
             # Substitui {{PROJECT_*}} antes de escrever
