@@ -9,6 +9,63 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+#### BUG-05: Interactive Layer 2 Profile Selection (Apr 2026)
+- **Phase 1 (Core)**: Interactive mode now shows Layer 2 profiles (python-fastapi, typescript-next, etc.):
+  - Added `_get_compatible_layer2_profiles()` in `scripts/lib/ui.py`:
+    - Reads profile-descriptors/*.yaml dynamically
+    - Filters by domain + language compatibility
+    - Supports both old (requires) and new (meta) descriptor formats
+    - Handles language aliases (hcl→terraform, yaml→kubernetes)
+    - Domain inference from tags (web/api→programming, iac/cloud→infrastructure, data/etl→analysis)
+  - Added `_select_layer2_profile()` in `scripts/lib/ui.py`:
+    - New question [9] in interactive wizard
+    - Shows only compatible profiles for selected domain + language
+    - Numbered menu with profile descriptions
+    - Default option: "No, just base structure"
+  - Modified `_collect_extra_profiles()` to integrate Layer 2 selection:
+    - Layer 1 profiles (devops-programming, devops-infrastructure, devops-analysis) remain separate (question [8])
+    - Layer 2 profiles shown dynamically based on domain + language (question [9])
+    - Returns combined list: Layer 1 extras + selected Layer 2 profile
+  - Resolves: "novice users cannot select python-fastapi in interactive mode" (original bug report)
+
+- **Phase 2 (Enhancement)**: Added `--with-code-profile` flag to `new` command:
+  - New argument in `scaffold.py`: `--with-code-profile PROFILE`
+  - One-step project creation with code profile: `scaffold.py new --ci --name my-api --domain programming --language python --with-code-profile python-fastapi`
+  - Equivalent to: `scaffold.py new ... && cd project && scaffold.py compose python-fastapi`
+  - Integration in `scripts/lib/flows/new_project.py`:
+    - Executes `flow_compose_profiles()` after project creation if flag provided
+    - Always non-interactive when using --with-code-profile
+    - Complete error handling with rollback on compose failure
+  - Benefits:
+    - ✅ Single command workflow
+    - ✅ Validates domain + language compatibility
+    - ✅ Proper state persistence in .scaffold-state.yaml
+    - ✅ Used automatically by interactive mode (question [9])
+
+- **Phase 3 (Documentation)**:
+  - Updated `docs/guides/NEW_PROJECT_COMMAND.md`:
+    - New section: "Modo Interativo com Layer 2" explaining question [9]
+    - Updated examples to use `--with-code-profile` (recommended over 2-step workflow)
+    - Added comparison: `--with-code-profile` vs `compose` separate command
+    - Documented workflow: 1 command vs 2 steps with pros/cons
+  - Updated help text in `scaffold.py`:
+    - Clear usage example for `--with-code-profile`
+    - Explains equivalence to separate compose command
+  - Resolves: UX confusion for novice users (no documentation for Layer 2 profiles)
+
+Impact:
+- ✅ Novice users can now discover and select Layer 2 profiles interactively
+- ✅ CLI power users get single-command workflow with `--with-code-profile`
+- ✅ Backward compatible: 2-step workflow (new → compose) still works
+- ✅ Dynamic profile discovery: new profiles automatically appear in wizard
+- ✅ Smart filtering: only shows profiles compatible with selected domain + language
+
+**Status**: Phases 1-3 complete (9h work), Phase 4 (Tests) in progress
+**Priority**: P1 — UX blocker for novice users
+**Related**: IMP-65 (template synchronization), BUG-02/BUG-03 (fixed)
+
 ### Changed
 
 #### Session Manager Agent v1.2.0 (Mar 2026)

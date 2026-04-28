@@ -13,19 +13,25 @@ Script conveniente instalado em `~/.local/bin/new-project` para criar projetos u
 
 ```bash
 # Modo interativo (recomendado para iniciantes)
+# Agora com seleção de perfis Layer 2! (BUG-05 fix)
 new-project
 
 # Quick start com nome
 new-project my-api
 
-# Com perfil específico
-new-project my-api --compose python-fastapi
+# Com perfil específico (modo simplificado - BUG-05 Phase 2)
+new-project my-api --with-code-profile python-fastapi
 
 # Frontend Next.js
-new-project my-frontend --compose typescript-next
+new-project my-frontend --with-code-profile typescript-next
 
 # Infraestrutura
-new-project infra-aws --domain infrastructure --compose terraform-aws
+new-project infra-aws --domain infrastructure --with-code-profile terraform-aws
+
+# Alternativa (2 passos - ainda funciona)
+new-project my-api
+cd my-api
+scaffold.py compose python-fastapi
 ```
 
 ## Comandos Úteis
@@ -46,16 +52,20 @@ new-project --validate
 ### Backend Python FastAPI
 
 ```bash
-new-project my-api --compose python-fastapi
+# Modo simplificado (1 comando - BUG-05 Phase 2)
+new-project my-api --with-code-profile python-fastapi
 cd my-api
 make install-deps
 make dev
+
+# Modo completo não-interativo
+scaffold.py new --ci --name my-api --domain programming --language python --with-code-profile python-fastapi
 ```
 
 ### Frontend TypeScript Next.js
 
 ```bash
-new-project my-frontend --compose typescript-next
+new-project my-frontend --with-code-profile typescript-next
 cd my-frontend
 npm install
 npm run dev
@@ -65,18 +75,59 @@ npm run dev
 
 ```bash
 # Backend
-new-project my-app-backend --compose python-fastapi --target-dir ~/workspace/my-app
+new-project my-app-backend --with-code-profile python-fastapi --target-dir ~/workspace/my-app
 
 # Frontend
-new-project my-app-frontend --compose typescript-next --target-dir ~/workspace/my-app
+new-project my-app-frontend --with-code-profile typescript-next --target-dir ~/workspace/my-app
 ```
 
 ### Infraestrutura Terraform
 
 ```bash
-new-project infra-prod --domain infrastructure --compose terraform-aws
+new-project infra-prod --domain infrastructure --with-code-profile terraform-aws
 cd infra-prod
 terraform init
+```
+     # programming | infrastructure | analysis
+--language LANG            # python | typescript | go | other
+--with-code-profile PROFILE # python-fastapi, python-flask, typescript-next, etc. (BUG-05)
+--compose PROFILE          # [deprecated] usar --with-code-profile ou compose separado
+--target-dir DIR           # Diretório pai onde criar o projeto
+--ci                       # Modo não-interativo (requer --name, --domain, --language)
+```
+
+### Diferença entre --with-code-profile e compose separado
+
+```bash
+# Opção 1: Tudo em 1 comando (BUG-05 Phase 2 - RECOMENDADO)
+scaffold.py new --ci --name my-api --domain programming --language python --with-code-profile python-fastapi
+
+# Opção 2: 2 passos (ainda funciona)
+scaffold.py new --ci --name my-api --domain programming --language python
+cd my-api
+scaffold.py compose python-fastapi
+```
+
+**Vantagens do --with-code-profile**:
+- ✅ 1 único comando
+- ✅ Estado do projeto configurado corretamente
+- ✅ Validação de compatibilidade domínio + linguagem
+- ✅ Usado automaticamente no modo interativo (pergunta [9])niciar wizard interativo
+new-project
+
+# O wizard agora pergunta:
+# [1] Nome do projeto?
+# [2] Título?
+# [3] Descrição?
+# [4] Domínio? (programming, infrastructure, analysis)
+# [5] Linguagem? (python, typescript, go, other)
+# [6] URL do repo?
+# [7] Diretório compartilhado?
+# [8] Perfis Layer 1 adicionais?
+# [9] Adicionar perfil de código específico? ← NOVO! (BUG-05 fix)
+#     - Mostra apenas perfis compatíveis com domínio + linguagem
+#     - Ex: python + programming → [python-fastapi, python-flask]
+#     - Ex: typescript + programming → [typescript-next]
 ```
 
 ## Opções Avançadas

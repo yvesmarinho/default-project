@@ -368,6 +368,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="linguagem: python | typescript | go | other",
     )
     fields_group.add_argument("--repo",       metavar="URL",  help="URL do repositório GitHub")
+    fields_group.add_argument(
+        "--with-code-profile",
+        metavar="PROFILE",
+        dest="with_code_profile",
+        help=(
+            "aplica perfil de código após criar estrutura base (BUG-05 fix)\n"
+            "  ex: scaffold.py new --ci --name my-api --domain programming --language python --with-code-profile python-fastapi\n"
+            "  equivalente a: scaffold.py new ... && cd my-api && scaffold.py compose python-fastapi"
+        ),
+    )
     fields_group.add_argument("--shared-dir", metavar="PATH", dest="shared_dir", help="caminho para .copilot-shared")
     fields_group.add_argument("--target-dir", metavar="PATH", dest="target_dir", help="onde criar o projeto (default: cwd)")
     fields_group.add_argument(
