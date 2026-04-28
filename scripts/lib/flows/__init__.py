@@ -11,6 +11,9 @@ from .list_profiles import _load_descriptor, flow_list_profiles
 from .merge_template import flow_merge_template
 from .new_profile import flow_new_profile
 from .new_project import flow_new_project
+from .objetivo_generate import flow_objetivo_generate
+from .objetivo_migrate import flow_objetivo_migrate
+from .objetivo_validate import flow_objetivo_validate
 from .publish import flow_publish
 from .release import flow_release
 from .upgrade import flow_upgrade
@@ -32,5 +35,8 @@ __all__ = [
     "flow_generate_rules",
     "flow_list_profiles",
     "flow_new_profile",
+    "flow_objetivo_validate",
+    "flow_objetivo_generate",
+    "flow_objetivo_migrate",
     "_load_descriptor",
 ]

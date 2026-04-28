@@ -62,6 +62,9 @@ _SUBCOMMAND_MAP: dict[str, list[str]] = {
     "new-profile":   ["--new-profile"],  # next positional arg becomes the value
     "infra":         ["--infra"],
     "release":       ["--release"],      # next positional arg becomes the value
+    "objetivo-validate": ["--objetivo-validate"],
+    "objetivo-generate": ["--objetivo-generate"],
+    "objetivo-migrate":  ["--objetivo-migrate"],
 }
 
 # Subcommands that take a required value as the next positional argument
@@ -114,6 +117,9 @@ from lib.flows import (
     flow_merge_template,
     flow_new_profile,
     flow_new_project,
+    flow_objetivo_generate,
+    flow_objetivo_migrate,
+    flow_objetivo_validate,
     flow_publish,
     flow_release,
     flow_upgrade,
@@ -276,6 +282,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="camada do novo perfil (usar com --new-profile): 1|2|3|4|layer2|layer3|layer4|transversal|core",
     )
     action_group.add_argument(
+        "--objetivo-validate",
+        action="store_true",
+        dest="objetivo_validate",
+        help="valida arquivo objetivo.yaml v2.0 (ex: scaffold.py objetivo-validate --file objetivo.yaml)",
+    )
+    action_group.add_argument(
+        "--objetivo-generate",
+        action="store_true",
+        dest="objetivo_generate",
+        help="gera YAML técnico a partir de objetivo.yaml (ex: scaffold.py objetivo-generate)",
+    )
+    action_group.add_argument(
+        "--objetivo-migrate",
+        action="store_true",
+        dest="objetivo_migrate",
+        help="migra objetivo.yaml v1.0 → v2.0 (ex: scaffold.py objetivo-migrate --file objetivo.yaml)",
+    )
+    action_group.add_argument(
         "--config",
         metavar="FILE",
         help="arquivo YAML com configuração do projeto (força modo não-interativo)",
@@ -294,6 +318,23 @@ def build_parser() -> argparse.ArgumentParser:
     fields_group.add_argument("--name",        metavar="NAME",  help="nome kebab-case (obrigatório em --ci)")
     fields_group.add_argument("--title",       metavar="TITLE", help="título legível")
     fields_group.add_argument("--description", metavar="DESC",  help="descrição breve")
+    fields_group.add_argument(
+        "--file",
+        metavar="FILE",
+        default="objetivo.yaml",
+        help="arquivo objetivo.yaml (default: objetivo.yaml)",
+    )
+    fields_group.add_argument(
+        "--input",
+        metavar="FILE",
+        default="objetivo.yaml",
+        help="arquivo de entrada para objetivo-generate (default: objetivo.yaml)",
+    )
+    fields_group.add_argument(
+        "--strict",
+        action="store_true",
+        help="modo strict para objetivo-validate (P1 warnings → errors)",
+    )
     fields_group.add_argument(
         "--domain",
         choices=["programming", "infrastructure", "analysis"],
@@ -453,6 +494,18 @@ def main() -> int:
         if not getattr(args, "json_output", False):
             show_banner()
         return flow_generate_infra(args)
+
+    # --objetivo-validate: valida objetivo.yaml v2.0 e sai
+    if getattr(args, "objetivo_validate", False):
+        return flow_objetivo_validate(args)
+
+    # --objetivo-generate: gera spec YAML a partir de objetivo.yaml e sai
+    if getattr(args, "objetivo_generate", False):
+        return flow_objetivo_generate(args)
+
+    # --objetivo-migrate: migra v1.0 → v2.0 e sai
+    if getattr(args, "objetivo_migrate", False):
+        return flow_objetivo_migrate(args)
 
     # --check: verifica links e sai
     if args.check:

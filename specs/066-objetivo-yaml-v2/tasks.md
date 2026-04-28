@@ -203,7 +203,7 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### US3/US5 - Integração scaffold.py (Day 8)
 
-- [ ] T021 [US3] Adicionar comando `objetivo-validate` em `scripts/scaffold.py`
+- [x] T021 [US3] Adicionar comando `objetivo-validate` em `scripts/scaffold.py`
   - Parse args: `--file objetivo.yaml` (default)
   - Call `ObjetivoParser().parse(file)`
   - Call `ObjetivoValidator().validate(parsed)`
@@ -211,7 +211,7 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Exit code: 0 se válido, 1 se erros
   - Target: ~50 linhas
 
-- [ ] T022 [US3] Adicionar comando `objetivo-generate` em `scripts/scaffold.py`
+- [x] T022 [US3] Adicionar comando `objetivo-generate` em `scripts/scaffold.py`
   - Parse args: `--input objetivo.yaml --output objetivo-spec.yaml`
   - Call `ObjetivoParser().parse(input)`
   - Call `ObjetivoValidator().validate(parsed)` → assert no errors
@@ -220,7 +220,7 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Write to output file
   - Target: ~80 linhas
 
-- [ ] T023 [US2] Adicionar comando `objetivo-migrate` em `scripts/scaffold.py`
+- [x] T023 [US2] Adicionar comando `objetivo-migrate` em `scripts/scaffold.py`
   - Parse args: `--file objetivo.yaml`
   - Call `ObjetivoMigrator().migrate(file)`
   - Print preview side-by-side (v1.0 vs v2.0)
@@ -228,11 +228,13 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - If yes: backup to `objetivo.yaml.v1`, overwrite `objetivo.yaml`
   - Target: ~60 linhas
 
-- [ ] T024 [P] [US3] Criar testes integração em `tests/test_scaffold_objetivo.py`
+- [x] T024 [P] [US3] Criar testes integração em `tests/test_scaffold_objetivo.py`
   - Test `scaffold.py objetivo-validate` on valid file → exit 0
   - Test `scaffold.py objetivo-validate` on invalid file → exit 1, error message
   - Test `scaffold.py objetivo-generate` → spec.yaml created
   - Test `scaffold.py objetivo-migrate` → v2 created, v1 backed up
+
+**Checkpoint US3**: Integração scaffold.py completa, 38/38 testes passando
   - Target: ~150 linhas, 4 testes
 
 **Checkpoint Fase 2**: Parser + Validator + Migrator integrados, 21/21 testes passando
