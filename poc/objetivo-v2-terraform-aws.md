@@ -220,7 +220,7 @@ terraform {
     region         = "us-east-1"
     encrypt        = true
     dynamodb_table = "terraform-locks"
-    
+
     # Previne mudanças acidentais em prod
     skip_region_validation      = false
     skip_credentials_validation = false
@@ -266,7 +266,7 @@ resource "aws_ssm_parameter" "db_master_password" {
   description = "RDS master password for ${var.env}"
   type        = "SecureString"
   value       = random_password.db_master_password.result
-  
+
   tags = {
     Environment = var.env
     ManagedBy   = "terraform"
@@ -446,7 +446,7 @@ module "vpc" {
 module "ecs" {
   source = "./modules/ecs"
   count  = var.ecs_enabled ? 1 : 0  # Condicional
-  
+
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
   # ...
@@ -455,7 +455,7 @@ module "ecs" {
 module "rds" {
   source = "./modules/rds"
   count  = var.rds_enabled ? 1 : 0  # Condicional
-  
+
   vpc_id             = module.vpc.vpc_id
   private_subnet_ids = module.vpc.private_subnet_ids
   # ...

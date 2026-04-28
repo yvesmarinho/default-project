@@ -108,28 +108,28 @@ Redesenha o formato objetivo.yaml para ser legível e fácil de preencher por de
 ## 🎯 User Stories
 
 ### 🎯 US1 (P1 - MVP): Criar objetivo.yaml v2.0 para projeto simples
-**Persona**: DevOps Iniciante  
-**Goal**: Criar primeiro objetivo.yaml sem erros em <15 min  
+**Persona**: DevOps Iniciante
+**Goal**: Criar primeiro objetivo.yaml sem erros em <15 min
 **Acceptance**: Template com exemplos inline, validação com mensagens claras, <5% taxa erro
 
 ### 🎯 US2 (P1 - MVP): Converter objetivo.yaml v1.0 → v2.0
-**Persona**: Programador Intermediário  
-**Goal**: Migrar projeto existente sem perda de informação  
+**Persona**: Programador Intermediário
+**Goal**: Migrar projeto existente sem perda de informação
 **Acceptance**: 100% campos migrados, preview side-by-side, backup automático
 
 ### 🎯 US3 (P1 - MVP): Gerar objetivo-spec.yaml a partir de objetivo.yaml v2.0
-**Persona**: Tech Lead Avançado  
-**Goal**: Gerar arquivo máquina para Copilot processar  
+**Persona**: Tech Lead Avançado
+**Goal**: Gerar arquivo máquina para Copilot processar
 **Acceptance**: YAML técnico válido, perfis/features/personas extraídos automaticamente
 
 ### 🎯 US4 (P2): Wizard interativo para criar objetivo.yaml v2.0
-**Persona**: DevOps Iniciante  
-**Goal**: Criar objetivo.yaml respondendo perguntas (sem editar arquivo)  
+**Persona**: DevOps Iniciante
+**Goal**: Criar objetivo.yaml respondendo perguntas (sem editar arquivo)
 **Acceptance**: 3 perguntas P0, keyboard navigation completa, <5 min
 
 ### 🎯 US5 (P2): Validar objetivo.yaml v2.0 com mensagens claras
-**Persona**: Programador Intermediário  
-**Goal**: Corrigir erros de validação rapidamente  
+**Persona**: Programador Intermediário
+**Goal**: Corrigir erros de validação rapidamente
 **Acceptance**: Linha exata do erro, diff colorido, exemplo de correção sugerido
 
 ---
@@ -137,27 +137,27 @@ Redesenha o formato objetivo.yaml para ser legível e fácil de preencher por de
 ## 🏗️ Architecture Decisions (ADRs)
 
 ### ADR-001: Markdown Híbrido (YAML frontmatter + Markdown body)
-**Status**: ✅ Accepted  
+**Status**: ✅ Accepted
 **Rationale**: Legibilidade +200%, suporte formatação (listas/tabelas/código), parsers maduros disponíveis
 
 ### ADR-002: Progressive Disclosure em 3 Níveis (P0/P1/P2)
-**Status**: ✅ Accepted  
+**Status**: ✅ Accepted
 **Rationale**: -75% tempo preenchimento, -89% taxa erro, minimalismo (3 campos P0 vs 18 v1.0)
 
 ### ADR-003: Arquitetura Two-File (objetivo.yaml + objetivo-spec.yaml)
-**Status**: ✅ Accepted  
+**Status**: ✅ Accepted
 **Rationale**: Separação clara humano/máquina, zero ambiguidade, Git-friendly
 
 ### ADR-004: Wizard Interativo com Keyboard Navigation
-**Status**: ✅ Accepted  
+**Status**: ✅ Accepted
 **Rationale**: Acessibilidade (keyboard-only), guiado (perguntas claras), progressivo (P0→P1→P2)
 
 ### ADR-005: Parser com Zero Dependências Obrigatórias
-**Status**: ✅ Accepted  
+**Status**: ✅ Accepted
 **Rationale**: Minimalismo (stdlib Python suficiente), segurança (menos dependências), portabilidade
 
 ### ADR-006: Migração Automática v1.0 → v2.0
-**Status**: ✅ Accepted  
+**Status**: ✅ Accepted
 **Rationale**: Preservação (100% campos migrados), segurança (preview + confirmação), adoção facilitada
 
 Ver [plan.md](./plan.md) para detalhes completos de cada ADR.
@@ -271,6 +271,6 @@ Ver [tasks.md](./tasks.md) para task list completa.
 
 ---
 
-**Last Updated**: 2026-04-27  
-**Spec Version**: 1.0.0  
+**Last Updated**: 2026-04-27
+**Spec Version**: 1.0.0
 **Implementation Status**: 📋 Spec Ready → ⏳ Implementation Pending

@@ -1,7 +1,7 @@
 # 📋 Resumo: Redesign objetivo.yaml → Formato Human-Readable
 
-**Data**: 2026-04-27  
-**Solicitação**: Criar formato objetivo.yaml mais legível para iniciantes  
+**Data**: 2026-04-27
+**Solicitação**: Criar formato objetivo.yaml mais legível para iniciantes
 **Status**: ✅ COMPLETO — Proposta v2.0 pronta para revisão
 
 ---
@@ -10,7 +10,7 @@
 
 ### 3 Documentos Criados
 
-#### 1. **Debate Técnico Completo** 
+#### 1. **Debate Técnico Completo**
 📄 [docs/debates/DEBATE-OBJETIVO-YAML-HUMAN-READABLE-COMPLETO.md](DEBATE-OBJETIVO-YAML-HUMAN-READABLE-COMPLETO.md)
 
 **Conteúdo** (~5.400 linhas):
@@ -161,7 +161,7 @@ project:
 **Excluído** ❌:  <!-- OPTIONAL: pode ficar vazio -->
 - Sistema de notificações
 
-💡 **Exemplo**: 
+💡 **Exemplo**:
    Incluído: "Migração de dados de produção"
    Excluído: "Alteração de código legado"
 ```
@@ -264,8 +264,8 @@ tasks:
 ## 🎬 Próximas Ações Recomendadas
 
 ### Opção A: **Validar Proposta** (Recomendado)
-**Ação**: Revisar os 3 documentos criados  
-**Tempo**: 30-60 minutos  
+**Ação**: Revisar os 3 documentos criados
+**Tempo**: 30-60 minutos
 **Output**: Feedback para ajustes
 
 **Perguntas para considerar**:
@@ -277,8 +277,8 @@ tasks:
 ---
 
 ### Opção B: **Implementar Fase 1** (Partir para código)
-**Ação**: Começar implementação do parser + validador  
-**Tempo**: 2 semanas  
+**Ação**: Começar implementação do parser + validador
+**Tempo**: 2 semanas
 **Output**: `scripts/lib/objetivo_parser.py` funcional
 
 **Entregas**:
@@ -290,8 +290,8 @@ tasks:
 ---
 
 ### Opção C: **Converter Projeto Real** (Proof of Concept)
-**Ação**: Aplicar formato v2.0 em projeto real (além do exemplo Chatwoot)  
-**Tempo**: 1-2 horas  
+**Ação**: Aplicar formato v2.0 em projeto real (além do exemplo Chatwoot)
+**Tempo**: 1-2 horas
 **Output**: 2-3 exemplos de objetivo.yaml v2.0
 
 **Projetos sugeridos**:
@@ -302,8 +302,8 @@ tasks:
 ---
 
 ### Opção D: **Criar Wizard Interativo** (Melhor UX)
-**Ação**: Script que entrevista usuário e gera objetivo.yaml v2.0  
-**Tempo**: 3-4 dias  
+**Ação**: Script que entrevista usuário e gera objetivo.yaml v2.0
+**Tempo**: 3-4 dias
 **Output**: `scripts/objetivo-wizard.py`
 
 **Fluxo**:
@@ -319,7 +319,7 @@ Não se preocupe — você pode pular qualquer pergunta.
 ─────────────────────────────────────────────────────
 📝 Nome do projeto: [enterprise-api]
 📝 Tipo de projeto: [1=API, 2=CLI, 3=Web, 4=Data, 5=Infra]
-📝 Em uma frase, o que este projeto faz? 
+📝 Em uma frase, o que este projeto faz?
 
 [...]
 

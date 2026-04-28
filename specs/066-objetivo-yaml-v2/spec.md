@@ -19,7 +19,7 @@ breaking_changes: false
 
 **Problem**: Formato atual objetivo.yaml v1.0 é "difícil de entender e preencher" especialmente para iniciantes. 18 campos obrigatórios, fronteira ambígua entre input humano e geração Copilot, zero exemplos inline, YAML aninhado técnico demais.
 
-**Value Proposition**: 
+**Value Proposition**:
 - **-75% tempo de preenchimento** (45-60 min → 10-15 min)
 - **-89% taxa de erro** (38% → 4% campos obrigatórios)
 - **+171% NPS** (28 → 76 satisfação)
@@ -100,7 +100,7 @@ breaking_changes: false
    - 3/3 campos P0 preenchidos
    - 0 erros de sintaxe
    - Formato: v2.0 (Markdown Híbrido)
-   
+
 📋 Próximos passos:
    - Adicione seções P1 (opcionais): Restrições, Regras de Negócio
    - Gere spec: scaffold.py objetivo-generate
@@ -241,7 +241,7 @@ O que ESTÁ no escopo? (lista, Enter para próximo item, linha vazia para termin
 > Autenticação JWT
 > CRUD de usuários
 > Migração de sessões ativas
-> 
+>
 
 ✅ 3/3 campos P0 preenchidos!
 
@@ -284,16 +284,16 @@ Adicionar seções opcionais? [y/N]: n
 Erro #1: Seção P0 obrigatória vazia
    Localização: linha 15-18
    Seção: ## 1️⃣ O que este projeto faz?
-   
+
    ❌ Encontrado:
    15 | ## 1️⃣ O que este projeto faz?
-   16 | 
-   17 | **Em uma frase**: 
+   16 |
+   17 | **Em uma frase**:
    18 |
-   
+
    ✅ Esperado:
    **Em uma frase**: API REST para gerenciar usuários e autenticação JWT
-   
+
    💡 Dica: Descreva em 1 frase clara o que o projeto faz.
        Exemplo: "Migra dados entre instâncias Chatwoot mantendo integridade referencial"
 

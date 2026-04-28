@@ -158,8 +158,8 @@ scaffold.py objetivo-migrate --file objetivo.yaml
 scaffold.py objetivo-migrate --file objetivo.yaml --no-auto
 ```
 
-📖 **Complete guide**: [docs/guides/OBJETIVO_WIZARD_GUIDE.md](docs/guides/OBJETIVO_WIZARD_GUIDE.md)  
-📋 **Specification**: [specs/066-objetivo-yaml-v2/spec.md](specs/066-objetivo-yaml-v2/spec.md)  
+📖 **Complete guide**: [docs/guides/OBJETIVO_WIZARD_GUIDE.md](docs/guides/OBJETIVO_WIZARD_GUIDE.md)
+📋 **Specification**: [specs/066-objetivo-yaml-v2/spec.md](specs/066-objetivo-yaml-v2/spec.md)
 🔀 **v1.0 vs v2.0 comparison**: [docs/debates/COMPARACAO-OBJETIVO-V1-V2.md](docs/debates/COMPARACAO-OBJETIVO-V1-V2.md)
 
 ---

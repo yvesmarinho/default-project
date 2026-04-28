@@ -22,7 +22,7 @@ Redesign objetivo.yaml para formato human-readable (Markdown Híbrido) com progr
 ### Stack & Infrastructure
 
 **Language/Version**: Python 3.11+
-**Primary Dependencies**: 
+**Primary Dependencies**:
 - PyYAML (já instalado) — parse YAML frontmatter
 - mistune (opcional) — parse Markdown sections, fallback regex
 - Rich (opcional) — wizard colorido, fallback print() simples
@@ -35,7 +35,7 @@ Redesign objetivo.yaml para formato human-readable (Markdown Híbrido) com progr
 
 ### Performance & Scale
 
-**Performance Goals**: 
+**Performance Goals**:
 - Parse objetivo.yaml <100ms
 - Validate <50ms
 - Generate objetivo-spec.yaml <200ms
@@ -51,7 +51,7 @@ Redesign objetivo.yaml para formato human-readable (Markdown Híbrido) com progr
 - 50+ templates de exemplo (library futura)
 - 1000+ usuários (template público)
 
-**Monitoring**: 
+**Monitoring**:
 - Structured logging (JSON) com correlation_id
 - Metrics: tempo_preenchimento, taxa_erro, abandono_secao
 - Alerting: taxa_erro >10% ou tempo_preenchimento >20 min

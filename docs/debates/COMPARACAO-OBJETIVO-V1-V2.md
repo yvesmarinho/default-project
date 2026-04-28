@@ -1,6 +1,6 @@
 # Comparação: objetivo.yaml v1.0 → v2.0
 
-**Data**: 2026-04-27  
+**Data**: 2026-04-27
 **Projeto de Exemplo**: enterprise-chatwoot-migration
 
 ---
@@ -57,7 +57,7 @@ project:
   type: "data-migration"
   domain: "data-engineering"
   language: "python"
-  
+
 created_at: "2026-04-27"
 created_by: "yves_marinho"
 ---
@@ -66,9 +66,9 @@ created_by: "yves_marinho"
 
 ## 1️⃣ O que este projeto faz?
 
-**Em uma frase**: Migra incrementalmente todos os dados de conversas, 
-contatos e mensagens de uma instância Chatwoot (chat.vya.digital — 
-descontinuada) para outra instância (synchat.vya.digital — mantida), 
+**Em uma frase**: Migra incrementalmente todos os dados de conversas,
+contatos e mensagens de uma instância Chatwoot (chat.vya.digital —
+descontinuada) para outra instância (synchat.vya.digital — mantida),
 garantindo zero perda de dados e integridade referencial completa.
 ```
 
@@ -113,11 +113,11 @@ garantindo zero perda de dados e integridade referencial completa.
 1. **Se cliente INATIVO na base destino**:
    - ✅ Sobrepor todos os dados da origem (atualizar registro)
    - ✅ Migrar todas conversas/mensagens relacionadas
-   
+
 2. **Se cliente ATIVO em ambas as bases**:
    - ⚠️ **NÃO migrar automaticamente** (risco de conflito)
    - ⚠️ Gerar relatório detalhado: `reports/conflitos_clientes_ativos.csv`
-   - ⚠️ Campos no relatório: account_id (origem), account_id (destino), 
+   - ⚠️ Campos no relatório: account_id (origem), account_id (destino),
      email, status, última_atividade
 
 **Output esperado**: CSV com 0 conflitos (ideal) ou lista para análise manual
@@ -267,13 +267,13 @@ enterprise-chatwoot-migration/
         skill_level: "expert"
       - role: python_developer
         skill_level: "expert"
-        
+
     features_to_implement:
       - "Conexão segura a dois bancos PostgreSQL via SQLAlchemy..."
       - "Inspeção automática do schema das duas instâncias..."
       - "Remapeamento de IDs: calcular offset..."
       # [15+ features listadas]
-      
+
     pending_tasks:
       - id: "D1"
         description: "Verificar versão exata do Chatwoot..."
@@ -401,7 +401,7 @@ project_name: "My API"  # Tem espaço? Vai quebrar depois
 ```markdown
 ## 1️⃣ O que este projeto faz?
 
-<!-- OBRIGATÓRIO: Descrever em 1-3 frases. 
+<!-- OBRIGATÓRIO: Descrever em 1-3 frases.
      Evite jargões técnicos. Público-alvo: stakeholders não-técnicos. -->
 
 **Em uma frase**: ...
@@ -430,7 +430,7 @@ description: ""  # O que escrevo aqui?
 - **Stakeholder principal**: [Nome ou cargo]
 - **Usuários afetados**: [Quem usa o sistema]
 
-💡 **Exemplo**: 
+💡 **Exemplo**:
    - Stakeholder principal: Head of Customer Success
    - Usuários afetados: Time de atendimento (12 pessoas)
 
@@ -563,6 +563,6 @@ python scripts/migrate-objetivo.py objetivo.yaml
 
 ---
 
-**Documento criado**: 2026-04-27  
-**Versão**: 1.0  
+**Documento criado**: 2026-04-27
+**Versão**: 1.0
 **Autor**: Template Architect Agent

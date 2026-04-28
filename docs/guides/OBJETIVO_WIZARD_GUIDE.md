@@ -233,7 +233,7 @@ Exemplo: Processamento automático de dados (P0)...
   Autenticação JWT (P0)
   OAuth2 Google (P1)
   2FA por SMS (P2)
-  
+
 ✓ Resposta salva
 ```
 

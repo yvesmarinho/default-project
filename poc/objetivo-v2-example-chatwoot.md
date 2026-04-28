@@ -13,7 +13,7 @@ project:
   type: "data-migration"
   domain: "data-engineering"
   language: "python"
-  
+
 created_at: "2026-04-27"
 created_by: "yves_marinho"
 organization: "Vya.Digital"
@@ -28,7 +28,7 @@ generation:
   auto_generate_architecture: true  # speckit.plan cria ADRs e diagramas
   auto_suggest_profiles: true       # Copilot sugere profiles adicionais
   interactive_mode: false           # Não perguntar durante geração (CI/CD)
-  
+
 validation:
   require_security_review: true     # Dados sensíveis → obrigatório security review
   require_tests: true               # Código crítico → testes obrigatórios
@@ -151,7 +151,7 @@ validation:
 - [ ] **Docstrings**: reStructuredText com doctests (quando possível)
 - [ ] **Tests**: Coverage ≥ 80% (pytest + pytest-cov)
 
-**Estrutura de pastas** (ver seção 6 para detalhes):
+**Estrutura de pastas** (ver ## 6️⃣ Estrutura de Pastas para detalhes):
 ```
 src/
 ├── migrators/         # Classes de migração por tabela
@@ -172,7 +172,7 @@ src/
 1. **Se cliente INATIVO na base destino**:
    - ✅ Sobrepor todos os dados da origem (atualizar registro)
    - ✅ Migrar todas conversas/mensagens relacionadas
-   
+
 2. **Se cliente ATIVO em ambas as bases**:
    - ⚠️ **NÃO migrar automaticamente** (risco de conflito)
    - ⚠️ Gerar relatório detalhado: `reports/conflitos_clientes_ativos.csv`
@@ -340,7 +340,7 @@ graph TD
 ```
 
 **Agents que processam este arquivo**:
-- `speckit.constitution` — Extrai princípios do projeto (seção 4 → constitution.md)
+- `speckit.constitution` — Extrai princípios do projeto (## 4️⃣ Restrições → constitution.md)
 - `speckit.clarify` — Identifica campos vazios → faz perguntas
 - `speckit.specify` — Gera spec.md técnica detalhada
 - `speckit.plan` — Cria arquitetura e ADRs
@@ -355,7 +355,7 @@ graph TD
 **Task D1** ✅ **RESOLVIDO** (2026-04-09):
 - **Descrição**: Verificar versão exata do Chatwoot nas 2 instâncias
 - **Script**: `scripts/check_chatwoot_versions.py`
-- **Resultado**: 
+- **Resultado**:
   - `schema_sha1` idêntico (da6b4a366d...)
   - Origem: migration=20241217041352, total=252 migrations
   - Destino: migration=20240820191716, total=255 migrations
@@ -424,7 +424,7 @@ graph TD
 
 ### Como preencher este arquivo?
 
-**Este arquivo é SOMENTE INPUT HUMANO**. Você preenche até a seção 9, depois:
+**Este arquivo é SOMENTE INPUT HUMANO**. Você preenche até ## 9️⃣ Contexto Adicional, depois:
 1. Salve como `objetivo.yaml` na raiz do projeto
 2. Execute: `uv run scripts/scaffold.py --from-objetivo`
 3. Copilot gera automaticamente: `objetivo-spec.yaml` (formato máquina)
@@ -435,14 +435,14 @@ graph TD
 - ❌ Profile descriptors → Copilot sugere automaticamente
 
 **Seções obrigatórias** (P0):
-- ✅ Seção 1: O que o projeto faz?
-- ✅ Seção 2: Qual problema resolve?
-- ✅ Seção 3: Escopo (incluído/excluído)
+- ✅ ## 1️⃣ O que este projeto faz?
+- ✅ ## 2️⃣ Qual problema resolve?
+- ✅ ## 3️⃣ Escopo do Projeto
 
 **Seções opcionais** (P1-P2):
-- Seção 4: Restrições (preencher se houver requisitos não-funcionais)
-- Seção 5: Regras de negócio (preencher se houver lógica complexa)
-- Seção 6-9: Preencher conforme necessidade (ou deixar Copilot preencher)
+- ## 4️⃣ Restrições e Requisitos Não-Funcionais (preencher se houver requisitos específicos)
+- ## 5️⃣ Regras de Negócio (preencher se houver lógica complexa)
+- ## 6️⃣-9️⃣ Estrutura de Pastas / Tecnologias / Próximos Passos / Contexto (Copilot pode gerar)
 
 ### Dúvidas?
 

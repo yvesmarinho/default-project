@@ -419,29 +419,29 @@ _LAUNCH_BY_LANGUAGE: dict[str, list[dict]] = {
 def generate_workspace(config: ProjectConfig) -> CreatedItem:
     """
     Gera `[project-name].code-workspace` com configurações MCP integradas.
-    
+
     Inclui:
     - Folders (path atual)
     - Settings básicos (formatOnSave, rulers, etc)
     - Tasks do Makefile
     - Launch configurations vazias
     - **MCP servers** (dinamicamente por domínio) ⭐ FIX BUG
-    
+
     Não sobrescreve se já existe.
     """
     dest = config.project_path / f"{config.project_name}.code-workspace"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
-    
+
     # Get MCP servers for this domain
     server_names = _MCP_BY_DOMAIN.get(config.domain, ["memory", "sequential-thinking"])
     mcp_servers = {name: _ALL_MCP_SERVERS[name] for name in server_names if name in _ALL_MCP_SERVERS}
-    
+
     # Get settings for this language/domain
     settings: dict = {}
     settings.update(_SETTINGS_BY_DOMAIN.get(config.domain, {}))
     settings.update(_SETTINGS_BY_LANGUAGE.get(config.language, {}))
-    
+
     # Add base settings
     settings.update({
         "editor.formatOnSave": True,
@@ -449,7 +449,7 @@ def generate_workspace(config: ProjectConfig) -> CreatedItem:
         "files.trimTrailingWhitespace": True,
         "files.insertFinalNewline": True,
     })
-    
+
     workspace_config = {
         "folders": [{"path": "."}],
         "settings": settings,
@@ -515,7 +515,7 @@ def generate_workspace(config: ProjectConfig) -> CreatedItem:
             "configurations": []
         }
     }
-    
+
     return _write_json(dest, workspace_config)
 
 

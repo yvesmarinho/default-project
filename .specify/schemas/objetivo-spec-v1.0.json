@@ -4,7 +4,11 @@
   "title": "Objetivo Technical Spec v1.0",
   "description": "JSON Schema for validating objetivo-spec.yaml files generated from objetivo.yaml v2.0",
   "type": "object",
-  "required": ["version", "project", "profiles"],
+  "required": [
+    "version",
+    "project",
+    "profiles"
+  ],
   "properties": {
     "version": {
       "type": "string",
@@ -13,7 +17,13 @@
     },
     "project": {
       "type": "object",
-      "required": ["name", "title", "type", "domain", "language"],
+      "required": [
+        "name",
+        "title",
+        "type",
+        "domain",
+        "language"
+      ],
       "properties": {
         "name": {
           "type": "string",
@@ -87,7 +97,10 @@
       "description": "List of features extracted from Section 3 (Incluído)",
       "items": {
         "type": "object",
-        "required": ["name", "priority"],
+        "required": [
+          "name",
+          "priority"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -97,7 +110,11 @@
           },
           "priority": {
             "type": "string",
-            "enum": ["P0", "P1", "P2"],
+            "enum": [
+              "P0",
+              "P1",
+              "P2"
+            ],
             "description": "Feature priority (P0 = must-have, P1 = should-have, P2 = nice-to-have)"
           },
           "estimated_effort": {
@@ -113,7 +130,10 @@
       "description": "List of user personas extracted from Section 5",
       "items": {
         "type": "object",
-        "required": ["name", "role"],
+        "required": [
+          "name",
+          "role"
+        ],
         "properties": {
           "name": {
             "type": "string",

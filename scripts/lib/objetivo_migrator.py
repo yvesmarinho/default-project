@@ -1,7 +1,7 @@
 """
 objetivo_migrator.py — Migrator for objetivo.yaml v1.0 → v2.0
 
-Automatically migrates objetivo.yaml files from v1.0 (YAML puro) to v2.0 
+Automatically migrates objetivo.yaml files from v1.0 (YAML puro) to v2.0
 (Markdown Híbrido) format with zero data loss.
 
 Features:
@@ -12,10 +12,10 @@ Features:
 
 Usage:
     from scripts.lib.objetivo_migrator import ObjetivoMigrator
-    
+
     migrator = ObjetivoMigrator()
     result = migrator.migrate("objetivo.yaml")
-    
+
     if result.success:
         print(f"✅ Migrated! Preview: {result.preview_file}")
         print(f"Warnings: {len(result.warnings)}")
@@ -34,7 +34,7 @@ from typing import Dict, List, Optional, Any, Tuple
 @dataclass
 class MigrationResult:
     """Dataclass representing the result of a migration.
-    
+
     Attributes:
         success: Whether migration completed successfully
         source_version: Detected version of source file ("1.0" | "2.0" | "unknown")
@@ -51,43 +51,43 @@ class MigrationResult:
     mappings: Dict[str, str] = field(default_factory=dict)
     warnings: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
-    
+
     def __str__(self) -> str:
         """Format result for display."""
         if not self.success:
             return f"❌ Migration failed:\n  " + "\n  ".join(self.errors)
-        
+
         result = f"✅ Migration successful: v{self.source_version} → v{self.target_version}\n"
         result += f"📄 Preview: {self.preview_file}\n"
         result += f"🔄 Mappings: {len(self.mappings)} fields\n"
-        
+
         if self.warnings:
             result += f"⚠️  Warnings ({len(self.warnings)}):\n"
             for w in self.warnings[:3]:  # Show first 3 warnings
                 result += f"  - {w}\n"
             if len(self.warnings) > 3:
                 result += f"  ... and {len(self.warnings) - 3} more\n"
-        
+
         return result
 
 
 class ObjetivoMigrator:
     """Migrator for objetivo.yaml v1.0 → v2.0.
-    
+
     Detects version automatically and migrates from v1.0 YAML structure
     to v2.0 Markdown Híbrido format.
-    
+
     Example:
         migrator = ObjetivoMigrator()
         result = migrator.migrate("objetivo.yaml")
-        
+
         if result.success:
             print(f"Preview: {result.preview_file}")
             # User reviews objetivo.yaml.v2
             # Then: mv objetivo.yaml objetivo.yaml.v1.bak
             #       mv objetivo.yaml.v2 objetivo.yaml
     """
-    
+
     # v1.0 field patterns
     V1_INDICATORS = [
         "feature.id",
@@ -95,7 +95,7 @@ class ObjetivoMigrator:
         "produto.visao_alto_nivel",
         "decisoes_iniciais",
     ]
-    
+
     # v2.0 indicators
     V2_INDICATORS = [
         'version: "2.0"',
@@ -103,28 +103,28 @@ class ObjetivoMigrator:
         "## 2️⃣",
         "## 3️⃣",
     ]
-    
+
     def __init__(self):
         """Initialize migrator."""
         pass
-    
+
     def migrate(
-        self, 
+        self,
         file_path: str | Path,
         output_path: Optional[str | Path] = None
     ) -> MigrationResult:
         """Migrate objetivo.yaml v1.0 → v2.0.
-        
+
         Args:
             file_path: Path to source objetivo.yaml file
             output_path: Path to write preview (default: {file_path}.v2)
-            
+
         Returns:
             MigrationResult with success status, mappings, and warnings
-            
+
         Raises:
             FileNotFoundError: If source file does not exist
-            
+
         Implementation:
             1. Read source file
             2. Detect version (_detect_version)
@@ -136,7 +136,7 @@ class ObjetivoMigrator:
         """
         # Convert to Path
         source_path = Path(file_path)
-        
+
         # Check file exists
         if not source_path.exists():
             return MigrationResult(
@@ -144,7 +144,7 @@ class ObjetivoMigrator:
                 source_version="unknown",
                 errors=[f"Source file not found: {source_path}"]
             )
-        
+
         # Read source file
         try:
             content = source_path.read_text(encoding='utf-8')
@@ -154,10 +154,10 @@ class ObjetivoMigrator:
                 source_version="unknown",
                 errors=[f"Failed to read source file: {e}"]
             )
-        
+
         # Detect version
         version = self._detect_version(content)
-        
+
         # Check if already v2.0
         if version == "2.0":
             return MigrationResult(
@@ -165,7 +165,7 @@ class ObjetivoMigrator:
                 source_version="2.0",
                 errors=["File is already in v2.0 format - no migration needed"]
             )
-        
+
         # Check if unknown version
         if version == "unknown":
             return MigrationResult(
@@ -177,7 +177,7 @@ class ObjetivoMigrator:
                 ],
                 warnings=["Check if file is valid YAML or has expected v1.0 fields"]
             )
-        
+
         # Parse v1.0 YAML (handle multi-document YAML with comments)
         try:
             # First, try safe_load for single document
@@ -205,28 +205,28 @@ class ObjetivoMigrator:
                 source_version="1.0",
                 errors=[f"Failed to parse YAML: {e}"]
             )
-        
+
         if not isinstance(v1_data, dict):
             return MigrationResult(
                 success=False,
                 source_version="1.0",
                 errors=[f"Expected YAML dict, got {type(v1_data).__name__}"]
             )
-        
+
         # Map v1.0 to v2.0
         v2_content, warnings = self._map_v1_to_v2(v1_data)
-        
+
         # Render v2.0 template
         frontmatter = v2_content["frontmatter"]
         sections = v2_content["sections"]
         v2_text = self._render_v2_template(frontmatter, sections)
-        
+
         # Determine output path
         if output_path is None:
             output_path = source_path.parent / f"{source_path.name}.v2"
         else:
             output_path = Path(output_path)
-        
+
         # Write preview file
         try:
             output_path.write_text(v2_text, encoding='utf-8')
@@ -237,7 +237,7 @@ class ObjetivoMigrator:
                 errors=[f"Failed to write preview file: {e}"],
                 warnings=warnings
             )
-        
+
         # Build mappings summary
         mappings = {
             "feature.name": f"project.name ({frontmatter['project']['name']})",
@@ -248,7 +248,7 @@ class ObjetivoMigrator:
             "produto.personas": "Section 5️⃣",
             "decisoes_iniciais": "Section 7️⃣",
         }
-        
+
         # Success!
         return MigrationResult(
             success=True,
@@ -258,21 +258,21 @@ class ObjetivoMigrator:
             mappings=mappings,
             warnings=warnings
         )
-    
+
     def _detect_version(self, content: str) -> str:
         """Detect objetivo.yaml version from content.
-        
+
         Args:
             content: File content as string
-            
+
         Returns:
             Version string: "1.0" | "2.0" | "unknown"
-            
+
         Detection Logic:
             - v1.0: YAML puro, has fields like feature:, negocio:, produto:
             - v2.0: Markdown Híbrido, has YAML frontmatter with version: "2.0"
             - unknown: Cannot determine (malformed or new format)
-            
+
         Implementation:
             Check for v2.0 indicators first (version field, ## sections)
             Then check for v1.0 indicators (nested YAML fields)
@@ -282,36 +282,36 @@ class ObjetivoMigrator:
         # Strong v2.0 signal: has version: "2.0" AND markdown sections
         if 'version: "2.0"' in content and any(f"## {i}️⃣" in content for i in [1, 2, 3]):
             return "2.0"
-        
+
         if "version: '2.0'" in content and any(f"## {i}️⃣" in content for i in [1, 2, 3]):
             return "2.0"
-        
+
         # Check for v1.0 indicators - top-level YAML keys
         v1_score = 0
         v1_keys = ["feature:", "negocio:", "produto:", "decisoes_iniciais:"]
-        
+
         for key in v1_keys:
             # Check if key appears at start of line (top-level YAML key)
             if re.search(rf'^{re.escape(key)}', content, re.MULTILINE):
                 v1_score += 1
-        
+
         # Decision logic
         if v1_score >= 2:
             return "1.0"
-        
+
         return "unknown"
-    
+
     def _map_v1_to_v2(self, v1_data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
         """Map v1.0 YAML structure to v2.0 format.
-        
+
         Args:
             v1_data: Parsed v1.0 YAML dict
-            
+
         Returns:
             Tuple of (v2_content, warnings)
             - v2_content: Dict with frontmatter + sections for template rendering
             - warnings: List of warnings (unmapped fields, missing data, etc.)
-            
+
         Mapping Rules:
             feature.name → frontmatter project.name
             produto.visao_alto_nivel → Section 1️⃣ (What this does)
@@ -321,7 +321,7 @@ class ObjetivoMigrator:
             negocio.contexto.restricoes_negocio → Section 4️⃣ (Constraints)
             produto.personas → Section 5️⃣ (Business rules - adapted)
             decisoes_iniciais → Section 7️⃣ (Technologies - adapted)
-            
+
         Implementation:
             Build dict with frontmatter (project.name, type, domain)
             and sections dict {1: content, 2: content, ...}
@@ -329,11 +329,11 @@ class ObjetivoMigrator:
         """
         warnings = []
         sections = {}
-        
+
         # Extract feature info
         feature = v1_data.get("feature", {})
         project_name = feature.get("name", "migrated-project").lower().replace(" ", "-")
-        
+
         # Build frontmatter
         frontmatter = {
             "version": "2.0",
@@ -355,7 +355,7 @@ class ObjetivoMigrator:
                 "require_p0": True,
             },
         }
-        
+
         # Section 1: What this does (from produto.visao_alto_nivel)
         produto = v1_data.get("produto", {})
         visao = produto.get("visao_alto_nivel", "").strip()
@@ -366,13 +366,13 @@ class ObjetivoMigrator:
         else:
             warnings.append("Section 1: produto.visao_alto_nivel not found - section will be minimal")
             sections[1] = "**Em uma frase**: [Descreva o que este projeto faz]\n"
-        
+
         # Section 2: Problem solved (from negocio.problema)
         negocio = v1_data.get("negocio", {})
         problema = negocio.get("problema", {})
         problema_desc = problema.get("descricao", "").strip()
         impacto = problema.get("impacto_atual", "").strip()
-        
+
         if problema_desc or impacto:
             sections[2] = ""
             if problema_desc:
@@ -382,11 +382,11 @@ class ObjetivoMigrator:
         else:
             warnings.append("Section 2: negocio.problema not found - section will be minimal")
             sections[2] = "### Problema Atual\n\n[Descreva o problema que este projeto resolve]\n"
-        
+
         # Section 3: Scope (from produto.jornadas_criticas)
         jornadas = produto.get("jornadas_criticas", [])
         sections[3] = "**Incluído ✅**:\n"
-        
+
         if jornadas:
             for jornada in jornadas:
                 if isinstance(jornada, dict):
@@ -397,14 +397,14 @@ class ObjetivoMigrator:
         else:
             warnings.append("Section 3: produto.jornadas_criticas not found - adding placeholder")
             sections[3] += "- [Adicione itens do escopo]\n"
-        
+
         sections[3] += "\n**Excluído ❌**:\n"
         sections[3] += "- [Adicione itens fora do escopo]\n"
-        
+
         # Section 4: Constraints (from negocio.contexto.restricoes_negocio)
         contexto = negocio.get("contexto", {})
         restricoes = contexto.get("restricoes_negocio", [])
-        
+
         if restricoes:
             sections[4] = "**Restrições de Negócio**:\n"
             for restricao in restricoes:
@@ -413,10 +413,10 @@ class ObjetivoMigrator:
         else:
             # Optional section, don't add if no data
             pass
-        
+
         # Section 5: Business Rules (adapted from produto.personas)
         personas = produto.get("personas", [])
-        
+
         if personas:
             sections[5] = "**Personas e Necessidades**:\n\n"
             for persona in personas:
@@ -424,7 +424,7 @@ class ObjetivoMigrator:
                     name = persona.get("name", "")
                     needs = persona.get("needs", "")
                     pain_points = persona.get("pain_points", "")
-                    
+
                     if name:
                         sections[5] += f"**{name}**:\n"
                         if needs:
@@ -435,51 +435,51 @@ class ObjetivoMigrator:
         else:
             # Optional section
             pass
-        
+
         # Section 7: Technologies (adapted from decisoes_iniciais)
         decisoes = v1_data.get("decisoes_iniciais", [])
-        
+
         if decisoes:
             sections[7] = "**Decisões Técnicas Iniciais**:\n\n"
             for decisao in decisoes:
                 if isinstance(decisao, dict):
                     question = decisao.get("question", "")
                     decision = decisao.get("decision", "")
-                    
+
                     if question and decision:
                         sections[7] += f"- **{question}**\n"
                         sections[7] += f"  Decisão: {decision}\n\n"
-        
+
         # Add general warning about manual review
         warnings.append(
             "Migration complete but manual review recommended: "
             "update project.type, project.domain, project.language in frontmatter"
         )
-        
+
         v2_content = {
             "frontmatter": frontmatter,
             "sections": sections,
         }
-        
+
         return v2_content, warnings
-    
+
     def _render_v2_template(
-        self, 
+        self,
         frontmatter: Dict[str, Any],
         sections: Dict[int, str]
     ) -> str:
         """Render v2.0 template with mapped content.
-        
+
         Args:
             frontmatter: YAML frontmatter dict
             sections: Dict mapping section number to content
-            
+
         Returns:
             Complete v2.0 objetivo.yaml content as string
         """
         # Build YAML frontmatter
         yaml_str = yaml.dump(frontmatter, allow_unicode=True, default_flow_style=False)
-        
+
         # Build Markdown sections
         section_titles = {
             1: "O que este projeto faz?",
@@ -492,15 +492,15 @@ class ObjetivoMigrator:
             8: "Próximos Passos",
             9: "Contexto Adicional",
         }
-        
+
         # Start with frontmatter
         result = f"---\n{yaml_str}---\n\n"
         result += f"# 🎯 Objetivo: {frontmatter.get('project', {}).get('title', 'Project')}\n\n"
-        
+
         # Add sections
         for num in sorted(sections.keys()):
             if num in section_titles and sections[num].strip():
                 result += f"## {num}️⃣ {section_titles[num]}\n\n"
                 result += sections[num].strip() + "\n\n---\n\n"
-        
+
         return result

@@ -168,18 +168,18 @@ status: "in-progress"
 - Sub-estrutura **"Regra #N: Nome da Regra"**:
   ```markdown
   ### Regra #1: Registro de Usuários (Self-Registration)
-  
+
   **Cenário**: ...
-  
+
   **Validações**:
   - ✅ Email: formato válido
   - ❌ Emails temporários bloqueados
-  
+
   **Output esperado**:
   ```json
   { "id": "uuid", ... }
   ```
-  
+
   **Regra de auditoria**:
   - ✅ Log em `audit_logs`
   ```
@@ -193,7 +193,7 @@ status: "in-progress"
 - Adicionar no template guidance:
   ```markdown
   ## 5️⃣ Regras de Negócio
-  
+
   <!-- Organize como:
        ### Regra #1: Nome Descritivo
        **Cenário**: Quando X acontece
@@ -239,7 +239,7 @@ status: "in-progress"
 - Template deve incluir exemplo com comentários:
   ```markdown
   ## 6️⃣ Estrutura de Pastas
-  
+
   ```
   projeto/
   ├── src/
@@ -247,7 +247,7 @@ status: "in-progress"
   │   └── core/
   │       └── config.py        # Configurações via env vars
   ```
-  
+
   <!-- Use comentários # para explicar o propósito de cada arquivo -->
   ```
 
@@ -262,11 +262,11 @@ status: "in-progress"
 - **Organização hierárquica por Fases**:
   ```markdown
   ### Fase 1: Setup Inicial (1 dia)
-  
+
   **Estrutura do projeto**:
   - [ ] Criar estrutura de pastas
   - [ ] Configurar pyproject.toml
-  
+
   **Database setup**:
   - [ ] Configurar SQLAlchemy
   - [ ] Criar migration inicial
@@ -282,9 +282,9 @@ status: "in-progress"
 - Template deve incluir exemplo de organização:
   ```markdown
   ## 8️⃣ Próximos Passos
-  
+
   ### Fase 1: Nome da Fase (tempo estimado)
-  
+
   **Grupo de tarefas**:
   - [ ] Tarefa 1
   - [ ] Tarefa 2
@@ -384,7 +384,7 @@ status: "in-progress"
 - Template deve incluir exemplo de tabela:
   ```markdown
   ## 2️⃣ Qual problema resolve?
-  
+
   | Métrica | Antes | Depois | Δ |
   |---------|-------|--------|---|
   | Tempo   | 5 min | 30s    | -90% |
@@ -443,19 +443,19 @@ status: "in-progress"
   ### Histórico do Projeto
   - Quando criado
   - Parte de qual iniciativa
-  
+
   ### Arquitetura de Referência
   - Pattern usado (ex: Repository + Service Layer)
   - Diagrama ou ASCII art
-  
+
   ### Decisões de Design
   - Por que tecnologia X em vez de Y?
   - Trade-offs importantes
-  
+
   ### Referências Externas
   - Links para docs oficiais
   - Projetos similares
-  
+
   ### Meta-Observação
   - Validação do objetivo.yaml v2.0 em si
   ```
@@ -469,13 +469,13 @@ status: "in-progress"
 - Renomear seção ou adicionar sub-headers sugeridas no template:
   ```markdown
   ## 9️⃣ Contexto Adicional
-  
+
   ### Histórico do Projeto
   <!-- Quando criado, por quê, parte de qual iniciativa -->
-  
+
   ### Decisões de Design
   <!-- Por que tecnologia X em vez de Y? Trade-offs -->
-  
+
   ### Referências Externas
   <!-- Links para docs, projetos similares -->
   ```
@@ -490,10 +490,10 @@ status: "in-progress"
    ```yaml
    project:
      type: "backend-api"  # Comum: backend-api, frontend-spa, cli-tool, etc
-   
+
    generation:
      generate_spec_on_change: false  # Auto-gera objetivo-spec.yaml ao salvar
-   
+
    validation:
      level: "strict"  # Options: strict, permissive, off
    ```
@@ -508,7 +508,7 @@ status: "in-progress"
 3. **Guideline para Seção 5️⃣ Regras de Negócio**:
    ```markdown
    ## 5️⃣ Regras de Negócio
-   
+
    <!-- Organize como:
         ### Regra #1: Nome Descritivo
         **Cenário**: ...
@@ -521,7 +521,7 @@ status: "in-progress"
 4. **Exemplo de Estrutura de Pastas com comentários**:
    ```markdown
    ## 6️⃣ Estrutura de Pastas
-   
+
    ```
    projeto/
    ├── src/
@@ -529,7 +529,7 @@ status: "in-progress"
    │   └── core/
    │       └── config.py        # Configurações via env vars
    ```
-   
+
    <!-- Use comentários # inline para explicar cada arquivo -->
    ```
 

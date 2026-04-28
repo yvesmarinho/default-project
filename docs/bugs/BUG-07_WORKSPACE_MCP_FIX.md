@@ -1,9 +1,9 @@
 # BUG-07: Workspace File Missing MCP Configuration
 
-**Status**: ✅ RESOLVIDO  
-**Data**: 2026-04-27  
-**Prioridade**: P0 (Critical)  
-**Branch**: 060-mini-engram-python  
+**Status**: ✅ RESOLVIDO
+**Data**: 2026-04-27
+**Prioridade**: P0 (Critical)
+**Branch**: 060-mini-engram-python
 
 ---
 
@@ -62,7 +62,7 @@ Resultado: MCP global/incorreto carregado
 def generate_workspace(config: ProjectConfig) -> CreatedItem:
     """
     Gera [project-name].code-workspace com MCP integrado.
-    
+
     Inclui:
     - Folders, settings, tasks, launch
     - ⭐ MCP servers (por domínio) - FIX BUG-07
@@ -70,7 +70,7 @@ def generate_workspace(config: ProjectConfig) -> CreatedItem:
     # Get MCP servers for domain
     server_names = _MCP_BY_DOMAIN.get(config.domain, [...])
     mcp_servers = {name: _ALL_MCP_SERVERS[name] for name in server_names}
-    
+
     workspace_config = {
         "folders": [{"path": "."}],
         "settings": {...},
@@ -80,7 +80,7 @@ def generate_workspace(config: ProjectConfig) -> CreatedItem:
         "tasks": {...},
         "launch": {...}
     }
-    
+
     return _write_json(dest, workspace_config)
 ```
 
