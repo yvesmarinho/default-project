@@ -161,18 +161,18 @@ description: "Task list for objetivo.yaml v2.0 implementation"
 
 ### US2 - Migrador v1.0 → v2.0 (Day 6-7)
 
-- [ ] T016 [US2] Criar `scripts/lib/objetivo_migrator.py` com estrutura base
+- [x] T016 [US2] Criar `scripts/lib/objetivo_migrator.py` com estrutura base
   - Classes: `ObjetivoMigrator`, `MigrationResult` (dataclass)
   - Methods stub: `migrate()`, `_detect_version()`, `_map_v1_to_v2()`
   - Target: ~70 linhas inicial
 
-- [ ] T017 [US2] Implementar `_detect_version()` em `objetivo_migrator.py`
+- [x] T017 [US2] Implementar `_detect_version()` em `objetivo_migrator.py`
   - Detect v1.0: YAML puro, campo `prompt.role.user`
   - Detect v2.0: Markdown Híbrido, YAML frontmatter com `version: "2.0"`
   - Return: "1.0" | "2.0" | "unknown"
   - Target: ~30 linhas
 
-- [ ] T018 [US2] Implementar `_map_v1_to_v2()` em `objetivo_migrator.py`
+- [x] T018 [US2] Implementar `_map_v1_to_v2()` em `objetivo_migrator.py`
   - Map `prompt.content.description` → seções 1️⃣ + 2️⃣ (split by sentence)
   - Map `specification.project_name` → frontmatter `project.name`
   - Map `specification.response` → seção 7️⃣ Tecnologias
@@ -181,7 +181,7 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Return dict com conteúdo v2.0
   - Target: ~100 linhas
 
-- [ ] T019 [US2] Implementar `migrate()` método principal em `objetivo_migrator.py`
+- [x] T019 [US2] Implementar `migrate()` método principal em `objetivo_migrator.py`
   - Read v1.0 file
   - Call `_detect_version()` → assert v1.0
   - Call `_map_v1_to_v2()`
@@ -190,7 +190,7 @@ description: "Task list for objetivo.yaml v2.0 implementation"
   - Return `MigrationResult` (success, mappings, warnings)
   - Target: ~80 linhas
 
-- [ ] T020 [P] [US2] Criar testes unitários em `tests/test_objetivo_migrator.py`
+- [x] T020 [P] [US2] Criar testes unitários em `tests/test_objetivo_migrator.py`
   - Test migrate valid v1.0 → v2.0 (all fields mapped)
   - Test migrate complex v1.0 (nested rules, multiple personas)
   - Test migrate edge case: missing fields → warnings
