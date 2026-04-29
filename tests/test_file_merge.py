@@ -58,16 +58,16 @@ dist/
 build/
 *.egg-info/
 """)
-    
+
     template_content = """# Template gitignore (não usado diretamente pelo merger)
 .secrets/
 *.key
 """
-    
+
     # Act: Executar merge
     merger = GitignoreMerger()
     result = merger.merge(gitignore, template_content, interactive=False)
-    
+
     # Assert: Verificar que padrões críticos foram adicionados
     assert result.status == "created"  # Merge bem-sucedido
     assert ".secrets/" in gitignore.read_text()
@@ -98,13 +98,13 @@ def test_gitignore_merge_skips_if_all_patterns_present(temp_dir):
 __pycache__/
 """
     gitignore.write_text(complete_content)
-    
+
     template_content = ".secrets/\n*.key\n"
-    
+
     # Act
     merger = GitignoreMerger()
     result = merger.merge(gitignore, template_content, interactive=False)
-    
+
     # Assert: Arquivo não foi modificado
     assert result.status == "skipped"
     assert gitignore.read_text() == complete_content  # Nenhuma mudança
@@ -118,13 +118,13 @@ def test_gitignore_merge_on_empty_file(temp_dir):
     # Arrange
     gitignore = temp_dir / ".gitignore"
     gitignore.write_text("")
-    
+
     template_content = ".secrets/\n*.key\n"
-    
+
     # Act
     merger = GitignoreMerger()
     result = merger.merge(gitignore, template_content, interactive=False)
-    
+
     # Assert
     assert result.status == "created"
     content = gitignore.read_text()
@@ -151,7 +151,7 @@ def test_makefile_merge_adds_essential_targets(temp_dir):
 custom-task:
 \techo "Custom task"
 """)
-    
+
     template_content = """help:
 \t@echo "Available targets:"
 \t@echo "  make test    - Run tests"
@@ -162,11 +162,11 @@ test:
 lint:
 \truff check .
 """
-    
+
     # Act
     merger = MakefileMerger()
     result = merger.merge(makefile, template_content, interactive=False)
-    
+
     # Assert
     assert result.status == "created"
     content = makefile.read_text()
@@ -203,13 +203,13 @@ install-deps:
 \tpip install -r requirements.txt
 """
     makefile.write_text(complete_content)
-    
+
     template_content = "help:\n\t@echo 'template help'\n"
-    
+
     # Act
     merger = MakefileMerger()
     result = merger.merge(makefile, template_content, interactive=False)
-    
+
     # Assert
     assert result.status == "skipped"
     assert makefile.read_text() == complete_content
@@ -235,7 +235,7 @@ This is my awesome project that does amazing things.
 
 Some custom content here.
 """)
-    
+
     template_content = """# {{PROJECT_NAME}}
 
 Template intro (não usado)
@@ -254,11 +254,11 @@ Template intro (não usado)
 - Feature 1
 - Feature 2
 """
-    
+
     # Act
     merger = ReadmeMerger()
     result = merger.merge(readme, template_content, interactive=False)
-    
+
     # Assert
     assert result.status == "created"
     content = readme.read_text()
@@ -297,13 +297,13 @@ pip install
 python main.py
 """
     readme.write_text(complete_content)
-    
+
     template_content = "## Project Status\nTemplate status\n"
-    
+
     # Act
     merger = ReadmeMerger()
     result = merger.merge(readme, template_content, interactive=False)
-    
+
     # Assert
     assert result.status == "skipped"
     assert readme.read_text() == complete_content
@@ -321,7 +321,7 @@ def test_readme_merge_preserves_intro_without_sections(temp_dir):
 Just a simple intro paragraph.
 No sections yet.
 """)
-    
+
     template_content = """# Template
 
 ## Project Status
@@ -330,11 +330,11 @@ Active
 ## Stack
 Python
 """
-    
+
     # Act
     merger = ReadmeMerger()
     result = merger.merge(readme, template_content, interactive=False)
-    
+
     # Assert
     assert result.status == "created"
     content = readme.read_text()
@@ -356,12 +356,12 @@ def test_merge_or_skip_uses_gitignore_merger(temp_dir):
     # Arrange
     gitignore = temp_dir / ".gitignore"
     gitignore.write_text("__pycache__/\n")
-    
+
     template_content = ".secrets/\n*.key\n"
-    
+
     # Act
     result = merge_or_skip(gitignore, template_content, interactive=False)
-    
+
     # Assert
     assert result.status in ["created", "skipped"]
     assert ".secrets/" in gitignore.read_text()  # Merge executado
@@ -375,12 +375,12 @@ def test_merge_or_skip_skips_unsupported_files(temp_dir):
     # Arrange
     custom_file = temp_dir / "custom.txt"
     custom_file.write_text("User content\n")
-    
+
     template_content = "Template content\n"
-    
+
     # Act
     result = merge_or_skip(custom_file, template_content, interactive=False)
-    
+
     # Assert
     assert result.status == "skipped"
     assert result.message == "File exists, no merger available"
@@ -395,12 +395,12 @@ def test_merge_or_skip_uses_makefile_merger(temp_dir):
     # Arrange
     makefile = temp_dir / "Makefile"
     makefile.write_text("deploy:\n\t./deploy.sh\n")
-    
+
     template_content = "help:\n\t@echo 'Help'\n\ntest:\n\tpytest\n"
-    
+
     # Act
     result = merge_or_skip(makefile, template_content, interactive=False)
-    
+
     # Assert
     assert result.status in ["created", "skipped"]
     content = makefile.read_text()
@@ -417,12 +417,12 @@ def test_merge_or_skip_uses_readme_merger(temp_dir):
     # Arrange
     readme = temp_dir / "README.md"
     readme.write_text("# My Project\n\nIntro\n")
-    
+
     template_content = "# Template\n\n## Project Status\nActive\n"
-    
+
     # Act
     result = merge_or_skip(readme, template_content, interactive=False)
-    
+
     # Assert
     assert result.status in ["created", "skipped"]
     content = readme.read_text()
@@ -440,7 +440,7 @@ def test_get_registered_mergers():
     """
     # Act
     mergers = get_registered_mergers()
-    
+
     # Assert
     assert "GitignoreMerger" in mergers
     assert "MakefileMerger" in mergers
@@ -455,11 +455,11 @@ def test_get_registered_mergers():
 def test_full_github_repo_scaffold_scenario(temp_dir):
     """
     Cenário COMPLETO: Simula clone de repo GitHub + scaffold
-    
+
     1. Repo tem .gitignore, README.md do GitHub
     2. Scaffold executa merge em ambos
     3. Verifica resultado final
-    
+
     Este é o cenário REAL que causou o BUG-#1.
     """
     # Arrange: Simular repo GitHub recém-clonado
@@ -469,13 +469,13 @@ __pycache__/
 *.pyc
 *.pyo
 """)
-    
+
     readme = temp_dir / "README.md"
     readme.write_text("""# knowledge-harvester-library
 
 A library for harvesting knowledge from various sources.
 """)
-    
+
     # Templates (simplificados)
     gitignore_template = ".secrets/\n*.key\n"
     readme_template = """# Project
@@ -486,7 +486,7 @@ Active
 ## Stack
 Python
 """
-    
+
     # Act: Executar merge em ambos os arquivos
     gitignore_result = merge_or_skip(
         gitignore, gitignore_template, interactive=False
@@ -494,14 +494,14 @@ Python
     readme_result = merge_or_skip(
         readme, readme_template, interactive=False
     )
-    
+
     # Assert: Verificar merge bem-sucedido
     # .gitignore
     assert gitignore_result.status == "created"
     gitignore_content = gitignore.read_text()
     assert ".secrets/" in gitignore_content  # 🔒 CRÍTICO: Segurança
     assert "__pycache__/" in gitignore_content  # Preservado
-    
+
     # README.md
     assert readme_result.status == "created"
     readme_content = readme.read_text()
@@ -515,17 +515,17 @@ def test_empty_project_scaffold_scenario(temp_dir):
     """
     Cenário: Projeto vazio (sem arquivos pré-existentes)
     Expectativa: merge_or_skip não é chamado (arquivos criados normalmente)
-    
+
     Este cenário já funcionava antes do fix.
     """
     # Arrange: Diretório vazio (sem .gitignore nem README)
     gitignore = temp_dir / ".gitignore"
     readme = temp_dir / "README.md"
-    
+
     # Assert: Arquivos não existem
     assert not gitignore.exists()
     assert not readme.exists()
-    
+
     # Neste cenário, create_structure() cria arquivos diretamente
     # (não passa por merge_or_skip)
     # Este teste documenta o comportamento baseline.

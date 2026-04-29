@@ -22,25 +22,25 @@ def test_profiles_applied_populated(tmp_path):
     """
     Cenário: Criar projeto e verificar que profiles_applied não está vazio.
     Expectativa: profiles_applied deve conter pelo menos o perfil de domínio.
-    
+
     Bug fix: BUG-#2 (P1 - profiles_applied sempre vazio)
     """
     # Este é um teste de integração que precisa executar o scaffold completo
     # Por enquanto, vamos testar a lógica de cálculo de perfis isoladamente
     from scripts.lib.config import DOMAIN_DEFAULT_PROFILES, SPECKIT_TRANSVERSAL_PROFILES
-    
+
     # Simular configuração do projeto
     domain = "programming"
     extra_profiles = []
-    
+
     # Lógica de cálculo (mesma de new_project.py linha 100-102)
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(domain, f"devops-{domain}")
     all_profiles = [domain_profile] + extra_profiles + SPECKIT_TRANSVERSAL_PROFILES
-    
+
     # Verificações
     assert len(all_profiles) > 0, "profiles_applied não deveria estar vazio"
     assert domain_profile in all_profiles, f"Perfil de domínio '{domain_profile}' deveria estar presente"
-    
+
     # Verifica que transversais estão incluídos
     for transversal in SPECKIT_TRANSVERSAL_PROFILES:
         assert transversal in all_profiles, f"Perfil transversal '{transversal}' deveria estar presente"
@@ -52,22 +52,22 @@ def test_profiles_applied_with_extras():
     Expectativa: profiles_applied deve conter domínio + extras + transversais.
     """
     from scripts.lib.config import DOMAIN_DEFAULT_PROFILES, SPECKIT_TRANSVERSAL_PROFILES
-    
+
     domain = "infrastructure"
     extra_profiles = ["terraform-aws", "k8s-helm"]
-    
+
     # Lógica de cálculo
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(domain, f"devops-{domain}")
     all_profiles = [domain_profile] + extra_profiles + SPECKIT_TRANSVERSAL_PROFILES
-    
+
     # Verificações
     assert domain_profile in all_profiles
     assert "terraform-aws" in all_profiles
     assert "k8s-helm" in all_profiles
-    
+
     for transversal in SPECKIT_TRANSVERSAL_PROFILES:
         assert transversal in all_profiles
-    
+
     # Verifica ordem (domínio → extras → transversais)
     assert all_profiles.index(domain_profile) < all_profiles.index("terraform-aws")
     assert all_profiles.index("terraform-aws") < all_profiles.index(SPECKIT_TRANSVERSAL_PROFILES[0])
@@ -79,22 +79,22 @@ def test_profiles_calculation_matches_ui():
     Expectativa: Mesma lógica, mesmo resultado.
     """
     from scripts.lib.config import DOMAIN_DEFAULT_PROFILES, SPECKIT_TRANSVERSAL_PROFILES
-    
+
     # Simular vários cenários
     scenarios = [
         ("programming", []),
         ("infrastructure", ["terraform-aws"]),
         ("analysis", ["data-warehouse-dbt", "python-fastapi"]),
     ]
-    
+
     for domain, extras in scenarios:
         # Lógica de ui.py (linha 619)
         domain_profile = DOMAIN_DEFAULT_PROFILES.get(domain, f"devops-{domain}")
         ui_result = [domain_profile] + extras + SPECKIT_TRANSVERSAL_PROFILES
-        
+
         # Lógica de new_project.py (deveria ser idêntica)
         new_project_result = [domain_profile] + extras + SPECKIT_TRANSVERSAL_PROFILES
-        
+
         assert ui_result == new_project_result, \
             f"Cálculo de perfis diverge entre ui.py e new_project.py para domínio '{domain}'"
 
@@ -115,7 +115,7 @@ def test_scaffold_state_yaml_structure():
         "profiles_applied",  # ← Campo crítico (BUG-#2)
         "template_versions",
     ]
-    
+
     # Simular conteúdo mínimo
     sample_state = {
         "scaffold_version": "1.0.0",
@@ -126,14 +126,14 @@ def test_scaffold_state_yaml_structure():
         "profiles_applied": ["devops-programming", "devops-security"],  # NÃO vazio
         "template_versions": {},
     }
-    
+
     # Verificações
     for key in expected_keys:
         assert key in sample_state, f"Campo '{key}' deveria estar presente em .scaffold-state.yaml"
-    
+
     assert isinstance(sample_state["profiles_applied"], list), \
         "profiles_applied deveria ser uma lista"
-    
+
     assert len(sample_state["profiles_applied"]) > 0, \
         "profiles_applied NÃO deveria estar vazio (BUG-#2 fix)"
 
@@ -143,19 +143,19 @@ def test_scaffold_state_committed_in_initial_commit():
     """
     Cenário de integração: Criar projeto e verificar que .scaffold-state.yaml está no commit inicial.
     Expectativa: git show HEAD --name-only deve listar .scaffold-state.yaml.
-    
+
     Bug fix: BUG-#3 (P1 - .scaffold-state.yaml criado APÓS commit)
-    
+
     NOTA: Este é um teste de integração que requer scaffold completo.
     Pode ser executado manualmente ou em CI/CD.
     """
     pytest.skip("Teste de integração - requer scaffold completo")
-    
+
     # Código de referência para teste manual:
-    # 
+    #
     # with tempfile.TemporaryDirectory() as tmpdir:
     #     project_path = Path(tmpdir) / "test-project"
-    #     
+    #
     #     # Executar scaffold
     #     result = subprocess.run([
     #         "uv", "run", "scripts/scaffold.py", "new",
@@ -165,9 +165,9 @@ def test_scaffold_state_committed_in_initial_commit():
     #         "--language=python",
     #         "--target-dir", tmpdir
     #     ], capture_output=True, text=True)
-    #     
+    #
     #     assert result.returncode == 0, f"Scaffold falhou: {result.stderr}"
-    #     
+    #
     #     # Verificar que .scaffold-state.yaml está no commit inicial
     #     git_show = subprocess.run(
     #         ["git", "show", "HEAD", "--name-only"],
@@ -175,7 +175,7 @@ def test_scaffold_state_committed_in_initial_commit():
     #         capture_output=True,
     #         text=True
     #     )
-    #     
+    #
     #     assert ".scaffold-state.yaml" in git_show.stdout, \
     #         "BUG-#3: .scaffold-state.yaml NÃO está no commit inicial"
 
@@ -184,7 +184,7 @@ def test_commit_order_logic():
     """
     Cenário: Verificar ordem lógica das operações no flow.
     Expectativa: write_scaffold_state() → git.create_initial_commit() → git.tag_scaffold()
-    
+
     Bug fix: BUG-#3 (ordem errada causava .scaffold-state.yaml untracked)
     """
     # Este teste verifica a ordem lógica das operações
@@ -192,25 +192,25 @@ def test_commit_order_logic():
     # 1. Criar todos os arquivos (incluindo .scaffold-state.yaml)
     # 2. Fazer commit (git add . && git commit)
     # 3. Criar tag
-    
+
     # Ordem ERRADA (antes do fix):
     wrong_order = [
         "git.create_initial_commit",  # Commit sem .scaffold-state.yaml
         "git.tag_scaffold",
         "write_scaffold_state",  # Criado DEPOIS do commit (untracked)
     ]
-    
+
     # Ordem CORRETA (após fix):
     correct_order = [
         "write_scaffold_state",  # Criar .scaffold-state.yaml PRIMEIRO
         "git.create_initial_commit",  # Commit inclui .scaffold-state.yaml
         "git.tag_scaffold",  # Tag aponta para commit completo
     ]
-    
+
     # Verificar que ordem correta faz sentido logicamente
     assert correct_order.index("write_scaffold_state") < correct_order.index("git.create_initial_commit"), \
         "Estado deve ser escrito ANTES do commit"
-    
+
     assert correct_order.index("git.create_initial_commit") < correct_order.index("git.tag_scaffold"), \
         "Commit deve ser criado ANTES da tag"
 
@@ -221,21 +221,21 @@ def test_profiles_not_empty_edge_cases():
     Expectativa: Sempre retornar pelo menos perfil de domínio + transversais.
     """
     from scripts.lib.config import DOMAIN_DEFAULT_PROFILES, SPECKIT_TRANSVERSAL_PROFILES
-    
+
     # Caso 1: Domínio inválido (não existe em DOMAIN_DEFAULT_PROFILES)
     invalid_domain = "nonexistent"
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(invalid_domain, f"devops-{invalid_domain}")
     all_profiles = [domain_profile] + [] + SPECKIT_TRANSVERSAL_PROFILES
-    
+
     assert len(all_profiles) > 0
     assert domain_profile == "devops-nonexistent"  # Fallback correto
-    
+
     # Caso 2: extras = None (não fornecido)
     extras = None
     all_profiles = [domain_profile] + (extras or []) + SPECKIT_TRANSVERSAL_PROFILES
-    
+
     assert len(all_profiles) > 0
-    
+
     # Caso 3: SPECKIT_TRANSVERSAL_PROFILES vazio (edge case teórico)
     # Mesmo se transversais forem vazios, deve ter pelo menos o domínio
     minimal_profiles = [domain_profile] + []

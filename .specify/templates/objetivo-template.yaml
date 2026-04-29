@@ -62,7 +62,7 @@ negocio:
         #   metric: "Tempo médio de deploy"
         #   target: "<= 15 minutos (vs 2h atual)"
 
-      # Adicione mais métricas conforme necessário
+        # Adicione mais métricas conforme necessário
 
   contexto:
     restricoes_negocio:
@@ -83,7 +83,7 @@ negocio:
       # OPCIONAL: Para features complexas, identifique bounded contexts (DDD)
       # Se não aplicável, deixe como lista vazia: []
       - context: "[CONTEXT_NAME]"
-        entities: ["[ENTITY_1]", "[ENTITY_2]"]
+        entities: [ "[ENTITY_1]", "[ENTITY_2]" ]
         # Exemplo:
         #   context: "Deploy Management"
         #   entities: ["Deployment", "Environment", "Rollback"]
@@ -113,7 +113,7 @@ produto:
       #   needs: "Visibilidade de deploys em produção e rollback rápido em falhas"
       #   pain_points: "Downtime médio de 30min quando deploy falha devido a rollback manual"
 
-    # Adicione mais personas conforme necessário
+      # Adicione mais personas conforme necessário
 
   jornadas_criticas:
     - journey: "[USER_JOURNEY_1]"
@@ -132,8 +132,8 @@ produto:
       #   priority: "P1"
       #   value: "Reduz downtime de 30min para 2min com rollback automático"
 
-    # Adicione mais jornadas conforme necessário
-    # P1 = Crítico (MVP), P2 = Importante, P3 = Desejável
+      # Adicione mais jornadas conforme necessário
+      # P1 = Crítico (MVP), P2 = Importante, P3 = Desejável
 
 decisoes_iniciais:
   - id: "D-01"
@@ -144,8 +144,8 @@ decisoes_iniciais:
     #   question: "Construir solução própria ou comprar SaaS?"
     #   decision: "Construir (justificativa: requisitos específicos de integração com sistema legado não atendidos por SaaS existentes)"
 
-  # Adicione mais decisões conforme necessário
-  # Se nenhuma decisão foi tomada ainda, remova esta seção ou deixe lista vazia: []
+    # Adicione mais decisões conforme necessário
+    # Se nenhuma decisão foi tomada ainda, remova esta seção ou deixe lista vazia: []
 
 perguntas_abertas:
   - question: "[OPEN_QUESTION_1]"
@@ -160,8 +160,8 @@ perguntas_abertas:
     #   question: "Suporte a quais idiomas na UI? Apenas PT-BR ou PT-BR + EN?"
     #   impact: "Médio - afeta UI e mensagens de validação"
 
-  # Adicione mais perguntas conforme necessário
-  # Se todas perguntas foram resolvidas, deixe lista vazia: []
+    # Adicione mais perguntas conforme necessário
+    # Se todas perguntas foram resolvidas, deixe lista vazia: []
 
 metadata:
   owner: "[PRODUCT_OWNER]"

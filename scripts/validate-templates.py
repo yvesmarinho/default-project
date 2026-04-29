@@ -62,11 +62,11 @@ class ValidationResult:
     errors: List[ValidationIssue] = field(default_factory=list)
     warnings: List[ValidationIssue] = field(default_factory=list)
     files_checked: int = 0
-    
+
     @property
     def success(self) -> bool:
         return len(self.errors) == 0
-    
+
     @property
     def has_warnings(self) -> bool:
         return len(self.warnings) > 0
@@ -77,11 +77,11 @@ class ValidationResult:
 
 class TemplateValidator:
     """Main template validation logic"""
-    
+
     def __init__(self, template_dir: Path):
         self.template_dir = template_dir
         self.result = ValidationResult()
-    
+
     def validate_all(self, template_filter: Optional[str] = None) -> ValidationResult:
         """Validate all templates or filtered subset"""
         if not self.template_dir.exists():
@@ -92,16 +92,16 @@ class TemplateValidator:
                 message=f"Template directory not found: {self.template_dir}"
             ))
             return self.result
-        
+
         # Find all template files
         template_files = []
         for pattern in ["*.md", "*.yaml", "*.json"]:
             template_files.extend(self.template_dir.glob(pattern))
-        
+
         # Filter if specified
         if template_filter:
             template_files = [f for f in template_files if template_filter in f.stem]
-        
+
         if not template_files:
             self.result.warnings.append(ValidationIssue(
                 severity="warning",
@@ -110,14 +110,14 @@ class TemplateValidator:
                 message="No template files found"
             ))
             return self.result
-        
+
         # Validate each file
         for template_file in sorted(template_files):
             self.result.files_checked += 1
             self._validate_file(template_file)
-        
+
         return self.result
-    
+
     def _validate_file(self, file_path: Path):
         """Validate single template file"""
         try:
@@ -138,7 +138,7 @@ class TemplateValidator:
                 message=f"Failed to read file: {e}"
             ))
             return
-        
+
         # Dispatch to specific validator
         if file_path.suffix == ".yaml":
             self._validate_yaml(file_path, content)
@@ -146,7 +146,7 @@ class TemplateValidator:
             self._validate_json(file_path, content)
         elif file_path.suffix == ".md":
             self._validate_markdown(file_path, content)
-    
+
     def _validate_yaml(self, file_path: Path, content: str):
         """Validate YAML file syntax"""
         try:
@@ -165,7 +165,7 @@ class TemplateValidator:
                 line=getattr(e, 'problem_mark', None) and e.problem_mark.line + 1,
                 message=f"YAML syntax error: {e}"
             ))
-    
+
     def _validate_json(self, file_path: Path, content: str):
         """Validate JSON file syntax"""
         try:
@@ -177,12 +177,12 @@ class TemplateValidator:
                 line=e.lineno,
                 message=f"JSON syntax error: {e.msg}"
             ))
-    
+
     def _validate_markdown(self, file_path: Path, content: str):
         """Validate Markdown template"""
         # Extract frontmatter
         frontmatter = self._extract_frontmatter(content)
-        
+
         # Validate frontmatter
         if frontmatter:
             self._validate_frontmatter(file_path, frontmatter)
@@ -193,19 +193,19 @@ class TemplateValidator:
                 line=1,
                 message="No YAML frontmatter found"
             ))
-        
+
         # Validate links
         self._validate_markdown_links(file_path, content)
-        
+
         # Validate variables
         self._validate_variables(file_path, content)
-    
+
     def _extract_frontmatter(self, content: str) -> Optional[Dict[str, Any]]:
         """Extract YAML frontmatter from Markdown"""
         lines = content.split('\n')
         if not lines or lines[0].strip() != '---':
             return None
-        
+
         frontmatter_lines = []
         for i, line in enumerate(lines[1:], start=1):
             if line.strip() == '---':
@@ -215,9 +215,9 @@ class TemplateValidator:
                 except yaml.YAMLError:
                     return None
             frontmatter_lines.append(line)
-        
+
         return None
-    
+
     def _validate_frontmatter(self, file_path: Path, frontmatter: Dict[str, Any]):
         """Validate frontmatter required fields"""
         # Check required fields
@@ -230,7 +230,7 @@ class TemplateValidator:
                     message=f"Missing required frontmatter field: {field}",
                     details=f"Required fields: {', '.join(REQUIRED_FRONTMATTER_FIELDS['*.md'])}"
                 ))
-        
+
         # Validate template_version format
         if "template_version" in frontmatter:
             version = frontmatter["template_version"]
@@ -241,7 +241,7 @@ class TemplateValidator:
                     line=1,
                     message=f"template_version should follow semver format (x.y.z): {version}"
                 ))
-        
+
         # Warn on breaking_changes without justification
         if frontmatter.get("breaking_changes") is True:
             if "breaking_reason" not in frontmatter and "breaking_change_notes" not in frontmatter:
@@ -251,22 +251,22 @@ class TemplateValidator:
                     line=1,
                     message="breaking_changes=true but no breaking_reason or breaking_change_notes field"
                 ))
-    
+
     def _validate_markdown_links(self, file_path: Path, content: str):
         """Validate Markdown links"""
         for match in MARKDOWN_LINK_PATTERN.finditer(content):
             link_text = match.group(1)
             link_url = match.group(2)
-            
+
             # Skip external links (http/https)
             if link_url.startswith(('http://', 'https://', '#')):
                 continue
-            
+
             # Validate file references
             if link_url.startswith(('./', '../', '/')):
                 # Resolve relative path
                 link_path = (file_path.parent / link_url).resolve()
-                
+
                 # Check if file exists
                 if not link_path.exists():
                     # Extract line number
@@ -278,7 +278,7 @@ class TemplateValidator:
                         message=f"Broken link: [{link_text}]({link_url})",
                         details=f"Target file not found: {link_path}"
                     ))
-    
+
     def _validate_variables(self, file_path: Path, content: str):
         """Validate variable substitution placeholders"""
         # Extract all variables
@@ -287,7 +287,7 @@ class TemplateValidator:
             var = match.group(1) or match.group(2) or match.group(3)
             if var:
                 variables.add(var)
-        
+
         # Check for common issues
         for var in variables:
             # Warn on lowercase variables (convention is uppercase)
@@ -308,14 +308,14 @@ class TemplateValidator:
 def format_console(result: ValidationResult) -> str:
     """Format validation results for console output"""
     lines = []
-    
+
     # Header
     lines.append("=" * 70)
     lines.append("TEMPLATE VALIDATION RESULTS")
     lines.append("=" * 70)
     lines.append(f"Files checked: {result.files_checked}")
     lines.append("")
-    
+
     # Errors
     if result.errors:
         lines.append(f"❌ ERRORS ({len(result.errors)}):")
@@ -329,7 +329,7 @@ def format_console(result: ValidationResult) -> str:
             if issue.details:
                 lines.append(f"    Details: {issue.details}")
             lines.append("")
-    
+
     # Warnings
     if result.warnings:
         lines.append(f"⚠️  WARNINGS ({len(result.warnings)}):")
@@ -343,7 +343,7 @@ def format_console(result: ValidationResult) -> str:
             if issue.details:
                 lines.append(f"    Details: {issue.details}")
             lines.append("")
-    
+
     # Summary
     lines.append("=" * 70)
     if result.success:
@@ -354,7 +354,7 @@ def format_console(result: ValidationResult) -> str:
     else:
         lines.append("❌ FAILED")
     lines.append("=" * 70)
-    
+
     return "\n".join(lines)
 
 def format_json(result: ValidationResult) -> str:
@@ -415,19 +415,19 @@ def main():
         default=TEMPLATE_DIR,
         help=f"Template directory (default: {TEMPLATE_DIR})"
     )
-    
+
     args = parser.parse_args()
-    
+
     # Run validation
     validator = TemplateValidator(args.template_dir)
     result = validator.validate_all(template_filter=args.template)
-    
+
     # Output results
     if args.json:
         print(format_json(result))
     else:
         print(format_console(result))
-    
+
     # Exit code
     if not result.success:
         sys.exit(1)

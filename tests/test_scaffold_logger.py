@@ -25,7 +25,7 @@ def test_log_scaffold():
     with tempfile.TemporaryDirectory() as tmpdir:
         log_file = Path(tmpdir) / "test.yaml"
         logger = ScaffoldLogger(log_file)
-        
+
         entry = logger.log_scaffold(
             project_name="test-project",
             template_version="2.1.0",
@@ -33,11 +33,11 @@ def test_log_scaffold():
             created_by="test_user",
             path="/tmp/test"
         )
-        
+
         assert entry.id == 1
         assert entry.project_name == "test-project"
         assert entry.success is True
-        
+
         # Verify it was saved
         entries = logger.query()
         assert len(entries) == 1
@@ -49,21 +49,21 @@ def test_query_filters():
     with tempfile.TemporaryDirectory() as tmpdir:
         log_file = Path(tmpdir) / "test.yaml"
         logger = ScaffoldLogger(log_file)
-        
+
         # Log multiple scaffolds
         logger.log_scaffold("proj-1", "2.0.0", "python-fastapi", "user1", "/tmp/1")
         logger.log_scaffold("proj-2", "2.0.0", "typescript-next", "user2", "/tmp/2")
         logger.log_scaffold("proj-3", "2.1.0", "python-fastapi", "user1", "/tmp/3")
-        
+
         # Filter by profile
         results = logger.query(profile="python-fastapi")
         assert len(results) == 2
         assert all(r.profile == "python-fastapi" for r in results)
-        
+
         # Filter by user
         results = logger.query(created_by="user1")
         assert len(results) == 2
-        
+
         # Filter by project name
         results = logger.query(project_name="proj-2")
         assert len(results) == 1
@@ -75,11 +75,11 @@ def test_wildcard_query():
     with tempfile.TemporaryDirectory() as tmpdir:
         log_file = Path(tmpdir) / "test.yaml"
         logger = ScaffoldLogger(log_file)
-        
+
         logger.log_scaffold("vya-api-users", "2.0.0", "python-fastapi", "user1", "/tmp/1")
         logger.log_scaffold("vya-api-orders", "2.0.0", "python-fastapi", "user1", "/tmp/2")
         logger.log_scaffold("other-project", "2.0.0", "python-fastapi", "user1", "/tmp/3")
-        
+
         # Wildcard query
         results = logger.query(project_name="vya-*")
         assert len(results) == 2
@@ -91,11 +91,11 @@ def test_query_limit():
     with tempfile.TemporaryDirectory() as tmpdir:
         log_file = Path(tmpdir) / "test.yaml"
         logger = ScaffoldLogger(log_file)
-        
+
         # Log 10 scaffolds
         for i in range(10):
             logger.log_scaffold(f"proj-{i}", "2.0.0", "python", "user1", f"/tmp/{i}")
-        
+
         # Query with limit
         results = logger.query(limit=5)
         assert len(results) == 5
@@ -106,14 +106,14 @@ def test_statistics():
     with tempfile.TemporaryDirectory() as tmpdir:
         log_file = Path(tmpdir) / "test.yaml"
         logger = ScaffoldLogger(log_file)
-        
+
         # Log scaffolds
         logger.log_scaffold("proj-1", "2.0.0", "python-fastapi", "user1", "/tmp/1", success=True)
         logger.log_scaffold("proj-2", "2.0.0", "typescript-next", "user2", "/tmp/2", success=True)
         logger.log_scaffold("proj-3", "2.0.0", "python-fastapi", "user1", "/tmp/3", success=False)
-        
+
         stats = logger.get_stats()
-        
+
         assert stats["total_scaffolds"] == 3
         assert stats["success_rate"] == 66.7  # 2/3
         assert stats["by_profile"]["python-fastapi"] == 2
@@ -127,7 +127,7 @@ def test_failed_scaffold_logging():
     with tempfile.TemporaryDirectory() as tmpdir:
         log_file = Path(tmpdir) / "test.yaml"
         logger = ScaffoldLogger(log_file)
-        
+
         entry = logger.log_scaffold(
             project_name="failed-proj",
             template_version="2.0.0",
@@ -137,10 +137,10 @@ def test_failed_scaffold_logging():
             success=False,
             error_message="Template parse error"
         )
-        
+
         assert entry.success is False
         assert entry.error_message == "Template parse error"
-        
+
         # Query only failed
         results = logger.query(success=False)
         assert len(results) == 1
@@ -152,13 +152,13 @@ def test_csv_export():
     with tempfile.TemporaryDirectory() as tmpdir:
         log_file = Path(tmpdir) / "test.yaml"
         logger = ScaffoldLogger(log_file)
-        
+
         logger.log_scaffold("proj-1", "2.0.0", "python", "user1", "/tmp/1")
         logger.log_scaffold("proj-2", "2.0.0", "typescript", "user2", "/tmp/2")
-        
+
         csv_file = Path(tmpdir) / "export.csv"
         logger.export_csv(csv_file)
-        
+
         # Verify CSV exists and has content
         assert csv_file.exists()
         content = csv_file.read_text()
@@ -169,7 +169,7 @@ def test_csv_export():
 
 if __name__ == "__main__":
     print("Running scaffold_logger.py tests...")
-    
+
     tests = [
         test_log_scaffold,
         test_query_filters,
@@ -179,10 +179,10 @@ if __name__ == "__main__":
         test_failed_scaffold_logging,
         test_csv_export,
     ]
-    
+
     passed = 0
     failed = 0
-    
+
     for test in tests:
         try:
             test()
@@ -194,9 +194,9 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"❌ {test.__name__}: Unexpected error: {e}")
             failed += 1
-    
+
     print(f"\n{'='*70}")
     print(f"Tests passed: {passed}/{len(tests)}")
     print(f"{'='*70}")
-    
+
     sys.exit(0 if failed == 0 else 1)
