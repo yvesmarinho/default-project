@@ -110,6 +110,51 @@
 
 ---
 
+### Activity 004 — Fix BUG-06: Profile Descriptor References
+**Time**: 2026-04-29
+**Type**: CODING + DOCUMENTATION
+**Status**: ✅ COMPLETE
+
+**Description**: Updated profile descriptor references to match renamed prompt files (removed layer2-/layer3- prefixes).
+
+**Root Cause**: Prompt files were renamed previously (layer2-python-fastapi.prompt.md → python-fastapi.prompt.md) but descriptor references were not updated.
+
+**Actions**:
+1. ✅ Verified that prompt files already have correct names (without layer prefix)
+2. ✅ Updated python-fastapi.yaml descriptor (2 path references)
+3. ✅ Updated python-flask.yaml descriptor (2 path references)
+4. ✅ Updated documentation references:
+   - docs/templates/TEMPLATE-VERSIONS.md (2 references)
+   - docs/planning/TODO.md (2 references)
+   - docs/TODO.md (3 references)
+5. ✅ Updated BUG-06 report with resolution details
+
+**Results**:
+- Bug Status: 🔴 EM INVESTIGAÇÃO → ✅ RESOLVIDO
+- Descriptors now reference correct file paths
+- Documentation fully consistent
+- Ready for integration testing
+
+**Files Modified**:
+- `profile-descriptors/python-fastapi.yaml`
+- `profile-descriptors/python-flask.yaml`
+- `docs/templates/TEMPLATE-VERSIONS.md`
+- `docs/planning/TODO.md`
+- `docs/TODO.md`
+- `docs/bugs/BUG-06_PROFILE_LOADING.md`
+
+**Decisions Made**:
+- Followed Opção 1 from bug analysis (normalize file names)
+- Updated all documentation for consistency
+- Deferred integration test to validate fix
+
+**Next Steps**:
+- Integration test: scaffold new python-fastapi project
+- Verify SpecKit loads correct profile
+- Add regression test
+
+---
+
 <!-- Template for next activities:
 
 ### Activity NNN — [Activity Name]
@@ -144,9 +189,9 @@
 
 ## Session Summary (to be updated at session end)
 
-**Total Activities**: 3
+**Total Activities**: 4
 **Status Distribution**:
-- ✅ Complete: 3
+- ✅ Complete: 4
 - 🔵 In Progress: 0
 - ❌ Blocked: 0
 - ⏸️ Paused: 0
@@ -155,5 +200,6 @@
 - Session initialized and ready for work
 - BUG-08 documented (knowledge-harvester-library missing MCP config)
 - BUG-05 RESOLVED (objetivo wizard placeholder replacement fixed + tested)
+- BUG-06 RESOLVED (profile descriptor references updated)
 
 **Next Session Priorities**: [To be filled at session end]

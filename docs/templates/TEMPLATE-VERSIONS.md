@@ -184,7 +184,7 @@
 **Status**: ✅ stable
 **Descriptor**: [`profile-descriptors/python-fastapi.yaml`](../profile-descriptors/python-fastapi.yaml)
 **Templates**: [`.github/templates/python-fastapi/`](../.github/templates/python-fastapi/)
-**Prompt**: [`.github/prompts/domain/layer2-python-fastapi.prompt.md`](../.github/prompts/domain/layer2-python-fastapi.prompt.md)
+**Prompt**: [`.github/prompts/domain/python-fastapi.prompt.md`](../.github/prompts/domain/python-fastapi.prompt.md)
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
@@ -202,7 +202,7 @@
 **Status**: ✅ stable
 **Descriptor**: [`profile-descriptors/python-flask.yaml`](../profile-descriptors/python-flask.yaml)
 **Templates**: [`.github/templates/python-flask/`](../.github/templates/python-flask/)
-**Prompt**: [`.github/prompts/domain/layer2-python-flask.prompt.md`](../.github/prompts/domain/layer2-python-flask.prompt.md)
+**Prompt**: [`.github/prompts/domain/python-flask.prompt.md`](../.github/prompts/domain/python-flask.prompt.md)
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|

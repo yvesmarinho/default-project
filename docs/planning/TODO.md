@@ -1280,7 +1280,7 @@
   - [x] `scaffold.py --dry-run --json`: manifesto JSON limpo (sem banner)
   - [x] `scaffold.py --config FILE`: lê configuração de arquivo YAML (força `--ci`)
 - [x] **[IMP-20]** ✅ **CONCLUÍDO 2026-03-07** — Layer 2 — Perfil `python-fastapi` completo
-  - [x] Prompt domain: `.github/prompts/domain/layer2-python-fastapi.prompt.md`
+  - [x] Prompt domain: `.github/prompts/domain/python-fastapi.prompt.md`
   - [x] Templates: `src/main.py`, `src/api/router.py`, `src/api/v1/health.py`, `src/core/config.py`, `tests/conftest.py`, `tests/test_health.py`
   - [x] `pyproject.toml` com deps FastAPI + pytest-asyncio + ruff + bandit + pip-audit
   - [x] `Dockerfile` multistage (`uv sync --frozen --no-dev` + usuário não-root)
@@ -1289,7 +1289,7 @@
   - [x] `.env.example` com variáveis documentadas sem valores reais
   - [x] Profile descriptor: `profile-descriptors/python-fastapi.yaml`
 - [x] **[IMP-20b]** ✅ **CONCLUÍDO 2026-03-07** — Layer 2 — Perfil `python-flask` completo *(uso declarado pelo mantenedor)*
-  - [x] Prompt domain: `.github/prompts/domain/layer2-python-flask.prompt.md`
+  - [x] Prompt domain: `.github/prompts/domain/python-flask.prompt.md`
   - [x] Templates: `src/app.py`, `src/blueprints/health/`, `src/core/config.py`, `src/extensions.py`, `tests/conftest.py`, `tests/test_health.py`
   - [x] `pyproject.toml` com deps Flask + Flask-WTF + Flask-Talisman + ruff + bandit + pip-audit
   - [x] `Dockerfile` multistage (`uv sync --frozen --no-dev` + usuário não-root, gunicorn)

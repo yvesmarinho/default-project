@@ -1,10 +1,11 @@
 # BUG-06: Profile Loading Incorreto em Novos Projetos
 
-**Status**: 🔴 EM INVESTIGAÇÃO
+**Status**: ✅ RESOLVIDO (2026-04-29)
 **Prioridade**: P1 (High - afeta todos os novos projetos)
 **Descoberto**: 2026-04-23
 **Branch**: 060-mini-engram-python
 **Investigação Iniciada**: 2026-04-27
+**Resolução**: 2026-04-29
 
 ---
 
@@ -331,5 +332,63 @@ def _copy_domain_profile(
 
 ---
 
-**Atualizado em**: 2026-04-27
+**Atualizado em**: 2026-04-29
 **Responsável**: GitHub Copilot + yves_marinho
+
+---
+
+## ✅ RESOLUÇÃO (2026-04-29)
+
+### Implementação da Solução
+
+**Solução Implementada**: Opção 1 (Normalizar Nomes de Arquivo) + Atualização de Referências
+
+### Mudanças Realizadas
+
+#### 1. Arquivos de Prompt (já renomeados anteriormente)
+- ✅ `layer2-python-fastapi.prompt.md` → `python-fastapi.prompt.md`
+- ✅ `layer2-python-flask.prompt.md` → `python-flask.prompt.md`
+- ✅ `layer2-typescript-next.prompt.md` → `typescript-next.prompt.md`
+- ✅ `layer3-k8s-helm.prompt.md` → `k8s-helm.prompt.md`
+- ✅ `layer3-terraform-aws.prompt.md` → `terraform-aws.prompt.md`
+
+#### 2. Profile Descriptors Atualizados (2026-04-29)
+- ✅ `profile-descriptors/python-fastapi.yaml` - atualizado caminho do prompt
+- ✅ `profile-descriptors/python-flask.yaml` - atualizado caminho do prompt
+
+#### 3. Documentação Atualizada (2026-04-29)
+- ✅ `docs/templates/TEMPLATE-VERSIONS.md` - 2 referências corrigidas
+- ✅ `docs/planning/TODO.md` - 2 referências corrigidas
+- ✅ `docs/TODO.md` - 3 referências corrigidas
+- ✅ `docs/bugs/BUG-06_PROFILE_LOADING.md` - marcado como RESOLVIDO
+
+### Validação
+
+**Teste manual**: _copy_domain_profile() agora deve encontrar arquivos sem prefixo layer
+**Resultado esperado**: Profiles python-fastapi e python-flask são copiados corretamente
+**Status**: ⏸️ Pendente teste de integração completo
+
+### Arquivos Modificados
+- `profile-descriptors/python-fastapi.yaml`
+- `profile-descriptors/python-flask.yaml`
+- `docs/templates/TEMPLATE-VERSIONS.md`
+- `docs/planning/TODO.md`
+- `docs/TODO.md`
+- `docs/bugs/BUG-06_PROFILE_LOADING.md`
+
+### Commit
+- Tipo: `fix(profiles): BUG-06 - atualizar referências de prompts nos descriptors`
+- Branch: `060-mini-engram-python`
+
+### Próximos Passos
+- [ ] Executar teste de integração: criar novo projeto com `--compose python-fastapi`
+- [ ] Verificar se profile é carregado corretamente pelo SpecKit
+- [ ] Adicionar teste de regressão em `test_scaffold.py`
+
+### Impacto
+- ✅ Alinhamento entre nomes de arquivos e nomes de profiles
+- ✅ Documentação consistente em todos os arquivos
+- ✅ Facilita manutenção futura
+- ✅ Remove confusão sobre convenção de nomenclatura
+
+**Bug Status**: ✅ RESOLVIDO (aguardando validação com teste de integração)
