@@ -1,12 +1,76 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-28 — Session 2026-04-28 Closed (Spec 066 Complete + Enhancements)
-**Project Status**: 🟢 Stable — Spec 066 objetivo.yaml v2.0 COMPLETE ✅ + Post-Enhancements
-**Version**: 1.17.0
-**Last Session**: 2026-04-28 — ✅ Spec 066 Feature Complete (100%) + Sprint 3 + Wizard v1.0
+**Last Updated**: 2026-04-29 — Session 2026-04-29 Active (BUG-05 + BUG-06 + GitHub Optional + Pre-commit Hook)
+**Project Status**: 🟢 Stable — Spec 066 objetivo.yaml v2.0 COMPLETE ✅ + Bug Fixes
+**Version**: 1.18.0
+**Last Session**: 2026-04-29 — ✅ BUG-05 FIXED + BUG-06 FIXED + GitHub Optional Feature + Pre-commit Hook Fix
 
 ---
 
+> **✅ SESSION 2026-04-29 IN PROGRESS (Bug Fixes + Feature Enhancements)**
+> - **Status**: 🔄 ACTIVE — 4 major issues resolved
+> - **Duration**: ~6h (bug fixes + feature implementation)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 7 total
+>   - 7f30b43 — fix(bug05): corrigir substituição de placeholders no wizard objetivo-init ✅
+>   - 73a880d — test(bug05): adicionar testes para wizard objetivo-init ✅
+>   - 1e138e7 — test(bug05): POC completo com 2 cenários de teste ✅
+>   - b6c3ec2 — fix(bug06): corrigir referências de prompt files em python-{fastapi,flask}.yaml ✅
+>   - 729b654 — docs(bug06): adicionar guia de validação de perfis e teste de integração ✅
+>   - 626ed5c — feat(github): tornar repositório GitHub opcional no scaffold ✅
+>   - 53a9ac5 — fix(precommit): hook bloqueava .git-hooks/ e usava git reset HEAD ✅ PUSHED
+> - **BUG-05 RESOLVED**: objetivo-init Wizard Placeholder Replacement
+>   - Issue: wizard gerava {{PLACEHOLDERS}} em vez de substituir com respostas
+>   - Root cause: mismatch entre nomes de placeholders ({{ANSWER_1}} vs {{DESCRIPTION}})
+>   - Fix: 7 placeholders renomeados para nomes semânticos + lógica multiline
+>   - Tests: 4/4 passing (single/multiline, default values, all fields)
+>   - Files: objetivo_wizard.py, test_bug05_objetivo_wizard_placeholders.py
+> - **BUG-06 RESOLVED**: Profile Descriptor Loading
+>   - Issue: SpecKit carregava "Default" em vez de perfis especificados
+>   - Root cause: prompt files renomeados sem atualizar descriptors
+>   - Fix: python-fastapi.yaml + python-flask.yaml atualizados
+>   - Validation: teste de integração confirmou 14 .prompt.md files copiados
+>   - Files: python-fastapi.yaml, python-flask.yaml, validate-profiles-integration.sh
+> - **GitHub Optional Feature**: ✅ COMPLETE
+>   - Feature: permitir scaffold new sem --repo flag
+>   - Implementation:
+>     - _apply_placeholders() mostra "(não configurado)" quando repo vazio
+>     - 2 templates SECURITY.md (com/sem GitHub)
+>     - generate_github_security_files() condicional
+>   - Tests: 6/6 passing (placeholder, templates, config validation)
+>   - Docs: docs/guides/GITHUB_OPTIONAL.md (comprehensive guide)
+> - **Pre-commit Hook Fix**: ✅ COMPLETE
+>   - Issue 1: Hook bloqueava `.git-hooks/pre-commit.secrets` (falso positivo)
+>   - Issue 2: Comando `git reset HEAD` falhava em repos sem commits
+>   - Fix 1: Adicionada exceção para `.git-hooks/` (são scripts, não secrets)
+>   - Fix 2: Comando alterado para `git restore --staged` (Git 2.23+)
+>   - Tests: 6/6 passing (exception, git commands, patterns, permissions)
+>   - Docs: docs/guides/PRECOMMIT_HOOK_FIX.md (detailed analysis)
+> - **Documentation Created**:
+>   - docs/guides/OBJETIVO_WIZARD_EXAMPLES.md (copy/paste examples for wizard)
+>   - docs/guides/GITHUB_OPTIONAL.md (feature guide with examples)
+>   - docs/guides/PRECOMMIT_HOOK_FIX.md (hook corrections analysis)
+>   - docs/bugs/BUG-08-knowledge-harvester-missing-mcp-config.md
+> - **Tests Created**:
+>   - test_bug05_objetivo_wizard_placeholders.py (4 tests, all passing)
+>   - test_objetivo_wizard_complete_poc.py (2 POC functions)
+>   - test_github_repo_optional.py (6 tests, all passing)
+>   - test_precommit_hook_git_hooks_exception.py (6 tests, all passing)
+> - **Session Metrics**:
+>   - Files modified: 10+
+>   - Tests: 16/16 passing (100%)
+>   - Documentation: ~3,500 lines (guides + bug reports)
+>   - Commits: 7 total (all to origin/060-mini-engram-python)
+> - **Impact**:
+>   - ✅ objetivo-init wizard agora funciona corretamente (placeholders substituídos)
+>   - ✅ Perfis python-fastapi e python-flask carregam prompts corretos
+>   - ✅ Scaffold new funciona sem --repo (GitHub opcional)
+>   - ✅ Hook pre-commit funciona em repos recém-inicializados
+> - **Next Priorities**:
+>   - Limpar warnings de linting (21 warnings em 3 arquivos)
+>   - Validar workflow completo end-to-end
+>   - Documentar BUG-09 se houver novos issues
+>
 > **✅ SESSION 2026-04-28 COMPLETE (Spec 066 Feature Complete + Post-Enhancements)**
 > - **Status**: ✅ CLOSED — All objectives achieved
 > - **Duration**: ~17h (extended session with enhancements)
