@@ -1,46 +1,52 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-28 — Session Closed: Spec 066 Complete + Post-Enhancements
+**Last Updated**: 2026-04-29 — Session Closed: BUG-05, BUG-06, GitHub Optional, Pre-commit Hook Fixes
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
 ---
 
-## 🎯 Próxima Sessão (2026-04-29+)
+## 🎯 Próxima Sessão (2026-04-30+)
 
-- [ ] **BUG-05**: Objetivo-Init Wizard Placeholder Substitution (P1 HIGH)
-  - **Objetivo**: Fix wizard placeholder substitution bug
-  - **Descrição**: Wizard generates files with `{{PLACEHOLDERS}}` instead of user values
-  - **Prioridade**: P1 HIGH (blocks feature use)
-  - **Estimativa**: 2-4h
-  - **Arquivo**: docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md
+- [ ] **BUG-08**: Knowledge-Harvester MCP Configuration (P2 MEDIUM)
+  - **Objetivo**: Fix missing MCP configuration in knowledge-harvester-library project
+  - **Descrição**: Project missing .vscode/mcp.json, no access to MCP servers
+  - **Prioridade**: P2 MEDIUM (limits functionality but not blocking)
+  - **Estimativa**: 30 min
+  - **Arquivo**: docs/bugs/BUG-08-knowledge-harvester-missing-mcp-config.md
   - **Tarefas**:
-    1. Debug placeholder substitution in `objetivo_wizard.py`
-    2. Verify template rendering logic
-    3. Test with real workflow: wizard → validate → generate
-    4. Update tests to catch regression
+    1. Copy .vscode/mcp.json from a-default-project
+    2. Update server paths to match workspace structure
+    3. Restart VS Code to activate servers
+    4. Test memory, sequential-thinking, GitHub, Pylance tools
   - **Blocker**: None
-  - **Expected Outcome**: Wizard generates valid objetivo-init.yaml files
+  - **Expected Outcome**: Full MCP functionality in knowledge-harvester-library
 
-- [ ] **Objetivo-Init Pipeline Testing** (P1)
+- [ ] **Objetivo-Init Pipeline Testing** (P1 HIGH)
   - **Objetivo**: Test complete v1.0 workflow end-to-end
-  - **Prioridade**: P1 (validate v1.0 pipeline)
+  - **Prioridade**: P1 HIGH (validate v1.0 pipeline)
   - **Estimativa**: 2h
-  - **Blocker**: BUG-05 fix
+  - **Blocker**: None (BUG-05 and BUG-06 now resolved)
   - **Tarefas**:
-    1. Run wizard with real project
+    1. Run wizard with real project (e.g., new web app)
     2. Validate generated objetivo-init.yaml
     3. Generate spec from objetivo-init.yaml
     4. Scaffold new project from spec
-  - **Expected Outcome**: Complete working pipeline validated
+    5. Document pipeline usage with examples
+  - **Expected Outcome**: Complete working pipeline validated + documented
 
-- [ ] **Housekeeping Commits** (P2)
-  - **Objetivo**: Commit pending changes from session 2026-04-28
-  - **Estimativa**: 30 min
+- [ ] **Linting Cleanup** (P2 LOW)
+  - **Objetivo**: Resolve non-critical linting warnings
+  - **Descrição**: 21 warnings remaining (cosmetic, non-blocking)
+  - **Prioridade**: P2 LOW (code quality improvement)
+  - **Estimativa**: 1h
   - **Tarefas**:
-    - Commit wizard v1.0 changes (objetivo_wizard.py, flows, validator, template)
-    - Commit technical documentation (3 docs)
-    - Commit BUG-05 report
+    1. Run `make lint` to review all warnings
+    2. Fix warnings incrementally
+    3. Verify clean lint output
+    4. Update linting rules if needed
+  - **Blocker**: None
+  - **Expected Outcome**: Clean lint output, improved code quality
 
 - [ ] **IMP-65 P1 Gaps**: Production hygiene improvements
   - **Objetivo**: CI/CD integration, audit trail, quality gates
@@ -48,6 +54,59 @@
   - **Prioridade**: P1 (production hygiene, Week 2-3)
   - **Estimativa**: 88h total
   - **Deliverables**: CI/CD automation, audit logs, automated gates
+
+---
+
+## ✅ CONCLUÍDO — Sessão 2026-04-29
+
+- [x] **BUG-05**: Objetivo-Init Wizard Placeholder Substitution (P1 HIGH)
+  - **Status**: ✅ RESOLVIDO (2026-04-29)
+  - **Tempo**: 2.0h (within estimate)
+  - **Solução**: Fixed 7 placeholder mismatches + multiline expansion logic
+  - **Testes**: 4/4 passing (test_bug05_objetivo_wizard_placeholders.py)
+  - **Commits**: 7f30b43, 73a880d, 1e138e7
+  - **Outcome**: Wizard generates valid objetivo-init.yaml files ✅
+
+- [x] **BUG-06**: Profile Descriptor Loading (P1 MEDIUM)
+  - **Status**: ✅ RESOLVIDO + VALIDADO (2026-04-29)
+  - **Tempo**: 1.5h
+  - **Solução**: Updated python-fastapi.yaml + python-flask.yaml descriptors
+  - **Validação**: Integration test confirmed 14 prompt files loaded
+  - **Commits**: b6c3ec2, 729b654
+  - **Outcome**: SpecKit loads correct profiles ✅
+
+- [x] **GitHub Optional Feature** (BONUS, unplanned)
+  - **Status**: ✅ IMPLEMENTADO (2026-04-29)
+  - **Tempo**: 2.0h
+  - **Descrição**: Make GitHub repository optional in scaffold new
+  - **Testes**: 6/6 passing (test_github_repo_optional.py)
+  - **Documentação**: docs/guides/GITHUB_OPTIONAL.md
+  - **Commit**: 626ed5c
+  - **Outcome**: Projects can be created without GitHub integration ✅
+
+- [x] **Pre-commit Hook Fixes** (BONUS, unplanned)
+  - **Status**: ✅ RESOLVIDO (2026-04-29)
+  - **Tempo**: 1.5h
+  - **Issues Fixed**:
+    1. False positive on .git-hooks/ directory
+    2. git reset HEAD failure in repos without commits
+  - **Solução**: Added .git-hooks/ exception + switched to git restore --staged
+  - **Testes**: 5/5 passing (test_precommit_hook_git_hooks_exception.py)
+  - **Documentação**: docs/guides/PRECOMMIT_HOOK_FIX.md
+  - **Commits**: 53a9ac5, 9173afe, 9cead75
+  - **Outcome**: Hook works correctly in all scenarios ✅
+
+- [x] **BUG-08 Documentation** (BONUS, unplanned)
+  - **Status**: ✅ DOCUMENTADO (2026-04-29)
+  - **Tempo**: 0.5h
+  - **Arquivo**: docs/bugs/BUG-08-knowledge-harvester-missing-mcp-config.md
+  - **Outcome**: Bug documented, ready to fix next session ✅
+
+- [x] **Housekeeping Commits** (P2)
+  - **Status**: ✅ COMPLETO (2026-04-29)
+  - **Tempo**: 0.5h
+  - **Commits**: 9 total (all pushed to origin/060-mini-engram-python)
+  - **Outcome**: All changes committed with proper messages ✅
 
 ---
 

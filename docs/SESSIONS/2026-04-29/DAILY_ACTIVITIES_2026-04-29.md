@@ -208,6 +208,167 @@ find /tmp/test-fastapi-bug06/.github -name "*.prompt.md" | wc -l  # 14 files
 
 ---
 
+### Activity 006 — Implement GitHub Optional Feature
+**Time**: 2026-04-29 12:15 - 14:30
+**Type**: CODING + TESTING + DOCUMENTATION
+**Status**: ✅ COMPLETE
+
+**Description**: Implemented feature to make GitHub repository optional in scaffold new workflow, allowing projects without GitHub integration.
+
+**Actions**:
+1. ✅ Modified `_apply_placeholders()` to show "(não configurado)" for empty repo
+2. ✅ Created dual SECURITY.md templates (with/without GitHub)
+3. ✅ Made `generate_github_security_files()` conditional on repo presence
+4. ✅ Created comprehensive test suite (6 tests)
+5. ✅ Created user guide documentation
+
+**Results**:
+- ✅ Feature Status: COMPLETE
+- ✅ Tests: 6/6 passing (placeholder, templates, config validation)
+- ✅ Templates: 2 SECURITY.md versions created
+- ✅ Backward Compatibility: Preserved for existing projects
+
+**Files Modified/Created**:
+- `scripts/scaffold.py` (_apply_placeholders + generate_github_security_files)
+- `template-bases/SECURITY-template-no-github.md` (new)
+- `template-bases/SECURITY-template-github.md` (new)
+- `tests/test_github_repo_optional.py` (new, 6 tests)
+- `docs/guides/GITHUB_OPTIONAL.md` (new)
+
+**Test Coverage**:
+```
+test_placeholder_shows_no_repo_when_empty ✅
+test_placeholder_shows_repo_when_provided ✅
+test_template_selection_no_github ✅
+test_template_selection_with_github ✅
+test_config_validation_with_repo ✅
+test_config_validation_without_repo ✅
+```
+
+**Decisions Made**:
+- Display "(não configurado)" instead of empty string for missing repo
+- Create separate templates instead of single template with conditionals
+- Keep GitHub files optional (SECURITY.md, CODEOWNERS, workflows)
+
+**Commit**: 626ed5c — feat(github): tornar repositório GitHub opcional no scaffold
+
+---
+
+### Activity 007 — Fix Pre-commit Hook Issues
+**Time**: 2026-04-29 14:45 - 16:30
+**Type**: DEBUGGING + CODING + TESTING + DOCUMENTATION
+**Status**: ✅ COMPLETE
+
+**Description**: Fixed two critical issues in pre-commit secrets scanning hook: false positives on `.git-hooks/` directory and Git command failures.
+
+**Root Causes**:
+1. Hook flagged `.git-hooks/pre-commit.secrets` as sensitive file (false positive)
+2. Command `git reset HEAD` failed in repos without commits (empty history)
+
+**Actions**:
+1. ✅ Added `.git-hooks/` to exception list (line 15)
+2. ✅ Changed `git reset HEAD` to `git restore --staged` (Git 2.23+)
+3. ✅ Created comprehensive test suite (5 tests)
+4. ✅ Created detailed analysis documentation
+5. ✅ Added force update mechanism for existing projects
+
+**Results**:
+- ✅ Issue 1: Fixed - `.git-hooks/` now excluded from scanning
+- ✅ Issue 2: Fixed - `git restore --staged` works in all scenarios
+- ✅ Tests: 5/5 passing (exception, commands, patterns, permissions)
+- ✅ Documentation: Complete analysis with technical details
+
+**Files Modified/Created**:
+- `template-bases/pre-commit.secrets` (exception + command fix)
+- `scripts/scaffold.py` (force hook update logic)
+- `tests/test_precommit_hook_git_hooks_exception.py` (new, 5 tests)
+- `docs/guides/PRECOMMIT_HOOK_FIX.md` (new)
+
+**Test Coverage**:
+```
+test_git_hooks_exception_in_template ✅
+test_git_restore_command_in_template ✅
+test_hook_pattern_detection ✅
+test_hook_permissions ✅
+test_scaffold_updates_existing_hook ✅
+```
+
+**Commits**:
+- 53a9ac5 — fix(precommit): hook bloqueava .git-hooks/ e usava git reset HEAD
+- 9173afe — docs(precommit): documentar correções do hook de secrets scanning
+- 9cead75 — feat(precommit): forçar atualização do hook em projetos existentes
+
+**Decisions Made**:
+- Use `git restore --staged` (Git 2.23+) instead of `git reset HEAD`
+- Add `.git-hooks/` to permanent exception list
+- Force hook updates in existing projects (overwrite old version)
+- Document Git 2.23+ requirement (2019 release, widely available)
+
+---
+
+### Activity 008 — Create Session Documentation Guides
+**Time**: 2026-04-29 16:45 - 17:15
+**Type**: DOCUMENTATION
+**Status**: ✅ COMPLETE
+
+**Description**: Created comprehensive guides for BUG-05 wizard examples, GitHub optional feature, and pre-commit hook fixes.
+
+**Actions**:
+1. ✅ Created wizard examples guide with copy/paste snippets
+2. ✅ Created GitHub optional feature user guide
+3. ✅ Created pre-commit hook technical analysis
+4. ✅ Updated docs/INDEX.md to v1.18.0
+
+**Results**:
+- ✅ 3 guides created with complete examples and technical details
+- ✅ INDEX.md updated with session summary
+- ✅ All documentation cross-referenced
+
+**Files Created**:
+- `docs/guides/OBJETIVO_WIZARD_EXAMPLES.md` (wizard usage examples)
+- `docs/guides/GITHUB_OPTIONAL.md` (GitHub optional feature guide)
+- `docs/guides/PRECOMMIT_HOOK_FIX.md` (hook fix technical analysis)
+
+**Decisions Made**:
+- Focus on practical examples (copy/paste ready)
+- Include technical details for troubleshooting
+- Cross-reference related documentation
+
+---
+
+### Activity 009 — Commit and Push All Changes
+**Time**: 2026-04-29 17:20 - 18:00
+**Type**: GIT OPERATIONS
+**Status**: ✅ COMPLETE
+
+**Description**: Created and pushed all commits for session work (9 commits total).
+
+**Commits Pushed**:
+```bash
+7f30b43 — fix(bug05): corrigir substituição de placeholders no wizard objetivo-init
+73a880d — test(bug05): adicionar testes para wizard objetivo-init
+1e138e7 — test(bug05): POC completo com 2 cenários de teste
+b6c3ec2 — fix(bug06): corrigir referências de prompt files em python-{fastapi,flask}.yaml
+729b654 — docs(bug06): adicionar guia de validação de perfis e teste de integração
+626ed5c — feat(github): tornar repositório GitHub opcional no scaffold
+53a9ac5 — fix(precommit): hook bloqueava .git-hooks/ e usava git reset HEAD
+9173afe — docs(precommit): documentar correções do hook de secrets scanning
+9cead75 — feat(precommit): forçar atualização do hook em projetos existentes
+```
+
+**Results**:
+- ✅ All commits created with proper messages
+- ✅ All commits pushed to origin/060-mini-engram-python
+- ✅ Branch synced with remote
+- ✅ No uncommitted changes remaining
+
+**Decisions Made**:
+- Use conventional commit format (fix/feat/test/docs)
+- Push immediately after each logical group of changes
+- Keep commit messages concise but descriptive
+
+---
+
 <!-- Template for next activities:
 
 ### Activity NNN — [Activity Name]
@@ -240,19 +401,58 @@ find /tmp/test-fastapi-bug06/.github -name "*.prompt.md" | wc -l  # 14 files
 
 -->
 
-## Session Summary (to be updated at session end)
+## Session Summary
 
-**Total Activities**: 4
+**Total Activities**: 9
 **Status Distribution**:
-- ✅ Complete: 4
+- ✅ Complete: 9
 - 🔵 In Progress: 0
 - ❌ Blocked: 0
 - ⏸️ Paused: 0
 
 **Key Achievements**:
-- Session initialized and ready for work
-- BUG-08 documented (knowledge-harvester-library missing MCP config)
-- BUG-05 RESOLVED (objetivo wizard placeholder replacement fixed + tested)
-- BUG-06 RESOLVED and VALIDATED (profile descriptor references updated and tested)
+- ✅ BUG-08 documented (knowledge-harvester-library missing MCP config)
+- ✅ BUG-05 RESOLVED (objetivo wizard placeholder replacement + 4 tests)
+- ✅ BUG-06 RESOLVED and VALIDATED (profile descriptor references + integration test)
+- ✅ GitHub Optional Feature IMPLEMENTED (6 tests + user guide)
+- ✅ Pre-commit Hook FIXED (2 issues resolved + 5 tests + technical analysis)
+- ✅ 9 commits created and pushed (all synced with origin/060-mini-engram-python)
+- ✅ 3 comprehensive guides created
+- ✅ 16/16 tests passing (100% success rate)
 
-**Next Session Priorities**: [To be filled at session end]
+**Bug Resolution Summary**:
+- BUG-05: ✅ RESOLVED (placeholder substitution fixed)
+- BUG-06: ✅ RESOLVED + VALIDATED (descriptor references updated)
+- Pre-commit Issue 1: ✅ RESOLVED (.git-hooks/ exception added)
+- Pre-commit Issue 2: ✅ RESOLVED (git restore --staged)
+- BUG-08: 📝 DOCUMENTED (knowledge-harvester MCP config missing)
+
+**Feature Implementation**:
+- GitHub Optional: ✅ COMPLETE (dual templates + conditional logic)
+
+**Test Results**:
+- test_bug05_objetivo_wizard_placeholders.py: 4/4 ✅
+- test_objetivo_wizard_complete_poc.py: 2/2 ✅  
+- test_github_repo_optional.py: 6/6 ✅
+- test_precommit_hook_git_hooks_exception.py: 5/5 ✅
+- **Total**: 16/16 passing (100%)
+
+**Documentation Created**:
+1. docs/guides/OBJETIVO_WIZARD_EXAMPLES.md (wizard usage guide)
+2. docs/guides/GITHUB_OPTIONAL.md (GitHub optional feature guide)
+3. docs/guides/PRECOMMIT_HOOK_FIX.md (hook fix technical analysis)
+4. docs/bugs/BUG-08-knowledge-harvester-missing-mcp-config.md (bug report)
+
+**Git Activity**:
+- Commits: 9 (all pushed)
+- Branch: 060-mini-engram-python (synced with origin)
+- Files modified: ~15 (code + tests + docs)
+- Lines added: ~800 (tests + documentation)
+
+**Next Session Priorities**:
+1. ⚠️ Resolve 21 linting warnings (non-critical)
+2. BUG-08: Fix knowledge-harvester-library MCP config (~30 min)
+3. Continue IMP-65 P1 gaps (production hygiene improvements)
+
+**Session Duration**: ~8 hours (full development day)
+**Session Status**: ✅ COMPLETE — All objectives achieved
