@@ -44,6 +44,9 @@ PLACEHOLDERS = {
 
 def _apply_placeholders(text: str, config: ProjectConfig) -> str:
     """Substitui todos os placeholders pelo valor real da config."""
+    # Valor para GitHub repo: mostrar link se configurado, senão "(não configurado)"
+    github_repo_display = config.github_repo if config.github_repo else "(não configurado)"
+    
     replacements = {
         "{{PROJECT_NAME}}":        config.project_name,
         "{{PROJECT_TITLE}}":       config.project_title,
@@ -51,7 +54,7 @@ def _apply_placeholders(text: str, config: ProjectConfig) -> str:
         "{{CREATED_AT}}":          config.created_at,
         "{{DOMAIN}}":              config.domain,
         "{{LANGUAGE}}":            config.language,
-        "{{GITHUB_REPO}}":         config.github_repo or "",
+        "{{GITHUB_REPO}}":         github_repo_display,
     }
     for key, value in replacements.items():
         text = text.replace(key, value)
@@ -1258,7 +1261,7 @@ mcp:
 # Templates de segurança GitHub (BUG-06)
 # ---------------------------------------------------------------------------
 
-_SECURITY_MD = """\
+_SECURITY_MD_WITH_GITHUB = """\
 # Security Policy
 
 ## Supported Versions
@@ -1299,6 +1302,100 @@ This project follows security best practices:
 - ✅ Secret scanning enabled
 - ✅ Branch protection rules
 - ✅ Required code review
+
+## Security Contacts
+
+For security-related questions, contact: [security contact info]
+"""
+
+_SECURITY_MD_WITHOUT_GITHUB = """
+# Security Policy
+
+## Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| Latest  | :white_check_mark: |
+
+## Reporting a Vulnerability
+
+**DO NOT** open public issues for security vulnerabilities.
+
+Instead, please report them privately through one of these channels:
+
+1. **Email**: Send details to your project security contact
+2. **Internal ticketing**: Create a confidential security ticket
+3. **Direct contact**: Reach out to project maintainers directly
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if available)
+
+### Response Timeline
+
+- **Initial response**: Within 48 hours
+- **Status update**: Within 7 days
+- **Fix timeline**: Depends on severity (Critical: 24-48h, High: 1 week, Medium: 2 weeks, Low: 1 month)
+
+## Security Best Practices
+
+This project follows security best practices:
+
+- ✅ Regular security audits
+- ✅ Dependency updates and scanning
+- ✅ Code review for all changes
+- ✅ Secure credential management
+- ✅ Principle of least privilege
+
+## Security Contacts
+
+For security-related questions, contact: [security contact info]
+"""
+
+_SECURITY_MD_WITHOUT_GITHUB = """
+# Security Policy
+
+## Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| Latest  | :white_check_mark: |
+
+## Reporting a Vulnerability
+
+**DO NOT** open public issues for security vulnerabilities.
+
+Instead, please report them privately through one of these channels:
+
+1. **Email**: Send details to your project security contact
+2. **Internal ticketing**: Create a confidential security ticket
+3. **Direct contact**: Reach out to project maintainers directly
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if available)
+
+### Response Timeline
+
+- **Initial response**: Within 48 hours
+- **Status update**: Within 7 days
+- **Fix timeline**: Depends on severity (Critical: 24-48h, High: 1 week, Medium: 2 weeks, Low: 1 month)
+
+## Security Best Practices
+
+This project follows security best practices:
+
+- ✅ Regular security audits
+- ✅ Dependency updates and scanning
+- ✅ Code review for all changes
+- ✅ Secure credential management
+- ✅ Principle of least privilege
 
 ## Security Contacts
 
@@ -2113,10 +2210,12 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
 
     Cria:
       - SECURITY.md (política de reporte de vulnerabilidades)
-      - .github/CODEOWNERS (ownership de código)
-      - .github/dependabot.yml (atualizações automáticas)
-      - .github/workflows/security-scan.yml (CodeQL + secret scan)
-      - .github/workflows/dependency-review.yml (análise de dependências em PRs)
+      - .github/CODEOWNERS (ownership de código) — apenas se github_repo configurado
+      - .github/dependabot.yml (atualizações automáticas) — apenas se github_repo configurado
+      - .github/workflows/security-scan.yml (CodeQL + secret scan) — apenas se github_repo configurado
+      - .github/workflows/dependency-review.yml (análise de dependências em PRs) — apenas se github_repo configurado
+
+    Se github_repo não estiver configurado, cria apenas SECURITY.md com versão genérica.
 
     OWNER placeholder é substituído pelo dono do repo GitHub (se disponível).
 
@@ -2133,9 +2232,17 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
             owner = f"@{parts[-2]}"
 
     # Arquivo 1: SECURITY.md (raiz do projeto)
+    # Usa template com GitHub se repositório configurado, senão usa versão genérica
     security_md = base / "SECURITY.md"
-    content = _apply_placeholders(_SECURITY_MD, config)
+    if config.github_repo:
+        content = _apply_placeholders(_SECURITY_MD_WITH_GITHUB, config)
+    else:
+        content = _SECURITY_MD_WITHOUT_GITHUB
     results.append(_write_file(security_md, content))
+
+    # Arquivos 2-5: Apenas criar se houver repositório GitHub configurado
+    if not config.github_repo:
+        return results
 
     # Arquivo 2: .github/CODEOWNERS
     codeowners = base / ".github" / "CODEOWNERS"
