@@ -29,10 +29,10 @@ def test_apply_placeholders_with_github_repo():
         target_dir=Path("/tmp/target"),
         created_at="2026-04-29T10:00:00",
     )
-    
+
     text = "Repo: {{GITHUB_REPO}}"
     result = _apply_placeholders(text, config)
-    
+
     assert result == "Repo: https://github.com/org/test-project"
     assert "(não configurado)" not in result
 
@@ -50,10 +50,10 @@ def test_apply_placeholders_without_github_repo():
         target_dir=Path("/tmp/target"),
         created_at="2026-04-29T10:00:00",
     )
-    
+
     text = "Repo: {{GITHUB_REPO}}"
     result = _apply_placeholders(text, config)
-    
+
     assert result == "Repo: (não configurado)"
     assert "https://" not in result
 
@@ -63,7 +63,7 @@ def test_github_security_files_with_repo(tmp_path):
     # ProjectConfig calcula project_path como target_dir/project_name
     # Então passamos target_dir como o pai e configuramos o nome do projeto
     project_dir = tmp_path / "test-project"
-    
+
     config = ProjectConfig(
         project_name="test-project",
         project_title="Test Project",
@@ -75,22 +75,22 @@ def test_github_security_files_with_repo(tmp_path):
         target_dir=tmp_path,  # Pai do diretório do projeto
         created_at="2026-04-29T10:00:00",
     )
-    
+
     # Criar diretório do projeto manualmente (generate_github_security_files espera que exista)
     project_dir.mkdir(parents=True, exist_ok=True)
-    
+
     results = generate_github_security_files(config)
-    
+
     # Deve criar 5 arquivos quando há repositório GitHub
     assert len(results) == 5
-    
+
     # Verificar que SECURITY.md foi criado com template GitHub
     security_md = project_dir / "SECURITY.md"
     assert security_md.exists()
     content = security_md.read_text()
     assert "Security tab" in content
     assert "https://github.com/org/test-project" in content
-    
+
     # Verificar que arquivos .github foram criados
     assert (project_dir / ".github" / "CODEOWNERS").exists()
     assert (project_dir / ".github" / "dependabot.yml").exists()
@@ -102,7 +102,7 @@ def test_github_security_files_without_repo(tmp_path):
     """Verifica que apenas SECURITY.md genérico é criado quando não há repo."""
     # ProjectConfig calcula project_path como target_dir/project_name
     project_dir = tmp_path / "test-project"
-    
+
     config = ProjectConfig(
         project_name="test-project",
         project_title="Test Project",
@@ -114,15 +114,15 @@ def test_github_security_files_without_repo(tmp_path):
         target_dir=tmp_path,  # Pai do diretório do projeto
         created_at="2026-04-29T10:00:00",
     )
-    
+
     # Criar diretório do projeto manualmente (generate_github_security_files espera que exista)
     project_dir.mkdir(parents=True, exist_ok=True)
-    
+
     results = generate_github_security_files(config)
-    
+
     # Deve criar apenas 1 arquivo quando não há repositório GitHub
     assert len(results) == 1
-    
+
     # Verificar que SECURITY.md foi criado com template genérico
     security_md = project_dir / "SECURITY.md"
     assert security_md.exists()
@@ -131,7 +131,7 @@ def test_github_security_files_without_repo(tmp_path):
     assert "Internal ticketing" in content  # Template genérico menciona ticketing
     assert "Security tab" not in content  # Não deve ter link GitHub
     assert "{{GITHUB_REPO}}" not in content  # Placeholder deve estar substituído
-    
+
     # Verificar que arquivos .github NÃO foram criados
     assert not (project_dir / ".github" / "CODEOWNERS").exists()
     assert not (project_dir / ".github" / "dependabot.yml").exists()
@@ -152,7 +152,7 @@ def test_project_config_github_repo_none():
         target_dir=Path("/tmp/target"),
         created_at="2026-04-29T10:00:00",
     )
-    
+
     assert config.github_repo is None
     assert config.project_name == "test-project"
 
@@ -172,10 +172,10 @@ def test_project_config_github_repo_empty_string():
         target_dir=Path("/tmp/target"),
         created_at="2026-04-29T10:00:00",
     )
-    
+
     # String vazia é aceita, mas ui.py deve converter para None antes de criar config
     assert config.github_repo == ""
-    
+
     # Quando usado em templates, string vazia deve ser tratada como "(não configurado)"
     # porque _apply_placeholders verifica `if config.github_repo` (falsy para "")
     text = "Repo: {{GITHUB_REPO}}"

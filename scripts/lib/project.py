@@ -46,7 +46,7 @@ def _apply_placeholders(text: str, config: ProjectConfig) -> str:
     """Substitui todos os placeholders pelo valor real da config."""
     # Valor para GitHub repo: mostrar link se configurado, senão "(não configurado)"
     github_repo_display = config.github_repo if config.github_repo else "(não configurado)"
-    
+
     replacements = {
         "{{PROJECT_NAME}}":        config.project_name,
         "{{PROJECT_TITLE}}":       config.project_title,
@@ -387,11 +387,12 @@ if git diff --cached --name-only | grep -q '^\.secrets/'; then
     git diff --cached --name-only | grep '^\.secrets/' | sed 's/^/  - /'
     echo ""
     echo "💡 Solução: remova os arquivos do staging:"
-    echo "   git reset HEAD .secrets/"
+    echo "   git restore --staged .secrets/"
+    echo "   # ou: git reset .secrets/"
     exit 1
 fi
 
-# 2. Verificar padrões de arquivos sensíveis
+# 2. Verificar padrões de arquivos sensíveis (excluindo .git-hooks/)
 SENSITIVE_PATTERNS=(
     '\.env'
     '\.env\.'
@@ -409,6 +410,10 @@ SENSITIVE_PATTERNS=(
 BLOCKED_FILES=()
 for pattern in "${SENSITIVE_PATTERNS[@]}"; do
     while IFS= read -r file; do
+        # Ignorar arquivos em .git-hooks/ (são scripts de validação, não secrets)
+        if [[ "$file" =~ ^\.git-hooks/ ]]; then
+            continue
+        fi
         [[ -n "$file" ]] && BLOCKED_FILES+=("$file")
     done < <(git diff --cached --name-only | grep -iE "$pattern" || true)
 done
