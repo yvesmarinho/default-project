@@ -355,7 +355,7 @@ class ObjetivoWizard:
             if '\n' in value and base_placeholder in ['FEATURE', 'RULE', 'CONSTRAINT', 'INFRASTRUCTURE', 'EXPECTED_OUTCOME']:
                 # Split multiline value into individual items
                 lines = [line.strip() for line in value.split('\n') if line.strip()]
-                
+
                 # Create numbered placeholders
                 for i, line in enumerate(lines, start=1):
                     numbered_placeholder = f"{{{{{base_placeholder}_{i}}}}}"
@@ -386,7 +386,7 @@ class ObjetivoWizard:
         import re
         # Remove lines with unreplaced placeholders that look like "{{PLACEHOLDER_N}}"
         template = re.sub(r'^\s*-?\s*"?\{\{[A-Z_0-9]+\}\}"?\s*$', '', template, flags=re.MULTILINE)
-        
+
         # Clean up remaining single placeholders
         template = re.sub(r'"?\{\{[A-Z_0-9]+\}\}"?', '""', template)
 
