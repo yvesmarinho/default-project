@@ -1,8 +1,8 @@
 # BUG-05: Wizard objetivo-init não gera arquivo com informações inseridas
 
-**Data**: 2026-04-28  
-**Severidade**: 🔴 Alta (bloqueia workflow completo)  
-**Status**: 🟡 Reportado  
+**Data**: 2026-04-28
+**Severidade**: 🔴 Alta (bloqueia workflow completo)
+**Status**: ✅ RESOLVIDO (2026-04-29)
 **Afeta**: `scaffold objetivo-init`
 
 ---
@@ -13,7 +13,82 @@ O wizard `scaffold objetivo-init` executa sem erros, mas o arquivo gerado (`obje
 
 ---
 
-## 🔍 Reprodução
+## ✅ Resolução (2026-04-29)
+
+### Causa Raiz Identificada
+
+**Problema**: Mapeamento incorreto entre placeholders das perguntas e placeholders do template.
+
+- ❌ Perguntas usavam `{{ANSWER_1}}`, `{{ANSWER_2}}`, `{{ANSWER_3}}`
+- ❌ Template esperava `{{DESCRIPTION}}`, `{{FEATURE_1}}`, `{{RULE_1}}`
+- ❌ Resultado: Substituição nunca acontecia
+
+### Correções Implementadas
+
+#### 1. **Atualização dos Placeholders das Perguntas** (`scripts/lib/objetivo_wizard.py`)
+
+```python
+# ANTES:
+placeholder="{{ANSWER_1}}"  # ❌ Não existe no template
+
+# DEPOIS:
+placeholder="{{DESCRIPTION}}"  # ✅ Corresponde ao template
+```
+
+Placeholders corrigidos:
+- `q1_what`: `{{ANSWER_1}}` → `{{DESCRIPTION}}`
+- `q3_scope_included`: `{{ANSWER_3}}` → `{{FEATURE}}` (expansão multiline)
+- `q4_constraints`: `{{ANSWER_4}}` → `{{CONSTRAINT}}` (expansão multiline)
+- `q5_business_rules`: `{{ANSWER_5}}` → `{{RULE}}` (expansão multiline)
+- `q8_infrastructure`: `{{INFRASTRUCTURE_1}}` → `{{INFRASTRUCTURE}}` (expansão)
+- `q10_expected_outcome`: `{{EXPECTED_OUTCOME_1}}` → `{{EXPECTED_OUTCOME}}` (expansão)
+
+#### 2. **Função `_render_template()` Melhorada**
+
+Nova lógica implementada:
+1. ✅ Substituição de placeholders simples (`{{DESCRIPTION}}`, `{{RESPONSE}}`)
+2. ✅ **Expansão multiline → múltiplos placeholders**:
+   - Input: `{{FEATURE}}` = "Feature 1\nFeature 2\nFeature 3"
+   - Output: `{{FEATURE_1}}` = "Feature 1", `{{FEATURE_2}}` = "Feature 2", `{{FEATURE_3}}` = "Feature 3"
+3. ✅ Valores padrão para placeholders sem perguntas
+4. ✅ Limpeza de placeholders não substituídos (regex)
+
+```python
+def _render_template(self, answers: WizardAnswers) -> str:
+    # ...
+    # Process multiline expansion
+    if '\n' in value and base_placeholder in ['FEATURE', 'RULE', 'CONSTRAINT', ...]:
+        lines = [line.strip() for line in value.split('\n') if line.strip()]
+        for i, line in enumerate(lines, start=1):
+            numbered_placeholder = f"{{{{{base_placeholder}_{i}}}}}"
+            processed_placeholders[numbered_placeholder] = line
+```
+
+#### 3. **Simplificação do Template** (`template-bases/objetivo-init-template.yaml`)
+
+- ✅ Removidos placeholders complexos sem suporte (PROFILE com múltiplos campos, PENDING_TASK)
+- ✅ Adicionados valores padrão para profile e pending_tasks
+- ✅ Template agora corresponde às capabilities do wizard
+
+#### 4. **Suite de Testes Criada** (`tests/test_bug05_objetivo_wizard_placeholders.py`)
+
+4 testes implementados:
+- ✅ `test_simple_placeholder_replacement()` - Placeholders simples
+- ✅ `test_multiline_placeholder_expansion()` - Expansão multiline
+- ✅ `test_default_placeholders()` - Valores padrão
+- ✅ `test_no_unreplaced_placeholders()` - Nenhum `{{PLACEHOLDER}}` no output
+
+**Resultado**: 4/4 testes passando ✅
+
+### Arquivos Modificados
+
+- `scripts/lib/objetivo_wizard.py` (7 placeholders corrigidos + nova lógica de rendering)
+- `template-bases/objetivo-init-template.yaml` (simplificação de seções complexas)
+- `tests/test_bug05_objetivo_wizard_placeholders.py` (novo - 4 testes)
+
+---
+
+## 🔍 Reprodução (ANTES da correção)
 
 ### Passos
 
@@ -140,11 +215,11 @@ except KeyboardInterrupt:
 # objetivo_wizard.py - _render_template()
 def _render_template(self, answers: WizardAnswers) -> str:
     template = self.template_path.read_text(encoding='utf-8')
-    
+
     # Substituição de metadados
     template = template.replace("{{PROJECT_NAME}}", answers.project_name or "")
     # ❌ Se answers.project_name é None, substitui por ""
-    
+
     # Substituição de respostas
     for question in self.questions:
         placeholder = question.placeholder
@@ -190,14 +265,14 @@ def _render_template(self, answers: WizardAnswers) -> str:
 # scripts/lib/objetivo_wizard.py - _render_template()
 def _render_template(self, answers: WizardAnswers) -> str:
     template = self.template_path.read_text(encoding='utf-8')
-    
+
     # DEBUG: Verificar conteúdo de answers
     print(f"DEBUG: project_name = {answers.project_name}")
     print(f"DEBUG: answers.answers = {answers.answers}")
-    
+
     # Substituição
     template = template.replace("{{PROJECT_NAME}}", answers.project_name or "MISSING_PROJECT_NAME")
-    
+
     for question in self.questions:
         placeholder = question.placeholder
         value = answers.answers.get(placeholder)
@@ -206,7 +281,7 @@ def _render_template(self, answers: WizardAnswers) -> str:
             template = template.replace(placeholder, value)
         else:
             print(f"WARNING: {placeholder} sem valor!")  # DEBUG
-    
+
     return template
 ```
 
@@ -340,6 +415,6 @@ $ scaffold objetivo-init
 
 ---
 
-**Assignee**: (a definir)  
-**Sprint**: (a definir)  
+**Assignee**: (a definir)
+**Sprint**: (a definir)
 **Related Issues**: #IMP-66 (objetivo.yaml v2.0)

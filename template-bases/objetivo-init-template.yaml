@@ -52,22 +52,11 @@ prompt:
       - "{{INFRASTRUCTURE_1}}"
       - "{{INFRASTRUCTURE_2}}"
     profile:
-      - role: "{{PROFILE_ROLE_1}}"
-        skill_level: "{{PROFILE_LEVEL_1}}"
-        description: "{{PROFILE_DESC_1}}"
-      - role: "{{PROFILE_ROLE_2}}"
-        skill_level: "{{PROFILE_LEVEL_2}}"
-        description: "{{PROFILE_DESC_2}}"
+      - role: "copilot-assisted-developer"
+        skill_level: "intermediate"
+        description: "Desenvolvedor usando GitHub Copilot para acelerar desenvolvimento"
     features_to_implement:
       - "{{FEATURE_1}}"
       - "{{FEATURE_2}}"
       - "{{FEATURE_3}}"
-    pending_tasks:
-      - id: "D1"
-        description: "{{PENDING_TASK_1}}"
-        assignee: "{{ASSIGNEE_1}}"
-        status: "pendente"
-      - id: "D2"
-        description: "{{PENDING_TASK_2}}"
-        assignee: "{{ASSIGNEE_2}}"
-        status: "pendente"
+    pending_tasks: []

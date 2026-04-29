@@ -136,7 +136,7 @@ class ObjetivoWizard:
             priority="P0",
             prompt="O que este projeto faz? (descreva em 1 frase clara)",
             example="Sistema automatizado de deploy que permite equipes DevOps configurar e executar deploys via interface web/CLI, com rollback automático em caso de falha.",
-            placeholder="{{ANSWER_1}}",
+            placeholder="{{DESCRIPTION}}",
             multiline=False,
             required=True,
         ))
@@ -158,7 +158,7 @@ class ObjetivoWizard:
             priority="P0",
             prompt="O que está NO escopo? (liste features incluídas, Enter vazio para terminar)",
             example="Processamento automático de dados (P0)\nInterface web para monitoramento (P1)\nNotificações por email (P2)",
-            placeholder="{{ANSWER_3}}",
+            placeholder="{{FEATURE}}",  # Will expand to FEATURE_1, FEATURE_2, etc
             multiline=True,
             required=True,
         ))
@@ -170,7 +170,7 @@ class ObjetivoWizard:
             priority="P1",
             prompt="Há restrições técnicas? (performance, segurança, compliance - Enter vazio para pular)",
             example="Budget: R$ 50k\nPrazo: 3 meses\nDeve ser compatível com LGPD\nPerformance: <200ms p95",
-            placeholder="{{ANSWER_4}}",
+            placeholder="{{CONSTRAINT}}",  # Will expand to CONSTRAINT_1, CONSTRAINT_2, etc
             multiline=True,
             required=False,
         ))
@@ -181,7 +181,7 @@ class ObjetivoWizard:
             priority="P1",
             prompt="Há regras de negócio complexas? (Enter vazio para pular)",
             example="Usuários premium têm acesso a features avançadas\nDados devem ser retidos por 7 anos\nCálculo de desconto: 10% para >100 unidades, 20% para >1000",
-            placeholder="{{ANSWER_5}}",
+            placeholder="{{RULE}}",  # Will expand to RULE_1, RULE_2, RULE_3
             multiline=True,
             required=False,
         ))
@@ -215,7 +215,7 @@ class ObjetivoWizard:
             priority="P1",
             prompt="Infraestrutura necessária (servidores, DBs, containers)",
             example="Servidor PostgreSQL em wfdb02.vya.digital\nAplicação em container Docker",
-            placeholder="{{INFRASTRUCTURE_1}}",
+            placeholder="{{INFRASTRUCTURE}}",  # Will expand to INFRASTRUCTURE_1, INFRASTRUCTURE_2, etc
             multiline=True,
             required=False,
         ))
@@ -237,7 +237,7 @@ class ObjetivoWizard:
             priority="P0",
             prompt="Resultados esperados mensuráveis",
             example="100% dos dados migrados com zero erros de FK\nTempo de migração <2h\nZero exposição de dados sensíveis",
-            placeholder="{{EXPECTED_OUTCOME_1}}",
+            placeholder="{{EXPECTED_OUTCOME}}",  # Will expand to EXPECTED_OUTCOME_1, EXPECTED_OUTCOME_2, etc
             multiline=True,
             required=True,
         ))
@@ -338,21 +338,57 @@ class ObjetivoWizard:
 
         template = self.template_path.read_text(encoding='utf-8')
 
-        # Substitute metadados placeholders
+        # 1. Substitute metadata placeholders
         template = template.replace('"{{PROJECT_NAME}}"', f'"{answers.project_name}"')
         template = template.replace('{{PROJECT_NAME}}', answers.project_name)
 
-        # Substitute section placeholders from answers dict
+        # 2. Process answers - expand multiline placeholders
+        processed_placeholders = {}
+
         for placeholder, value in answers.answers.items():
-            if value:
-                # Preserva aspas YAML para strings multiline
-                if '\n' in value:
-                    # For multiline YAML strings
-                    template = template.replace(f'"{placeholder}"', f'"{value}"')
-                    template = template.replace(placeholder, value)
-                else:
-                    template = template.replace(f'"{placeholder}"', f'"{value}"')
-                    template = template.replace(placeholder, value)
+            if not value:
+                continue
+
+            # Check if placeholder should be expanded (e.g., {{FEATURE}} → {{FEATURE_1}}, {{FEATURE_2}})
+            base_placeholder = placeholder.replace('{{', '').replace('}}', '')
+
+            if '\n' in value and base_placeholder in ['FEATURE', 'RULE', 'CONSTRAINT', 'INFRASTRUCTURE', 'EXPECTED_OUTCOME']:
+                # Split multiline value into individual items
+                lines = [line.strip() for line in value.split('\n') if line.strip()]
+                
+                # Create numbered placeholders
+                for i, line in enumerate(lines, start=1):
+                    numbered_placeholder = f"{{{{{base_placeholder}_{i}}}}}"
+                    processed_placeholders[numbered_placeholder] = line
+            else:
+                # Single value placeholder
+                processed_placeholders[placeholder] = value
+
+        # 3. Substitute all processed placeholders
+        for placeholder, value in processed_placeholders.items():
+            # Handle quoted and unquoted placeholders
+            template = template.replace(f'"{placeholder}"', f'"{value}"')
+            template = template.replace(placeholder, value)
+
+        # 4. Add default values for placeholders without questions
+        defaults = {
+            '{{WORKFLOW_OBJETIVO}}': 'Workflow baseado em objetivo.yaml v2.0 com SpecKit',
+            '{{WORKFLOW_SPECIFY}}': 'Gera\u00e7\u00e3o autom\u00e1tica de spec.md, plan.md e tasks.md',
+            '{{OUT_SCOPE}}': 'Itens fora do escopo ser\u00e3o documentados separadamente',
+            '{{FOLDER_STRUCTURE_CUSTOM}}': '',  # Empty for default structure
+        }
+
+        for placeholder, default_value in defaults.items():
+            template = template.replace(f'"{placeholder}"', f'"{default_value}"')
+            template = template.replace(placeholder, default_value)
+
+        # 5. Clean up remaining empty placeholders (remove or set to empty string)
+        import re
+        # Remove lines with unreplaced placeholders that look like "{{PLACEHOLDER_N}}"
+        template = re.sub(r'^\s*-?\s*"?\{\{[A-Z_0-9]+\}\}"?\s*$', '', template, flags=re.MULTILINE)
+        
+        # Clean up remaining single placeholders
+        template = re.sub(r'"?\{\{[A-Z_0-9]+\}\}"?', '""', template)
 
         return template
 
