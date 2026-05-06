@@ -62,6 +62,7 @@ LANGUAGE_EXTENSIONS: dict[str, list[str]] = {
     "python": [
         "ms-python.python",
         "ms-python.pylance",
+        "astral-sh.uv",
         "ms-python.black-formatter",
         "ms-python.flake8",
         "ms-python.mypy-type-checker",
@@ -90,7 +91,16 @@ LANGUAGE_EXTENSIONS: dict[str, list[str]] = {
 
 _SETTINGS_BY_LANGUAGE: dict[str, dict] = {
     "python": {
-        "python.defaultInterpreterPath": ".venv/bin/python",
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python-envs.pythonProjects": [
+            {
+                "path": ".",
+                "envManager": "astral-sh.uv:uv",
+                "packageManager": "astral-sh.uv:uv",
+            }
+        ],
+        "flake8.path": ["${workspaceFolder}/.venv/bin/flake8"],
+        "flake8.args": [],
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": True,
         "python.linting.enabled": True,
