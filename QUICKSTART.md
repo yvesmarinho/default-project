@@ -55,6 +55,40 @@ uv --version       # uv 0.5+
 git --version      # git 2.38+
 ```
 
+### GitHub Token (Opcional — para MCP GitHub Server)
+
+O servidor MCP `github` permite ao Copilot criar issues, PRs, buscar código e comentar em threads.
+
+**Se você NÃO configurar**:
+- ✅ Servidores `memory`, `sequential-thinking`, `filesystem` funcionam normalmente
+- ❌ Servidor `github` não inicia (falha graciosamente)
+
+**Para ativar**:
+
+1. **Criar token**: https://github.com/settings/tokens
+   - Scopes necessários: `repo`, `read:org`
+   - Tipo: Personal Access Token (classic)
+
+2. **Exportar variável de ambiente**:
+   ```bash
+   # Linux/macOS (adicionar ao ~/.bashrc ou ~/.zshrc)
+   echo 'export GITHUB_PERSONAL_ACCESS_TOKEN="ghp_..."' >> ~/.bashrc
+   source ~/.bashrc
+
+   # Ou usar arquivo .secrets/.env (recomendado para projetos)
+   echo 'GITHUB_PERSONAL_ACCESS_TOKEN=ghp_...' >> .secrets/.env
+   ```
+
+3. **Restart VS Code** para carregar a variável
+
+**Verificar se funciona**:
+```bash
+# No terminal do VS Code
+echo $GITHUB_PERSONAL_ACCESS_TOKEN  # Deve mostrar seu token
+```
+
+📖 **Mais detalhes**: `.vscode/mcp.json` (comentários inline)
+
 ---
 
 ## Passo 1 — Clonar o template

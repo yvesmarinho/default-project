@@ -944,7 +944,7 @@ npm run test:coverage
 - ✅ `scripts/scaffold.py` especificado (SPEC, USER-STORIES, DEBATE)
 
 ### v1.1.0 (2026-02-27)
-- ✅ MCP configurado (`memory` + `sequential-thinking`)
+- ✅ MCP configurado (`memory`, `sequential-thinking`, `filesystem`, `github`)
 - ✅ Arquitetura Domain Profiles definida (estratégia 3 camadas, 19 decisões D-01–D-19)
 - ✅ `docs/copilot/` — Strategy + Decisions documentados
 - ✅ `scripts/manage.py` adicionado (TUI Python inicial)

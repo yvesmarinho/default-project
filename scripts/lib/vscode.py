@@ -216,8 +216,10 @@ def generate_mcp(config: ProjectConfig) -> CreatedItem:
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
-    server_names = _MCP_BY_DOMAIN.get(config.domain, ["memory", "sequential-thinking"])
-    servers = {name: _ALL_MCP_SERVERS[name] for name in server_names if name in _ALL_MCP_SERVERS}
+    server_names = _MCP_BY_DOMAIN.get(
+        config.domain, ["memory", "sequential-thinking", "filesystem", "github"])
+    servers = {name: _ALL_MCP_SERVERS[name]
+               for name in server_names if name in _ALL_MCP_SERVERS}
 
     return _write_json(dest, {"servers": servers})
 
@@ -434,8 +436,10 @@ def generate_workspace(config: ProjectConfig) -> CreatedItem:
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
     # Get MCP servers for this domain
-    server_names = _MCP_BY_DOMAIN.get(config.domain, ["memory", "sequential-thinking"])
-    mcp_servers = {name: _ALL_MCP_SERVERS[name] for name in server_names if name in _ALL_MCP_SERVERS}
+    server_names = _MCP_BY_DOMAIN.get(
+        config.domain, ["memory", "sequential-thinking", "filesystem", "github"])
+    mcp_servers = {name: _ALL_MCP_SERVERS[name]
+                   for name in server_names if name in _ALL_MCP_SERVERS}
 
     # Get settings for this language/domain
     settings: dict = {}
@@ -527,7 +531,8 @@ def _write_json(dest: Path, data: dict) -> CreatedItem:
     """Serializa dict como JSON formatado e grava em dest."""
     try:
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        dest.write_text(json.dumps(
+            data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         return CreatedItem(path=dest, kind="file", status="created")
     except OSError as e:
         return CreatedItem(path=dest, kind="file", status="error", message=str(e))

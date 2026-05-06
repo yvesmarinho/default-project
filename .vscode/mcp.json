@@ -1,0 +1,142 @@
+{
+  // Model Context Protocol (MCP) Servers Configuration
+  // Documentation: https://modelcontextprotocol.io/docs
+  //
+  // This file configures MCP servers for GitHub Copilot in VS Code.
+  // Each server extends Copilot's ability to read context and perform actions
+  // from external systems (APIs, databases, documentation, cloud, etc.)
+  //
+  // SECURITY: Never store credentials here. Use environment variables or .secrets/
+  //
+  // To activate a server:
+  //   1. Uncomment its block
+  //   2. Ensure the command/binary is installed
+  //   3. Configure required environment variables in .secrets/.env
+  //   4. Restart VS Code or run "MCP: Refresh Servers" from Command Palette
+  "servers": {
+    // ─────────────────────────────────────────────
+    // 📁 FILESYSTEM — Read/write local files with controlled scope
+    // Install: npx -y @modelcontextprotocol/server-filesystem
+    // ─────────────────────────────────────────────
+    // "filesystem": {
+    //     "command": "npx",
+    //     "args": [
+    //         "-y",
+    //         "@modelcontextprotocol/server-filesystem",
+    //         "${workspaceFolder}"
+    //     ]
+    // },
+    // ─────────────────────────────────────────────
+    // 🐙 GITHUB — Issues, PRs, repos, code search
+    // Install: npx -y @modelcontextprotocol/server-github
+    // Requires: GITHUB_PERSONAL_ACCESS_TOKEN in env
+    // ─────────────────────────────────────────────
+    // "github": {
+    //     "command": "npx",
+    //     "args": ["-y", "@modelcontextprotocol/server-github"],
+    //     "env": {
+    //         "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+    //     }
+    // },
+    // ─────────────────────────────────────────────
+    // 🗄️ SQLITE — Query local SQLite databases
+    // Install: npx -y @modelcontextprotocol/server-sqlite
+    // ─────────────────────────────────────────────
+    // "sqlite": {
+    //     "command": "npx",
+    //     "args": [
+    //         "-y",
+    //         "@modelcontextprotocol/server-sqlite",
+    //         "--db-path",
+    //         "${workspaceFolder}/data/db.sqlite"
+    //     ]
+    // },
+    // ─────────────────────────────────────────────
+    // 🔍 BRAVE SEARCH — Web search via Brave API
+    // Install: npx -y @modelcontextprotocol/server-brave-search
+    // Requires: BRAVE_API_KEY in env
+    // ─────────────────────────────────────────────
+    // "brave-search": {
+    //     "command": "npx",
+    //     "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+    //     "env": {
+    //         "BRAVE_API_KEY": "${env:BRAVE_API_KEY}"
+    //     }
+    // },
+    // ─────────────────────────────────────────────
+    // ☁️ AWS — Describe resources, logs, policies (read-only)
+    // Install: pip install awslabs.aws-mcp-server or use docker
+    // Requires: AWS credentials configured (~/.aws/credentials or env)
+    // ─────────────────────────────────────────────
+    // "aws": {
+    //     "command": "uvx",
+    //     "args": ["awslabs.aws-documentation-mcp-server@latest"],
+    //     "env": {
+    //         "AWS_PROFILE": "${env:AWS_PROFILE}",
+    //         "AWS_REGION": "${env:AWS_REGION}"
+    //     }
+    // },
+    // ─────────────────────────────────────────────
+    // ☸️ KUBERNETES — kubectl queries via MCP
+    // Install: go install github.com/strowk/mcp-k8s-go@latest
+    // Requires: KUBECONFIG env or default ~/.kube/config
+    // ─────────────────────────────────────────────
+    // "kubernetes": {
+    //     "command": "mcp-k8s-go",
+    //     "env": {
+    //         "KUBECONFIG": "${env:KUBECONFIG}"
+    //     }
+    // },
+    // ─────────────────────────────────────────────
+    // 📝 MEMORY — Persistent key-value memory across sessions
+    // Install: npx -y @modelcontextprotocol/server-memory
+    // ─────────────────────────────────────────────
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    // ─────────────────────────────────────────────
+    // 🔧 SEQUENTIAL THINKING — Structured reasoning tool
+    // Install: npx -y @modelcontextprotocol/server-sequential-thinking
+    // ─────────────────────────────────────────────
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    // ─────────────────────────────────────────────
+    // 📁 FILESYSTEM — Read/write local files with controlled scope
+    // Install: npx -y @modelcontextprotocol/server-filesystem
+    // ─────────────────────────────────────────────
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${workspaceFolder}"
+      ]
+    },
+    // ─────────────────────────────────────────────
+    // 🐙 GITHUB — Issues, PRs, repos, code search
+    // Install: npx -y @modelcontextprotocol/server-github
+    // Requires: GITHUB_PERSONAL_ACCESS_TOKEN in env
+    // Optional: Server tolerates missing token (fails gracefully)
+    // Setup: https://github.com/settings/tokens (scopes: repo, read:org)
+    // ─────────────────────────────────────────────
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}

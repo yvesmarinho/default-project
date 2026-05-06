@@ -1,11 +1,34 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-29 — Session 2026-04-29 Active (BUG-05 + BUG-06 + GitHub Optional + Pre-commit Hook)
-**Project Status**: 🟢 Stable — Spec 066 objetivo.yaml v2.0 COMPLETE ✅ + Bug Fixes
-**Version**: 1.18.0
-**Last Session**: 2026-04-29 — ✅ BUG-05 FIXED + BUG-06 FIXED + GitHub Optional Feature + Pre-commit Hook Fix
+**Last Updated**: 2026-05-06 — Session 2026-05-06 Active (MCP Servers Expansion)
+**Project Status**: 🟢 Stable — MCP Configuration Enhanced
+**Version**: 1.19.0
+**Last Session**: 2026-05-06 — ✅ MCP Servers Expanded (memory + sequential-thinking + filesystem + github)
 
 ---
+
+> **✅ SESSION 2026-05-06 IN PROGRESS (MCP Configuration Enhancement)**
+> - **Status**: 🔄 ACTIVE — MCP servers expanded from 2 to 4
+> - **Duration**: ~1h (analysis + implementation + documentation)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: Pending
+> - **MCP SERVERS EXPANSION**:
+>   - **Previous**: memory, sequential-thinking (2 servers)
+>   - **Current**: memory, sequential-thinking, **filesystem**, **github** (4 servers)
+>   - **Impact**: Enhanced Copilot capabilities (file access + GitHub integration)
+>   - **Security**: GitHub token optional (fails gracefully), filesystem scoped to workspace
+>   - **Files Modified**:
+>     - `.vscode/mcp.json` — Uncommented filesystem and github servers
+>     - `scripts/lib/vscode.py` — Updated default fallback (lines 219, 437)
+>     - `QUICKSTART.md` — Added GitHub token setup guide
+>     - `README.md` — Updated version history with 4 servers
+>   - **Documentation**:
+>     - Created: `docs/SESSIONS/2026-05-06/IMPACT_ANALYSIS_MCP_SERVERS.md`
+>     - Analysis: 55 min estimated implementation, 4 phases completed
+>     - Testing: Pending validation of generated projects
+> - **Previous Session**: 2026-04-29 — BUG-05 + BUG-06 + GitHub Optional + Pre-commit Hook
+>
+> ---
 
 > **✅ SESSION 2026-04-29 IN PROGRESS (Bug Fixes + Feature Enhancements)**
 > - **Status**: 🔄 ACTIVE — 4 major issues resolved
