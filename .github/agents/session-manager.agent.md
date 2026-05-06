@@ -29,7 +29,7 @@ Invoke this agent when:
 ## Core Responsibilities
 
 ### 1. Session Initialization
-- Validate and configure MCP servers (`memory`, `sequential-thinking`)
+- Validate and configure MCP servers (`memory`, `sequential-thinking`, `filesystem`, `github`)
 - Recover context from previous sessions (README, INDEX, TODO, session documents)
 - Load project rules from `.copilot-rules.md` and `.copilot-*` files incrementally
 - Create session documentation structure (`docs/SESSIONS/YYYY-MM-DD/`)
@@ -109,8 +109,9 @@ Invoke this agent when:
 
 1. **Validate MCP Configuration**
    - Read `.vscode/mcp.json`
-   - Ensure `memory` and `sequential-thinking` servers are configured
+   - Ensure `memory`, `sequential-thinking`, `filesystem`, and `github` servers are configured
    - Report status: `✅ MCP Config OK` or suggest fixes
+   - Note: `github` server requires `GITHUB_PERSONAL_ACCESS_TOKEN` env var (optional)
 
 2. **Load Project Rules**
    - Read `.copilot-rules.md` (base rules - Layer 1)
