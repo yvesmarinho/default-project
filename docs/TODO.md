@@ -1,26 +1,12 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-04-29 — Session Closed: BUG-05, BUG-06, GitHub Optional, Pre-commit Hook Fixes
+**Last Updated**: 2026-05-06 — MCP Expansion (4 servers) + UV Config + Agent Updates
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
 ---
 
-## 🎯 Próxima Sessão (2026-04-30+)
-
-- [ ] **BUG-08**: Knowledge-Harvester MCP Configuration (P2 MEDIUM)
-  - **Objetivo**: Fix missing MCP configuration in knowledge-harvester-library project
-  - **Descrição**: Project missing .vscode/mcp.json, no access to MCP servers
-  - **Prioridade**: P2 MEDIUM (limits functionality but not blocking)
-  - **Estimativa**: 30 min
-  - **Arquivo**: docs/bugs/BUG-08-knowledge-harvester-missing-mcp-config.md
-  - **Tarefas**:
-    1. Copy .vscode/mcp.json from a-default-project
-    2. Update server paths to match workspace structure
-    3. Restart VS Code to activate servers
-    4. Test memory, sequential-thinking, GitHub, Pylance tools
-  - **Blocker**: None
-  - **Expected Outcome**: Full MCP functionality in knowledge-harvester-library
+## 🎯 Próxima Sessão (2026-05-07+)
 
 - [ ] **Objetivo-Init Pipeline Testing** (P1 HIGH)
   - **Objetivo**: Test complete v1.0 workflow end-to-end
@@ -34,6 +20,20 @@
     4. Scaffold new project from spec
     5. Document pipeline usage with examples
   - **Expected Outcome**: Complete working pipeline validated + documented
+
+- [ ] **BUG-08**: Knowledge-Harvester MCP Configuration (P2 MEDIUM)
+  - **Objetivo**: Fix missing MCP configuration in knowledge-harvester-library project
+  - **Descrição**: Project missing .vscode/mcp.json, no access to MCP servers
+  - **Prioridade**: P2 MEDIUM (limits functionality but not blocking)
+  - **Estimativa**: 30 min
+  - **Arquivo**: docs/bugs/BUG-08-knowledge-harvester-missing-mcp-config.md
+  - **Tarefas**:
+    1. Copy .vscode/mcp.json from a-default-project
+    2. Update server paths to match workspace structure
+    3. Restart VS Code to activate servers
+    4. Test memory, sequential-thinking, GitHub, Pylance tools
+  - **Blocker**: None (but project now has 4 MCP servers available, not 2)
+  - **Expected Outcome**: Full MCP functionality in knowledge-harvester-library
 
 - [ ] **Linting Cleanup** (P2 LOW)
   - **Objetivo**: Resolve non-critical linting warnings
