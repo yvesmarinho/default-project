@@ -1,5 +1,6 @@
 # Alterações necessárias
 
+- no scaffold mudar a seleção das opções por letras ou numeros, ao contrário do texto correto da opção.(IMPORTANTE)
 - contabilização de tempo de trabalho de cada sessão.
 - Analisar as informações dos sites abaixo para fazer as devidas atualizações.
   - [Github Copilot Instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
@@ -7,10 +8,22 @@
   - [Custom Agents ](https://code.visualstudio.com/docs/copilot/customization/custom-agents)
   - [manage MCP servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers) habilitar Github MCP para acesso aos repositórios.
   - [Awesome Copilot](https://github.com/github/awesome-copilot), importar todos os códigos que torner o template de projeto mais completo.
+  - [Github Copilot in Visual Studio](https://github.blog/changelog/2026-04-30-github-copilot-in-visual-studio-april-update/)
+
+## Correção - IMPORTANTE
+  - arquivo ".github/copilot-instructions.md" deve ser renomeado para ".github/.copilot-instructions.md" que é padrão do Copilot.
 
 
 ---
 ## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
+
+✅ Bug IMP-65 Resolvido: scaffold --upgrade Ignora Atualizações
+- ✅ Opção 1 implementada: --force (backup + sobrescrita)
+- ✅ Opção 2 implementada: check/diff/merge commands
+- ✅ Opção 3 implementada: drift detection (SHA256)
+- ✅ Validação completa: 8/8 testes passaram (100%)
+- ⚠️ Limitação: merge-template requer debug adicional
+- 📝 Documentado em: docs/SESSIONS/2026-05-08/DAILY_ACTIVITIES_2026-05-08.md
 
 ---
 

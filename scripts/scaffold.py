@@ -35,6 +35,30 @@ Separação de domínios:
 """
 
 from __future__ import annotations
+from lib.ui import console, show_banner, show_menu
+from lib.flows import (
+    _load_descriptor,
+    flow_check_links,
+    flow_check_templates,
+    flow_compose_profiles,
+    flow_diff_template,
+    flow_dry_run,
+    flow_generate_infra,
+    flow_generate_rules,
+    flow_list_profiles,
+    flow_merge_template,
+    flow_new_profile,
+    flow_new_project,
+    flow_objetivo_generate,
+    flow_objetivo_init,
+    flow_objetivo_migrate,
+    flow_objetivo_validate,
+    flow_publish,
+    flow_release,
+    flow_upgrade,
+    flow_validate,
+)
+from lib.config import SCAFFOLD_VERSION
 
 import argparse
 import sys
@@ -56,12 +80,15 @@ _SUBCOMMAND_MAP: dict[str, list[str]] = {
     "list-profiles": ["--list-profiles"],
     "validate":      ["--validate"],
     "dry-run":       ["--dry-run"],
-    "compose":       ["--compose"],      # next positional arg becomes the value
+    # next positional arg becomes the value
+    "compose":       ["--compose"],
     "upgrade":       ["--upgrade"],
     "publish":       ["--publish"],
-    "new-profile":   ["--new-profile"],  # next positional arg becomes the value
+    # next positional arg becomes the value
+    "new-profile":   ["--new-profile"],
     "infra":         ["--infra"],
-    "release":       ["--release"],      # next positional arg becomes the value
+    # next positional arg becomes the value
+    "release":       ["--release"],
     "objetivo-init":     ["--objetivo-init"],
     "objetivo-validate": ["--objetivo-validate"],
     "objetivo-generate": ["--objetivo-generate"],
@@ -69,7 +96,8 @@ _SUBCOMMAND_MAP: dict[str, list[str]] = {
 }
 
 # Subcommands that take a required value as the next positional argument
-_SUBCOMMAND_VALUE: frozenset[str] = frozenset({"compose", "new-profile", "release", "diff-template", "merge-template"})
+_SUBCOMMAND_VALUE: frozenset[str] = frozenset(
+    {"compose", "new-profile", "release", "diff-template", "merge-template"})
 
 
 def _translate_subcommand(argv: list[str]) -> tuple[list[str], bool]:
@@ -93,7 +121,7 @@ def _translate_subcommand(argv: list[str]) -> tuple[list[str], bool]:
         value_consumed = False
         for i, token in enumerate(rest):
             if not token.startswith("-") and not value_consumed:
-                new_argv = replacement + [token] + rest[i + 1 :]
+                new_argv = replacement + [token] + rest[i + 1:]
                 return new_argv, True
             new_rest.append(token)
         # No positional value found — pass as-is so argparse can error properly
@@ -101,38 +129,16 @@ def _translate_subcommand(argv: list[str]) -> tuple[list[str], bool]:
 
     return replacement + rest, True
 
+
 # Garante que scripts/ está no sys.path para encontrar lib/
 sys.path.insert(0, str(Path(__file__).parent))
 
-from lib.config import SCAFFOLD_VERSION
-from lib.flows import (
-    _load_descriptor,
-    flow_check_links,
-    flow_check_templates,
-    flow_compose_profiles,
-    flow_diff_template,
-    flow_dry_run,
-    flow_generate_infra,
-    flow_generate_rules,
-    flow_list_profiles,
-    flow_merge_template,
-    flow_new_profile,
-    flow_new_project,
-    flow_objetivo_generate,
-    flow_objetivo_init,
-    flow_objetivo_migrate,
-    flow_objetivo_validate,
-    flow_publish,
-    flow_release,
-    flow_upgrade,
-    flow_validate,
-)
-from lib.ui import console, show_banner, show_menu
 
 # ---------------------------------------------------------------------------
 # CLI — argparse
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -279,7 +285,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--profile-layer",
         metavar="LAYER",
         dest="profile_layer",
-        choices=["1", "2", "3", "4", "layer2", "layer3", "layer4", "transversal", "core"],
+        choices=["1", "2", "3", "4", "layer2",
+                 "layer3", "layer4", "transversal", "core"],
         default=None,
         help="camada do novo perfil (usar com --new-profile): 1|2|3|4|layer2|layer3|layer4|transversal|core",
     )
@@ -323,9 +330,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     # Campos do projeto
     fields_group = parser.add_argument_group("campos do projeto")
-    fields_group.add_argument("--name",        metavar="NAME",  help="nome kebab-case (obrigatório em --ci)")
-    fields_group.add_argument("--title",       metavar="TITLE", help="título legível")
-    fields_group.add_argument("--description", metavar="DESC",  help="descrição breve")
+    fields_group.add_argument(
+        "--name",        metavar="NAME",  help="nome kebab-case (obrigatório em --ci)")
+    fields_group.add_argument(
+        "--title",       metavar="TITLE", help="título legível")
+    fields_group.add_argument(
+        "--description", metavar="DESC",  help="descrição breve")
     fields_group.add_argument(
         "--file",
         metavar="FILE",
@@ -367,7 +377,8 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="LANG",
         help="linguagem: python | typescript | go | other",
     )
-    fields_group.add_argument("--repo",       metavar="URL",  help="URL do repositório GitHub")
+    fields_group.add_argument(
+        "--repo",       metavar="URL",  help="URL do repositório GitHub")
     fields_group.add_argument(
         "--with-code-profile",
         metavar="PROFILE",
@@ -378,8 +389,10 @@ def build_parser() -> argparse.ArgumentParser:
             "  equivalente a: scaffold.py new ... && cd my-api && scaffold.py compose python-fastapi"
         ),
     )
-    fields_group.add_argument("--shared-dir", metavar="PATH", dest="shared_dir", help="caminho para .copilot-shared")
-    fields_group.add_argument("--target-dir", metavar="PATH", dest="target_dir", help="onde criar o projeto (default: cwd)")
+    fields_group.add_argument("--shared-dir", metavar="PATH",
+                              dest="shared_dir", help="caminho para .copilot-shared")
+    fields_group.add_argument("--target-dir", metavar="PATH",
+                              dest="target_dir", help="onde criar o projeto (default: cwd)")
     fields_group.add_argument(
         "--format",
         choices=["colored", "markdown", "html"],
@@ -478,7 +491,8 @@ def main() -> int:
                 args.target_dir = cfg_data["target_dir"]
             args.ci = True  # força modo não-interativo
         except Exception as exc:
-            console.print(f"\n  [bold red]❌ Erro ao carregar --config:[/bold red] {exc}\n")
+            console.print(
+                f"\n  [bold red]❌ Erro ao carregar --config:[/bold red] {exc}\n")
             return 1
 
     # --validate: valida profile-descriptors e sai
@@ -549,15 +563,16 @@ def main() -> int:
     if getattr(args, "check_templates", False):
         return flow_check_templates(args)
 
-    # --diff-template: mostra diff entre templates e sai (IMP-65 Fase 2)
-    if getattr(args, "template_name", None):
-        return flow_diff_template(args)
-
     # --merge-template: merge de template upstream e sai (IMP-65 Fase 3)
+    # IMPORTANTE: verificar ANTES de diff-template pois ambos usam template_name
     if getattr(args, "merge_template_name", None):
         # Rename merge_template_name to template_name for flow compatibility
         args.template_name = args.merge_template_name
         return flow_merge_template(args)
+
+    # --diff-template: mostra diff entre templates e sai (IMP-65 Fase 2)
+    if getattr(args, "template_name", None):
+        return flow_diff_template(args)
 
     # --new: pula menu
     if args.new or args.ci:

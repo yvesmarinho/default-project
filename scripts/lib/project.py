@@ -1695,7 +1695,7 @@ def create_structure(config: ProjectConfig) -> list[CreatedItem]:
                     message="hook de segurança atualizado com versão mais recente"
                 ))
                 continue
-            
+
             # NOVO: Tentar merge inteligente ao invés de skip incondicional
             # Fix: BUG-#1.1 (P0 sistêmico - arquivos críticos não mesclados)
             content = _prepare_content(template, file_rel, config)
@@ -1742,7 +1742,7 @@ def _prepare_content(template: str, file_rel: str, config: ProjectConfig) -> str
 # SpecKit — cópia de agents, prompts e perfis de domínio
 # ---------------------------------------------------------------------------
 
-def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
+def copy_speckit(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
     Copia assets SpecKit do template para o projeto gerado.
 
@@ -1756,7 +1756,14 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
       - Perfis extras selecionados (cfg.extra_profiles)
       - Sempre: SPECKIT_TRANSVERSAL_PROFILES (ex: devops-security)
 
-    Arquivos já existentes no destino são saltados (idempotente).
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes (com backup)
+
+    Arquivos já existentes no destino:
+      - Se idênticos: saltados
+      - Se diferentes e force=False: marcados com 'drift'
+      - Se diferentes e force=True: backupados e sobrescritos
     """
     results: list[CreatedItem] = []
     errors: list[str] = []
@@ -1779,7 +1786,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
             continue
         for src_file in sorted(src_dir.glob(pattern)):
             dst_file = base / rel_dir / src_file.name
-            result = _copy_file(src_file, dst_file)
+            result = _copy_file(src_file, dst_file, force=force)
             if result.status == "error":
                 errors.append(str(src_file))
             results.append(result)
@@ -1791,7 +1798,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
             if src_file.is_file():
                 rel = src_file.relative_to(src_root)
                 dst_file = base / rel
-                result = _copy_file(src_file, dst_file)
+                result = _copy_file(src_file, dst_file, force=force)
                 if result.status == "error":
                     errors.append(str(src_file))
                 results.append(result)
@@ -1802,7 +1809,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
     src_cfg = src_root / ".specify" / "config.json"
     if src_cfg.is_file():
         dst_cfg = base / ".specify" / "config.json"
-        result = _copy_file(src_cfg, dst_cfg)
+        result = _copy_file(src_cfg, dst_cfg, force=force)
         if result.status == "error":
             errors.append(str(src_cfg))
         results.append(result)
@@ -1811,22 +1818,26 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
     # 1) principal (pelo domínio)
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(config.domain)
     if domain_profile:
-        result = _copy_domain_profile(src_root, base, domain_profile, errors)
+        result = _copy_domain_profile(
+            src_root, base, domain_profile, errors, force=force)
         results.append(result)
 
     # 2) extras selecionados pelo utilizador (D-21)
     for profile_name in config.extra_profiles:
         if profile_name != domain_profile:  # evita duplicata
-            result = _copy_domain_profile(src_root, base, profile_name, errors)
+            result = _copy_domain_profile(
+                src_root, base, profile_name, errors, force=force)
             results.append(result)
 
     # 3) transversais — sempre copiados (D-20)
     for profile_name in SPECKIT_TRANSVERSAL_PROFILES:
-        result = _copy_domain_profile(src_root, base, profile_name, errors)
+        result = _copy_domain_profile(
+            src_root, base, profile_name, errors, force=force)
         results.append(result)
 
     if errors:
-        log.warning("⚠️  %d erro(s) ao copiar SpecKit: %s", len(errors), errors)
+        log.warning("⚠️  %d erro(s) ao copiar SpecKit: %s",
+                    len(errors), errors)
 
     return results
 
@@ -1860,7 +1871,8 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     src_templates = src_root / "docs" / "templates"
 
     if not src_templates.is_dir():
-        log.warning("⚠️  Diretório de origem não encontrado: %s", src_templates)
+        log.warning("⚠️  Diretório de origem não encontrado: %s",
+                    src_templates)
         return results
 
     # 1. objetivo.yaml (raiz, com substituições)
@@ -1869,22 +1881,30 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     try:
         if dst_objetivo.exists():
             log.info("⏭️  já existe: objetivo.yaml")
-            results.append(CreatedItem(path=dst_objetivo, kind="file", status="skipped"))
+            results.append(CreatedItem(path=dst_objetivo,
+                           kind="file", status="skipped"))
         else:
             content = src_objetivo.read_text(encoding="utf-8")
             # Substituir placeholders
-            content = content.replace('name: "CHANGE_ME"', f'name: "{config.project_name}"')
-            content = content.replace('summary: "CHANGE_ME (1-2 linhas)"', f'summary: "{config.description}"')
-            content = content.replace('problem_statement: "CHANGE_ME (qual dor real será resolvida?)"', f'problem_statement: "{config.description}"')
-            content = content.replace('team_or_person: "CHANGE_ME"', f'team_or_person: "{config.project_name} team"')
-            content = content.replace('- "CHANGE_ME"', f'- "{config.project_name} owner"')
+            content = content.replace(
+                'name: "CHANGE_ME"', f'name: "{config.project_name}"')
+            content = content.replace(
+                'summary: "CHANGE_ME (1-2 linhas)"', f'summary: "{config.description}"')
+            content = content.replace(
+                'problem_statement: "CHANGE_ME (qual dor real será resolvida?)"', f'problem_statement: "{config.description}"')
+            content = content.replace(
+                'team_or_person: "CHANGE_ME"', f'team_or_person: "{config.project_name} team"')
+            content = content.replace(
+                '- "CHANGE_ME"', f'- "{config.project_name} owner"')
 
             dst_objetivo.write_text(content, encoding="utf-8")
             log.info("✅ criado: objetivo.yaml")
-            results.append(CreatedItem(path=dst_objetivo, kind="file", status="created"))
+            results.append(CreatedItem(path=dst_objetivo,
+                           kind="file", status="created"))
     except OSError as exc:
         log.warning("⚠️  erro ao criar objetivo.yaml: %s", exc)
-        results.append(CreatedItem(path=dst_objetivo, kind="file", status="error", message=str(exc)))
+        results.append(CreatedItem(path=dst_objetivo,
+                       kind="file", status="error", message=str(exc)))
 
     # 2. mcp-questions.yaml (raiz, cópia direta)
     src_mcp = src_templates / "mcp-questions-template.yaml"
@@ -1910,29 +1930,77 @@ def _copy_domain_profile(
     base: Path,
     profile_name: str,
     errors: list[str],
+    force: bool = False,
 ) -> CreatedItem:
     """Copia um perfil de domínio individual."""
-    src_file = src_root / ".github" / "prompts" / "domain" / f"{profile_name}.prompt.md"
-    dst_file = base / ".github" / "prompts" / "domain" / f"{profile_name}.prompt.md"
-    result = _copy_file(src_file, dst_file)
+    src_file = src_root / ".github" / "prompts" / \
+        "domain" / f"{profile_name}.prompt.md"
+    dst_file = base / ".github" / "prompts" / \
+        "domain" / f"{profile_name}.prompt.md"
+    result = _copy_file(src_file, dst_file, force=force)
     if result.status == "error":
         errors.append(str(src_file))
     return result
 
 
-def _copy_file(src: Path, dst: Path) -> CreatedItem:
-    """Copia src → dst com logging. Salta se dst já existe."""
-    if dst.exists():
-        log.info("⏭️  skipped (já existe): %s", dst)
-        return CreatedItem(path=dst, kind="file", status="skipped")
+def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
+    """Copia src → dst com logging. Detecta drift e permite force com backup.
+
+    Args:
+        src: Arquivo de origem (upstream template)
+        dst: Arquivo de destino (projeto local)
+        force: Se True, sobrescreve arquivo existente após backup
+
+    Returns:
+        CreatedItem com status:
+        - created: arquivo criado ou atualizado
+        - skipped: arquivo existe e sem drift ou force=False
+        - drift: arquivo existe com drift detectado (apenas se force=False)
+        - error: erro ao copiar
+    """
+    import hashlib
+
     if not src.exists():
         msg = f"origem não encontrada: {src}"
         log.warning("⚠️  %s", msg)
         return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
+    # Calcular hash do arquivo upstream
+    src_hash = hashlib.sha256(src.read_bytes()).hexdigest()[:8]
+
+    if dst.exists():
+        # Calcular hash do arquivo local
+        dst_hash = hashlib.sha256(dst.read_bytes()).hexdigest()[:8]
+
+        # Detectar drift (Opção 3)
+        if src_hash != dst_hash:
+            if not force:
+                log.warning(
+                    "📊 drift detectado: %s (upstream: %s, local: %s)",
+                    dst.name, src_hash, dst_hash
+                )
+                return CreatedItem(
+                    path=dst,
+                    kind="file",
+                    status="drift",
+                    message=f"Arquivo difere do upstream (upstream: {src_hash}, local: {dst_hash})"
+                )
+            else:
+                # Opção 1: backup antes de sobrescrever
+                backup_path = dst.with_suffix(dst.suffix + ".backup")
+                shutil.copy2(dst, backup_path)
+                log.info("📦 backup: %s → %s", dst.name, backup_path.name)
+        else:
+            # Arquivo idêntico ao upstream
+            log.info("⏭️  skipped (idêntico ao upstream): %s", dst)
+            return CreatedItem(path=dst, kind="file", status="skipped")
+
+    # Criar ou sobrescrever arquivo
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
-        log.info("✅ copiado: %s → %s", src.name, dst)
+        action = "atualizado" if dst.exists() and force else "copiado"
+        log.info("✅ %s: %s → %s", action, src.name, dst)
         return CreatedItem(path=dst, kind="file", status="created")
     except OSError as exc:
         log.warning("⚠️  erro ao copiar %s: %s", src, exc)
@@ -1967,9 +2035,12 @@ def generate_constitution(config: ProjectConfig) -> CreatedItem:
         template_content = src.read_text(encoding="utf-8")
 
         # Substitui os marcadores de template do SpecKit
-        content = template_content.replace("[PROJECT_NAME]", config.project_title)
-        content = content.replace("[RATIFICATION_DATE]", config.created_at[:10])
-        content = content.replace("[LAST_AMENDED_DATE]", config.created_at[:10])
+        content = template_content.replace(
+            "[PROJECT_NAME]", config.project_title)
+        content = content.replace(
+            "[RATIFICATION_DATE]", config.created_at[:10])
+        content = content.replace(
+            "[LAST_AMENDED_DATE]", config.created_at[:10])
         content = content.replace("[CONSTITUTION_VERSION]", "1.0.0")
 
         # Cabeçalho com metadados do scaffold
@@ -2186,7 +2257,8 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
             # Verificar se .git/hooks/ existe
             hooks_dir = base / ".git" / "hooks"
             if not hooks_dir.exists():
-                log.warning("⚠️  .git/hooks/ não existe — pulando ativação de hook")
+                log.warning(
+                    "⚠️  .git/hooks/ não existe — pulando ativação de hook")
                 results.append(CreatedItem(
                     path=hook_template,
                     kind="file",
@@ -2318,7 +2390,8 @@ def generate_project_creation_summary(config: ProjectConfig) -> CreatedItem:
     if config.extra_profiles:
         if isinstance(config.extra_profiles, str):
             # Se for string, fazer split por vírgula
-            extra = [p.strip() for p in config.extra_profiles.split(",") if p.strip()]
+            extra = [p.strip()
+                     for p in config.extra_profiles.split(",") if p.strip()]
             profiles.extend(extra)
         elif isinstance(config.extra_profiles, list):
             profiles.extend(config.extra_profiles)
@@ -2460,7 +2533,8 @@ def write_scaffold_state(
     try:
         import yaml
         state_path.write_text(
-            yaml.dump(state, allow_unicode=True, default_flow_style=False, sort_keys=False),
+            yaml.dump(state, allow_unicode=True,
+                      default_flow_style=False, sort_keys=False),
             encoding="utf-8",
         )
         log.info("✅ scaffold state gravado: %s", state_path)
@@ -2529,6 +2603,7 @@ def config_from_state(state: dict, override_target: Path | None = None) -> Proje
         github_repo=proj.get("github_repo") or None,
         shared_dir=shared,
         target_dir=target,
-        created_at=state.get("created_at", datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
+        created_at=state.get("created_at", datetime.now(
+            timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
         extra_profiles=state.get("profiles_applied", []),
     )

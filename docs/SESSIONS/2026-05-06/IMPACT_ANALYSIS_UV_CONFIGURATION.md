@@ -1,15 +1,15 @@
 # Análise de Impacto — Configuração UV no VS Code
 
-**Data**: 2026-05-06  
-**Sessão**: 2026-05-06 (continuação)  
+**Data**: 2026-05-06
+**Sessão**: 2026-05-06 (continuação)
 **Solicitação**: Aplicar configuração de uv como package manager padrão no VS Code
 
 ---
 
 ## 📋 Resumo Executivo
 
-**Decisão**: ✅ APROVADA  
-**Mudança**: Atualizar `python-envs.pythonProjects` para usar `uv` em vez de `pip` como package manager padrão  
+**Decisão**: ✅ APROVADA
+**Mudança**: Atualizar `python-envs.pythonProjects` para usar `uv` em vez de `pip` como package manager padrão
 **Escopo**: Projeto template + projetos gerados
 
 ---
@@ -131,7 +131,7 @@ echo '{"python-envs.pythonProjects": [{"path": ".", "envManager": "astral-sh.uv:
 
 **Impacto**: ✅ Receberão configuração uv por padrão
 
-**Validação**: 
+**Validação**:
 - ✅ Domínio `programming` + linguagem `python`
 - ✅ Outros domínios/linguagens não afetados
 

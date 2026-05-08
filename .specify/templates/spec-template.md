@@ -1,89 +1,9 @@
----
-template_version: "2.2.0"
-last_updated: "2026-04-23"
-breaking_changes: false
----
-
 # Feature Specification: [FEATURE NAME]
 
-**Feature ID**: [FEATURE_ID]
-**Feature Branch**: `[###-feature-name]`
-**Created**: [DATE]
-**Status**: Draft
-**Business Objective**: See [objetivo.yaml](./objetivo.yaml) (if exists)
+**Feature Branch**: `[###-feature-name]`  
+**Created**: [DATE]  
+**Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
-
----
-
-## Business Context (from objetivo.yaml)
-
-<!--
-  AUTO-POPULATED from objetivo.yaml if exists.
-  If objetivo.yaml doesn't exist, summarize business context manually here.
--->
-
-**Problem**: [Pulled from objetivo.yaml → negocio.problema.descricao]
-
-**Value Proposition**: [Pulled from objetivo.yaml → negocio.valor.objetivos_estrategicos]
-
-**Success Metrics**: [Pulled from objetivo.yaml → negocio.valor.metricas_sucesso]
-
-**Key Personas**: [Pulled from objetivo.yaml → produto.personas]
-
-**Critical Journeys**: [Pulled from objetivo.yaml → produto.jornadas_criticas - P1 only]
-
-**Initial Decisions**: [Pulled from objetivo.yaml → decisoes_iniciais]
-
----
-
-## Performance Criteria *(added in v1.5.0)*
-
-<!--
-  Define non-functional performance requirements for this feature.
-  These should be measurable and testable.
--->
-
-### Response Time Requirements
-
-- **API Endpoints**: p95 < 200ms, p99 < 500ms
-- **Page Load**: Initial render < 1s, interactive < 2s
-- **Background Jobs**: Complete within [X] minutes/hours
-
-### Throughput & Scalability
-
-- **Peak Load**: Handle [X] requests/second sustained
-- **Concurrent Users**: Support [X] simultaneous users
-- **Data Volume**: Process [X] records without degradation
-
-### Availability & Reliability
-
-- **Uptime SLO**: 99.9% availability (43.2 min downtime/month max)
-- **Error Rate**: < 0.1% failed requests
-- **Recovery Time**: < 5 minutes for service restart
-
-### Resource Constraints
-
-- **Memory**: < [X]MB per instance
-- **CPU**: < [X]% average utilization
-- **Storage**: Data growth < [X]GB per month
-
-### Accessibility Criteria
-
-- **WCAG Compliance**: Meet WCAG 2.1 Level AA standards
-- **Keyboard Navigation**: All features accessible via keyboard
-- **Screen Readers**: Compatible with NVDA, JAWS, VoiceOver
-- **Color Contrast**: Minimum 4.5:1 for normal text, 3:1 for large text
-- **Focus Indicators**: Visible focus indicators on all interactive elements
-
-### Monitoring & Observability
-
-- **Metrics**: Key performance indicators tracked (response time, error rate, throughput)
-- **Logging**: Structured logging with correlation IDs for distributed tracing
-- **Alerting**: Automated alerts for SLO violations and error spikes
-- **Dashboards**: Real-time visibility into system health and business metrics
-- **Distributed Tracing**: End-to-end request tracking across services
-
----
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -91,7 +11,7 @@ breaking_changes: false
   IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
   Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
   you should still have a viable MVP (Minimum Viable Product) that delivers value.
-
+  
   Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
   Think of each story as a standalone slice of functionality that can be:
   - Developed independently
@@ -165,18 +85,15 @@ breaking_changes: false
 ### Functional Requirements
 
 - **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]
+- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
 - **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
-- **FR-006**: System MUST encrypt sensitive data at rest
-- **FR-007**: System MUST validate all user inputs against injection attacks
-- **FR-008**: System MUST implement rate limiting on public APIs
 
 *Example of marking unclear requirements:*
 
-- **FR-009**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-010**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
+- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
 ### Key Entities *(include if feature involves data)*
 
@@ -196,3 +113,16 @@ breaking_changes: false
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+
+## Assumptions
+
+<!--
+  ACTION REQUIRED: The content in this section represents placeholders.
+  Fill them out with the right assumptions based on reasonable defaults
+  chosen when the feature description did not specify certain details.
+-->
+
+- [Assumption about target users, e.g., "Users have stable internet connectivity"]
+- [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
+- [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
+- [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]

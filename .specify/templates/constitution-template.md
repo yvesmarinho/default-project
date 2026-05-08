@@ -1,9 +1,3 @@
----
-template_version: "1.0.0"
-last_updated: "2026-04-14"
-breaking_changes: false
----
-
 # [PROJECT_NAME] Constitution
 <!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 

@@ -1,11 +1,5 @@
 ---
-template_version: "2.0.0"
-last_updated: "2026-04-23"
-breaking_changes: true
-breaking_change_notes: |
-  - Removed "Legacy Task Format" section
-  - All tasks must use new Phase-based organization
-  - Migration: Convert old task lists to Phase 1-3 structure
+
 description: "Task list template for feature implementation"
 ---
 
@@ -31,21 +25,21 @@ description: "Task list template for feature implementation"
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
 - Paths shown below assume single project - adjust based on plan.md structure
 
-<!--
+<!-- 
   ============================================================================
   IMPORTANT: The tasks below are SAMPLE TASKS for illustration purposes only.
-
+  
   The /speckit.tasks command MUST replace these with actual tasks based on:
   - User stories from spec.md (with their priorities P1, P2, P3...)
   - Feature requirements from plan.md
   - Entities from data-model.md
   - Endpoints from contracts/
-
+  
   Tasks MUST be organized by user story so each story can be:
   - Implemented independently
   - Tested independently
   - Delivered as an MVP increment
-
+  
   DO NOT keep these sample tasks in the generated tasks.md file.
   ============================================================================
 -->

@@ -57,22 +57,33 @@ def flow_diff_template(args: argparse.Namespace) -> int:
         target_dir = Path.cwd().resolve()
 
     scaffold_root = Path(__file__).parent.parent.parent.parent
-    upstream_dir = scaffold_root / ".specify" / "templates"
-    local_dir = target_dir / ".specify" / "templates"
 
-    # Validate directories
-    if not upstream_dir.exists():
-        console.print(f"[red]❌ Upstream templates not found: {upstream_dir}[/red]")
-        return 2
+    # Support both template names and relative paths (e.g., .github/agents/session-manager.agent.md)
+    if "/" in template_name or template_name.startswith("."):
+        # Relative path provided
+        local_path = target_dir / template_name
+        upstream_path = scaffold_root / template_name
+    else:
+        # Just a template name - assume .specify/templates/
+        upstream_dir = scaffold_root / ".specify" / "templates"
+        local_dir = target_dir / ".specify" / "templates"
 
-    if not local_dir.exists():
-        console.print(f"[red]❌ Local templates not found: {local_dir}[/red]")
-        console.print("Are you in a project directory created with scaffold.py?")
-        return 1
+        if not upstream_dir.exists():
+            console.print(
+                f"[red]❌ Upstream templates not found: {upstream_dir}[/red]")
+            return 2
+
+        if not local_dir.exists():
+            console.print(
+                f"[red]❌ Local templates not found: {local_dir}[/red]")
+            console.print(
+                "Are you in a project directory created with scaffold.py?")
+            return 1
+
+        local_path = local_dir / template_name
+        upstream_path = upstream_dir / template_name
 
     # Validate template exists
-    local_path = local_dir / template_name
-    upstream_path = upstream_dir / template_name
 
     if not local_path.exists():
         console.print(f"[red]❌ Local template not found: {local_path}[/red]")
@@ -82,7 +93,8 @@ def flow_diff_template(args: argparse.Namespace) -> int:
         return 1
 
     if not upstream_path.exists():
-        console.print(f"[red]❌ Upstream template not found: {upstream_path}[/red]")
+        console.print(
+            f"[red]❌ Upstream template not found: {upstream_path}[/red]")
         console.print("This template may have been removed from upstream.")
         return 1
 
