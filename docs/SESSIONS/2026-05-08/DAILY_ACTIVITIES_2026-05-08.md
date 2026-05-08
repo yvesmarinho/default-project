@@ -113,7 +113,7 @@
 # Verificar drift sem modificar
 scaffold.py upgrade
 
-# Ver diferenças em arquivo específico  
+# Ver diferenças em arquivo específico
 scaffold.py diff-template .github/agents/session-manager.agent.md
 
 # Atualizar com backup automático

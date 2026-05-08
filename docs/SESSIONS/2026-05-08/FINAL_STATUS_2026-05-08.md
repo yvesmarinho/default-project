@@ -37,7 +37,7 @@
 ### D-01: SHA256 para comparação de arquivos
 **Contexto**: Necessidade de detectar drift de templates entre upstream e local
 **Decisão**: Usar SHA256 (8 primeiros caracteres) ao invés de timestamps
-**Rationale**: 
+**Rationale**:
 - Timestamps podem ser preservados em git (não confiáveis)
 - SHA256 detecta qualquer mudança de conteúdo
 - 8 caracteres oferecem colisão praticamente impossível no escopo do projeto

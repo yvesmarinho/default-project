@@ -1,12 +1,63 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-06 — Session 2026-05-06 Complete (MCP + UV + VS Code Modernization)
-**Project Status**: 🟢 Stable — MCP Enhanced + Python Modernized
+**Last Updated**: 2026-05-08 — [IMP-65] Template Synchronization System — Validação Completa ✅
+**Project Status**: 🟢 Stable — MCP Enhanced + Template Sync Validated
 **Version**: 1.2.0
-**Last Session**: 2026-05-06 — ✅ MCP Expansion (4 servers) + UV Configuration + enterprise-ansible Modernized
+**Last Session**: 2026-05-08 — ✅ IMP-65 Complete (Force Override + Drift Detection + Commands)
 
 ---
 
+> **✅ SESSION 2026-05-08 COMPLETE (IMP-65 Template Synchronization Validation)**
+> - **Status**: ✅ COMPLETE — All 3 options implemented and validated
+> - **Duration**: ~2h 40min (09:00-11:40)
+> - **Efficiency**: 100% (all objectives achieved)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 1 total (af3f4b6, pushed)
+>   - feat(IMP-65): Template Synchronization System - Validação Completa ✅ (80 files, +6352/-749)
+> - **VALIDATION SCORECARD**: 8/8 Tests (100% PASS)
+>   - ✅ Drift detection SHA256: `656040bd` vs `4b130207`
+>   - ✅ --force cria backup: `.backup` arquivo 16K criado
+>   - ✅ --force sobrescreve: arquivo restaurado 15K (upstream)
+>   - ✅ Preserva sem --force: hash mantido após upgrade
+>   - ✅ check-templates: escaneou 1 template <1s
+>   - ✅ diff-template caminhos relativos: `.github/agents/*`
+>   - ✅ diff-template detecta mudanças: 4 linhas identificadas
+>   - ✅ Warnings informativos: 4 opções listadas
+> - **OPTION 1 - FORCE OVERRIDE (--force)**:
+>   - Drift detection via SHA256 (8 caracteres)
+>   - Backup automático com sufixo `.backup`
+>   - Sobrescrita segura preservando customizações em backup
+>   - Files: `scripts/lib/flows/upgrade.py`, `scripts/lib/project.py`
+> - **OPTION 2 - DRIFT MANAGEMENT COMMANDS**:
+>   - `check-templates`: escaneia `.specify/templates/` em <1s
+>   - `diff-template`: aceita caminhos relativos (`.github/agents/*`)
+>   - Suporte a 3 formatos: colored terminal, markdown, HTML
+>   - Files: `scripts/lib/flows/diff_template.py`, `scripts/lib/flows/merge_template.py`, `scripts/scaffold.py`
+> - **OPTION 3 - DRIFT DETECTION (sem --force)**:
+>   - Detecção SHA256: upstream vs local
+>   - Preserva arquivo local (NÃO modifica sem --force)
+>   - Warning informativo com 4 opções de resolução
+>   - Files: `scripts/lib/project.py`, `scripts/lib/flows/upgrade.py`
+> - **NEW SCRIPT - activate-mcp.sh**:
+>   - Purpose: Validate and assist MCP server initialization
+>   - Features: JSONC validation, server detection, instruction display
+>   - Location: `scripts/activate-mcp.sh`
+> - **TECHNICAL DECISIONS**:
+>   - D-01: SHA256 (8 chars) > timestamps (confiabilidade)
+>   - D-02: merge-template ANTES de diff-template (routing)
+>   - D-03: Suporte a caminhos relativos (extensibilidade)
+> - **KNOWN LIMITATION**:
+>   - ⚠️ `merge-template` não testado completamente (solicita info projeto)
+> - **DOCUMENTATION**:
+>   - `docs/SESSIONS/2026-05-08/DAILY_ACTIVITIES_2026-05-08.md`
+>   - `docs/SESSIONS/2026-05-08/FINAL_STATUS_2026-05-08.md`
+>   - `docs/planning/lembrete.md` (bug resolvido)
+>   - `docs/TODO.md` (cabeçalho atualizado)
+> - **NEXT PRIORITIES**:
+>   - Debug `merge-template` (problema de coleta de info de projeto)
+>   - Documentar IMP-65 no README.md
+>   - Continuar IMP-59 (Mini-Engram Memory System)
+>
 > **✅ SESSION 2026-05-06 COMPLETE (Infrastructure Modernization)**
 > - **Status**: ✅ COMPLETE — All objectives achieved
 > - **Duration**: ~2.5h (09:00-11:30)
