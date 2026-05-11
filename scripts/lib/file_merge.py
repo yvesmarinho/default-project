@@ -22,6 +22,8 @@ import logging
 
 from .config import CreatedItem
 from .copilot_agent_merge import CopilotAgentMerger
+from .copilot_prompt_merge import CopilotPromptMerger
+from .copilot_rules_merge import CopilotRulesMerger
 
 log = logging.getLogger(__name__)
 
@@ -146,7 +148,8 @@ class GitignoreMerger:
         ]
 
         if not missing_patterns:
-            log.info(f"✅ {existing_path.name}: Todos padrões críticos presentes")
+            log.info(
+                f"✅ {existing_path.name}: Todos padrões críticos presentes")
             return CreatedItem(
                 path=existing_path,
                 kind="file",
@@ -245,7 +248,8 @@ class MakefileMerger:
         ]
 
         if not missing_essential:
-            log.info(f"✅ {existing_path.name}: Todos targets essenciais presentes")
+            log.info(
+                f"✅ {existing_path.name}: Todos targets essenciais presentes")
             return CreatedItem(
                 path=existing_path,
                 kind="file",
@@ -352,7 +356,8 @@ class ReadmeMerger:
         ]
 
         if not missing_sections:
-            log.info(f"✅ {existing_path.name}: Todas seções essenciais presentes")
+            log.info(
+                f"✅ {existing_path.name}: Todas seções essenciais presentes")
             return CreatedItem(
                 path=existing_path,
                 kind="file",
@@ -361,7 +366,8 @@ class ReadmeMerger:
             )
 
         # Extrair introdução do README existente (até primeiro ##)
-        intro_match = re.match(r'^(.*?)(?=^##|\Z)', existing_content, re.DOTALL | re.MULTILINE)
+        intro_match = re.match(r'^(.*?)(?=^##|\Z)',
+                               existing_content, re.DOTALL | re.MULTILINE)
         intro = intro_match.group(1).rstrip() if intro_match else ""
 
         # Extrair definições completas das seções ausentes do template
@@ -388,7 +394,8 @@ class ReadmeMerger:
         merged_content += "<!-- Original Sections Below -->\n\n"
 
         # Adicionar seções originais (se houver)
-        original_sections_match = re.search(r'^##.*', existing_content, re.MULTILINE | re.DOTALL)
+        original_sections_match = re.search(
+            r'^##.*', existing_content, re.MULTILINE | re.DOTALL)
         if original_sections_match:
             merged_content += original_sections_match.group(0)
 
@@ -414,7 +421,9 @@ class ReadmeMerger:
 
 # Registry global de mergers (ordem importa: mais específico primeiro)
 _MERGERS: List[FileMerger] = [
-    CopilotAgentMerger(),  # Sprint 1: P0 CRITICAL (32 agents)
+    CopilotAgentMerger(),   # Sprint 1: P0 CRITICAL (32 agents)
+    CopilotPromptMerger(),  # Sprint 2: P0 HIGH (26 prompts)
+    CopilotRulesMerger(),   # Sprint 2: P0 HIGH (2 rules files)
     GitignoreMerger(),
     MakefileMerger(),
     ReadmeMerger(),
@@ -452,7 +461,8 @@ def merge_or_skip(
     # Tentar encontrar merger apropriado
     for merger in _MERGERS:
         if merger.can_merge(file_path):
-            log.debug(f"🔀 Merge: {file_path.name} via {merger.__class__.__name__}")
+            log.debug(
+                f"🔀 Merge: {file_path.name} via {merger.__class__.__name__}")
             return merger.merge(file_path, template_content, interactive)
 
     # Sem merger disponível → skip (comportamento seguro)
