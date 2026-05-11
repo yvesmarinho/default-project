@@ -98,6 +98,94 @@
    - **Arquivo**: `.github/agents/session-manager.agent.md`
    - **Adicionados**: Trigger phrases em pt-BR mantendo EN
    - **Comandos pt-BR**:
+
+---
+
+### Activity 3: Integração Time Tracking no Session Manager
+
+**Time**: 10:30-11:00 BRT
+**Duration**: ~30 min
+**Type**: Development + Infrastructure
+**Objective**: Incorporar time tracker no session-manager para uso coeso
+
+**Actions**:
+
+1. ✅ **Atualização do Core Responsibilities**
+   - Adicionada seção "4. Time Tracking" nas responsabilidades principais
+   - Descrição: start/pause/resume/stop tracking com integração CSV
+   - Referência: `scripts/session-time-tracker.py`
+
+2. ✅ **Integração no Session Start Workflow**
+   - Novo passo 7: "Start Time Tracking"
+   - Comando: `python scripts/session-time-tracker.py start`
+   - Confirmação: "✅ Sessão iniciada: [timestamp]"
+   - Informação ao usuário sobre comandos pause/resume
+   - State tracking: `.session-time/current.json`
+
+3. ✅ **Nova seção: During Session - Pause/Resume Workflow**
+   - **Quando pausar**: Café (5-15min), Almoço (30-60min), Reuniões
+   - **Comando pause**: `python scripts/session-time-tracker.py pause "[reason]"`
+   - **Comando resume**: `python scripts/session-time-tracker.py resume`
+   - Rastreamento automático de múltiplas pausas com duração e motivo
+
+4. ✅ **Integração no Session End Workflow**
+   - Novo passo 7: "Stop Time Tracking"
+   - Comando: `python scripts/session-time-tracker.py stop`
+   - Captura de métricas: total, pausas, líquido, quantidade de pausas
+   - Adição automática ao session documentation com markdown table
+   - Auto-save CSV: `.session-time/history.csv`
+
+5. ✅ **Novos Trigger Phrases Bilíngues**
+   - **Pause (EN)**: `/pause-work`, `/take-break`
+   - **Pause (PT)**: `/pausar-trabalho`, `/pausa`
+   - **Resume (EN)**: `/resume-work`, `/back-to-work`
+   - **Resume (PT)**: `/retomar-trabalho`, `/voltar`
+
+6. ✅ **Exemplo de Workflow Completo**
+   - Documentação completa de um dia de trabalho (09:00-17:00)
+   - Incluindo: session start, pausa café, almoço, retomar, session end
+   - Demonstração de comandos e outputs esperados
+   - Exemplo de estatísticas: `python scripts/session-time-tracker.py stats`
+
+7. ✅ **Atualização de Versão**
+   - Version 1.3.0 (2026-05-11): Time tracking integration
+   - Changelog completo com todas versões anteriores
+
+**Outcome**:
+- Time tracking completamente integrado ao workflow session-manager
+- Comandos bilíngues (EN + PT-BR) para acessibilidade
+- Workflow coeso e automatizado: start → pause → resume → stop
+- Documentação completa com exemplos práticos
+- Zero overhead manual: tracking automático em background
+- Métricas persistidas em CSV para análise histórica
+
+**Files Modified**:
+- `.github/agents/session-manager.agent.md` (+~150 lines):
+  - Core Responsibilities: +1 seção (Time Tracking)
+  - Trigger Phrases: +4 novos comandos bilíngues
+  - Session Start Workflow: +1 passo (Start Tracking)
+  - New section: During Session - Pause/Resume Workflow (+40 lines)
+  - Session End Workflow: +1 passo (Stop Tracking)
+  - Session Closure Report: +métricas de tempo
+  - Example Workflow: +~80 lines de exemplos completos
+  - Version History: atualizado para 1.3.0
+
+**Integration Points**:
+- Session start: Tracking iniciado automaticamente após validações
+- Durante sessão: Pause/resume sob demanda via triggers
+- Session end: Stop tracking + captura métricas + commit
+- Documentação: Métricas adicionadas ao FINAL_STATUS
+
+**User Benefits**:
+- Rastreamento preciso de tempo líquido de trabalho
+- Histórico de sessões para retrospectiva e métricas
+- Comandos intuitivos em português ou inglês
+- Zero overhead cognitivo (automático no workflow)
+- Dados exportáveis para análise (CSV format)
+
+**Status**: ✅ Complete
+
+---
      - `/iniciar-sessao`, `/comecar-sessao`
      - `/inicio-sessao`, `/comecar-trabalho`
      - `/recuperar-contexto`
