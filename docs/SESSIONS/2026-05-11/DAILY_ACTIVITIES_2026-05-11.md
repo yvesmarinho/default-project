@@ -444,5 +444,149 @@ Time tracker validado para uso no session-manager:
 
 ---
 
+### Activity 6: Documentação do Workflow de Merge de Arquivos
+
+**Time**: 12:30-13:15 BRT
+**Duration**: ~45 min
+**Type**: Documentation + Architecture
+**Objective**: Documentar lógica de decisão para atualização de arquivos quando há conflito de nomes durante merge/atualização de templates
+
+**Context**:
+Usuário solicitou workflow explicando como o sistema de scaffold analisa arquivos existentes e decide se sobrescreve ou não quando encontra arquivos com mesmo nome durante atualização de projetos. Diferente da Activity 5 (que documentou o time tracker), esta atividade documenta o **sistema de merge de arquivos do scaffold**.
+
+**Actions**:
+
+1. ✅ **Análise de Código do Sistema de Merge**
+   - **Arquivos lidos**:
+     - `scripts/lib/file_merge.py` (500+ lines, 3 mergers específicos)
+     - `scripts/lib/template_merge.py` (250+ lines, three-way merge)
+     - `scripts/lib/flows/merge_template.py` (200+ lines, CLI flow)
+   - **Arquitetura identificada**: Sistema em 3 layers
+     - Layer 0: Skip Safe (fallback)
+     - Layer 1: File Merge System (.gitignore, Makefile, README)
+     - Layer 2: Template Merge System (three-way merge)
+
+2. ✅ **Criação do Documento Completo**
+   - **Arquivo**: `docs/SESSIONS/2026-05-11/PROJECT_UPDATE_DECISION_WORKFLOW.md` (1200+ lines)
+   - **Formato**: Markdown com diagramas Mermaid
+   - **Objetivo**: Explicar todas as decisões de merge/skip/overwrite
+
+3. ✅ **Diagramas e Fluxos Criados** (8 diagramas)
+   - **Arquitetura de Decisão**: Flowchart 3 layers (Skip Safe, File Merge, Template Merge)
+   - **Layer 0: Skip Safe**: Flowchart de fallback (preserva local)
+   - **Layer 1: File Merge**:
+     - Fluxo geral de decisão (6 passos)
+     - GitignoreMerger: Adiciona padrões de segurança ausentes
+     - MakefileMerger: Adiciona targets ausentes preservando custom
+     - ReadmeMerger: Adiciona seções ausentes preservando intro
+   - **Layer 2: Template Merge**:
+     - Three-way merge: git merge-file com base ancestral
+     - Detecção de conflitos: Parse de markers <<<<<<< >>>>>>> 
+     - Classificação: both_modified, local_added, upstream_added, both_added
+
+4. ✅ **Matriz de Decisão Completa**
+   - **Layer 0 (Skip Safe)**: 3 cenários × resultado
+   - **Layer 1 (File Merge)**: 6 cenários × decisão × resultado
+   - **Layer 2 (Template Merge)**: 9 cenários × flags × decisão × resultado
+   - **Total**: 18 cenários documentados
+
+5. ✅ **Exemplos Práticos** (3 exemplos completos)
+   - **Exemplo 1**: .gitignore com padrões ausentes
+     - Análise: Detecta 5 padrões de segurança faltando
+     - Decisão: Merge aditivo
+     - Resultado: Sobrescreve com security section + original
+   - **Exemplo 2**: Template Markdown com conflitos
+     - Análise: Three-way merge detecta both_modified
+     - Decisão: Resolução interativa
+     - Resultado: Usuário escolhe ou edita manualmente
+   - **Exemplo 3**: Arquivo sem merger (config.json)
+     - Análise: Nenhum merger disponível
+     - Decisão: Skip safe
+     - Resultado: Preserva arquivo local
+
+6. ✅ **Algoritmos Documentados**
+   - **GitignoreMerger**: 5 passos (ler → detectar → decidir → merge → escrever)
+   - **MakefileMerger**: 5 passos (extrair targets → detectar → decidir → merge → escrever)
+   - **ReadmeMerger**: 6 passos (extrair seções → detectar → extrair intro → merge → escrever)
+   - **Three-Way Merge**: 4 passos (criar tmp → git merge-file → analisar → aplicar)
+   - **Conflict Classification**: 4 tipos (both_modified, local_added, upstream_added, both_added)
+
+7. ✅ **Princípios de Design Documentados**
+   - **Segurança em Primeiro Lugar**: Skip safe quando em dúvida
+   - **Preservação de Customizações**: Merge aditivo (nunca remove)
+   - **Transparência**: Headers explícitos em seções auto-adicionadas
+   - **Controle do Usuário**: Interactive mode para conflitos
+
+8. ✅ **Comandos e Flags**
+   - **File Merge**: Automático durante scaffold
+   - **Template Merge**: Explícito com flags
+     - `--interactive`: Resolução manual de conflitos
+     - `--auto`: Aplicar apenas se limpo
+     - `--force`: Forçar aplicação mesmo com conflitos
+     - `--dry-run`: Visualizar sem aplicar
+
+**Outcome**:
+- ✅ **Documentação completa** do sistema de merge/update de arquivos
+- ✅ **8 diagramas Mermaid** visualizando fluxos e decisões
+- ✅ **18 cenários documentados** em matrizes de decisão
+- ✅ **3 exemplos práticos** com análise passo-a-passo
+- ✅ **5 algoritmos detalhados** com código Python
+- ✅ **4 princípios de design** explicitados
+- ✅ **Comandos CLI** documentados com todas as flags
+
+**Files Created**:
+- `docs/SESSIONS/2026-05-11/PROJECT_UPDATE_DECISION_WORKFLOW.md` (1200+ lines)
+
+**Content Structure**:
+1. Visão Geral (arquitetura 3 layers)
+2. Cenário do Problema (exemplo visual)
+3. Arquitetura de Decisão (diagrama geral)
+4. Layer 0: Skip Safe (flowchart + exemplos)
+5. Layer 1: File Merge System (3 mergers + algoritmos + exemplos)
+6. Layer 2: Template Merge System (three-way + conflitos + resolução)
+7. Matriz de Decisão (18 cenários × resultado)
+8. Exemplos Práticos (3 casos reais completos)
+9. Validação com Testes (cobertura)
+10. Princípios de Design (4 princípios)
+11. Comandos e Flags (referência CLI)
+12. Resumo Executivo (quando skip vs merge)
+
+**Diagramas Mermaid**:
+- ✅ 1 Arquitetura Geral (3 layers)
+- ✅ 1 Skip Safe (flowchart)
+- ✅ 1 File Merge Geral (flowchart)
+- ✅ 3 Mergers Específicos (GitignoreMerger, MakefileMerger, ReadmeMerger)
+- ✅ 1 Three-Way Merge (flowchart completo)
+- ✅ 1 Conflict Classification (flowchart)
+- **Total**: 8 diagramas interativos
+
+**Value Delivered**:
+- 📖 **Documentação técnica** para entender merge system
+- 🎓 **Material educacional** sobre three-way merge e conflict resolution
+- 🔍 **Referência** para debugging de conflitos em templates
+- ✅ **Validação** de que sistema é seguro (skip safe por padrão)
+
+**Key Insights**:
+- Sistema tem **comportamento seguro por padrão**: Skip safe quando em dúvida
+- **Merge é sempre aditivo**: Nunca remove conteúdo do usuário
+- **Three-way merge** usa base ancestral para detectar mudanças verdadeiras
+- **4 tipos de conflito** com sugestões inteligentes de resolução
+- **Flags CLI** permitem controle fino (interactive, auto, force, dry-run)
+
+**Use Cases**:
+- Onboarding de desenvolvedores no sistema de templates
+- Explicar decisões de merge em updates de projetos
+- Debugging de comportamentos inesperados em template updates
+- Base para expansão do sistema (novos mergers)
+
+**Clarification**:
+- **Activity 5** documentou: Time Tracker Decision Workflow (comandos start/pause/resume/stop)
+- **Activity 6** documentou: Project Update Decision Workflow (merge de arquivos .gitignore/Makefile/README + three-way merge)
+- Ambas são workflows de decisão, mas para sistemas diferentes
+
+**Status**: ✅ Complete
+
+---
+
 *Use this template for each activity throughout the session*
 *Separator: `---` between activities*
