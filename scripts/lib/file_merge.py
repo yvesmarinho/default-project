@@ -24,6 +24,8 @@ from .config import CreatedItem
 from .copilot_agent_merge import CopilotAgentMerger
 from .copilot_prompt_merge import CopilotPromptMerger
 from .copilot_rules_merge import CopilotRulesMerger
+from .github_workflow_merge import GitHubWorkflowMerger
+from .pyproject_merge import PyprojectMerger
 
 log = logging.getLogger(__name__)
 
@@ -424,6 +426,8 @@ _MERGERS: List[FileMerger] = [
     CopilotAgentMerger(),   # Sprint 1: P0 CRITICAL (32 agents)
     CopilotPromptMerger(),  # Sprint 2: P0 HIGH (26 prompts)
     CopilotRulesMerger(),   # Sprint 2: P0 HIGH (2 rules files)
+    GitHubWorkflowMerger(),  # Sprint 3: P1 HIGH (3+ workflows)
+    PyprojectMerger(),      # Sprint 3: P1 HIGH (pyproject.toml)
     GitignoreMerger(),
     MakefileMerger(),
     ReadmeMerger(),
