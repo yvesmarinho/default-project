@@ -1,12 +1,62 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-08 — [IMP-65] Template Synchronization System — Validação Completa ✅
-**Project Status**: 🟢 Stable — MCP Enhanced + Template Sync Validated
-**Version**: 1.2.0
-**Last Session**: 2026-05-08 — ✅ IMP-65 Complete (Force Override + Drift Detection + Commands)
+**Last Updated**: 2026-05-11 — Sprint 3 + POC Upgrade + Scaffold Infrastructure Fix ✅
+**Project Status**: 🟢 Stable — Merge System 77% Complete + POC Production-Ready
+**Version**: 1.3.0
+**Last Session**: 2026-05-11 — ✅ Sprint 3 Complete (2 mergers) + POC 100% + Template Permanent Fix
 
 ---
 
+> **✅ SESSION 2026-05-11 COMPLETE (Sprint 3 + POC Upgrade + Infrastructure Fix)**
+> - **Status**: ✅ COMPLETE — All P0+P1 gaps resolved (100%)
+> - **Duration**: ~9.5h (09:00-18:30)
+> - **Efficiency**: 100% (all objectives achieved)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 2 total (dc88032 session end, c354eca scaffold fix - both pushed)
+>   - feat(merge-system): Complete Sprint 3 + POC upgrade + scaffold fix (27 files, +1960/-570)
+>   - fix(scaffold): Add infrastructure directories to project template (1 file, +178)
+> - **SPRINT 3 - P1 HIGH MERGERS**:
+>   - GitHubWorkflowMerger (600+ lines, 16 tests, YAML "on" keyword handling)
+>   - PyprojectMerger (500+ lines, 16 tests, TOML nested dict access)
+>   - Coverage: 73% → 77% (+4%)
+>   - P1 gap: 100% resolved (4→0 files)
+>   - Tests: 32/32 passing (100% success rate)
+> - **POC SISTEMA-DEPLOY UPGRADE**:
+>   - POC completeness: 68% → 100%
+>   - Agents: 20 → 32 (+12 new agents)
+>   - Prompts: 17 → 21 (+4 git prompts)
+>   - Infrastructure: 0 → 4 dirs (tmp, .memory, .session-index, .session-time)
+>   - Backup: tmp/backup-sistema-deploy-20260511-131236 (211 files)
+>   - Reports: UPGRADE_REPORT (20KB) + UPGRADE_MONITORING (12KB)
+> - **SCAFFOLD INFRASTRUCTURE FIX (P0 CRITICAL)**:
+>   - Root cause: DIRS_TO_CREATE missing 4 infrastructure directories
+>   - Fix: scripts/lib/project.py (+178 lines)
+>     - Created 4 README templates (tmp, .memory, .session-index, .session-time)
+>     - Added 4 dirs to DIRS_TO_CREATE
+>     - Added 4 READMEs to FILES_TO_CREATE
+>     - Updated .gitignore template (8 rules)
+>   - Impact: ALL future projects (100+) benefit automatically
+>   - Validation: 8/8 checks passed
+> - **MERGE SYSTEM STATUS**:
+>   - Total mergers: 8 (3 baseline + 5 sprints)
+>   - Total files covered: 67/87 (77% coverage)
+>   - P0 CRITICAL: 100% resolved (60→0 files)
+>   - P1 HIGH: 100% resolved (4→0 files)
+>   - Total tests: 100 (100% passing)
+> - **TECHNICAL DECISIONS**:
+>   - D-18: YAML "on" keyword → dual key check (handles boolean conversion)
+>   - D-19: TOML nested dicts → tool.* access via nested get()
+>   - D-20: Scaffold infrastructure → permanent template correction
+> - **KEY DOCUMENTATION**:
+>   - `docs/SESSIONS/2026-05-11/DAILY_ACTIVITIES_2026-05-11.md` (10 activities)
+>   - `docs/SESSIONS/2026-05-11/FINAL_STATUS_2026-05-11.md` (comprehensive summary)
+>   - `docs/SESSIONS/2026-05-11/PROJECT_UPDATE_DECISION_WORKFLOW.md` (1200+ lines)
+>   - `docs/SESSIONS/2026-05-11/TIME_TRACKER_DECISION_WORKFLOW.md` (800+ lines)
+> - **NEXT PRIORITIES**:
+>   - Sprint 4: P2 Mergers (PreCommit, VSCode, IssueTemplates)
+>   - Objetivo-Init Pipeline Testing (P1 HIGH)
+>   - BUG-08: Knowledge-Harvester MCP Config
+>
 > **✅ SESSION 2026-05-08 COMPLETE (IMP-65 Template Synchronization Validation)**
 > - **Status**: ✅ COMPLETE — All 3 options implemented and validated
 > - **Duration**: ~2h 40min (09:00-11:40)
