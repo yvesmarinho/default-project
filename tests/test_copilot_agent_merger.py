@@ -133,7 +133,7 @@ def test_01_can_merge_detection(merger):
     # Should detect
     assert merger.can_merge(Path(".github/agents/test.agent.md"))
     assert merger.can_merge(Path(".github/agents/session-manager.agent.md"))
-    
+
     # Should NOT detect
     assert not merger.can_merge(Path(".github/prompts/test.prompt.md"))
     assert not merger.can_merge(Path("README.md"))
@@ -148,7 +148,7 @@ def test_01_can_merge_detection(merger):
 def test_02_parse_yaml_frontmatter(merger, sample_agent_v1):
     """Test 02: Parse YAML frontmatter corretamente."""
     fm, md = merger._parse_agent_file(sample_agent_v1)
-    
+
     assert fm.agent_name == "test-agent"
     assert fm.version == "1.0.0"
     assert fm.description == "Test agent for validation"
@@ -161,7 +161,7 @@ def test_02_parse_yaml_frontmatter(merger, sample_agent_v1):
 def test_03_parse_markdown_sections(merger, sample_agent_v1):
     """Test 03: Parse seções markdown corretamente."""
     fm, md = merger._parse_agent_file(sample_agent_v1)
-    
+
     assert "Role & Purpose" in md.sections
     assert "Core Responsibilities" in md.sections
     assert "Custom Section" in md.sections
@@ -189,21 +189,22 @@ def test_05_should_merge_version_update(merger, sample_agent_v1, sample_agent_v1
     """Test 05: Decide merge quando há atualização de versão."""
     existing_fm, _ = merger._parse_agent_file(sample_agent_v1)
     template_fm, _ = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     decision = merger._should_merge(existing_fm, template_fm, "test.agent.md")
-    
+
     assert decision.should_merge is True
     assert any("version" in change.lower() for change in decision.changes)
-    assert any("1.0.0" in change and "1.2.0" in change for change in decision.changes)
+    assert any(
+        "1.0.0" in change and "1.2.0" in change for change in decision.changes)
 
 
 def test_06_should_merge_new_handoffs(merger, sample_agent_v1, sample_agent_v1_2):
     """Test 06: Decide merge quando há novos handoffs."""
     existing_fm, _ = merger._parse_agent_file(sample_agent_v1)
     template_fm, _ = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     decision = merger._should_merge(existing_fm, template_fm, "test.agent.md")
-    
+
     assert decision.should_merge is True
     assert any("handoff" in change.lower() for change in decision.changes)
 
@@ -212,9 +213,9 @@ def test_07_should_merge_new_tools(merger, sample_agent_v1, sample_agent_v1_2):
     """Test 07: Decide merge quando há novos tools."""
     existing_fm, _ = merger._parse_agent_file(sample_agent_v1)
     template_fm, _ = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     decision = merger._should_merge(existing_fm, template_fm, "test.agent.md")
-    
+
     assert decision.should_merge is True
     assert any("tool" in change.lower() for change in decision.changes)
 
@@ -222,10 +223,10 @@ def test_07_should_merge_new_tools(merger, sample_agent_v1, sample_agent_v1_2):
 def test_08_should_skip_if_uptodate(merger, sample_agent_v1):
     """Test 08: Skip se arquivo já está atualizado."""
     fm, _ = merger._parse_agent_file(sample_agent_v1)
-    
+
     # Mesmo arquivo como template
     decision = merger._should_merge(fm, fm, "test.agent.md")
-    
+
     assert decision.should_merge is False
     assert "up-to-date" in decision.reason.lower()
 
@@ -238,9 +239,9 @@ def test_09_merge_frontmatter_version(merger, sample_agent_v1, sample_agent_v1_2
     """Test 09: Merge frontmatter atualiza versão."""
     existing_fm, _ = merger._parse_agent_file(sample_agent_v1)
     template_fm, _ = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     merged = merger._merge_frontmatter(existing_fm, template_fm)
-    
+
     assert merged["version"] == "1.2.0"  # Versão do template
 
 
@@ -248,9 +249,9 @@ def test_10_merge_frontmatter_handoffs_additive(merger, sample_agent_v1, sample_
     """Test 10: Merge frontmatter adiciona novos handoffs (aditivo)."""
     existing_fm, _ = merger._parse_agent_file(sample_agent_v1)
     template_fm, _ = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     merged = merger._merge_frontmatter(existing_fm, template_fm)
-    
+
     assert len(merged["handoffs"]) == 2  # 1 existing + 1 new
     agents = [h["agent"] for h in merged["handoffs"]]
     assert "agent1" in agents  # Existing
@@ -261,9 +262,9 @@ def test_11_merge_frontmatter_tools_additive(merger, sample_agent_v1, sample_age
     """Test 11: Merge frontmatter adiciona novos tools (aditivo)."""
     existing_fm, _ = merger._parse_agent_file(sample_agent_v1)
     template_fm, _ = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     merged = merger._merge_frontmatter(existing_fm, template_fm)
-    
+
     assert len(merged["tools"]) == 4  # 2 existing + 2 new
     assert "read_file" in merged["tools"]  # Existing
     assert "grep_search" in merged["tools"]  # Existing
@@ -279,9 +280,9 @@ def test_12_merge_markdown_preserves_custom_sections(merger, sample_agent_v1, sa
     """Test 12: Merge markdown preserva seções customizadas."""
     _, existing_md = merger._parse_agent_file(sample_agent_v1)
     _, template_md = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     merged_md = merger._merge_markdown_content(existing_md, template_md)
-    
+
     assert "Custom Section" in merged_md.sections
     assert "user" in merged_md.sections["Custom Section"].lower()
 
@@ -290,9 +291,9 @@ def test_13_merge_markdown_adds_new_sections(merger, sample_agent_v1, sample_age
     """Test 13: Merge markdown adiciona novas seções do template."""
     _, existing_md = merger._parse_agent_file(sample_agent_v1)
     _, template_md = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     merged_md = merger._merge_markdown_content(existing_md, template_md)
-    
+
     assert "Workflow" in merged_md.sections  # New section from template
 
 
@@ -300,9 +301,9 @@ def test_14_merge_markdown_updates_standard_sections(merger, sample_agent_v1, sa
     """Test 14: Merge markdown atualiza seções padrão."""
     _, existing_md = merger._parse_agent_file(sample_agent_v1)
     _, template_md = merger._parse_agent_file(sample_agent_v1_2)
-    
+
     merged_md = merger._merge_markdown_content(existing_md, template_md)
-    
+
     # Role & Purpose é seção padrão - deve ser atualizada do template
     assert "Enhanced" in merged_md.sections["Role & Purpose"]
 
@@ -318,19 +319,19 @@ def test_15_full_merge_integration(merger, temp_dir, sample_agent_v1, sample_age
     agents_dir.mkdir(parents=True)
     existing_file = agents_dir / "test.agent.md"
     existing_file.write_text(sample_agent_v1, encoding="utf-8")
-    
+
     # Execute merge
     result = merger.merge(existing_file, sample_agent_v1_2, interactive=False)
-    
+
     # Validate
     assert result.status == "merged"
     assert "backup" in result.message.lower()
-    
+
     # Verify backup exists
     backup_file = existing_file.with_suffix(".md.backup")
     assert backup_file.exists()
     assert backup_file.read_text(encoding="utf-8") == sample_agent_v1
-    
+
     # Verify merged content
     merged_content = existing_file.read_text(encoding="utf-8")
     assert "version: 1.2.0" in merged_content  # Updated version
@@ -346,7 +347,7 @@ def test_16_add_version_to_versionless_agent(merger, temp_dir, sample_agent_no_v
     agents_dir.mkdir(parents=True)
     existing_file = agents_dir / "noversion.agent.md"
     existing_file.write_text(sample_agent_no_version, encoding="utf-8")
-    
+
     # Template com version
     template_with_version = """---
 description: Agent now with version
@@ -361,10 +362,11 @@ tools:
 
 This agent now has a version field.
 """
-    
+
     # Execute merge
-    result = merger.merge(existing_file, template_with_version, interactive=False)
-    
+    result = merger.merge(
+        existing_file, template_with_version, interactive=False)
+
     # Validate
     assert result.status == "merged"
     merged_content = existing_file.read_text(encoding="utf-8")
@@ -381,7 +383,7 @@ def test_17_merge_handles_malformed_yaml(merger, temp_dir):
     agents_dir = temp_dir / ".github" / "agents"
     agents_dir.mkdir(parents=True)
     existing_file = agents_dir / "malformed.agent.md"
-    
+
     malformed = """---
 agentName: broken
 version: [this is: not: valid: yaml
@@ -391,9 +393,9 @@ version: [this is: not: valid: yaml
 
 Some content here.
 """
-    
+
     existing_file.write_text(malformed, encoding="utf-8")
-    
+
     # Template válido
     template = """---
 agentName: fixed
@@ -404,10 +406,10 @@ version: 1.0.0
 
 Fixed content.
 """
-    
+
     # Execute merge (não deve crashear)
     result = merger.merge(existing_file, template, interactive=False)
-    
+
     # Validate - pode dar erro ou skip, mas não deve crashear
     assert result.status in ["merged", "skipped", "error"]
 
@@ -419,10 +421,10 @@ def test_18_skip_if_no_changes_needed(merger, temp_dir, sample_agent_v1):
     agents_dir.mkdir(parents=True)
     existing_file = agents_dir / "unchanged.agent.md"
     existing_file.write_text(sample_agent_v1, encoding="utf-8")
-    
+
     # Template idêntico ao existente
     result = merger.merge(existing_file, sample_agent_v1, interactive=False)
-    
+
     # Validate
     assert result.status == "skipped"
     assert "up-to-date" in result.message.lower()

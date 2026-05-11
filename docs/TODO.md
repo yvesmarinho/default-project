@@ -1,12 +1,19 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-08 — [IMP-65] Template Synchronization System — Validação Completa ✅
+**Last Updated**: 2026-05-11 — Sprint 3 (GitHubWorkflowMerger + PyprojectMerger) + Scaffold Infrastructure Fix ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
 ---
 
-## 🎯 Próxima Sessão (2026-05-07+)
+## 🎯 Próxima Sessão (2026-05-12+)
+
+- [ ] **Sprint 4**: P2 Merge System Expansion
+  - **Objetivo**: Implement remaining P2 mergers (.pre-commit-config, VS Code configs)
+  - **Prioridade**: P2 MEDIUM (nice-to-have, not critical)
+  - **Estimativa**: 2h
+  - **Deliverables**: PreCommitMerger, VSCodeConfigMerger, IssueTemplateMerger
+  - **Impact**: +90% coverage (67 → 90+ files with intelligent merge)
 
 - [ ] **Objetivo-Init Pipeline Testing** (P1 HIGH)
   - **Objetivo**: Test complete v1.0 workflow end-to-end
@@ -54,6 +61,57 @@
   - **Prioridade**: P1 (production hygiene, Week 2-3)
   - **Estimativa**: 88h total
   - **Deliverables**: CI/CD automation, audit logs, automated gates
+
+---
+
+## ✅ CONCLUÍDO — Sessão 2026-05-11
+
+- [x] **Sprint 3**: GitHubWorkflowMerger + PyprojectMerger Implementation
+  - **Status**: ✅ COMPLETO (2026-05-11)
+  - **Tempo**: 2.0h
+  - **Deliverables**:
+    - scripts/lib/github_workflow_merge.py (600+ lines, 16 tests)
+    - scripts/lib/pyproject_merge.py (500+ lines, 16 tests)
+    - 100% P1 gap resolved (4→0 files)
+    - Coverage: 73% → 77% (+4%)
+  - **Bug Fixes**:
+    - YAML "on" keyword → boolean True (dual key check)
+    - TOML nested dicts tool.black access
+  - **Testes**: 32/32 passing (100% success rate)
+  - **Commits**: (to be added after session end)
+  - **Outcome**: GitHub workflows + pyproject.toml now have intelligent merge ✅
+
+- [x] **POC Sistema-Deploy Upgrade Workflow** (P0 CRITICAL)
+  - **Status**: ✅ COMPLETO + VALIDADO (2026-05-11)
+  - **Tempo**: 2.5h
+  - **Workflow**:
+    1. Verificação: POC 12 dias desatualizado ✅
+    2. Backup: tmp/backup-sistema-deploy-20260511-131236 (211 files) ✅
+    3. Upgrade: scaffold --upgrade + manual complementation ✅
+    4. Validação: 6/6 checks passed (agents, prompts, files, Makefile) ✅
+    5. Relatório: UPGRADE_REPORT (20KB) + UPGRADE_MONITORING (12KB) ✅
+    6. Restore+re-upgrade: poc/ location validated ✅
+    7. Infrastructure: 4 dirs created (tmp, .memory, .session-index, .session-time) ✅
+  - **Results**:
+    - POC: 68% → 100% completeness
+    - Agents: 20 → 32 (+12 novos)
+    - Prompts: 17 → 21 (+4 git prompts)
+    - Infrastructure: 0 → 4 directories
+  - **Outcome**: POC 100% atualizado e validado ✅
+
+- [x] **Scaffold Infrastructure Fix** (P0 CRITICAL - Template Correction)
+  - **Status**: ✅ CORRIGIDO PERMANENTEMENTE (2026-05-11)
+  - **Tempo**: 25 min
+  - **Arquivo**: scripts/lib/project.py (+178 lines)
+  - **Changes**:
+    - Created 4 README templates (tmp, .memory, .session-index, .session-time)
+    - Added 4 dirs to DIRS_TO_CREATE
+    - Added 4 READMEs to FILES_TO_CREATE
+    - Updated .gitignore template (8 rules)
+  - **Validation**: 8/8 checks passed (dirs, files, templates, gitignore)
+  - **Commit**: c354eca "fix(scaffold): Add infrastructure directories to project template"
+  - **Impact**: All future projects will have complete infrastructure ✅
+  - **Outcome**: Template permanently fixed, prevents gap in 100+ future projects ✅
 
 ---
 

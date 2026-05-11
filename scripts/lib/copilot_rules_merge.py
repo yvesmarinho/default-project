@@ -57,22 +57,22 @@ class RulesMergeDecision:
 class CopilotRulesMerger:
     """
     Merger inteligente para arquivos .copilot-rules*.md
-    
+
     Estratégia de merge:
     1. **Header/Metadata**:
        - Preservar título e metadata do arquivo existente
        - Atualizar "Última atualização" se regras mudaram
-       
+
     2. **Regras P0 (CRÍTICO)**:
        - Sempre adicionar novas regras P0 do template
        - Nunca remover regras P0 existentes
        - Atualizar se texto mudou significativamente
-       
+
     3. **Regras P1/P2**:
        - Adicionar novas regras ausentes
        - Preservar regras customizadas
        - Atualizar se versão mais recente
-    
+
     4. **Preservação**:
        - Regras específicas do projeto sempre preservadas
        - Merge é sempre aditivo (nunca remove)
@@ -112,7 +112,7 @@ class CopilotRulesMerger:
     ) -> CreatedItem:
         """
         Faz merge inteligente do arquivo .copilot-rules*.md
-        
+
         Algoritmo:
         1. Parse conteúdo (existente e template)
         2. Identificar seções por prioridade (P0, P1, P2)
@@ -125,50 +125,53 @@ class CopilotRulesMerger:
             # 1. Parse existente
             existing_content = existing_path.read_text(encoding="utf-8")
             existing_rules = self._parse_rules_file(existing_content)
-            
+
             # 2. Parse template
             template_rules = self._parse_rules_file(template_content)
-            
+
             # 3. Decisão de merge
             decision = self._should_merge(
                 existing_rules,
                 template_rules,
                 existing_path.name
             )
-            
+
             if not decision.should_merge:
-                log.info("⏭️  Skip: %s (%s)", existing_path.name, decision.reason)
+                log.info("⏭️  Skip: %s (%s)",
+                         existing_path.name, decision.reason)
                 return CreatedItem(
                     path=existing_path,
                     kind="file",
                     status="skipped",
                     message=decision.reason
                 )
-            
+
             # 4. Merge conteúdo
-            merged_rules = self._merge_rules_content(existing_rules, template_rules)
-            
+            merged_rules = self._merge_rules_content(
+                existing_rules, template_rules)
+
             # 5. Gerar arquivo final
             merged_content = self._reconstruct_rules_file(merged_rules)
-            
+
             # 6. Backup e save
             backup_path = existing_path.with_suffix(".md.backup")
             backup_path.write_text(existing_content, encoding="utf-8")
             existing_path.write_text(merged_content, encoding="utf-8")
-            
-            changes_msg = "\n".join(f"  - {change}" for change in decision.changes)
+
+            changes_msg = "\n".join(
+                f"  - {change}" for change in decision.changes)
             log.info(
                 "✅ Merged: %s\n%s\n  Backup: %s",
                 existing_path.name, changes_msg, backup_path.name
             )
-            
+
             return CreatedItem(
                 path=existing_path,
                 kind="file",
                 status="merged",
                 message=f"Merged with {len(decision.changes)} changes (backup created)"
             )
-            
+
         except Exception as e:
             log.error("❌ Merge failed for %s: %s", existing_path.name, e)
             return CreatedItem(
@@ -185,22 +188,22 @@ class CopilotRulesMerger:
     def _parse_rules_file(self, content: str) -> RulesContent:
         """
         Parse arquivo .copilot-rules.md em seções organizadas.
-        
+
         Formato esperado:
         ```
         # GitHub Copilot — Regras Comportamentais
-        
+
         **Status:** ATIVO
-        
+
         ## 1. Seção P0 — CRÍTICO
-        
+
         Content...
-        
+
         ## 2. Seção P1
-        
+
         More content...
         ```
-        
+
         Returns:
             RulesContent com header e seções organizadas
         """
@@ -210,17 +213,17 @@ class CopilotRulesMerger:
         current_heading = None
         current_content = []
         current_priority = None
-        
+
         # Extrair header (até primeira seção ##)
         in_header = True
-        
+
         for line in lines:
             # Detecta seção principal (## apenas, ignorar ###)
             heading_match = re.match(r"^(#{2})\s+(.+)$", line)
-            
+
             if heading_match:
                 in_header = False
-                
+
                 # Salvar seção anterior
                 if current_heading:
                     section = RuleSection(
@@ -229,11 +232,11 @@ class CopilotRulesMerger:
                         priority=current_priority or "P2"
                     )
                     sections[current_heading] = section
-                
+
                 # Iniciar nova seção
                 current_heading = heading_match.group(2).strip()
                 current_content = []
-                
+
                 # Detectar prioridade no heading
                 current_priority = self._detect_priority(current_heading)
             else:
@@ -241,7 +244,7 @@ class CopilotRulesMerger:
                     header.append(line)
                 elif current_heading:
                     current_content.append(line)
-        
+
         # Salvar última seção
         if current_heading:
             section = RuleSection(
@@ -250,7 +253,7 @@ class CopilotRulesMerger:
                 priority=current_priority or "P2"
             )
             sections[current_heading] = section
-        
+
         return RulesContent(
             header="\n".join(header).strip(),
             sections=sections,
@@ -260,7 +263,7 @@ class CopilotRulesMerger:
     def _detect_priority(self, heading: str) -> str:
         """
         Detecta prioridade (P0, P1, P2) no heading.
-        
+
         Exemplos:
         - "1. Ferramentas de Arquivo (P0 — CRÍTICO)" -> P0
         - "2. Git (P1)" -> P1
@@ -269,7 +272,7 @@ class CopilotRulesMerger:
         for priority, pattern in self.PRIORITY_PATTERNS.items():
             if re.search(pattern, heading, re.IGNORECASE):
                 return priority
-        
+
         # Default: P2 (baixa prioridade)
         return "P2"
 
@@ -285,7 +288,7 @@ class CopilotRulesMerger:
     ) -> RulesMergeDecision:
         """
         Decide se deve fazer merge baseado em novas regras.
-        
+
         Critérios:
         1. Se template tem novas seções P0 → merge (CRITICAL)
         2. Se template tem novas seções P1 → merge (importante)
@@ -293,7 +296,7 @@ class CopilotRulesMerger:
         4. Caso contrário → skip
         """
         changes = []
-        
+
         # 1. Detectar novas seções P0 (CRITICAL)
         existing_p0 = {
             h for h, s in existing_rules.sections.items() if s.priority == "P0"
@@ -302,10 +305,10 @@ class CopilotRulesMerger:
             h for h, s in template_rules.sections.items() if s.priority == "P0"
         }
         new_p0 = template_p0 - existing_p0
-        
+
         if new_p0:
             changes.append(f"Add {len(new_p0)} new P0 CRITICAL rules")
-        
+
         # 2. Detectar novas seções P1
         existing_p1 = {
             h for h, s in existing_rules.sections.items() if s.priority == "P1"
@@ -314,39 +317,40 @@ class CopilotRulesMerger:
             h for h, s in template_rules.sections.items() if s.priority == "P1"
         }
         new_p1 = template_p1 - existing_p1
-        
+
         if new_p1:
             changes.append(f"Add {len(new_p1)} new P1 rules")
-        
+
         # 3. Detectar atualizações em seções críticas
         critical_updates = 0
         for section_name in self.CRITICAL_SECTIONS:
             # Buscar seção que contenha o nome crítico
             existing_section = None
             template_section = None
-            
+
             for h, s in existing_rules.sections.items():
                 if section_name in h:
                     existing_section = s
                     break
-            
+
             for h, s in template_rules.sections.items():
                 if section_name in h:
                     template_section = s
                     break
-            
+
             if existing_section and template_section:
                 # Comparar conteúdo
                 if len(template_section.content) != len(existing_section.content):
                     diff_pct = abs(
-                        len(template_section.content) - len(existing_section.content)
+                        len(template_section.content) -
+                        len(existing_section.content)
                     ) / max(len(template_section.content), 1)
                     if diff_pct > 0.1:  # Mudança > 10%
                         critical_updates += 1
-        
+
         if critical_updates > 0:
             changes.append(f"Update {critical_updates} critical sections")
-        
+
         # Decisão final
         if not changes:
             return RulesMergeDecision(
@@ -354,7 +358,7 @@ class CopilotRulesMerger:
                 reason="Rules already up-to-date",
                 changes=[]
             )
-        
+
         return RulesMergeDecision(
             should_merge=True,
             reason=f"Template has updates ({len(changes)} changes)",
@@ -372,7 +376,7 @@ class CopilotRulesMerger:
     ) -> RulesContent:
         """
         Merge conteúdo de regras com estratégia aditiva por prioridade.
-        
+
         Regras:
         1. Header: preservar existing (metadata do projeto)
         2. P0 sections: adicionar todas ausentes, atualizar existentes
@@ -380,16 +384,16 @@ class CopilotRulesMerger:
         4. P2 sections: preservar existing (customizações)
         """
         merged_sections = dict(existing.sections)  # Start with existing
-        
+
         # Processar seções do template por prioridade
         priorities_order = ["P0", "P1", "P2"]
-        
+
         for priority in priorities_order:
             template_sections_p = {
                 h: s for h, s in template.sections.items()
                 if s.priority == priority
             }
-            
+
             for heading, section in template_sections_p.items():
                 if priority == "P0":
                     # P0: sempre adicionar/atualizar (CRITICAL)
@@ -402,7 +406,7 @@ class CopilotRulesMerger:
                     # P2: preservar existing (customizações)
                     if heading not in merged_sections:
                         merged_sections[heading] = section
-        
+
         return RulesContent(
             header=existing.header,  # Preservar header do projeto
             sections=merged_sections,
@@ -412,25 +416,25 @@ class CopilotRulesMerger:
     def _reconstruct_rules_file(self, rules: RulesContent) -> str:
         """
         Reconstrói arquivo .copilot-rules.md a partir das seções.
-        
+
         Formato de saída:
         ```
         # GitHub Copilot — Regras Comportamentais
-        
+
         **Status:** ATIVO
-        
+
         ## 1. Seção P0 — CRÍTICO
-        
+
         Content...
-        
+
         ## 2. Seção P1
-        
+
         More content...
         ```
         """
         # Header
         result = rules.header + "\n\n---\n\n"
-        
+
         # Ordenar seções por prioridade: P0 primeiro, depois P1, depois P2
         sorted_sections = sorted(
             rules.sections.items(),
@@ -441,9 +445,9 @@ class CopilotRulesMerger:
                 x[0]  # Alfabético dentro da mesma prioridade
             )
         )
-        
+
         # Gerar seções
         for heading, section in sorted_sections:
             result += f"## {heading}\n\n{section.content}\n\n---\n\n"
-        
+
         return result.rstrip() + "\n"

@@ -227,7 +227,7 @@ class GitHubWorkflowMerger:
         Parse workflow YAML em estrutura WorkflowContent.
 
         Extrai: name, on, permissions, jobs, env
-        
+
         Bug fix: YAML interpreta "on" como boolean True keyword
         """
         try:
@@ -237,11 +237,11 @@ class GitHubWorkflowMerger:
         except yaml.YAMLError as e:
             log.warning("YAML parse error: %s, using empty workflow", e)
             yaml_data = {}
-        
+
         # Bug fix: YAML converte "on" para True (boolean keyword)
         # Precisamos verificar ambos "on" (string) e True (boolean)
         on_triggers = yaml_data.get("on", yaml_data.get(True, {}))
-        
+
         return WorkflowContent(
             name=yaml_data.get("name"),
             on_triggers=on_triggers,

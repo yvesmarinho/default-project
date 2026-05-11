@@ -35,9 +35,9 @@ class TestSessionTimeTracker:
         # Setup: remover arquivos de estado anteriores
         if STATE_FILE.exists():
             STATE_FILE.unlink()
-        
+
         yield
-        
+
         # Teardown: limpar após teste
         if STATE_FILE.exists():
             STATE_FILE.unlink()
@@ -62,94 +62,95 @@ class TestSessionTimeTracker:
     def test_01_start_session(self):
         """Teste: Iniciar nova sessão."""
         result = self._run_tracker("start")
-        
+
         assert result.returncode == 0, f"Start falhou: {result.stderr}"
         assert "✅ Sessão iniciada:" in result.stdout
         assert STATE_FILE.exists(), "Arquivo de estado não foi criado"
-        
+
         state = self._load_state()
         assert state["status"] == "active"
         assert "start_time" in state
         assert state["pauses"] == []
         assert state["current_pause"] is None
-        
+
         print(f"✅ test_01: Sessão iniciada com sucesso")
 
     def test_02_prevent_double_start(self):
         """Teste: Prevenir iniciar sessão quando já existe uma ativa."""
         self._run_tracker("start")
         result = self._run_tracker("start")
-        
+
         assert result.returncode == 1
         assert "já em andamento" in result.stdout or "já em andamento" in result.stderr
-        
+
         print(f"✅ test_02: Duplo start corretamente prevenido")
 
     def test_03_pause_resume_single(self):
         """Teste: Pausar e retomar sessão."""
         # Start
         self._run_tracker("start")
-        
+
         # Pause
         sleep(0.5)  # Simular trabalho
         result_pause = self._run_tracker("pause", "café")
         assert result_pause.returncode == 0
         assert "⏸️" in result_pause.stdout
         assert "café" in result_pause.stdout
-        
+
         state = self._load_state()
         assert state["status"] == "paused"
         assert state["current_pause"] is not None
         assert state["current_pause"]["reason"] == "café"
-        
+
         # Resume
         sleep(0.5)  # Simular pausa
         result_resume = self._run_tracker("resume")
         assert result_resume.returncode == 0
         assert "▶️" in result_resume.stdout
-        
+
         state = self._load_state()
         assert state["status"] == "active"
         assert state["current_pause"] is None
         assert len(state["pauses"]) == 1
         assert state["pauses"][0]["reason"] == "café"
         assert "duration_seconds" in state["pauses"][0]
-        
+
         print(f"✅ test_03: Pause/resume funcionando")
 
     def test_04_multiple_pauses(self):
         """Teste: Múltiplas pausas durante a sessão."""
         # Start
         self._run_tracker("start")
-        
+
         # Primeira pausa: café
         sleep(0.5)
         self._run_tracker("pause", "café")
         sleep(0.5)
         self._run_tracker("resume")
-        
+
         # Segunda pausa: reunião
         sleep(0.5)
         self._run_tracker("pause", "reunião")
         sleep(0.5)
         self._run_tracker("resume")
-        
+
         # Terceira pausa: almoço
         sleep(0.5)
         self._run_tracker("pause", "almoço")
         sleep(0.5)
         self._run_tracker("resume")
-        
+
         state = self._load_state()
         assert len(state["pauses"]) == 3
         assert state["pauses"][0]["reason"] == "café"
         assert state["pauses"][1]["reason"] == "reunião"
         assert state["pauses"][2]["reason"] == "almoço"
-        
+
         for pause in state["pauses"]:
             assert "duration_seconds" in pause
-            assert pause["duration_seconds"] >= 0  # Accept 0 for very short pauses
-        
+            # Accept 0 for very short pauses
+            assert pause["duration_seconds"] >= 0
+
         print(f"✅ test_04: Múltiplas pausas registradas corretamente")
 
     def test_05_stop_session(self):
@@ -157,13 +158,13 @@ class TestSessionTimeTracker:
         # Start e adicionar pausas
         self._run_tracker("start")
         sleep(0.5)
-        
+
         self._run_tracker("pause", "café")
         sleep(0.3)
         self._run_tracker("resume")
-        
+
         sleep(0.5)
-        
+
         # Stop
         result = self._run_tracker("stop")
         assert result.returncode == 0
@@ -171,42 +172,42 @@ class TestSessionTimeTracker:
         assert "Duração total:" in result.stdout or "Duracao total:" in result.stdout
         assert "Pausas:" in result.stdout
         assert "líquido:" in result.stdout or "liquido:" in result.stdout
-        
+
         # Verificar que estado foi removido
         assert not STATE_FILE.exists(), "State file deveria ter sido removido"
-        
+
         # Verificar CSV foi criado
         assert HISTORY_CSV.exists(), "CSV history não foi criado"
-        
+
         # Ler última linha do CSV
         with open(HISTORY_CSV, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
             last_row = rows[-1]
-            
+
             assert "session_date" in last_row
             assert "total_duration" in last_row
             assert "pause_duration" in last_row
             assert "net_duration" in last_row
             assert "num_pauses" in last_row
             assert last_row["num_pauses"] == "1"
-        
+
         print(f"✅ test_05: Session stop e CSV gerado com sucesso")
 
     def test_06_stop_while_paused(self):
         """Teste: Finalizar sessão enquanto pausada (auto-resume)."""
         self._run_tracker("start")
         sleep(0.5)
-        
+
         self._run_tracker("pause", "café")
         # NÃO fazer resume, fazer stop diretamente
-        
+
         result = self._run_tracker("stop")
         assert result.returncode == 0
         assert "Retomando automaticamente" in result.stdout or "🏁" in result.stdout
-        
+
         assert not STATE_FILE.exists()
-        
+
         print(f"✅ test_06: Auto-resume antes do stop funcionando")
 
     def test_07_prevent_pause_without_session(self):
@@ -214,28 +215,28 @@ class TestSessionTimeTracker:
         result = self._run_tracker("pause", "café")
         assert result.returncode == 1
         assert "Nenhuma sessão ativa" in result.stdout or "Nenhuma sessão ativa" in result.stderr
-        
+
         print(f"✅ test_07: Pause sem sessão corretamente bloqueado")
 
     def test_08_prevent_resume_without_pause(self):
         """Teste: Prevenir resume sem estar pausado."""
         self._run_tracker("start")
-        
+
         result = self._run_tracker("resume")
         assert result.returncode == 1
         assert "não está pausada" in result.stdout or "não está pausada" in result.stderr
-        
+
         print(f"✅ test_08: Resume sem pause corretamente bloqueado")
 
     def test_09_prevent_double_pause(self):
         """Teste: Prevenir pausar quando já pausado."""
         self._run_tracker("start")
         self._run_tracker("pause", "café")
-        
+
         result = self._run_tracker("pause", "almoço")
         assert result.returncode == 1
         assert "já pausada" in result.stdout or "já pausada" in result.stderr
-        
+
         print(f"✅ test_09: Duplo pause corretamente bloqueado")
 
     def test_10_stats_command(self):
@@ -248,15 +249,15 @@ class TestSessionTimeTracker:
         self._run_tracker("resume")
         sleep(0.5)
         self._run_tracker("stop")
-        
+
         # Executar stats
         result = self._run_tracker("stats")
-        
+
         # Pode não ter Rich instalado, mas deve retornar sucesso
         assert result.returncode == 0
         # O output pode variar dependendo se Rich está instalado
         # Mas deve mostrar dados de alguma forma
-        
+
         print(f"✅ test_10: Stats command executado")
 
     def test_11_complete_workflow_integration(self):
@@ -264,88 +265,88 @@ class TestSessionTimeTracker:
         print("\n" + "="*60)
         print("🧪 TESTE DE INTEGRAÇÃO COMPLETO - SESSION MANAGER WORKFLOW")
         print("="*60)
-        
+
         # Simular workflow de um dia de trabalho
         print("\n📅 Simulando dia de trabalho 09:00-17:00")
-        
+
         # 09:00 - Start session
         print("\n[09:00] Starting session...")
         result = self._run_tracker("start")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # 10:30 - Coffee break
         print("\n[10:30] Coffee break...")
         sleep(0.5)
         result = self._run_tracker("pause", "café")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # 10:45 - Resume work
         print("\n[10:45] Back to work...")
         sleep(0.3)
         result = self._run_tracker("resume")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # 12:00 - Lunch break
         print("\n[12:00] Lunch break...")
         sleep(0.5)
         result = self._run_tracker("pause", "almoço")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # 13:30 - Resume after lunch
         print("\n[13:30] Resume after lunch...")
         sleep(0.5)
         result = self._run_tracker("resume")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # 15:00 - Quick break
         print("\n[15:00] Quick break...")
         sleep(0.5)
         result = self._run_tracker("pause", "break")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # 15:15 - Resume
         print("\n[15:15] Back to work...")
         sleep(0.3)
         result = self._run_tracker("resume")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # 17:00 - End session
         print("\n[17:00] Ending session...")
         sleep(0.5)
         result = self._run_tracker("stop")
         assert result.returncode == 0
         print(result.stdout.strip())
-        
+
         # Verificações finais
         print("\n📊 Verificações finais:")
-        
+
         # CSV deve existir com a entrada
         assert HISTORY_CSV.exists()
         with open(HISTORY_CSV, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
             last_row = rows[-1]
-            
+
             print(f"   ✅ CSV gerado: {HISTORY_CSV}")
             print(f"   ✅ Date: {last_row['session_date']}")
             print(f"   ✅ Total: {last_row['total_duration']}")
             print(f"   ✅ Breaks: {last_row['pause_duration']}")
             print(f"   ✅ Net work: {last_row['net_duration']}")
             print(f"   ✅ Number of pauses: {last_row['num_pauses']}")
-            
+
             assert last_row["num_pauses"] == "3", "Deveria ter 3 pausas"
-        
+
         # State file deve ter sido removido
         assert not STATE_FILE.exists()
         print(f"   ✅ State file removido após stop")
-        
+
         print("\n" + "="*60)
         print("✅ TESTE DE INTEGRAÇÃO COMPLETO - SUCESSO")
         print("="*60)
@@ -355,13 +356,13 @@ def run_manual_test():
     """Execução manual de teste de demonstração."""
     print("🧪 TESTE MANUAL - SESSION TIME TRACKER")
     print("="*60)
-    
+
     tracker = TestSessionTimeTracker()
-    
+
     # Setup
     if STATE_FILE.exists():
         STATE_FILE.unlink()
-    
+
     try:
         tracker.test_11_complete_workflow_integration()
         print("\n✅ Todos os testes passaram!")

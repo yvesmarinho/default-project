@@ -11,7 +11,7 @@ Exemplos de arquivos objetivo.yaml para diferentes tipos de projetos:
   - Projeto de biblioteca Python para coleta de conhecimento
   - Demonstra todas as seções de um objetivo.yaml
 
-- **objetivo-init.yaml** - Exemplo: sistema-deploy-automatizado  
+- **objetivo-init.yaml** - Exemplo: sistema-deploy-automatizado
   - Sistema de deployment automatizado
   - Demonstra estrutura para projetos de infraestrutura
 

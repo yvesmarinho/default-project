@@ -212,7 +212,7 @@ class PyprojectMerger:
         Parse pyproject.toml em estrutura PyprojectContent.
 
         Extrai: [project], [build-system], [tool.*]
-        
+
         Bug fix: TOML cria dict aninhado tool->black, não tool.black
         """
         try:
@@ -220,11 +220,11 @@ class PyprojectMerger:
         except Exception as e:
             log.warning("TOML parse error: %s, using empty pyproject", e)
             toml_data = {}
-        
+
         # Bug fix: TOML cria estrutura aninhada {"tool": {"black": {...}}}
         # não {"tool.black": {...}}
         tool_configs = toml_data.get("tool", {})
-        
+
         return PyprojectContent(
             project=toml_data.get("project", {}),
             build_system=toml_data.get("build-system", {}),
