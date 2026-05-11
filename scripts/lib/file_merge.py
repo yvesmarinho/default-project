@@ -21,6 +21,7 @@ from dataclasses import dataclass
 import logging
 
 from .config import CreatedItem
+from .copilot_agent_merge import CopilotAgentMerger
 
 log = logging.getLogger(__name__)
 
@@ -413,6 +414,7 @@ class ReadmeMerger:
 
 # Registry global de mergers (ordem importa: mais específico primeiro)
 _MERGERS: List[FileMerger] = [
+    CopilotAgentMerger(),  # Sprint 1: P0 CRITICAL (32 agents)
     GitignoreMerger(),
     MakefileMerger(),
     ReadmeMerger(),
