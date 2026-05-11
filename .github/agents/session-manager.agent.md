@@ -19,12 +19,19 @@ Invoke this agent when:
 - Organizing project structure and documentation
 - Validating security and credential protection
 
-**Trigger phrases:**
+**Trigger phrases (English):**
 - `/session-start` or `/start-session`
 - `/init-session` or `/begin-work`
 - `/recover-context`
 - `/first-time-setup`
 - `/session-end` or `/end-session`
+
+**Trigger phrases (Português/Brasil):**
+- `/iniciar-sessao` ou `/comecar-sessao`
+- `/inicio-sessao` ou `/comecar-trabalho`
+- `/recuperar-contexto`
+- `/configuracao-inicial`
+- `/encerrar-sessao` ou `/fim-sessao`
 
 ## Core Responsibilities
 

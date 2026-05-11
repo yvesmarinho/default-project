@@ -97,7 +97,8 @@ def _iso_now() -> str:
 def show_banner() -> None:
     """Exibe banner Rich com nome do projeto e versão."""
     panel = Panel(
-        Text(f"🚀  Enterprise Project Scaffold  v{SCAFFOLD_VERSION}", justify="center"),
+        Text(
+            f"🚀  Enterprise Project Scaffold  v{SCAFFOLD_VERSION}", justify="center"),
         style="bold blue",
         border_style="blue",
     )
@@ -113,12 +114,16 @@ def show_menu() -> str:
     """
     while True:
         console.print("  [bold cyan][1][/bold cyan]  Novo Projeto")
-        console.print("  [bold cyan][2][/bold cyan]  Verificar Links (.copilot-*)")
-        console.print("  [bold cyan][3][/bold cyan]  Gerar .copilot-rules-[projeto].md")
-        console.print("  [bold cyan][5][/bold cyan]  Upgrade (re-aplicar template)")
+        console.print(
+            "  [bold cyan][2][/bold cyan]  Verificar Links (.copilot-*)")
+        console.print(
+            "  [bold cyan][3][/bold cyan]  Gerar .copilot-rules-[projeto].md")
+        console.print(
+            "  [bold cyan][5][/bold cyan]  Upgrade (re-aplicar template)")
         console.print("  [bold cyan][4][/bold cyan]  Sair")
         console.print()
-        choice = Prompt.ask("  Escolha", choices=["1", "2", "3", "4", "5"], show_choices=False)
+        choice = Prompt.ask("  Escolha", choices=[
+                            "1", "2", "3", "4", "5"], show_choices=False)
         return choice
 
 
@@ -159,9 +164,11 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
     domain = overrides["domain"]
     language = overrides["language"]
     if domain not in VALID_DOMAINS:
-        raise ValueError(f"--domain inválido: '{domain}'. Válidos: {VALID_DOMAINS}")
+        raise ValueError(
+            f"--domain inválido: '{domain}'. Válidos: {VALID_DOMAINS}")
     if language not in VALID_LANGUAGES:
-        raise ValueError(f"--language inválido: '{language}'. Válidos: {VALID_LANGUAGES}")
+        raise ValueError(
+            f"--language inválido: '{language}'. Válidos: {VALID_LANGUAGES}")
 
     name = overrides["name"]
     if not _validate_name(name):
@@ -170,12 +177,14 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         )
 
     # BUG-02 fix: resolve() garante caminho absoluto independente do CWD
-    target_dir = Path(overrides["target_dir"]).expanduser().resolve() if overrides.get("target_dir") else get_default_target_dir().resolve()
+    target_dir = Path(overrides["target_dir"]).expanduser().resolve(
+    ) if overrides.get("target_dir") else get_default_target_dir().resolve()
 
     # Validar conflito de diretório (BUG-01)
     is_valid, error_msg = _validate_directory_conflict(name, target_dir)
     if not is_valid:
-        raise ValueError(f"Conflito de diretório: {name} == {target_dir.name}. {error_msg}")
+        raise ValueError(
+            f"Conflito de diretório: {name} == {target_dir.name}. {error_msg}")
 
     return ProjectConfig(
         project_name=name,
@@ -184,10 +193,12 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         domain=domain,
         language=language,
         github_repo=overrides.get("repo") or None,
-        shared_dir=Path(overrides["shared_dir"]).expanduser().resolve() if overrides.get("shared_dir") else get_default_shared_dir().resolve(),
+        shared_dir=Path(overrides["shared_dir"]).expanduser().resolve(
+        ) if overrides.get("shared_dir") else get_default_shared_dir().resolve(),
         target_dir=target_dir,
         created_at=_iso_now(),
-        extra_profiles=_parse_extra_profiles(overrides.get("extra_profiles") or "domain-only", domain),
+        extra_profiles=_parse_extra_profiles(overrides.get(
+            "extra_profiles") or "domain-only", domain),
     )
 
 
@@ -202,33 +213,34 @@ def _select_domain(default: str) -> str:
         Domínio selecionado
     """
     console.print("\n  [cyan]Domínio do projeto:[/cyan]")
-    
+
     domain_descriptions = {
         "programming": "Desenvolvimento de software (APIs, apps, CLIs)",
         "infrastructure": "Infraestrutura e DevOps (IaC, K8s, cloud)",
         "analysis": "Análise de dados e BI (ETL, data warehouse)",
     }
-    
+
     for idx, domain in enumerate(VALID_DOMAINS, start=1):
         desc = domain_descriptions.get(domain, "")
         default_marker = " [dim](default)[/dim]" if domain == default else ""
         console.print(
             f"      [bold cyan][{idx}][/bold cyan]  {domain}  [dim]({desc})[/dim]{default_marker}"
         )
-    
+
     console.print()
-    
+
     # Mapear escolha para domínio
     choices = [str(i) for i in range(1, len(VALID_DOMAINS) + 1)]
-    default_idx = str(VALID_DOMAINS.index(default) + 1) if default in VALID_DOMAINS else "1"
-    
+    default_idx = str(VALID_DOMAINS.index(default) +
+                      1) if default in VALID_DOMAINS else "1"
+
     choice = Prompt.ask(
         "      Escolha",
         choices=choices,
         default=default_idx,
         show_choices=False
     )
-    
+
     return VALID_DOMAINS[int(choice) - 1]
 
 
@@ -243,34 +255,35 @@ def _select_language(default: str) -> str:
         Linguagem selecionada
     """
     console.print("\n  [cyan]Linguagem principal:[/cyan]")
-    
+
     language_descriptions = {
         "python": "Python 3.10+",
         "typescript": "TypeScript / JavaScript / Node.js",
         "go": "Go / Golang",
         "other": "Outra linguagem ou multi-linguagem",
     }
-    
+
     for idx, lang in enumerate(VALID_LANGUAGES, start=1):
         desc = language_descriptions.get(lang, "")
         default_marker = " [dim](default)[/dim]" if lang == default else ""
         console.print(
             f"      [bold cyan][{idx}][/bold cyan]  {lang}  [dim]({desc})[/dim]{default_marker}"
         )
-    
+
     console.print()
-    
+
     # Mapear escolha para linguagem
     choices = [str(i) for i in range(1, len(VALID_LANGUAGES) + 1)]
-    default_idx = str(VALID_LANGUAGES.index(default) + 1) if default in VALID_LANGUAGES else "1"
-    
+    default_idx = str(VALID_LANGUAGES.index(default) +
+                      1) if default in VALID_LANGUAGES else "1"
+
     choice = Prompt.ask(
         "      Escolha",
         choices=choices,
         default=default_idx,
         show_choices=False
     )
-    
+
     return VALID_LANGUAGES[int(choice) - 1]
 
 
@@ -652,7 +665,8 @@ def _parse_extra_profiles(value: str, domain: str) -> list[str]:
       "profile1,profile2" → lista explícita
     """
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(domain, f"devops-{domain}")
-    available_extras = [p for p in ALL_SELECTABLE_PROFILES if p != domain_profile]
+    available_extras = [
+        p for p in ALL_SELECTABLE_PROFILES if p != domain_profile]
 
     if value in ("domain-only", "none", ""):
         return []
@@ -684,12 +698,14 @@ def confirm_summary(config: ProjectConfig) -> bool:
     table.add_row("Descrição", config.description or "[dim](vazia)[/dim]")
     table.add_row("Domínio", config.domain)
     table.add_row("Linguagem", config.language)
-    table.add_row("Repositório", config.github_repo or "[dim](não informado)[/dim]")
+    table.add_row(
+        "Repositório", config.github_repo or "[dim](não informado)[/dim]")
     table.add_row("Shared dir", str(config.shared_dir))
     table.add_row("Target dir", str(config.target_dir))
     table.add_row("Project path", str(config.project_path))
 
-    domain_profile = DOMAIN_DEFAULT_PROFILES.get(config.domain, f"devops-{config.domain}")
+    domain_profile = DOMAIN_DEFAULT_PROFILES.get(
+        config.domain, f"devops-{config.domain}")
     extras = config.extra_profiles or []
     all_profiles = [domain_profile] + extras + SPECKIT_TRANSVERSAL_PROFILES
     table.add_row("Perfis SpecKit", ", ".join(all_profiles))

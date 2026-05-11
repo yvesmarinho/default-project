@@ -1,8 +1,6 @@
 # Alterações necessárias
 
-- no scaffold mudar a seleção das opções por letras ou numeros, ao contrário do texto correto da opção.(IMPORTANTE)
-
-- contabilização de tempo de trabalho de cada sessão, gerar tabela csv com data h.ini,h.fim,tempo. possbilidade de contabilizar paradas para café e almoço.
+- ✅ contabilização de tempo de trabalho de cada sessão, gerar tabela csv com data h.ini,h.fim,tempo. possbilidade de contabilizar paradas para café e almoço. **(COMPLETO 2026-05-11)**
 
 - Analisar as informações dos sites abaixo para fazer as devidas atualizações.
   - [Github Copilot Instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
@@ -16,7 +14,9 @@
 
 ## Correção - IMPORTANTE
 
-- arquivos de template devem ficar fora da pasta de trabalho,para não confundir os usuários.
+- ✅ corregir organização de arquivos do projeto, templates não devem ficar na pasta de trabalho desse projeto, devem ter pasta própria. Dessa forma facilita até o scaffold. **(COMPLETO 2026-05-11)**
+
+- ✅ adicionar comando de sessão em porgues/Brasil ao session.manager **(COMPLETO 2026-05-11)**
 
 ---
 
@@ -42,6 +42,14 @@ C) Modernization 📚
 
 Integrate GitHub Copilot latest features from documentation
 What would you like to work on?
+
+---
+## 📅 Ações Completas — 2026-05-11
+
+- ✅ arquivo ".github/copilot-instructions.md" deve ser renomeado para ".github/.copilot-instructions.md" que é padrão do Copilot. **(COMPLETO 2026-05-11)**
+
+- ✅ no scaffold mudar a seleção das opções por letras ou numeros, ao contrário do texto correto da opção. **(COMPLETO 2026-05-11)**
+
 
 ---
 
