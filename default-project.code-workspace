@@ -1,11 +1,9 @@
-{
+- start mcp memory and sequential-thinking
+- session.manager satart.session{
   "folders": [
     {
       "name": "Enterprise Default Project Template",
       "path": "."
-    },
-    {
-      "path": "../enterprise-update-lab-n8n"
     }
   ],
   "settings": {

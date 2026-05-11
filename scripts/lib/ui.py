@@ -191,6 +191,89 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
     )
 
 
+def _select_domain(default: str) -> str:
+    """
+    Seleção de domínio via menu numerado.
+
+    Args:
+        default: Valor padrão (programming, infrastructure, analysis)
+
+    Returns:
+        Domínio selecionado
+    """
+    console.print("\n  [cyan]Domínio do projeto:[/cyan]")
+    
+    domain_descriptions = {
+        "programming": "Desenvolvimento de software (APIs, apps, CLIs)",
+        "infrastructure": "Infraestrutura e DevOps (IaC, K8s, cloud)",
+        "analysis": "Análise de dados e BI (ETL, data warehouse)",
+    }
+    
+    for idx, domain in enumerate(VALID_DOMAINS, start=1):
+        desc = domain_descriptions.get(domain, "")
+        default_marker = " [dim](default)[/dim]" if domain == default else ""
+        console.print(
+            f"      [bold cyan][{idx}][/bold cyan]  {domain}  [dim]({desc})[/dim]{default_marker}"
+        )
+    
+    console.print()
+    
+    # Mapear escolha para domínio
+    choices = [str(i) for i in range(1, len(VALID_DOMAINS) + 1)]
+    default_idx = str(VALID_DOMAINS.index(default) + 1) if default in VALID_DOMAINS else "1"
+    
+    choice = Prompt.ask(
+        "      Escolha",
+        choices=choices,
+        default=default_idx,
+        show_choices=False
+    )
+    
+    return VALID_DOMAINS[int(choice) - 1]
+
+
+def _select_language(default: str) -> str:
+    """
+    Seleção de linguagem via menu numerado.
+
+    Args:
+        default: Valor padrão (python, typescript, go, other)
+
+    Returns:
+        Linguagem selecionada
+    """
+    console.print("\n  [cyan]Linguagem principal:[/cyan]")
+    
+    language_descriptions = {
+        "python": "Python 3.10+",
+        "typescript": "TypeScript / JavaScript / Node.js",
+        "go": "Go / Golang",
+        "other": "Outra linguagem ou multi-linguagem",
+    }
+    
+    for idx, lang in enumerate(VALID_LANGUAGES, start=1):
+        desc = language_descriptions.get(lang, "")
+        default_marker = " [dim](default)[/dim]" if lang == default else ""
+        console.print(
+            f"      [bold cyan][{idx}][/bold cyan]  {lang}  [dim]({desc})[/dim]{default_marker}"
+        )
+    
+    console.print()
+    
+    # Mapear escolha para linguagem
+    choices = [str(i) for i in range(1, len(VALID_LANGUAGES) + 1)]
+    default_idx = str(VALID_LANGUAGES.index(default) + 1) if default in VALID_LANGUAGES else "1"
+    
+    choice = Prompt.ask(
+        "      Escolha",
+        choices=choices,
+        default=default_idx,
+        show_choices=False
+    )
+    
+    return VALID_LANGUAGES[int(choice) - 1]
+
+
 def _collect_interactive(defaults: dict) -> ProjectConfig:
     """Coleta dados interativamente com Rich prompts."""
     console.print("[bold]Informações do Projeto[/bold]\n", style="blue")
@@ -221,19 +304,11 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         default=defaults.get("description") or "",
     ).strip()
 
-    # domain
-    domain = Prompt.ask(
-        "  [cyan]Domínio[/cyan]",
-        choices=VALID_DOMAINS,
-        default=defaults.get("domain") or "programming",
-    )
+    # domain - usando menu numerado
+    domain = _select_domain(defaults.get("domain") or "programming")
 
-    # language
-    language = Prompt.ask(
-        "  [cyan]Linguagem principal[/cyan]",
-        choices=VALID_LANGUAGES,
-        default=defaults.get("language") or "python",
-    )
+    # language - usando menu numerado
+    language = _select_language(defaults.get("language") or "python")
 
     github_repo = Prompt.ask(
         "  [cyan]Repositório GitHub[/cyan] [dim](URL ou Enter para pular)[/dim]",

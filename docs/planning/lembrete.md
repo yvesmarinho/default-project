@@ -1,7 +1,9 @@
 # Alterações necessárias
 
 - no scaffold mudar a seleção das opções por letras ou numeros, ao contrário do texto correto da opção.(IMPORTANTE)
-- contabilização de tempo de trabalho de cada sessão.
+
+- contabilização de tempo de trabalho de cada sessão, gerar tabela csv com data h.ini,h.fim,tempo. possbilidade de contabilizar paradas para café e almoço.
+
 - Analisar as informações dos sites abaixo para fazer as devidas atualizações.
   - [Github Copilot Instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
   - [Agent Skills in VS Vode](https://code.visualstudio.com/docs/copilot/customization/agent-skills) para melhorar a atuação dos agentes.
@@ -10,20 +12,36 @@
   - [Awesome Copilot](https://github.com/github/awesome-copilot), importar todos os códigos que torner o template de projeto mais completo.
   - [Github Copilot in Visual Studio](https://github.blog/changelog/2026-04-30-github-copilot-in-visual-studio-april-update/)
 
-## Correção - IMPORTANTE
-  - arquivo ".github/copilot-instructions.md" deve ser renomeado para ".github/.copilot-instructions.md" que é padrão do Copilot.
+---
 
+## Correção - IMPORTANTE
+
+- arquivos de template devem ficar fora da pasta de trabalho,para não confundir os usuários.
 
 ---
-## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
 
-✅ Bug IMP-65 Resolvido: scaffold --upgrade Ignora Atualizações
-- ✅ Opção 1 implementada: --force (backup + sobrescrita)
-- ✅ Opção 2 implementada: check/diff/merge commands
-- ✅ Opção 3 implementada: drift detection (SHA256)
-- ✅ Validação completa: 8/8 testes passaram (100%)
-- ⚠️ Limitação: merge-template requer debug adicional
-- 📝 Documentado em: docs/SESSIONS/2026-05-08/DAILY_ACTIVITIES_2026-05-08.md
+## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
+MCP Servers: Memory and sequential-thinking are now active
+
+Session Status (2026-05-11):
+
+📁 Session docs created: 2026-05-11
+🔒 Security: Clean (no exposed credentials)
+🌿 Branch: 060-mini-engram-python (1 uncommitted file)
+✅ Recent: IMP-65 Template Sync validated (100%)
+Recommended Focus Areas:
+
+A) Quick Wins ⚡ (Highest ROI)
+
+Fix scaffold option selection (letters/numbers vs full text)
+Rename copilot-instructions.md → .github/.copilot-instructions.md
+B) Testing 🧪 (P1)
+
+Objetivo-Init Pipeline end-to-end validation
+C) Modernization 📚
+
+Integrate GitHub Copilot latest features from documentation
+What would you like to work on?
 
 ---
 
