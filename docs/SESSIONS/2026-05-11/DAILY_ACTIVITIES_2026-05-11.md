@@ -345,5 +345,104 @@ Time tracker validado para uso no session-manager:
 
 ---
 
+### Activity 5: Documentação do Workflow de Decisão
+
+**Time**: 11:35-12:00 BRT
+**Duration**: ~25 min
+**Type**: Documentation + Architecture
+**Objective**: Criar documentação visual do workflow de decisão de atualização de arquivos
+
+**Actions**:
+
+1. ✅ **Criação de Documento Técnico**
+   - **Arquivo**: `docs/SESSIONS/2026-05-11/TIME_TRACKER_DECISION_WORKFLOW.md` (800+ lines)
+   - **Formato**: Markdown com diagramas Mermaid
+   - **Objetivo**: Explicar lógica de decisão para análise e atualização de arquivos
+
+2. ✅ **Diagramas Criados** (5 diagramas Mermaid)
+   - **Diagrama de Estados**: Máquina de estados (NoSession → Active → Paused → Completed)
+   - **Flowchart START**: Lógica de criação de sessão
+   - **Flowchart PAUSE**: Lógica de pausa com validações
+   - **Flowchart RESUME**: Lógica de retomada com cálculos
+   - **Flowchart STOP**: Lógica de finalização com auto-recovery
+   - **Sequence Diagram**: Fluxo completo de uma sessão
+
+3. ✅ **Matriz de Decisão de Atualização**
+   - **Tabela**: 10 cenários × 7 colunas
+   - **Colunas**: Comando, State Existe?, Estado Atual, Current Pause?, Ação, Atualiza State?, Atualiza CSV?
+   - **Cobertura**: Todos os casos de uso e edge cases
+
+4. ✅ **Documentação de Proteções**
+   - **5 proteções implementadas**:
+     1. Proteção contra duplo start
+     2. Proteção contra comandos sem sessão
+     3. Proteção contra duplo pause
+     4. Proteção contra resume sem pause
+     5. Auto-recovery em stop (se pausado)
+   - Código exemplo para cada proteção
+
+5. ✅ **Operações de Arquivo Documentadas**
+   - **State File (JSON)**:
+     - CREATE: nova sessão
+     - READ: verificações
+     - UPDATE: mudanças de estado
+     - DELETE: cleanup após stop
+   - **History CSV**:
+     - APPEND: persistência de sessão completa
+     - Modo append-only (preserva histórico)
+
+6. ✅ **Validação com Testes**
+   - **Tabela de Validação**: 11 testes × cenários × decisões
+   - Cruzamento entre testes e matriz de decisão
+   - Confirmação: 100% cobertura
+
+**Outcome**:
+- ✅ **Documentação arquitetural completa** do sistema de decisão
+- ✅ **5 diagramas visuais** explicando fluxos e estados
+- ✅ **Matriz de decisão** com todos cenários documentados
+- ✅ **Princípios de design** explicitados:
+  - Idempotência (sem side effects em erros)
+  - Estado explícito (sempre verificar antes)
+  - Proteção de dados (validar pré-condições)
+  - Recuperação automática (auto-resume)
+  - Persistência segura (append-only CSV)
+
+**Files Created**:
+- `docs/SESSIONS/2026-05-11/TIME_TRACKER_DECISION_WORKFLOW.md` (800+ lines)
+
+**Content Structure**:
+1. Visão Geral (estados, arquivos)
+2. Diagrama de Estados (stateDiagram-v2)
+3. Lógica por Comando (4 flowcharts)
+4. Matriz de Decisão (tabela 10×7)
+5. Proteções Implementadas (5 casos)
+6. Operações de Arquivo (2 diagramas)
+7. Fluxo Completo (sequence diagram)
+8. Validação de Testes (tabela 11×4)
+9. Resumo da Lógica (quando atualizar)
+
+**Diagramas Mermaid**:
+- ✅ 1 State Diagram (máquina de estados)
+- ✅ 4 Flowcharts (decisões por comando)
+- ✅ 2 Fluxos (operações de arquivo)
+- ✅ 1 Sequence Diagram (workflow completo)
+- **Total**: 8 diagramas interativos
+
+**Value Delivered**:
+- 📖 **Documentação técnica** para onboarding de desenvolvedores
+- 🎓 **Material educacional** sobre design de sistemas com estado
+- 🔍 **Referência** para debugging e troubleshooting
+- ✅ **Validação** de que design está correto e completo
+
+**Use Cases**:
+- Onboarding de novos desenvolvedores no time tracker
+- Explicar decisões de design em code reviews
+- Debugging de comportamentos inesperados
+- Base para expansão futura do sistema
+
+**Status**: ✅ Complete
+
+---
+
 *Use this template for each activity throughout the session*
 *Separator: `---` between activities*
