@@ -230,6 +230,16 @@ Thumbs.db
 *.log
 logs/
 !scripts/logs/.gitkeep
+
+# Infrastructure directories
+tmp/*
+!tmp/README.md
+.memory/*
+!.memory/README.md
+.session-index/*
+!.session-index/README.md
+.session-time/*
+!.session-time/README.md
 """
 
 _SECRETS_README = """\
@@ -1595,6 +1605,166 @@ jobs:
           comment-summary-in-pr: always
 """
 
+_TMP_README = """\
+# Pasta tmp/
+
+## Propósito
+Armazenamento temporário para:
+- Backups de upgrade (`backup-*`)
+- Relatórios de atualização (`UPGRADE_REPORT_*`)
+- Outputs temporários de testes
+- Arquivos intermediários de processamento
+
+## Conteúdo Esperado
+```
+tmp/
+├── README.md
+├── backup-sistema-deploy-YYYYMMDD-HHmmss/  # Backups automáticos
+├── UPGRADE_REPORT_*.md                      # Relatórios de upgrade
+└── *.tmp                                    # Arquivos temporários
+```
+
+## Lifecycle
+- Backups: mantidos por 30 dias
+- Reports: mantidos permanentemente (documentação)
+- Arquivos .tmp: deletados após uso
+
+## Git Status
+Esta pasta está no `.gitignore` (conteúdo não versionado).
+Apenas este README.md é commitado.
+
+## Scripts Relacionados
+- `scripts/scaffold.py --upgrade` (gera backups aqui)
+- `scripts/cleanup-tmp.sh` (limpa arquivos antigos)
+"""
+
+_MEMORY_README = """\
+# Pasta .memory/
+
+## Propósito
+Storage para MCP servers de memória:
+- `memory` server: contexto de conversas
+- `sequential-thinking` server: raciocínios salvos
+
+## Estrutura
+```
+.memory/
+├── README.md
+├── *.json          # Memórias estruturadas
+└── *.txt           # Memórias em texto livre
+```
+
+## Formato
+- JSON: metadados + conteúdo estruturado
+- TXT: raciocínios, notas, observações
+
+## Indexação
+MCP servers indexam automaticamente este diretório.
+Busca disponível via interface de memória.
+
+## Git Status
+Esta pasta está no `.gitignore` (memórias são locais).
+Apenas este README.md é commitado.
+
+## MCP Configuration
+Configurado em `.vscode/mcp.json`:
+```json
+{
+  \"memory\": {
+    \"command\": \"npx\",
+    \"args\": [\"-y\", \"@modelcontextprotocol/server-memory\"]
+  }
+}
+```
+"""
+
+_SESSION_INDEX_README = """\
+# Pasta .session-index/
+
+## Propósito
+SQLite FTS5 database para busca em documentação de sessões.
+
+## Estrutura
+```
+.session-index/
+├── README.md
+└── sessions.db     # SQLite database (FTS5)
+```
+
+## Database Schema
+- Tabela `sessions_fts`: full-text search
+- Índice BM25 ranking
+- Campos: date, filename, content, metadata
+
+## Uso
+```bash
+# Buscar em sessões
+python scripts/session-search.py \"IMP-65\"
+
+# Reconstruir índice
+python scripts/session-index.py --rebuild
+```
+
+## Performance
+- Queries: <0.01s (FTS5 otimizado)
+- Tamanho típico: ~5MB/100 sessões
+
+## Git Status
+Database não é versionado (`.gitignore`).
+Apenas README.md commitado.
+
+## Sistema Relacionado
+- IMP-51: Session Search System
+- Scripts: `session-search.py`, `session-index.py`
+"""
+
+_SESSION_TIME_README = """\
+# Pasta .session-time/
+
+## Propósito
+Time tracking de sessões de desenvolvimento.
+
+## Estrutura
+```
+.session-time/
+├── README.md
+└── sessions.csv    # Registro de tempo
+```
+
+## Formato CSV
+```csv
+date,start,end,duration_minutes,pauses
+2026-05-11,09:00,12:30,210,30
+```
+
+## Campos
+- `date`: YYYY-MM-DD
+- `start`: HH:MM
+- `end`: HH:MM
+- `duration_minutes`: tempo líquido
+- `pauses`: tempo de pausas (café, almoço)
+
+## Uso
+```bash
+# Registrar sessão
+python scripts/session-time.py start
+python scripts/session-time.py pause
+python scripts/session-time.py resume
+python scripts/session-time.py end
+
+# Ver relatório
+python scripts/session-time.py report --week
+```
+
+## Git Status
+CSV não é versionado (dados pessoais).
+Apenas README.md commitado.
+
+## Sistema Relacionado
+- Feature: Session Management System
+- Script: `scripts/session-time.py`
+"""
+
 # ---------------------------------------------------------------------------
 # Pastas a criar
 # ---------------------------------------------------------------------------
@@ -1619,6 +1789,10 @@ DIRS_TO_CREATE = [
     "scripts/lib",
     "scripts/logs",
     "src",
+    "tmp",
+    ".memory",
+    ".session-index",
+    ".session-time",
 ]
 
 # ---------------------------------------------------------------------------
@@ -1643,6 +1817,10 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     # .vscode/mcp.json e settings.json são gerados dinamicamente por vscode.py (IMP-64)
     ("Makefile",                   _MAKEFILE),
     ("scripts/logs/.gitkeep",      ""),
+    ("tmp/README.md",              _TMP_README),
+    (".memory/README.md",          _MEMORY_README),
+    (".session-index/README.md",   _SESSION_INDEX_README),
+    (".session-time/README.md",    _SESSION_TIME_README),
 ]
 
 
