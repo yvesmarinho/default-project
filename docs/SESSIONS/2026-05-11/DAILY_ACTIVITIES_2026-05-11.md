@@ -691,5 +691,211 @@ Ao analisar código fonte (`scripts/lib/file_merge.py`, `scripts/lib/project.py`
 
 ---
 
+### Activity 6.2: Inventário Completo de Componentes Gerados
+
+**Time**: 13:45-14:15 BRT
+**Duration**: ~30 min
+**Type**: Analysis + Documentation
+**Objective**: Analisar TODOS os componentes gerados pelo default-project para identificar requisitos completos de merge
+
+**Context**:
+Usuário identificou gap crítico: "em 'Implementação Priorizada:' ainda falta atualização do session.manager, analise demais componentes gerados por `default-project` para atualização no destino"
+
+**Discovery - Análise de `scripts/lib/project.py`**:
+```python
+# copy_speckit() function (lines 1740-1900)
+speckit_globs = [
+    (".github/agents",                "*.agent.md"),      # 32+ arquivos
+    (".github/prompts",               "speckit.*.prompt.md"),  # 17+ arquivos
+    (".github/prompts",               "session-*.prompt.md"),  # 3 arquivos
+    (".github/ISSUE_TEMPLATE",        "*.md"),            # 3+ arquivos
+    (".github/ISSUE_TEMPLATE",        "*.yml"),           # 2+ arquivos
+]
+# Plus: .specify/templates/ (10+ arquivos)
+# Plus: profile-descriptors/*.yaml (20+ arquivos)
+```
+
+**Actions**:
+
+1. ✅ **Leitura Completa do Sistema de Scaffold**
+   - `scripts/lib/project.py` (2000+ lines)
+   - Função `copy_speckit()` (lines 1740-1850)
+   - Função `setup_project_docs()` (lines 1900+)
+   - Constante `FILES_TO_CREATE` (lines 1550-1650)
+
+2. ✅ **Inventário da Estrutura `.github/`**
+   - `.github/agents/` → 32 agent files:
+     - session-manager.agent.md ⭐ **CRITICAL**
+     - Família SpecKit: 9 agents (specify, plan, tasks, implement, validate, analyze, constitution, checklist, clarify)
+     - Família Git: 5 agents (initialize, feature, commit, validate, remote)
+     - DevOps: 2 agents (automation-sdd, engineer-sdd)
+     - Software Engineering: 3 agents (architect, tech writer, ux designer)
+     - Domain Experts: 13+ agents (principal, debian, template-architect, etc.)
+   
+   - `.github/prompts/` → 26+ prompt files:
+     - Família SpecKit: 17 prompts (*.prompt.md)
+     - Session: 3 prompts (start, start-first, end)
+     - Domain: 6+ prompts (devops-infrastructure, devops-analysis, etc.)
+   
+   - `.github/workflows/` → 3+ workflow files:
+     - secret-scan.yml
+     - dependency-review.yml
+     - Outros workflows de CI/CD
+   
+   - `.github/ISSUE_TEMPLATE/` → 5+ template files:
+     - bug_report.md
+     - feature_request.md
+     - config.yml
+     - custom templates
+   
+   - `.github/.copilot-instructions.md` → 1 arquivo
+
+3. ✅ **Inventário da Estrutura `.vscode/`**
+   - mcp.json (MCP servers config)
+   - settings.json (VS Code settings)
+   - extensions.json (recommended extensions)
+
+4. ✅ **Inventário da Estrutura `.specify/`**
+   - `.specify/templates/*.md` (10+ templates)
+   - `.specify/config.json` (configuração)
+
+5. ✅ **Inventário de Arquivos Raiz**
+   - README.md ✅ (MergeMerger implementado)
+   - Makefile ✅ (MakefileMerger implementado)
+   - .gitignore ✅ (GitignoreMerger implementado)
+   - .copilot-rules.md ❌ **GAP P0**
+   - .copilot-rules-[projeto].md ❌ **GAP P0**
+   - pyproject.toml ❌ **GAP P1**
+   - .pre-commit-config.yaml ❌ **GAP P1**
+   - .gitleaks.toml ❌ **GAP P2**
+   - .gitguardian.yaml ❌ **GAP P2**
+   - objetivo.yaml ❌ **GAP P2**
+   - mcp-questions.yaml ❌ **GAP P2**
+   - pytest.ini ❌ **GAP P3**
+
+6. ✅ **Inventário de Documentação**
+   - `docs/INDEX.md`
+   - `docs/TODO.md`
+   - `docs/TODAY_ACTIVITIES.md`
+   - `docs/architecture/`, `docs/debates/`, `docs/planning/`, etc.
+
+7. ✅ **Análise de Cobertura**
+   | Categoria | Total Arquivos | Com Merge | Cobertura | Gap |
+   |-----------|----------------|-----------|-----------|-----|
+   | Agentes Copilot | 32+ | 0 | 0% | 🔴 CRITICAL |
+   | Prompts Copilot | 26+ | 0 | 0% | 🔴 CRITICAL |
+   | Workflows GitHub | 3+ | 0 | 0% | 🔴 IMPORTANT |
+   | Arquivos Raiz | 15+ | 3 | 20% | 🟡 PARTIAL |
+   | SpecKit Templates | 10+ | 10+ | 100% | ✅ Layer 2 |
+   | VS Code Configs | 3 | 0 | 0% | 🟡 MEDIUM |
+   | Issue Templates | 5+ | 0 | 0% | 🟡 MEDIUM |
+   | Documentação | 10+ | 0 | 0% | ⚪ LOW |
+   | **TOTAL** | **~100** | **~13** | **~13%** | 🔴 **87% Gap** |
+
+8. ✅ **Atualização da Documentação**
+   - **Arquivo**: `docs/SESSIONS/2026-05-11/PROJECT_UPDATE_DECISION_WORKFLOW.md`
+   - **Seções atualizadas**:
+     - "Resumo Executivo" → Estatísticas atualizadas (100 arquivos, 13% cobertura)
+     - "Escopo Atual e Limitações" → Tabela completa com 7 categorias
+     - "Gaps e Oportunidades" → Substituída por "Priorização de Implementação"
+     - Nova seção "Detalhamento por Categoria" (7 categorias completas)
+     - Nova seção "Análise Completa de Componentes Gerados" (tabela overview)
+
+9. ✅ **Matriz de Priorização Expandida**
+   - **16 componentes identificados** (vs 8 anteriores)
+   - **7 categorias organizadas**:
+     1. Agentes Copilot (32 arquivos) - P0 CRITICAL
+     2. Prompts Copilot (26 arquivos) - P0 HIGH
+     3. SpecKit Templates (10+ arquivos) - Layer 2 OK
+     4. Issue Templates (5+ arquivos) - P2 MEDIUM
+     5. Workflows GitHub (3+ arquivos) - P1 HIGH
+     6. VS Code Configs (3 arquivos) - P2 MEDIUM
+     7. Arquivos Raiz (15+ arquivos) - P0-P3 MIXED
+
+10. ✅ **Pseudocódigo para Novos Mergers**
+    - **CopilotAgentMerger** (32 arquivos):
+      - Parse YAML frontmatter (version, triggers)
+      - Preservar customizações (custom triggers, workflows)
+      - Atualizar seções padrão se versão mais recente
+      - Adicionar novos triggers do template
+      - Merge de workflow steps (adicionar ausentes)
+    
+    - **CopilotPromptMerger** (26 arquivos):
+      - Parse seções do prompt (System, User, Examples)
+      - Preservar exemplos custom do projeto
+      - Adicionar novas seções ausentes
+      - Atualizar system prompt se versão mais recente
+    
+    - **GitHubWorkflowMerger** (3+ arquivos):
+      - Parse YAML existente e template
+      - Adicionar novos jobs ausentes
+      - Atualizar versões de actions se mais recentes
+      - Preservar jobs custom
+      - Merge de steps dentro de jobs
+    
+    - **VSCodeConfigMerger** (3 arquivos):
+      - Parse JSON existente e template
+      - Merge arrays (mcpServers, recommendations, etc.)
+      - Preservar configurações custom
+      - Adicionar novos settings ausentes
+
+**Outcome**:
+- ✅ **Inventário completo**: 100+ arquivos catalogados em 7 categorias
+- ✅ **Session-manager identificado**: Entre 32 agentes sem merge (P0 CRITICAL)
+- ✅ **Gap dimensionado**: 87% dos arquivos sem merge inteligente
+- ✅ **60+ arquivos críticos** (agentes + prompts + copilot-rules) sem merge
+- ✅ **Roadmap de 5 sprints** com priorização clara
+- ✅ **4 novos mergers documentados** com pseudocódigo
+- ✅ **ROI calculado**: Após Sprint 1-2 → 70% cobertura dos arquivos críticos
+
+**Files Modified**:
+- `docs/SESSIONS/2026-05-11/PROJECT_UPDATE_DECISION_WORKFLOW.md` (+~400 lines):
+  - "Resumo Executivo": Estatísticas atualizadas (100 arquivos, 13% cobertura, gaps por categoria)
+  - "Escopo Atual e Limitações": Tabela completa 7 categorias × 6 colunas
+  - "Priorização de Implementação": Expandida de 8 para 16 componentes
+  - "Análise Completa de Componentes Gerados": Nova tabela overview
+  - "Detalhamento por Categoria": 7 seções detalhadas com:
+    - Localização dos arquivos
+    - Lista completa de arquivos identificados
+    - Impacto do gap
+    - Pseudocódigo do merger proposto
+
+**Key Insights**:
+- 📊 **Cobertura real**: 13% (vs 25% estimado anteriormente)
+- 🔴 **Gap crítico**: 32 agentes + 26 prompts = 58 arquivos P0 sem merge
+- 🎯 **Session-manager**: Entre os 32 agentes, confirmado como P0 CRITICAL
+- 🚀 **ROI altíssimo**: Sprint 1 (CopilotAgentMerger) atinge 32 arquivos de uma vez
+- 📈 **Progressão**: Sprint 1-2 → 70%, Sprint 1-4 → 90% cobertura
+
+**Impacto dos Gaps**:
+| Gap | Arquivos | Impacto | Consequência |
+|-----|----------|---------|--------------|
+| Agentes não atualizados | 32+ | 🔴 CRÍTICO | Session-manager sem time tracking, SpecKit agents sem melhorias |
+| Prompts não atualizados | 26+ | 🔴 CRÍTICO | Prompt engineering improvements não propagados |
+| Workflows não atualizados | 3+ | 🔴 ALTO | Security workflows desatualizados |
+| Copilot rules não mescladas | 2+ | 🔴 ALTO | Melhores práticas não disseminadas |
+| pyproject.toml não atualizado | 1 | 🔴 ALTO | Dependências desatualizadas |
+
+**Value Delivered**:
+- 🎓 **Educacional**: Mapa completo do sistema de templates
+- 🗺️ **Roadmap**: Priorização detalhada de 5 sprints
+- 💡 **Inovação**: 4 novos mergers com pseudocódigo
+- 🔍 **Transparência**: 87% gap documentado e quantificado
+- 📈 **Acionável**: Próximo passo claro (Sprint 1: CopilotAgentMerger)
+
+**Recomendação de Implementação**:
+1. **Sprint 1 (P0 CRITICAL)**: CopilotAgentMerger (32 arquivos, incluindo session-manager) → +32% cobertura
+2. **Sprint 2 (P0 HIGH)**: CopilotPromptMerger (26 arquivos) + CopilotRulesMerger (2 arquivos) → +28% cobertura
+3. **Sprint 3 (P1 HIGH)**: GitHubWorkflowMerger (3 arquivos) + PyprojectMerger (1 arquivo) → +4% cobertura
+4. **Sprint 4 (P1 MEDIUM)**: PreCommitMerger (1 arquivo) → +1% cobertura
+5. **Sprint 5+ (P2-P3)**: VSCodeConfigMerger, IssueTemplateMerger, outros → +10% cobertura
+
+**User Question Answered**:
+✅ "em 'Implementação Priorizada:' ainda falta atualização do session.manager" → Confirmado e documentado como P0 CRITICAL (1 de 32 agentes sem merge)
+
+**Status**: ✅ Complete
+
+---
+
 *Use this template for each activity throughout the session*
 *Separator: `---` between activities*

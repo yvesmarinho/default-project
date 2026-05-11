@@ -23,25 +23,80 @@ Sistema de **three-way merge** para templates em `.specify/templates/*.md` usand
 
 ## ⚠️ Escopo Atual e Limitações
 
-**Arquivos COM merge inteligente** (Layer 1 - 3 mergers):
-- ✅ `.gitignore` → GitignoreMerger
-- ✅ `Makefile` → MakefileMerger
-- ✅ `README.md` → ReadmeMerger
+### **📊 Visão Geral da Cobertura**
 
-**Templates Markdown COM merge** (Layer 2):
-- ✅ `.specify/templates/*.md` → Three-way merge via git merge-file
+O `default-project` gera **~100 arquivos** distribuídos em 7 categorias. Cobertura atual de merge:
 
-**Arquivos SEM merge inteligente** (Layer 0 - Skip Safe):
+| Categoria | Total Arquivos | Com Merge | Cobertura | Status |
+|-----------|----------------|-----------|-----------|--------|
+| **Agentes Copilot** | 32+ | 0 | 0% | 🔴 **Gap Crítico** |
+| **Prompts Copilot** | 26+ | 0 | 0% | 🔴 **Gap Crítico** |
+| **Workflows GitHub** | 3+ | 0 | 0% | 🔴 **Gap Importante** |
+| **Arquivos Raiz** | 15+ | 3 | 20% | 🟡 Parcial |
+| **SpecKit Templates** | 10+ | 10+ | 100% | ✅ Layer 2 |
+| **VS Code Configs** | 3 | 0 | 0% | 🟡 Gap Médio |
+| **Issue Templates** | 5+ | 0 | 0% | 🟡 Gap Médio |
+| **Documentação** | 10+ | 0 | 0% | ⚪ Baixa prioridade |
+| **TOTAL** | **~100** | **~13** | **~13%** | 🔴 **Cobertura Baixa** |
+
+---
+
+### **Arquivos COM merge inteligente** (Layer 1 - 3 mergers):
+- ✅ `.gitignore` → GitignoreMerger (P0 CRITICAL - segurança)
+- ✅ `Makefile` → MakefileMerger (P1 HIGH - workflow)
+- ✅ `README.md` → ReadmeMerger (P1 HIGH - documentação)
+
+### **Templates Markdown COM merge** (Layer 2):
+- ✅ `.specify/templates/*.md` → Three-way merge via git merge-file (comando `scaffold.py merge-template`)
+
+---
+
+### **Arquivos SEM merge inteligente** (Layer 0 - Skip Safe):
+
+#### **🔴 Gap Crítico (P0)** - Boas Práticas e Automação
+- ⚠️ **`.github/agents/*.agent.md` (32+ arquivos)** - Agentes Copilot incluindo:
+  - `session-manager.agent.md` ⭐ **CRITICAL** - Workflows não atualizados
+  - Família SpecKit (9 agentes)
+  - Família Git (5 agentes)
+  - DevOps, SE, Domain Experts (15+ agentes)
+- ⚠️ **`.github/prompts/*.prompt.md` (26+ arquivos)** - Prompts Copilot
 - ⚠️ `.copilot-rules.md` / `.copilot-rules-[projeto].md` (gerados mas não mesclados)
+
+#### **🔴 Gap Importante (P1)** - Dependências e Segurança
+- ⚠️ **`.github/workflows/*.yml` (3+ arquivos)** - Workflows de CI/CD e segurança
 - ⚠️ `pyproject.toml` (configuração Python)
 - ⚠️ `.pre-commit-config.yaml` (hooks de segurança)
+
+#### **🟡 Gap Médio (P2)** - Configuração e Templates
+- ⚠️ **`.vscode/*.json` (3 arquivos)** - Configs VS Code (mcp.json, settings.json, extensions.json)
+- ⚠️ **`.github/ISSUE_TEMPLATE/*.md` (5+ arquivos)** - Templates de issues
 - ⚠️ `.gitleaks.toml` (detector de secrets)
 - ⚠️ `.gitguardian.yaml` (scanner de credenciais)
+- ⚠️ `objetivo.yaml`, `mcp-questions.yaml` (manifests)
+
+#### **⚪ Gap Baixo (P3)** - Documentação
+- ⚠️ **`docs/*.md` (10+ arquivos)** - Documentação estrutural
 - ⚠️ Outros arquivos do template base
 
 **Implicação**: Arquivos listados acima são **preservados intactos** se já existem no projeto (não recebem atualizações do template)
 
 **Expansão Futura**: Sistema permite registrar novos mergers via `register_merger()`
+
+---
+
+### **📈 Impacto dos Gaps**
+
+| Gap | Arquivos | Impacto | Consequência |
+|-----|----------|---------|--------------|
+| Agentes não atualizados | 32+ | 🔴 **CRÍTICO** | Session-manager sem time tracking, SpecKit agents sem melhorias |
+| Prompts não atualizados | 26+ | 🔴 **CRÍTICO** | Prompt engineering improvements não propagados |
+| Workflows não atualizados | 3+ | 🔴 **ALTO** | Security workflows desatualizados, novos workflows não adicionados |
+| Copilot rules não mescladas | 2+ | 🔴 **ALTO** | Melhores práticas não disseminadas |
+| pyproject.toml não atualizado | 1 | 🔴 **ALTO** | Dependências e ferramentas desatualizadas |
+| Pre-commit hooks não atualizados | 1 | 🟡 **MÉDIO** | Hooks de segurança obsoletos |
+| VS Code configs não atualizados | 3 | 🟡 **MÉDIO** | MCP servers, settings e extensões não propagados |
+
+**Conclusão**: Sistema atual cobre apenas **~13% dos arquivos gerados**, com **gaps críticos em 60+ arquivos** de automação e boas práticas.
 
 ---
 
@@ -67,7 +122,7 @@ Projeto Local:                Template Upstream:
 flowchart TD
     A[Arquivo encontrado em ambos<br/>local e template] --> B{Qual sistema usar?}
 
-    B -->|Arquivo crítico<br/>.gitignore, Makefile, README| C[Layer 1:<br/>File Merge System]  
+    B -->|Arquivo crítico<br/>.gitignore, Makefile, README| C[Layer 1:<br/>File Merge System]
     B -->|Template .specify<br/>.specify/templates/*.md| D[Layer 2:<br/>Template Merge System]
     B -->|Outros arquivos<br/>.copilot-rules*, pyproject.toml, etc| E[Layer 0:<br/>Skip Safe]
 
@@ -1033,7 +1088,7 @@ scaffold.py merge-template spec-template.md --dry-run
 O sistema atual tem **gaps importantes** em arquivos que deveriam ter merge mas usam fallback "Skip Safe":
 
 #### 1. `.copilot-rules.md` / `.copilot-rules-[projeto].md`
-**Problema**: 
+**Problema**:
 - São **gerados** pelo scaffold (`scripts/lib/templates.py`)
 - Mas **não têm merge** quando já existem no projeto
 - Novas regras do default-project não são propagadas
@@ -1046,10 +1101,10 @@ O sistema atual tem **gaps importantes** em arquivos que deveriam ter merge mas 
 ```python
 class CopilotRulesMerger:
     """Merge inteligente de .copilot-rules*.md"""
-    
+
     def can_merge(self, file_path: Path) -> bool:
         return file_path.name.startswith(".copilot-rules")
-    
+
     def merge(self, existing_path, template_content, interactive=True):
         # 1. Preservar regras custom do projeto
         # 2. Adicionar novas regras do template
@@ -1070,7 +1125,7 @@ class CopilotRulesMerger:
 ```python
 class PyprojectMerger:
     """Merge inteligente de pyproject.toml (TOML parsing)"""
-    
+
     def merge(self, existing_path, template_content, interactive=True):
         # 1. Parse TOML existente e template
         # 2. Adicionar novas sections ausentes
@@ -1092,7 +1147,7 @@ class PyprojectMerger:
 ```python
 class PreCommitMerger:
     """Merge inteligente de .pre-commit-config.yaml (YAML parsing)"""
-    
+
     def merge(self, existing_path, template_content, interactive=True):
         # 1. Parse YAML existente e template
         # 2. Adicionar novos repos ausentes
@@ -1114,7 +1169,7 @@ class PreCommitMerger:
 ```python
 class GitLeaksMerger:
     """Merge inteligente de .gitleaks.toml"""
-    
+
     def merge(self, existing_path, template_content, interactive=True):
         # 1. Parse TOML existente e template
         # 2. Adicionar novos regex patterns ausentes
@@ -1156,18 +1211,265 @@ scaffold.py extract-rule --file .copilot-rules-meu-projeto.md --section "Nova Re
 
 ### 📊 **Priorização de Implementação**
 
-| Merger | Prioridade | Complexidade | Impacto | Status |
-|--------|------------|--------------|---------|--------|
-| `.copilot-rules*` | **P0 HIGH** | Média | Alto | 🔴 **Gap Crítico** |
-| `.gitignore` | P0 CRITICAL | Baixa | Crítico | ✅ Implementado |
-| `Makefile` | P1 HIGH | Média | Alto | ✅ Implementado |
-| `README.md` | P1 HIGH | Média | Médio | ✅ Implementado |
-| `pyproject.toml` | **P1 HIGH** | Alta | Alto | 🔴 **Gap Importante** |
-| `.pre-commit-config.yaml` | **P1 MEDIUM** | Média | Alto | 🔴 **Gap Segurança** |
-| `.gitleaks.toml` | P2 MEDIUM | Média | Médio | 🟡 Nice to have |
-| `.gitguardian.yaml` | P2 LOW | Média | Baixo | 🟡 Nice to have |
+#### **Análise Completa de Componentes Gerados**
 
-**Recomendação**: Implementar mergers em ordem de prioridade para maximizar impacto
+O `default-project` gera **100+ arquivos** distribuídos em 7 categorias principais:
+
+| Categoria | Quantidade | Tem Merge? | Gap Crítico? |
+|-----------|------------|------------|--------------|
+| **Agentes Copilot** | 32+ arquivos | ❌ Não | 🔴 **SIM** (P0) |
+| **Prompts Copilot** | 26+ arquivos | ❌ Não | 🔴 **SIM** (P0) |
+| **SpecKit Templates** | 10+ arquivos | ⚠️ Parcial | 🟡 Layer 2 apenas |
+| **Issue Templates** | 5+ arquivos | ❌ Não | 🟡 Médio |
+| **Workflows GitHub** | 3+ arquivos | ❌ Não | 🔴 **SIM** (P1) |
+| **VS Code Configs** | 3 arquivos | ❌ Não | 🟡 Médio |
+| **Arquivos Raiz** | 15+ arquivos | ⚠️ 3 de 15 | 🔴 **SIM** (P0-P2) |
+| **Documentação** | 10+ arquivos | ❌ Não | 🟡 Baixo |
+
+**Total**: ~100+ arquivos gerados, apenas **~5% têm merge inteligente** (3 mergers de Layer 1)
+
+---
+
+#### **Detalhamento por Categoria**
+
+##### 1. **Agentes Copilot** (32+ arquivos) - 🔴 **GAP CRÍTICO P0**
+
+**Localização**: `.github/agents/*.agent.md`
+
+**Arquivos Identificados**:
+- `session-manager.agent.md` ⭐ **(CRITICAL - mencionado pelo usuário)**
+- Família SpecKit: `speckit.specify.agent.md`, `speckit.plan.agent.md`, `speckit.tasks.agent.md`, `speckit.implement.agent.md`, `speckit.validate.agent.md`, `speckit.analyze.agent.md`, `speckit.constitution.agent.md`, `speckit.checklist.agent.md`, `speckit.clarify.agent.md`
+- Família Git: `speckit.git.initialize.agent.md`, `speckit.git.feature.agent.md`, `speckit.git.commit.agent.md`, `speckit.git.validate.agent.md`, `speckit.git.remote.agent.md`
+- DevOps: `devops.automation-sdd.agent.md`, `devops.engineer-sdd.agent.md`
+- Software Engineering: `se-system-architecture-reviewer.agent.md`, `se-technical-writer.agent.md`, `se-ux-ui-designer.agent.md`
+- Especialistas: `principal-software-engineer.agent.md`, `debian-linux-expert.agent.md`, `template-architect.agent.md`, `software-engineer-agent-v1.agent.md`
+- Planning: `implementation-plan.agent.md`
+
+**Impacto**:
+- **Session-manager** não recebe atualizações de workflow (ex: time tracking adicionado)
+- **SpecKit agents** não recebem melhorias de templates e validações
+- **Domain experts** não recebem novas melhores práticas
+
+**Solução Proposta**:
+```python
+class CopilotAgentMerger:
+    """Merge inteligente de .github/agents/*.agent.md"""
+
+    def can_merge(self, file_path: Path) -> bool:
+        return (
+            file_path.parent.name == "agents" and
+            file_path.suffix == ".md" and
+            ".agent" in file_path.name
+        )
+
+    def merge(self, existing_path, template_content, interactive=True):
+        # 1. Parse YAML frontmatter (version, triggers, etc.)
+        # 2. Preservar customizações (custom triggers, workflows)
+        # 3. Atualizar seções padrão se versão mais recente
+        # 4. Adicionar novos triggers do template
+        # 5. Merge de workflow steps (adicionar ausentes)
+        pass
+```
+
+---
+
+##### 2. **Prompts Copilot** (26+ arquivos) - 🔴 **GAP CRÍTICO P0**
+
+**Localização**: `.github/prompts/*.prompt.md` e `.github/prompts/domain/*.prompt.md`
+
+**Arquivos Identificados**:
+- Família SpecKit: `speckit.specify.prompt.md`, `speckit.plan.prompt.md`, `speckit.tasks.prompt.md`, `speckit.implement.prompt.md`, etc.
+- Session: `session-start.prompt.md`, `session-start-first.prompt.md`, `session-end.prompt.md`
+- Domain-specific: `devops-infrastructure.prompt.md`, `devops-analysis.prompt.md`, `devops-programming.prompt.md`
+
+**Impacto**:
+- Prompts não recebem melhorias de instruções
+- Novos contextos e exemplos não são propagados
+- Melhores práticas de prompt engineering não são disseminadas
+
+**Solução Proposta**:
+```python
+class CopilotPromptMerger:
+    """Merge inteligente de .github/prompts/*.prompt.md"""
+
+    def can_merge(self, file_path: Path) -> bool:
+        return (
+            "prompts" in file_path.parts and
+            file_path.suffix == ".md" and
+            ".prompt" in file_path.name
+        )
+
+    def merge(self, existing_path, template_content, interactive=True):
+        # 1. Parse seções do prompt (System, User, Examples)
+        # 2. Preservar exemplos custom do projeto
+        # 3. Adicionar novas seções ausentes
+        # 4. Atualizar system prompt se versão mais recente
+        pass
+```
+
+---
+
+##### 3. **SpecKit Templates** (.specify/templates/) - ⚠️ **PARCIAL**
+
+**Status Atual**: ✅ Layer 2 implementado (three-way merge via `scaffold.py merge-template`)
+
+**Limitação**: Requer execução manual do comando `merge-template` para cada arquivo
+
+**Melhoria Proposta**:
+```bash
+# Comando para atualizar TODOS os templates de uma vez
+scaffold.py merge-all-templates --interactive
+
+# Auto-detecta templates desatualizados e aplica merge
+```
+
+---
+
+##### 4. **Workflows GitHub** (3+ arquivos) - 🔴 **GAP IMPORTANTE P1**
+
+**Localização**: `.github/workflows/*.yml`
+
+**Arquivos Identificados**:
+- `secret-scan.yml` (TruffleHog OSS)
+- `dependency-review.yml` (Dependency Review Action)
+- Outros workflows de CI/CD gerados
+
+**Impacto**:
+- Workflows de segurança não recebem atualizações
+- Novos workflows (ex: code scanning, linting) não são adicionados
+- Configurações de segurança ficam desatualizadas
+
+**Solução Proposta**:
+```python
+class GitHubWorkflowMerger:
+    """Merge inteligente de .github/workflows/*.yml"""
+
+    def can_merge(self, file_path: Path) -> bool:
+        return (
+            file_path.parent.name == "workflows" and
+            file_path.suffix in [".yml", ".yaml"]
+        )
+
+    def merge(self, existing_path, template_content, interactive=True):
+        # 1. Parse YAML existente e template
+        # 2. Adicionar novos jobs ausentes
+        # 3. Atualizar versões de actions se mais recentes
+        # 4. Preservar jobs custom
+        # 5. Merge de steps dentro de jobs
+        pass
+```
+
+---
+
+##### 5. **VS Code Configs** (3 arquivos) - 🟡 **GAP MÉDIO P2**
+
+**Localização**: `.vscode/`
+
+**Arquivos**:
+- `mcp.json` (MCP servers configuration)
+- `settings.json` (VS Code settings)
+- `extensions.json` (recommended extensions)
+
+**Impacto**:
+- Novos MCP servers não são adicionados automaticamente
+- Settings de linting/formatting não são atualizados
+- Extensões recomendadas ficam desatualizadas
+
+**Solução Proposta**:
+```python
+class VSCodeConfigMerger:
+    """Merge inteligente de .vscode/*.json"""
+
+    def can_merge(self, file_path: Path) -> bool:
+        return (
+            file_path.parent.name == ".vscode" and
+            file_path.suffix == ".json"
+        )
+
+    def merge(self, existing_path, template_content, interactive=True):
+        # 1. Parse JSON existente e template
+        # 2. Merge arrays (mcpServers, recommendations, etc.)
+        # 3. Preservar configurações custom
+        # 4. Adicionar novos settings ausentes
+        pass
+```
+
+---
+
+##### 6. **Issue Templates** (5+ arquivos) - 🟡 **GAP MÉDIO P2**
+
+**Localização**: `.github/ISSUE_TEMPLATE/`
+
+**Arquivos**:
+- `bug_report.md`, `feature_request.md`, `config.yml`, etc.
+
+**Impacto**:
+- Templates de issues não recebem melhorias
+- Novos campos/seções não são adicionados
+
+**Solução Proposta**:
+```python
+class IssueTemplateMerger:
+    """Merge inteligente de .github/ISSUE_TEMPLATE/*.md"""
+
+    def can_merge(self, file_path: Path) -> bool:
+        return "ISSUE_TEMPLATE" in file_path.parts
+
+    def merge(self, existing_path, template_content, interactive=True):
+        # 1. Parse frontmatter YAML
+        # 2. Adicionar novos campos ausentes
+        # 3. Preservar customizações do projeto
+        pass
+```
+
+---
+
+##### 7. **Arquivos de Raiz** (15+ arquivos) - 🔴 **GAP MISTO P0-P2**
+
+**Status**:
+- ✅ `.gitignore` → GitignoreMerger (implementado)
+- ✅ `Makefile` → MakefileMerger (implementado)
+- ✅ `README.md` → ReadmeMerger (implementado)
+- ❌ `.copilot-rules.md` / `.copilot-rules-[projeto].md` → **P0 HIGH**
+- ❌ `pyproject.toml` → **P1 HIGH**
+- ❌ `.pre-commit-config.yaml` → **P1 MEDIUM**
+- ❌ `.gitleaks.toml`, `.gitguardian.yaml` → P2 MEDIUM
+- ❌ `objetivo.yaml`, `mcp-questions.yaml` → P2 LOW
+- ❌ `pytest.ini`, `.python-version` → P2 LOW
+
+---
+
+#### **Priorização de Implementação** (Atualizada)
+
+| Merger | Categoria | Prioridade | Complexidade | Impacto | Arquivos | Status |
+|--------|-----------|------------|--------------|---------|----------|--------|
+| **CopilotAgentMerger** | Agentes | **P0 CRITICAL** | Alta | Crítico | 32+ | 🔴 **Gap Crítico** |
+| **CopilotPromptMerger** | Prompts | **P0 HIGH** | Média | Alto | 26+ | 🔴 **Gap Crítico** |
+| `.copilot-rules*` | Raiz | **P0 HIGH** | Média | Alto | 2+ | 🔴 **Gap Crítico** |
+| `GitignoreMerger` | Raiz | P0 CRITICAL | Baixa | Crítico | 1 | ✅ Implementado |
+| `MakefileMerger` | Raiz | P1 HIGH | Média | Alto | 1 | ✅ Implementado |
+| `README.md` | Raiz | P1 HIGH | Média | Médio | 1 | ✅ Implementado |
+| **GitHubWorkflowMerger** | Workflows | **P1 HIGH** | Alta | Alto | 3+ | 🔴 **Gap Importante** |
+| `pyproject.toml` | Raiz | **P1 HIGH** | Alta | Alto | 1 | 🔴 **Gap Importante** |
+| `.pre-commit-config.yaml` | Raiz | **P1 MEDIUM** | Média | Alto | 1 | 🔴 **Gap Segurança** |
+| **VSCodeConfigMerger** | VS Code | P2 MEDIUM | Média | Médio | 3 | 🟡 Nice to have |
+| **IssueTemplateMerger** | GitHub | P2 MEDIUM | Baixa | Médio | 5+ | 🟡 Nice to have |
+| `.gitleaks.toml` | Raiz | P2 MEDIUM | Média | Médio | 1 | 🟡 Nice to have |
+| `.gitguardian.yaml` | Raiz | P2 LOW | Média | Baixo | 1 | 🟡 Nice to have |
+| `objetivo.yaml` | Raiz | P2 LOW | Baixa | Baixo | 1 | 🟡 Nice to have |
+| **Documentação** | Docs | P3 LOW | Baixa | Baixo | 10+ | ⚪ Baixa prioridade |
+
+**Recomendação de Implementação** (ordem de ROI):
+1. **Sprint 1 (P0 CRITICAL)**: CopilotAgentMerger (32 arquivos, incluindo session-manager)
+2. **Sprint 2 (P0 HIGH)**: CopilotPromptMerger (26 arquivos) + CopilotRulesMerger (2 arquivos)
+3. **Sprint 3 (P1 HIGH)**: GitHubWorkflowMerger (3 arquivos) + PyprojectMerger (1 arquivo)
+4. **Sprint 4 (P1 MEDIUM)**: PreCommitMerger (1 arquivo)
+5. **Sprint 5+ (P2-P3)**: VSCodeConfigMerger, IssueTemplateMerger, outros
+
+**Impacto Total**:
+- **Cobertura atual**: ~5% dos arquivos gerados (3 de ~100)
+- **Após Sprint 1-2**: ~70% dos arquivos críticos cobertos
+- **Após Sprint 1-4**: ~90% dos arquivos importantes cobertos
 
 ---
 
@@ -1200,12 +1502,25 @@ scaffold.py extract-rule --file .copilot-rules-meu-projeto.md --section "Nova Re
 - ✅ `README.md` → ReadmeMerger (P1 HIGH - documentação)
 - ✅ `.specify/templates/*.md` → Three-way merge system (Layer 2)
 
-**Não Implementado** (gaps críticos):
+**Não Implementado** (gaps críticos - 87+ arquivos):
+- ❌ **`.github/agents/*.agent.md` (32+ arquivos)** → Sem merger (**P0 CRITICAL** - incluindo session-manager)
+- ❌ **`.github/prompts/*.prompt.md` (26+ arquivos)** → Sem merger (**P0 HIGH** - prompt engineering)
+- ❌ **`.github/workflows/*.yml` (3+ arquivos)** → Sem merger (**P1 HIGH** - CI/CD e segurança)
 - ❌ `.copilot-rules*.md` → Sem merger (**P0 HIGH** - boas práticas)
 - ❌ `pyproject.toml` → Sem merger (**P1 HIGH** - dependências)
 - ❌ `.pre-commit-config.yaml` → Sem merger (**P1 MEDIUM** - segurança)
+- ❌ **`.vscode/*.json` (3 arquivos)** → Sem merger (P2 MEDIUM - configs VS Code)
+- ❌ **`.github/ISSUE_TEMPLATE/*` (5+ arquivos)** → Sem merger (P2 MEDIUM - templates)
 - ❌ `.gitleaks.toml` → Sem merger (P2 MEDIUM - detecção secrets)
+- ❌ **`docs/*.md` (10+ arquivos)** → Sem merger (P3 LOW - documentação)
 - ❌ Outros arquivos → Sem merger (P2-P3)
+
+**Estatísticas**:
+- **Total de arquivos gerados**: ~100
+- **Arquivos com merge**: ~13 (13%)
+- **Arquivos sem merge**: ~87 (87%)
+- **Gap crítico (P0)**: 60+ arquivos (agentes + prompts + copilot-rules)
+- **Gap importante (P1)**: 5+ arquivos (workflows + pyproject + pre-commit)
 
 ---
 
@@ -1214,7 +1529,8 @@ scaffold.py extract-rule --file .copilot-rules-meu-projeto.md --section "Nova Re
 2. ✅ Arquivo crítico com todos elementos presentes → **Skip (já completo)**
 3. ✅ Template merge com conflitos + flag --auto → **Block**
 4. ✅ Template merge sem base disponível → **Fallback para diff**
-5. ⚠️ **Arquivos importantes sem merger** (.copilot-rules*, pyproject.toml, etc.) → **Skip (GAP)**
+5. ⚠️ **60+ arquivos de automação sem merger** (.github/agents/, .github/prompts/, .github/workflows/) → **Skip (GAP CRÍTICO)**
+6. ⚠️ **Arquivos de configuração importantes** (.copilot-rules*, pyproject.toml, .pre-commit-config.yaml) → **Skip (GAP)**
 
 ### Quando SOBRESCREVE com Merge?
 1. ✅ .gitignore com padrões ausentes → **Merge aditivo**
@@ -1229,4 +1545,12 @@ scaffold.py extract-rule --file .copilot-rules-meu-projeto.md --section "Nova Re
 
 **Comportamento padrão**: ⏭️ **Skip Safe** (quando em dúvida, preserva local)
 
-**Limitação atual**: Sistema preserva arquivos importantes que deveriam receber atualizações (ver seção "Gaps e Oportunidades")
+**Limitação atual crítica**: Sistema preserva **87% dos arquivos** que deveriam receber atualizações, incluindo:
+- **32+ agentes Copilot** (incluindo session-manager) - workflows e features não propagados
+- **26+ prompts Copilot** - melhorias de prompt engineering não disseminadas
+- **3+ workflows GitHub** - security workflows e CI/CD desatualizados
+
+**Próximos passos prioritários**:
+1. **Sprint 1 (P0)**: Implementar CopilotAgentMerger (32 arquivos, ROI altíssimo)
+2. **Sprint 2 (P0)**: Implementar CopilotPromptMerger (26 arquivos) + CopilotRulesMerger (2 arquivos)
+3. **Sprint 3 (P1)**: Implementar GitHubWorkflowMerger (3 arquivos) + PyprojectMerger (1 arquivo)

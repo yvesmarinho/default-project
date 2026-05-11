@@ -1,7 +1,7 @@
 # 🔄 Time Tracker Decision Workflow
 
-**Data**: 2026-05-11  
-**Arquivo**: `scripts/session-time-tracker.py`  
+**Data**: 2026-05-11
+**Arquivo**: `scripts/session-time-tracker.py`
 **Objetivo**: Documentar lógica de decisão para análise de estado e atualização de arquivos
 
 ---
@@ -27,34 +27,34 @@ O session-time-tracker implementa uma **máquina de estados** que decide quando 
 ```mermaid
 stateDiagram-v2
     [*] --> NoSession: Sistema inicializado
-    
+
     NoSession --> Active: cmd_start()
-    
+
     Active --> Paused: cmd_pause(reason)
     Paused --> Active: cmd_resume()
-    
+
     Active --> Completed: cmd_stop()
     Paused --> Completed: cmd_stop() + auto-resume
-    
+
     Completed --> [*]: CSV salvo + state cleanup
-    
+
     note right of NoSession
         State file não existe
         ❌ Pause/Resume/Stop bloqueados
     end note
-    
+
     note right of Active
         current_pause = None
         ✅ Pause/Stop permitidos
         ❌ Resume bloqueado
     end note
-    
+
     note right of Paused
         current_pause = {...}
         ✅ Resume/Stop permitidos
         ❌ Pause bloqueado
     end note
-    
+
     note right of Completed
         Estado transitório
         Persiste CSV
@@ -78,10 +78,10 @@ flowchart TD
     F --> G[Campos iniciais:<br/>session_date<br/>start_time<br/>pauses=[]<br/>current_pause=null<br/>status=active]
     G --> H[Salvar state file]
     H --> I[✅ SUCESSO: Sessão iniciada]
-    
+
     C --> J[returncode = 1]
     I --> K[returncode = 0]
-    
+
     style C fill:#ff6b6b
     style I fill:#51cf66
 ```
@@ -106,11 +106,11 @@ flowchart TD
     H --> I[Atualizar state:<br/>current_pause=pause<br/>status=paused]
     I --> J[Salvar state file]
     J --> K[✅ SUCESSO: Pausado]
-    
+
     C --> L[returncode = 1]
     F --> L
     K --> M[returncode = 0]
-    
+
     style C fill:#ff6b6b
     style F fill:#ff6b6b
     style K fill:#51cf66
@@ -144,11 +144,11 @@ flowchart TD
     K --> L[Atualizar status:<br/>status=active]
     L --> M[Salvar state file]
     M --> N[✅ SUCESSO: Retomado]
-    
+
     C --> O[returncode = 1]
     F --> O
     N --> P[returncode = 0]
-    
+
     style C fill:#ff6b6b
     style F fill:#ff6b6b
     style N fill:#51cf66
@@ -186,10 +186,10 @@ flowchart TD
     K --> L[Salvar no CSV:<br/>_save_to_csv]
     L --> M[Remover state file:<br/>STATE_FILE.unlink]
     M --> N[✅ SUCESSO: Finalizado]
-    
+
     C --> O[returncode = 1]
     N --> P[returncode = 0]
-    
+
     style C fill:#ff6b6b
     style F fill:#ffd43b
     style N fill:#51cf66
@@ -302,12 +302,12 @@ flowchart LR
     B -->|READ| D[json.load]
     B -->|UPDATE| E[json.load → modify → json.dump]
     B -->|DELETE| F[STATE_FILE.unlink]
-    
+
     C --> G[Disco]
     D --> H[Memória]
     E --> G
     F --> I[Removed]
-    
+
     style C fill:#51cf66
     style D fill:#339af0
     style E fill:#ffd43b
@@ -326,7 +326,7 @@ flowchart LR
     E --> G[writer.writerow]
     F --> G
     G --> H[Nova linha persistida]
-    
+
     style D fill:#51cf66
     style E fill:#339af0
     style H fill:#51cf66
@@ -344,32 +344,32 @@ sequenceDiagram
     participant CMD as Command
     participant STATE as State File
     participant CSV as History CSV
-    
+
     U->>CMD: start
     CMD->>STATE: CREATE current.json
     STATE-->>CMD: ✅ Created
     CMD-->>U: Sessão iniciada
-    
+
     Note over U,CSV: Trabalhando...
-    
+
     U->>CMD: pause "café"
     CMD->>STATE: READ current.json
     STATE-->>CMD: state (active)
     CMD->>STATE: UPDATE current.json<br/>(add current_pause)
     STATE-->>CMD: ✅ Updated
     CMD-->>U: Sessão pausada
-    
+
     Note over U,CSV: Break...
-    
+
     U->>CMD: resume
     CMD->>STATE: READ current.json
     STATE-->>CMD: state (paused)
     CMD->>STATE: UPDATE current.json<br/>(move to pauses[], clear current_pause)
     STATE-->>CMD: ✅ Updated
     CMD-->>U: Sessão retomada
-    
+
     Note over U,CSV: Mais trabalho...
-    
+
     U->>CMD: stop
     CMD->>STATE: READ current.json
     STATE-->>CMD: state (active)
