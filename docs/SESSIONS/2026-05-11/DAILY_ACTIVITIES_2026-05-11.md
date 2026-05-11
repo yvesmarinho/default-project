@@ -481,7 +481,7 @@ Usuário solicitou workflow explicando como o sistema de scaffold analisa arquiv
      - ReadmeMerger: Adiciona seções ausentes preservando intro
    - **Layer 2: Template Merge**:
      - Three-way merge: git merge-file com base ancestral
-     - Detecção de conflitos: Parse de markers <<<<<<< >>>>>>> 
+     - Detecção de conflitos: Parse de markers <<<<<<< >>>>>>>
      - Classificação: both_modified, local_added, upstream_added, both_added
 
 4. ✅ **Matriz de Decisão Completa**
@@ -583,6 +583,109 @@ Usuário solicitou workflow explicando como o sistema de scaffold analisa arquiv
 - **Activity 5** documentou: Time Tracker Decision Workflow (comandos start/pause/resume/stop)
 - **Activity 6** documentou: Project Update Decision Workflow (merge de arquivos .gitignore/Makefile/README + three-way merge)
 - Ambas são workflows de decisão, mas para sistemas diferentes
+
+**Status**: ✅ Complete
+
+---
+
+### Activity 6.1: Correção e Expansão da Documentação de Merge
+
+**Time**: 13:20-13:40 BRT
+**Duration**: ~20 min
+**Type**: Documentation Correction + Gap Analysis
+**Objective**: Corrigir documentação e identificar gaps críticos no sistema de merge
+
+**Context**:
+Usuário questionou linha 44 da documentação: "Template completo `.specify/templates/*.md`" e perguntou:
+1. Só estamos analisando templates do `.specify`?
+2. Demais templates do default-project não são analisados?
+3. `.copilot-rules*` não tem análise para identificar nova regra?
+
+**Discovery**:
+Ao analisar código fonte (`scripts/lib/file_merge.py`, `scripts/lib/project.py`):
+- ✅ **Layer 2** é realmente específico para `.specify/templates/*.md`
+- ✅ **Registry atual** tem apenas 3 mergers: GitignoreMerger, MakefileMerger, ReadmeMerger
+- ❌ **`.copilot-rules*` NÃO tem merger** - gap crítico identificado
+- ❌ **`pyproject.toml` NÃO tem merger** - gap importante
+- ❌ **`.pre-commit-config.yaml` NÃO tem merger** - gap de segurança
+
+**Actions**:
+
+1. ✅ **Correção da Visão Geral**
+   - Alterado de "duas camadas" para "três camadas" (Layer 0, 1, 2)
+   - Adicionado Layer 0 como camada explícita (Skip Safe fallback)
+
+2. ✅ **Seção "Escopo Atual e Limitações"**
+   - Listagem clara dos 3 mergers implementados
+   - Listagem de arquivos SEM merge inteligente com severidade
+   - Explicação das implicações (arquivos preservados não recebem updates)
+
+3. ✅ **Atualização de Diagramas**
+   - Corrigido nó "Arquivo genérico" → "Outros arquivos (.copilot-rules*, pyproject.toml, etc)"
+   - Melhor descrição de escopo de cada layer
+
+4. ✅ **Atualização da Matriz de Decisão**
+   - Adicionada coluna "Observação" na tabela Layer 0
+   - Marcados 3 arquivos como "GAP" (.copilot-rules*, pyproject.toml, .pre-commit-config.yaml)
+
+5. ✅ **Nova Seção: "Gaps e Oportunidades de Expansão"**
+   - **4 mergers propostos**:
+     - `CopilotRulesMerger` (P0 HIGH - boas práticas)
+     - `PyprojectMerger` (P1 HIGH - dependências)
+     - `PreCommitMerger` (P1 MEDIUM - segurança)
+     - `GitLeaksMerger` (P2 MEDIUM - detecção secrets)
+   - **Problema detalhado**: Por que são gaps
+   - **Impacto**: Consequências de não ter merge
+   - **Solução proposta**: Pseudocódigo de implementação
+
+6. ✅ **Sistema de Feedback: Projeto → Template**
+   - Identificado gap: Não há fluxo reverso (projeto → default-project)
+   - Proposto comando `scaffold.py extract-rule`
+   - Workflow de contribuição documentado
+
+7. ✅ **Matriz de Priorização**
+   - 8 mergers priorizados (3 implementados + 5 propostos)
+   - Colunas: Prioridade, Complexidade, Impacto, Status
+   - Recomendação de ordem de implementação
+
+8. ✅ **Atualização do Resumo Executivo**
+   - Seção "Escopo Atual do Sistema" com implementados vs não implementados
+   - Item 5 adicionado em "Quando NÃO sobrescreve": arquivos importantes sem merger
+   - Nota sobre limitação atual
+
+**Outcome**:
+- ✅ **Documentação corrigida** para refletir realidade do código
+- ✅ **5 gaps críticos identificados** (.copilot-rules*, pyproject.toml, .pre-commit-config.yaml, .gitleaks.toml, feedback reverso)
+- ✅ **Roadmap de expansão** com priorização clara
+- ✅ **Transparência**: Usuário agora sabe exatamente o que funciona e o que falta
+- ✅ **Acionável**: Propostas concretas de implementação com pseudocódigo
+
+**Files Modified**:
+- `docs/SESSIONS/2026-05-11/PROJECT_UPDATE_DECISION_WORKFLOW.md` (+~200 lines):
+  - Visão Geral: atualizada com 3 layers e escopo
+  - Seção "Escopo Atual e Limitações": nova (+40 lines)
+  - Arquitetura de Decisão: diagrama corrigido
+  - Layer 0 exemplos: adicionados 3 arquivos com GAP
+  - Matriz Layer 0: adicionada coluna "Observação"
+  - Seção "Gaps e Oportunidades": nova (+150 lines)
+  - Resumo Executivo: expandido com escopo e limitações
+
+**Key Insights**:
+- 📊 **Sistema atual**: 3 mergers (25% dos arquivos críticos)
+- 🚨 **Gap crítico**: `.copilot-rules*` não propaga boas práticas
+- 🔄 **Fluxo unidirecional**: Template → Projeto (sem feedback reverso)
+- 🎯 **Próximo passo**: Implementar CopilotRulesMerger (P0 HIGH)
+
+**Value Delivered**:
+- 🎓 **Educacional**: Desenvolvedor entende limitações atuais
+- 🗺️ **Roadmap**: Priorização clara de expansão
+- 💡 **Inovação**: Proposta de fluxo de feedback bidirecional
+- 🔍 **Transparência**: Documentação honesta sobre estado atual
+
+**User Questions Answered**:
+1. ✅ "Só `.specify/templates/`?" → SIM, Layer 2 é específico
+2. ✅ "Demais templates não analisados?" → CORRETO, usam Skip Safe (Layer 0)
+3. ✅ "`.copilot-rules*` não tem análise?" → CORRETO, gap crítico identificado
 
 **Status**: ✅ Complete
 
