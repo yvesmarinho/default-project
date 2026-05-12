@@ -15,6 +15,106 @@ _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 _PROFILE_DESCRIPTORS_DIR = _PROJECT_ROOT / "profile-descriptors"
 
 
+def _validate_and_fix_paths(
+    state: dict,
+    current_target: Path,
+    use_json: bool,
+) -> dict | None:
+    """
+    Valida se os paths no state divergem do local atual de execução.
+
+    Se houver divergência, questiona o usuário sobre qual usar:
+    - Atualizar paths no state para refletir local atual
+    - Cancelar e executar do local correto
+
+    Args:
+        state: Estado lido de .scaffold-state.yaml
+        current_target: Path onde upgrade está sendo executado
+        use_json: Se True, não interage com usuário (assume paths atuais)
+
+    Returns:
+        state atualizado ou None se usuário cancelar
+    """
+    from rich.prompt import Prompt
+    import yaml
+
+    paths = state.get("paths", {})
+    project_name = state.get("project", {}).get("name", "unknown")
+    saved_target_dir = Path(paths.get("target_dir", "."))
+
+    # Resolve current_target para comparação
+    # Se current_target termina com project_name, extrai o pai
+    if current_target.name == project_name:
+        current_parent = current_target.parent
+    else:
+        current_parent = current_target
+
+    # Normalizar paths para comparação (resolve symlinks, relativos, etc)
+    saved_target_resolved = saved_target_dir.resolve()
+    current_parent_resolved = current_parent.resolve()
+
+    # Verificar divergência
+    if saved_target_resolved == current_parent_resolved:
+        # Paths coincidem, tudo ok
+        return state
+
+    # DIVERGÊNCIA DETECTADA!
+    console.print("\n  [yellow]⚠️  DIVERGÊNCIA DE PATHS DETECTADA[/yellow]\n")
+    console.print("  Path salvo em [cyan].scaffold-state.yaml[/cyan]:")
+    console.print(f"    [dim]{saved_target_resolved}[/dim]\n")
+    console.print("  Path onde upgrade está sendo executado:")
+    console.print(f"    [dim]{current_parent_resolved}[/dim]\n")
+
+    if use_json:
+        # Modo JSON: assume usar path atual (não pode interagir)
+        console.print(
+            "  [yellow]Modo JSON: atualizando automaticamente para path atual[/yellow]\n"
+        )
+        state["paths"]["target_dir"] = str(current_parent_resolved)
+        # Escreve YAML diretamente (sem ProjectConfig)
+        state_file = current_target / ".scaffold-state.yaml"
+        with state_file.open("w", encoding="utf-8") as f:
+            yaml.dump(state, f, default_flow_style=False, allow_unicode=True)
+        return state
+
+    # Perguntar ao usuário o que fazer
+    console.print("  [bold]Escolha uma opção:[/bold]\n")
+    console.print(
+        "    [green]1[/green] - Usar path atual e atualizar .scaffold-state.yaml")
+    console.print(f"        [dim]{current_parent_resolved}[/dim]\n")
+    console.print(
+        "    [yellow]2[/yellow] - Cancelar upgrade (execute do diretório salvo)")
+    console.print(
+        f"        [dim]{saved_target_resolved / project_name}[/dim]\n")
+
+    choice = Prompt.ask(
+        "  Sua escolha",
+        choices=["1", "2"],
+        default="1",
+    )
+
+    if choice == "1":
+        # Atualizar state com path atual
+        console.print(
+            "\n  [green]✅ Atualizando .scaffold-state.yaml com path atual[/green]\n"
+        )
+        state["paths"]["target_dir"] = str(current_parent_resolved)
+        # Escreve YAML diretamente (sem ProjectConfig)
+        state_file = current_target / ".scaffold-state.yaml"
+        with state_file.open("w", encoding="utf-8") as f:
+            yaml.dump(state, f, default_flow_style=False, allow_unicode=True)
+        return state
+    else:
+        # Usuário escolheu cancelar
+        console.print(
+            f"\n  [yellow]❌ Upgrade cancelado[/yellow]\n"
+            f"  Execute upgrade do diretório correto:\n"
+            f"    [cyan]cd {saved_target_resolved / project_name}[/cyan]\n"
+            f"    [cyan]scaffold.py upgrade[/cyan]\n"
+        )
+        return None
+
+
 def flow_upgrade(args: argparse.Namespace) -> int:
     """
     Modo upgrade: relê .scaffold-state.yaml do projeto alvo e re-aplica
@@ -43,6 +143,12 @@ def flow_upgrade(args: argparse.Namespace) -> int:
             print(_json.dumps({"error": msg}, ensure_ascii=False))
         else:
             console.print(f"  [bold red]❌ {msg}[/bold red]\n")
+        return 1
+
+    # Verificar divergência de paths
+    state = _validate_and_fix_paths(state, target, use_json)
+    if state is None:
+        # Usuário cancelou ou erro fatal
         return 1
 
     cfg = config_from_state(state, override_target=target)

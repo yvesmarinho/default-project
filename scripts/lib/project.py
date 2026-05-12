@@ -2755,11 +2755,19 @@ def config_from_state(state: dict, override_target: Path | None = None) -> Proje
     paths = state.get("paths", {})
     project_name = proj.get("name", "unknown")
 
-    # Correção IMP-47: detectar se override_target é o próprio projeto
+    # Correção IMP-47 + BUG-10: detectar se override_target é o próprio projeto
     if override_target:
-        # Se override_target termina com o nome do projeto,
-        # então está apontando para o projeto, não para o diretório pai
-        if override_target.name == project_name:
+        # Verificar se .scaffold-state.yaml existe em override_target
+        # Se sim, override_target É O PROJETO (upgrade in-place)
+        state_file = override_target / ".scaffold-state.yaml"
+
+        if state_file.exists():
+            # Upgrade in-place: override_target tem .scaffold-state.yaml
+            # target_dir deve ser override_target (sem parent)
+            # project_path será = target_dir (sem concatenação)
+            target = override_target
+        elif override_target.name == project_name:
+            # override_target termina com project_name → é o projeto
             target = override_target.parent
         else:
             # Fallback: assume que override_target é o diretório pai

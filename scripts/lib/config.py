@@ -84,6 +84,7 @@ def get_default_shared_dir() -> Path:
 
     return DEFAULT_SHARED_DIR
 
+
 # Pós-IMP-13: apenas um arquivo copilot ativo (consolidado de 5 → 1)
 SHARED_COPILOT_FILES: list[str] = [
     ".copilot-rules.md",
@@ -135,21 +136,29 @@ class ProjectConfig:
     shared_dir: Path                    # caminho para .copilot-shared
     target_dir: Path                    # diretório PAI onde criar a pasta do projeto
     created_at: str                     # ISO8601 timestamp
-    extra_profiles: list[str] = field(default_factory=list)  # perfis extras além do domínio (D-21)
+    # perfis extras além do domínio (D-21)
+    extra_profiles: list[str] = field(default_factory=list)
 
     @property
     def project_path(self) -> Path:
         """
         Retorna o caminho completo do projeto.
 
-        Se target_dir já termina com project_name, usa target_dir diretamente
-        (evita duplicação quando usuário especifica caminho completo).
-
-        Caso contrário, retorna target_dir / project_name.
+        Lógica de detecção:
+        1. Se target_dir tem .scaffold-state.yaml → upgrade in-place, retorna target_dir
+        2. Se target_dir.name == project_name → evita duplicação, retorna target_dir
+        3. Caso contrário → retorna target_dir / project_name (modo normal)
         """
+        # Upgrade in-place: se .scaffold-state.yaml existe em target_dir, é o projeto
+        state_file = self.target_dir / ".scaffold-state.yaml"
+        if state_file.exists():
+            return self.target_dir.resolve()
+
         # Evita duplicação: se target_dir.name == project_name, não concatena novamente
         if self.target_dir.resolve().name == self.project_name:
             return self.target_dir.resolve()
+
+        # Modo normal: target_dir é o pai, concatena com project_name
         return self.target_dir / self.project_name
 
 
