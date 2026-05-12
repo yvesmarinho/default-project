@@ -55,7 +55,7 @@
 ### Coverage Evolution
 - **Baseline**: 13% (3 mergers, 13 files)
 - **Sprint 1**: 45% (+32 agents)
-- **Sprint 2**: 73% (+28 prompts/rules)  
+- **Sprint 2**: 73% (+28 prompts/rules)
 - **Sprint 3**: **77%** (+4 workflows/pyproject)
 
 ### P0/P1 Gap Resolution
@@ -87,13 +87,13 @@
 ## 📚 Context for Next Session
 
 ### Where We Left Off
-- **Branch**: 060-mini-engram-python  
+- **Branch**: 060-mini-engram-python
 - **Last modified**: scripts/lib/project.py (+178 lines)
 - **Commit ready**: Yes (session end commit pending)
 
 ### Immediate Next Steps
 1. ✅ DAILY_ACTIVITIES updated
-2. ✅ TODO.md updated  
+2. ✅ TODO.md updated
 3. ✅ FINAL_STATUS created
 4. ⏳ Security review (next)
 5. ⏳ Git commit + push
@@ -122,7 +122,7 @@
 
 - All user tasks completed ✅
 - Sprint 3 delivered on time ✅
-- Template permanently improved ✅  
+- Template permanently improved ✅
 - POC production-ready ✅
 - 100% tests passing ✅
 

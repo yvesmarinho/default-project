@@ -11,18 +11,8 @@
 
 ## Correção - IMPORTANTE
 
-- ✅ pasta "./tmp" do projeto não existe. **(RESOLVIDO 2026-05-11)**
-  - Criada em: `/home/yves_marinho/Documentos/DevOps/teste_projetos/tmp/`
-  - Inclui: README.md com documentação de propósito
-
-- ✅ não tem a memória do MCP criada. **(RESOLVIDO 2026-05-11)**
-  - Criadas 3 pastas: `.memory/`, `.session-index/`, `.session-time/`
-  - Cada pasta com README.md explicativo
-  - MCP servers (memory, sequential-thinking) agora podem armazenar dados
-  - Session search e time tracking prontos para uso
-
 ---
- 
+
 ## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
 
 

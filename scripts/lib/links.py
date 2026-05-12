@@ -50,11 +50,13 @@ def setup_symlinks(config: ProjectConfig) -> list[CreatedItem]:
         return results
 
     for name in SHARED_COPILOT_FILES:
-        src = shared / name
+        # Os arquivos compartilhados estão em shared_dir/rules/
+        src = shared / "rules" / name
         dst = target / name
 
         if not src.exists():
-            console.print(f"  [yellow]⚠️  Arquivo ausente em shared: {src}[/yellow]")
+            console.print(
+                f"  [yellow]⚠️  Arquivo ausente em shared: {src}[/yellow]")
             results.append(CreatedItem(
                 path=dst, kind="symlink", status="skipped",
                 message=f"arquivo ausente em shared: {src}",
@@ -110,16 +112,19 @@ def check_symlinks(target_dir: Path, shared_dir: Path) -> list[LinkStatus]:
         dst = target_dir / name
 
         if not dst.exists() and not dst.is_symlink():
-            results.append(LinkStatus(name=name, target=None, status="missing"))
+            results.append(LinkStatus(
+                name=name, target=None, status="missing"))
             continue
 
         if dst.is_symlink():
             resolved = dst.resolve()
             if resolved.exists():
-                results.append(LinkStatus(name=name, target=resolved, status="ok"))
+                results.append(LinkStatus(
+                    name=name, target=resolved, status="ok"))
             else:
                 raw = Path(os.readlink(dst))
-                results.append(LinkStatus(name=name, target=raw, status="broken"))
+                results.append(LinkStatus(
+                    name=name, target=raw, status="broken"))
         else:
             # Arquivo real (não é symlink) — reporta como ok
             results.append(LinkStatus(name=name, target=dst, status="ok"))
