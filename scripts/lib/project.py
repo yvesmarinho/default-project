@@ -2184,6 +2184,41 @@ def copy_memory_scripts(config: ProjectConfig) -> list[CreatedItem]:
     return results
 
 
+def copy_copilot_instructions(config: ProjectConfig) -> list[CreatedItem]:
+    """
+    Copia arquivos de instruções customizadas do Copilot para o novo projeto.
+
+    Arquivos copiados:
+      1. copilot-instructions.md → .github/copilot-instructions.md
+      2. .copilot-rules.md → .copilot-rules.md (raiz)
+
+    Esses arquivos são necessários para:
+      - Persistir instruções customizadas do Copilot (copilot-instructions.md)
+      - Definir regras críticas P0/P1 do projeto (.copilot-rules.md)
+
+    Arquivos já existentes são saltados (idempotente).
+
+    Ref: BUG-13 — copilot instructions not persisted
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT
+
+    # Copiar copilot-instructions.md para .github/
+    src_instructions = src_root / ".github" / "copilot-instructions.md"
+    dst_instructions = base / ".github" / "copilot-instructions.md"
+    result = _copy_file(src_instructions, dst_instructions)
+    results.append(result)
+
+    # Copiar .copilot-rules.md para raiz do projeto
+    src_rules = src_root / ".copilot-rules.md"
+    dst_rules = base / ".copilot-rules.md"
+    result = _copy_file(src_rules, dst_rules)
+    results.append(result)
+
+    return results
+
+
 def _copy_domain_profile(
     src_root: Path,
     base: Path,

@@ -56,17 +56,36 @@ Regras ativas carregadas: .copilot-rules.md [N] linhas, [N] seções.
 
 ### Passo 3 — Carregar Regras Copilot
 
-Confirmar que `.copilot-rules.md` está ativo e suas regras P0 estão na memória:
+**ENFORCEMENT TÉCNICO** — Executar read_file nos arquivos críticos:
+
+1. **Regras completas**: `.copilot-rules.md` (7 seções, ~400 linhas)
+   ```
+   read_file(.copilot-rules.md, startLine=1, endLine=50)
+   ```
+   - P0: Criar/editar arquivos NUNCA via terminal → `create_file`, `replace_string_in_file`
+   - P0: Ler/buscar/listar NUNCA via terminal → `read_file`, `grep_search`, `file_search`, `list_dir`
+   - P0: Mover/copiar/excluir → Python stdlib (shutil, pathlib, logging)
+   - P0: Git commits ≥6 linhas → `./scripts/git-commit-with-file.sh`
+
+2. **Instruções customizadas**: `.github/copilot-instructions.md` (~100 linhas)
+   ```
+   read_file(.github/copilot-instructions.md, startLine=1, endLine=100)
+   ```
+   - Resumo das regras P0/P1
+   - Estrutura do projeto
+   - Rituais de sessão
+
+**Checklist de confirmação**:
 
 | Regra | Verificado |
 |-------|-----------|
+| `.copilot-rules.md` lido e carregado | ✅ |
+| `.github/copilot-instructions.md` lido e carregado | ✅ |
 | P0: Nunca heredoc/echo para criar arquivos | ✅ |
-| P0: Nunca cat/grep/find/ls via terminal (usar ferramentas nativas) | ✅ |
-| P0: 3+ arquivos → Python + JSON para mover | ✅ |
-| P0: Git com arquivo de mensagem (≥6 linhas) | ✅ |
-| P1: Docs de sessão em `docs/SESSIONS/YYYY-MM-DD/` | ✅ |
+| P0: Nunca cat/grep/find/ls via terminal | ✅ |
+| P0: Mover/copiar/excluir → Python stdlib | ✅ |
 
-Se existir `.copilot-rules-[projeto].md` no projeto ativo, lê-lo também (Camada 3).
+Se existir `.copilot-rules-[projeto].md` específico, ler também (Camada 3).
 
 ---
 

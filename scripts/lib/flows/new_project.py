@@ -66,6 +66,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🤖 Copiando assets SpecKit...[/blue]")
     results.extend(project.copy_speckit(cfg))
 
+    # 5a. Copilot Instructions: copilot-instructions.md, .copilot-rules.md
+    console.print("  [blue]🧑‍💻 Copiando instruções do Copilot...[/blue]")
+    results.extend(project.copy_copilot_instructions(cfg))
+
     # 5b. Session Scripts: session-index, session-time-tracker, session-search
     console.print("  [blue]📊 Copiando scripts de sessão...[/blue]")
     results.extend(project.copy_session_scripts(cfg))
