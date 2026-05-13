@@ -45,6 +45,19 @@
   - 📄 Documentação completa: `docs/bugs/BUG-13-copilot-instructions-not-persisted.md`
   - 📦 Commit: 4caadd3
 
+- ✅ **BUG-14 RESOLVIDO** (2026-05-13): Session scripts missing lib dependencies
+  - ✅ session-index.py falhava: `ModuleNotFoundError: No module named 'scripts.lib.search'`
+  - ✅ session-chat.py e session-search.py também afetados
+  - ✅ scripts/lib/ vazio em projetos criados/atualizados
+  - ✅ **CAUSA RAIZ**: Scaffold copiava apenas scripts .py, não os módulos compartilhados
+  - ✅ **CORREÇÃO**: Nova função `copy_session_libs()` criada
+    - Copia 4 módulos: `__init__.py`, `search.py`, `chat_capture.py`, `memory.py`
+    - Integrada em new_project.py (step 5b) e upgrade.py (BUG-14)
+    - Suporta force parameter para upgrades
+  - ✅ session-start-first.prompt.md Passo 8.2 corrigido: apenas `start` (não `stop`)
+  - ✅ Validado em test-workspace-fix: session-index.py --help ✅ OK
+  - 📦 Commit: 03fcb96
+
 
 
 ---
