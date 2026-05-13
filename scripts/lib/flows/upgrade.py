@@ -246,22 +246,29 @@ def flow_upgrade(args: argparse.Namespace) -> int:
 
     # BUG-13: Copilot Instructions (copilot-instructions.md, .copilot-rules.md)
     if not use_json:
-        console.print("  [blue]🧑‍💻 Verificando instruções do Copilot...[/blue]")
-    results.extend(project.copy_copilot_instructions(cfg))
+        console.print(
+            "  [blue]🧑‍💻 Verificando instruções do Copilot...[/blue]")
+    results.extend(project.copy_copilot_instructions(cfg, force=force))
+
+    # BUG-14: Session Support Libraries (scripts/lib/*.py dependencies)
+    if not use_json:
+        console.print("  [blue]📚 Verificando bibliotecas de suporte...[/blue]")
+    results.extend(project.copy_session_libs(cfg, force=force))
 
     # BUG-11: Session Scripts (session-index, session-time-tracker, etc)
     if not use_json:
         console.print("  [blue]📊 Verificando scripts de sessão...[/blue]")
-    results.extend(project.copy_session_scripts(cfg))
+    results.extend(project.copy_session_scripts(cfg, force=force))
 
     # BUG-12: Memory Scripts (create_memory_structure, mem_*, etc)
     if not use_json:
         console.print("  [blue]🧠 Verificando scripts de memory...[/blue]")
-    results.extend(project.copy_memory_scripts(cfg))
+    results.extend(project.copy_memory_scripts(cfg, force=force))
 
     # BUG-09: Templates de documentação
     if not use_json:
-        console.print("  [blue]📋 Verificando templates de documentação...[/blue]")
+        console.print(
+            "  [blue]📋 Verificando templates de documentação...[/blue]")
     results.extend(project.setup_project_docs(cfg))
 
     if not use_json:

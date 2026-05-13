@@ -70,11 +70,15 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🧑‍💻 Copiando instruções do Copilot...[/blue]")
     results.extend(project.copy_copilot_instructions(cfg))
 
-    # 5b. Session Scripts: session-index, session-time-tracker, session-search
+    # 5b. Session Support Libraries: scripts/lib/*.py (dependências)
+    console.print("  [blue]📚 Copiando bibliotecas de suporte...[/blue]")
+    results.extend(project.copy_session_libs(cfg))
+
+    # 5c. Session Scripts: session-index, session-time-tracker, session-search
     console.print("  [blue]📊 Copiando scripts de sessão...[/blue]")
     results.extend(project.copy_session_scripts(cfg))
 
-    # 5c. Memory Scripts: create_memory_structure, mem_context, mem_search, mem_save
+    # 5d. Memory Scripts: create_memory_structure, mem_context, mem_search, mem_save
     console.print("  [blue]🧠 Copiando scripts de memory...[/blue]")
     results.extend(project.copy_memory_scripts(cfg))
 

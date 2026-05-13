@@ -235,12 +235,21 @@ python scripts/session-index.py --rebuild
 #### 8.2 — Inicializar Session Time Tracker
 
 ```bash
-# Criar arquivo CSV de histórico de tempo
+# Iniciar primeira sessão de rastreamento
 python scripts/session-time-tracker.py start
-python scripts/session-time-tracker.py stop
+
+# NÃO executar 'stop' aqui - isso criaria sessão de 0 segundos
+# A sessão será encerrada no ritual de fim de sessão
 ```
 
-**Resultado esperado**: `.session-time/history.csv` criado com header
+**Resultado esperado**: `.session-time/history.csv` criado com header + primeira sessão ativa
+
+**Verificar estado**:
+```bash
+python scripts/session-time-tracker.py stats
+```
+
+Deve mostrar 1 sessão em andamento (sem timestamp de fim).
 
 #### 8.3 — Verificar Sistemas Ativos
 

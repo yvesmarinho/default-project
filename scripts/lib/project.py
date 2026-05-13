@@ -2104,10 +2104,57 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
 
 
 # ---------------------------------------------------------------------------
+# Session Support Libraries — módulos compartilhados necessários para scripts
+# ---------------------------------------------------------------------------
+
+def copy_session_libs(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia módulos compartilhados necessários para scripts de sessão e memory.
+
+    Módulos copiados:
+      1. scripts/lib/__init__.py
+      2. scripts/lib/search.py (usado por session-index, session-search, session-chat)
+      3. scripts/lib/chat_capture.py (usado por session-chat)
+      4. scripts/lib/memory.py (usado por memory scripts)
+
+    Esses módulos são dependências dos scripts de sessão e memory system.
+    Sem eles, os scripts falham com ModuleNotFoundError.
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: BUG-14 — session scripts missing lib dependencies
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_lib = _TEMPLATE_ROOT / "scripts" / "lib"
+    dst_lib = base / "scripts" / "lib"
+
+    # Criar diretório scripts/lib/ se não existir
+    dst_lib.mkdir(parents=True, exist_ok=True)
+
+    libs_to_copy = [
+        "__init__.py",
+        "search.py",
+        "chat_capture.py",
+        "memory.py",
+    ]
+
+    for lib_name in libs_to_copy:
+        src_file = src_lib / lib_name
+        dst_file = dst_lib / lib_name
+        result = _copy_file(src_file, dst_file, force=force)
+        results.append(result)
+
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Session Scripts — cópia de scripts de rastreamento para novo projeto
 # ---------------------------------------------------------------------------
 
-def copy_session_scripts(config: ProjectConfig) -> list[CreatedItem]:
+def copy_session_scripts(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
     Copia scripts de rastreamento de sessão para o novo projeto.
 
@@ -2125,7 +2172,9 @@ def copy_session_scripts(config: ProjectConfig) -> list[CreatedItem]:
       - Chat interativo com sessões (session-chat.py)
       - Validar estrutura de sessões (session-validate.py)
 
-    Arquivos já existentes são saltados (idempotente).
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
 
     Ref: BUG-11 — session-start-first incomplete initialization
     """
@@ -2144,13 +2193,13 @@ def copy_session_scripts(config: ProjectConfig) -> list[CreatedItem]:
     for script_name in scripts_to_copy:
         src_script = src_root / script_name
         dst_script = base / "scripts" / script_name
-        result = _copy_file(src_script, dst_script)
+        result = _copy_file(src_script, dst_script, force=force)
         results.append(result)
 
     return results
 
 
-def copy_memory_scripts(config: ProjectConfig) -> list[CreatedItem]:
+def copy_memory_scripts(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
     Copia scripts do memory system para o novo projeto.
 
@@ -2168,7 +2217,9 @@ def copy_memory_scripts(config: ProjectConfig) -> list[CreatedItem]:
       - Salvar novo memory (mem_save.py)
       - Testar funcionalidade do memory system (test_memory_smoke.py)
 
-    Arquivos já existentes são saltados (idempotente).
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
 
     Ref: BUG-12 — memory system not initialized
     """
@@ -2187,13 +2238,13 @@ def copy_memory_scripts(config: ProjectConfig) -> list[CreatedItem]:
     for script_name in scripts_to_copy:
         src_script = src_root / script_name
         dst_script = base / "scripts" / script_name
-        result = _copy_file(src_script, dst_script)
+        result = _copy_file(src_script, dst_script, force=force)
         results.append(result)
 
     return results
 
 
-def copy_copilot_instructions(config: ProjectConfig) -> list[CreatedItem]:
+def copy_copilot_instructions(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
     Copia arquivos de instruções customizadas do Copilot para o novo projeto.
 
@@ -2205,7 +2256,9 @@ def copy_copilot_instructions(config: ProjectConfig) -> list[CreatedItem]:
       - Persistir instruções customizadas do Copilot (copilot-instructions.md)
       - Definir regras críticas P0/P1 do projeto (.copilot-rules.md)
 
-    Arquivos já existentes são saltados (idempotente).
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
 
     Ref: BUG-13 — copilot instructions not persisted
     """
@@ -2216,13 +2269,13 @@ def copy_copilot_instructions(config: ProjectConfig) -> list[CreatedItem]:
     # Copiar copilot-instructions.md para .github/
     src_instructions = src_root / ".github" / "copilot-instructions.md"
     dst_instructions = base / ".github" / "copilot-instructions.md"
-    result = _copy_file(src_instructions, dst_instructions)
+    result = _copy_file(src_instructions, dst_instructions, force=force)
     results.append(result)
 
     # Copiar .copilot-rules.md para raiz do projeto
     src_rules = src_root / ".copilot-rules.md"
     dst_rules = base / ".copilot-rules.md"
-    result = _copy_file(src_rules, dst_rules)
+    result = _copy_file(src_rules, dst_rules, force=force)
     results.append(result)
 
     return results
@@ -2260,6 +2313,8 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
         - skipped: arquivo existe e sem drift ou force=False
         - drift: arquivo existe com drift detectado (apenas se force=False)
         - error: erro ao copiar
+
+    Nota: Se dst for um symlink, NUNCA sobrescreve (preserva symlink).
     """
     import hashlib
 
@@ -2267,6 +2322,16 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
         msg = f"origem não encontrada: {src}"
         log.warning("⚠️  %s", msg)
         return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
+    # PROTEÇÃO: Nunca sobrescrever symlinks (preservar configuração de shared files)
+    if dst.is_symlink():
+        log.info("🔗 skipped (symlink): %s → %s", dst.name, dst.resolve())
+        return CreatedItem(
+            path=dst,
+            kind="symlink",
+            status="skipped",
+            message=f"Preservado symlink → {dst.resolve()}"
+        )
 
     # Calcular hash do arquivo upstream
     src_hash = hashlib.sha256(src.read_bytes()).hexdigest()[:8]
