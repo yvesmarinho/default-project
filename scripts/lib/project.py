@@ -2115,11 +2115,15 @@ def copy_session_scripts(config: ProjectConfig) -> list[CreatedItem]:
       1. session-index.py → scripts/session-index.py
       2. session-time-tracker.py → scripts/session-time-tracker.py
       3. session-search.py → scripts/session-search.py
+      4. session-chat.py → scripts/session-chat.py
+      5. session-validate.py → scripts/session-validate.py
 
     Esses scripts são necessários para:
       - Indexar documentação de sessões (session-index.py)
       - Rastrear tempo de trabalho (session-time-tracker.py)
       - Buscar em sessões indexadas (session-search.py)
+      - Chat interativo com sessões (session-chat.py)
+      - Validar estrutura de sessões (session-validate.py)
 
     Arquivos já existentes são saltados (idempotente).
 
@@ -2133,6 +2137,8 @@ def copy_session_scripts(config: ProjectConfig) -> list[CreatedItem]:
         "session-index.py",
         "session-time-tracker.py",
         "session-search.py",
+        "session-chat.py",
+        "session-validate.py",
     ]
 
     for script_name in scripts_to_copy:
@@ -2153,12 +2159,14 @@ def copy_memory_scripts(config: ProjectConfig) -> list[CreatedItem]:
       2. mem_context.py → scripts/mem_context.py
       3. mem_search.py → scripts/mem_search.py
       4. mem_save.py → scripts/mem_save.py
+      5. test_memory_smoke.py → scripts/test_memory_smoke.py
 
     Esses scripts são necessários para:
       - Criar estrutura .memory/ (create_memory_structure.py)
       - Buscar memories por contexto (mem_context.py)
       - Buscar memories por query (mem_search.py)
       - Salvar novo memory (mem_save.py)
+      - Testar funcionalidade do memory system (test_memory_smoke.py)
 
     Arquivos já existentes são saltados (idempotente).
 
@@ -2173,6 +2181,7 @@ def copy_memory_scripts(config: ProjectConfig) -> list[CreatedItem]:
         "mem_context.py",
         "mem_search.py",
         "mem_save.py",
+        "test_memory_smoke.py",
     ]
 
     for script_name in scripts_to_copy:

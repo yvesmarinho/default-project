@@ -244,6 +244,26 @@ def flow_upgrade(args: argparse.Namespace) -> int:
     # Aplicar copy_speckit com force (se especificado)
     results.extend(project.copy_speckit(cfg, force=force))
 
+    # BUG-13: Copilot Instructions (copilot-instructions.md, .copilot-rules.md)
+    if not use_json:
+        console.print("  [blue]🧑‍💻 Verificando instruções do Copilot...[/blue]")
+    results.extend(project.copy_copilot_instructions(cfg))
+
+    # BUG-11: Session Scripts (session-index, session-time-tracker, etc)
+    if not use_json:
+        console.print("  [blue]📊 Verificando scripts de sessão...[/blue]")
+    results.extend(project.copy_session_scripts(cfg))
+
+    # BUG-12: Memory Scripts (create_memory_structure, mem_*, etc)
+    if not use_json:
+        console.print("  [blue]🧠 Verificando scripts de memory...[/blue]")
+    results.extend(project.copy_memory_scripts(cfg))
+
+    # BUG-09: Templates de documentação
+    if not use_json:
+        console.print("  [blue]📋 Verificando templates de documentação...[/blue]")
+    results.extend(project.setup_project_docs(cfg))
+
     if not use_json:
         console.print("  [blue]📜 Verificando constitution.md...[/blue]")
     results.append(project.generate_constitution(cfg))
