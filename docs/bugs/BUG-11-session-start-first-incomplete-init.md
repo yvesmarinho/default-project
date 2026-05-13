@@ -150,7 +150,7 @@ head -1 .session-time/history.csv  # deve mostrar header CSV
 
 **Antes da correção**:
 - ❌ 0% dos novos projetos tinham session-index funcional
-- ❌ 0% dos novos projetos tinham session-time funcional  
+- ❌ 0% dos novos projetos tinham session-time funcional
 - ⚠️ 0% dos usuários sabiam que precisavam executar "MCP: Refresh Servers"
 
 **Após a correção**:

@@ -63,7 +63,7 @@
    - Falta instrução enfática sobre "MCP: Refresh Servers" (ação manual)
 
 3. **Correções Implementadas**:
-   
+
    **A. session-start-first.prompt.md** (+58 linhas):
    - Novo Passo 8: Inicializar Sistemas de Rastreamento (3 sub-passos)
      - 8.1: session-index.py --rebuild (cria index.db)
@@ -71,16 +71,16 @@
      - 8.3: Verificar arquivos criados
    - Passo 2 atualizado: Instrução enfática MCP manual (+15 linhas)
    - Checklist +3 novos itens
-   
+
    **B. project.py** (+40 linhas):
    - Nova função `copy_session_scripts(config)` após setup_project_docs
    - Copia 3 scripts: session-index.py, session-time-tracker.py, session-search.py
    - Usa `_copy_file()` com detecção de drift (consistente com padrão)
-   
+
    **C. new_project.py** (+4 linhas):
    - Passo 5b: Chamada para `project.copy_session_scripts(cfg)`
    - Mensagem: "📊 Copiando scripts de sessão..."
-   
+
    **D. lembrete.md** (+8/-5 linhas):
    - Atualizado status do teste: ✅ RESOLVIDO (2026-05-13)
    - Corrigido typos: "Porjeto" → "Projeto", "verfifcar" → "verificar"

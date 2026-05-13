@@ -21,7 +21,7 @@
   - ❌ session-index não populado → **CORRIGIDO**: Adicionado Passo 8.1 ao ritual
   - ❌ servidores mcp não iniciados → **CORRIGIDO**: Instruções claras para usuário executar "MCP: Refresh Servers"
   - ✅ Verificado: Não há outros componentes faltando
-  
+
 **Arquivos atualizados**:
 - `.github/prompts/session-start-first.prompt.md` (+3 passos de inicialização)
 - `docs/bugs/BUG-11-session-start-first-incomplete-init.md` (documentação completa)

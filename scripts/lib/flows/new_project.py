@@ -101,7 +101,8 @@ def flow_new_project(args: argparse.Namespace) -> int:
 
     # 9b. Persiste estado do projeto ANTES do commit (BUG-#3 fix)
     # Calcula profiles aplicados (BUG-#2 fix)
-    domain_profile = DOMAIN_DEFAULT_PROFILES.get(cfg.domain, f"devops-{cfg.domain}")
+    domain_profile = DOMAIN_DEFAULT_PROFILES.get(
+        cfg.domain, f"devops-{cfg.domain}")
     extras = cfg.extra_profiles or []
     all_profiles = [domain_profile] + extras + SPECKIT_TRANSVERSAL_PROFILES
     write_scaffold_state(cfg, profiles_applied=all_profiles)
@@ -118,9 +119,11 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # Resumo final
     print_final_summary(results)
 
-    errors = [r for r in results if hasattr(r, "status") and r.status == "error"]
+    errors = [r for r in results if hasattr(
+        r, "status") and r.status == "error"]
     if errors:
-        console.print(f"  [bold red]❌ {len(errors)} erro(s) durante a criação.[/bold red]\n")
+        console.print(
+            f"  [bold red]❌ {len(errors)} erro(s) durante a criação.[/bold red]\n")
         return 1
 
     # 10. Log scaffold operation (IMP-65-LITE)
@@ -141,14 +144,17 @@ def flow_new_project(args: argparse.Namespace) -> int:
         )
     except Exception as e:
         # Don't fail scaffold if logging fails
-        console.print(f"  [dim yellow]⚠️  Aviso: Falha ao registrar log: {e}[/dim yellow]")
+        console.print(
+            f"  [dim yellow]⚠️  Aviso: Falha ao registrar log: {e}[/dim yellow]")
 
-    console.print(f"  [bold green]✅ Projeto '{cfg.project_name}' criado com sucesso![/bold green]\n")
+    console.print(
+        f"  [bold green]✅ Projeto '{cfg.project_name}' criado com sucesso![/bold green]\n")
     console.print(f"  [dim]Diretório: {cfg.project_path}[/dim]\n")
 
     # BUG-05 Phase 2: Se --with-code-profile fornecido, aplicar perfil de código
     if hasattr(args, "with_code_profile") and args.with_code_profile:
-        console.print(f"\n  [blue]🚀 Aplicando perfil de código '{args.with_code_profile}'...[/blue]\n")
+        console.print(
+            f"\n  [blue]🚀 Aplicando perfil de código '{args.with_code_profile}'...[/blue]\n")
         from .compose import flow_compose_profiles
 
         # Criar namespace com argumentos para compose
@@ -161,9 +167,11 @@ def flow_new_project(args: argparse.Namespace) -> int:
         # Executar flow_compose_profiles
         result = flow_compose_profiles(compose_args)
         if result != 0:
-            console.print(f"  [bold red]❌ Erro ao aplicar perfil '{args.with_code_profile}'[/bold red]\n")
+            console.print(
+                f"  [bold red]❌ Erro ao aplicar perfil '{args.with_code_profile}'[/bold red]\n")
             return result
 
-        console.print(f"  [bold green]✅ Perfil '{args.with_code_profile}' aplicado com sucesso![/bold green]\n")
+        console.print(
+            f"  [bold green]✅ Perfil '{args.with_code_profile}' aplicado com sucesso![/bold green]\n")
 
     return 0
