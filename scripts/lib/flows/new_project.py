@@ -70,7 +70,11 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]📊 Copiando scripts de sessão...[/blue]")
     results.extend(project.copy_session_scripts(cfg))
 
-    # 5c. Templates de documentação (BUG-09 fix - corrigido conceito)
+    # 5c. Memory Scripts: create_memory_structure, mem_context, mem_search, mem_save
+    console.print("  [blue]🧠 Copiando scripts de memory...[/blue]")
+    results.extend(project.copy_memory_scripts(cfg))
+
+    # 5d. Templates de documentação (BUG-09 fix - corrigido conceito)
     console.print("  [blue]📋 Configurando templates de documentação...[/blue]")
     results.extend(project.setup_project_docs(cfg))
 

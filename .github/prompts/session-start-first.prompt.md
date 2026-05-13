@@ -227,6 +227,27 @@ ls -lh .session-index/index.db .session-time/history.csv
 ✅ .session-time/history.csv presente (~200 bytes)
 ```
 
+#### 8.4 — Inicializar Memory System
+
+```bash
+# Criar estrutura .memory/ com diretórios e templates
+python scripts/create_memory_structure.py
+```
+
+**Resultado esperado**:
+- `.memory/index/.gitignore` criado
+- `.memory/memories/project/` criado
+- `.memory/memories/team/` criado
+- `.memory/memories/sessions/` criado
+- `.memory/memories/.templates/` criado
+- `.memory/memories/.templates/example_decision.md` criado
+
+**Verificar estrutura criada**:
+```bash
+ls -la .memory/index/
+ls -la .memory/memories/
+```
+
 ---
 
 ### Passo 9 — Criar Documentação Inicial de Sessão
@@ -252,10 +273,7 @@ Linguagem/Cloud: [stack]
 Objetivo desta primeira sessão: [1 frase]
 ```
 
-Carreg**Session-index inicializado**: `.session-index/index.db` criado
-- [ ] **Session-time inicializado**: `.session-time/history.csv` criado
-- [ ] **MCP servers iniciados**: usuário executou "MCP: Refresh Servers" (ação manual)
-- [ ] ar Domain Profile correspondente:
+Carregar Domain Profile correspondente:
 - `PROGRAMMING` → `.github/prompts/domain/devops-programming.prompt.md`
 - `INFRASTRUCTURE` → `.github/prompts/domain/devops-infrastructure.prompt.md`
 - `ANALYSIS` → `.github/prompts/domain/devops-analysis.prompt.md`
@@ -275,6 +293,10 @@ Carreg**Session-index inicializado**: `.session-index/index.db` criado
 - [ ] `git push -u origin main` executado
 - [ ] `.copilot-rules.md` e `.copilot-rules-[projeto].md` lidos
 - [ ] Scan de segurança: 🟢 LIMPO
+- [ ] **Session-index inicializado**: `.session-index/index.db` criado
+- [ ] **Session-time inicializado**: `.session-time/history.csv` criado
+- [ ] **Memory system inicializado**: `.memory/memories/` structure criada
+- [ ] **MCP servers iniciados**: usuário executou "MCP: Refresh Servers" (ação manual)
 - [ ] `docs/SESSIONS/[data]/` criada com SESSION_RECOVERY + DAILY_ACTIVITIES
 - [ ] `docs/TODO.md` com primeiros itens
 - [ ] Domínio declarado + Domain Profile carregado
