@@ -2103,6 +2103,47 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     return results
 
 
+# ---------------------------------------------------------------------------
+# Session Scripts — cópia de scripts de rastreamento para novo projeto
+# ---------------------------------------------------------------------------
+
+def copy_session_scripts(config: ProjectConfig) -> list[CreatedItem]:
+    """
+    Copia scripts de rastreamento de sessão para o novo projeto.
+
+    Scripts copiados:
+      1. session-index.py → scripts/session-index.py
+      2. session-time-tracker.py → scripts/session-time-tracker.py
+      3. session-search.py → scripts/session-search.py
+
+    Esses scripts são necessários para:
+      - Indexar documentação de sessões (session-index.py)
+      - Rastrear tempo de trabalho (session-time-tracker.py)
+      - Buscar em sessões indexadas (session-search.py)
+
+    Arquivos já existentes são saltados (idempotente).
+
+    Ref: BUG-11 — session-start-first incomplete initialization
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT / "scripts"
+
+    scripts_to_copy = [
+        "session-index.py",
+        "session-time-tracker.py",
+        "session-search.py",
+    ]
+
+    for script_name in scripts_to_copy:
+        src_script = src_root / script_name
+        dst_script = base / "scripts" / script_name
+        result = _copy_file(src_script, dst_script)
+        results.append(result)
+
+    return results
+
+
 def _copy_domain_profile(
     src_root: Path,
     base: Path,

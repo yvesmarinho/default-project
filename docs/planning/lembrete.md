@@ -11,6 +11,23 @@
 
 ## Correção - IMPORTANTE
 
+- Copilot Github perde as instruções constamente. verificar forma de fixar as instruções
+  para serem usadas durante toda a sessão de trabalho.
+
+### Teste Projeto `/home/yves_marinho/Documentos/DevOps/teste_projetos`
+
+- ✅ **RESOLVIDO** (2026-05-13): Executado start-first, problemas identificados e corrigidos:
+  - ❌ session-time não populado → **CORRIGIDO**: Adicionado Passo 8.2 ao ritual
+  - ❌ session-index não populado → **CORRIGIDO**: Adicionado Passo 8.1 ao ritual
+  - ❌ servidores mcp não iniciados → **CORRIGIDO**: Instruções claras para usuário executar "MCP: Refresh Servers"
+  - ✅ Verificado: Não há outros componentes faltando
+  
+**Arquivos atualizados**:
+- `.github/prompts/session-start-first.prompt.md` (+3 passos de inicialização)
+- `docs/bugs/BUG-11-session-start-first-incomplete-init.md` (documentação completa)
+
+**Próximo**: Testar ritual atualizado em novo projeto
+
 ---
 
 ## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
