@@ -31,6 +31,34 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ---
 
+### Passo 1.1 — Criar Ambiente Virtual (projetos Python)
+
+**Para projetos Python-based**, criar ambiente virtual usando `uv`:
+
+```bash
+# Criar ambiente virtual com uv
+uv venv
+
+# Ativar ambiente virtual
+source .venv/bin/activate  # Linux/Mac
+# ou .venv\Scripts\activate  # Windows
+
+# Instalar dependências do projeto
+uv pip install -e ".[dev,security]"
+
+# Verificar instalação
+uv pip list
+```
+
+**Verificar que `.venv/` está no `.gitignore`**:
+```bash
+grep -q ".venv" .gitignore && echo "✅ .venv ignorado pelo Git" || echo "❌ ADICIONAR .venv ao .gitignore"
+```
+
+**Nota**: O `uv` gerencia dependências de forma mais eficiente que pip tradicional. Para projetos que já têm `pyproject.toml`, o comando `uv sync` pode ser usado como alternativa a `uv pip install -e .`.
+
+---
+
 ### Passo 2 — Verificar Configuração MCP
 
 **Ação do agente**: ler `.vscode/mcp.json` e confirmar que os servidores `memory` e `sequential-thinking` estão configurados e **não comentados**.
@@ -283,6 +311,7 @@ Carregar Domain Profile correspondente:
 ## ✅ Checklist de Primeira Sessão
 
 - [ ] Pré-requisitos: `uv`, `git`, `python3 ≥3.10` presentes
+- [ ] **Ambiente virtual Python criado**: `uv venv` + `.venv/` no `.gitignore` (projetos Python)
 - [ ] MCP verificado (ou será criado pelo scaffold)
 - [ ] `scaffold.py` executado com sucesso
 - [ ] Estrutura de diretórios criada

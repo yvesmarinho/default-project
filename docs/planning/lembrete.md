@@ -10,36 +10,26 @@
 ---
 
 ## Correção - IMPORTANTE
-
-- ✅ **BUG-13 DOCUMENTADO** (2026-05-13): Copilot perde instruções constantemente
-  - ❌ Arquivo com nome incorreto: `.copilot-instructions.md` → **CORRIGIR**: `copilot-instructions.md`
-  - ❌ Não copiado para novos projetos → **CORRIGIR**: Criar `copy_copilot_instructions()`
-  - ❌ Session-start não garante persistência → **CORRIGIR**: Adicionar `read_file` enforcement
-  - 📄 Documentação completa: `docs/bugs/BUG-13-copilot-instructions-not-persisted.md`
-
-**Próximo**: Implementar correções do BUG-13
-
-### Teste Projeto `/home/yves_marinho/Documentos/DevOps/teste_projetos`
+- na pasta `./docs` os arquivos INDEX.md, TODAY_ACTIVITIES.md e TODO.md estão com data errada "2026-04-27....", executei o scaffold upgrade com a pasta `./docs` vazia.
+- a pasta `logs` deve ficar na raiz do projeto e ser padrão, junto com a pata `./tmp`.
 
 
 ---
 
 ## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
 
-
-
 ---
 ## 📅 Ações Completas — 2026-05-13
 
 - ✅ **BUG-11 RESOLVIDO** (2026-05-13): Session systems não inicializados
-  - ❌ session-time não populado → **CORRIGIDO**: Adicionado Passo 8.2 ao ritual
-  - ❌ session-index não populado → **CORRIGIDO**: Adicionado Passo 8.1 ao ritual
-  - ❌ servidores mcp não iniciados → **CORRIGIDO**: Instruções claras para usuário executar "MCP: Refresh Servers"
+  - ✅ session-time não populado → **CORRIGIDO**: Adicionado Passo 8.2 ao ritual
+  - ✅ session-index não populado → **CORRIGIDO**: Adicionado Passo 8.1 ao ritual
+  - ✅ servidores mcp não iniciados → **CORRIGIDO**: Instruções claras para usuário executar "MCP: Refresh Servers"
 
 - ✅ **BUG-12 RESOLVIDO** (2026-05-13): Memory system não inicializado
-  - ❌ `.memory/` vazio → **CORRIGIDO**: Adicionado Passo 8.4 ao ritual
-  - ❌ scripts `mem_*.py` não copiados → **CORRIGIDO**: Função `copy_memory_scripts()` criada
-  - ❌ `create_memory_structure.py` não copiado → **CORRIGIDO**: Incluído na lista de scripts
+  - ✅ `.memory/` vazio → **CORRIGIDO**: Adicionado Passo 8.4 ao ritual
+  - ✅ scripts `mem_*.py` não copiados → **CORRIGIDO**: Função `copy_memory_scripts()` criada
+  - ✅ `create_memory_structure.py` não copiado → **CORRIGIDO**: Incluído na lista de scripts
 
 **Arquivos atualizados**:
 - `scripts/lib/project.py` (+copy_memory_scripts)
@@ -47,6 +37,13 @@
 - `.github/prompts/session-start-first.prompt.md` (+Passo 8.4 + checklist fix)
 - `docs/bugs/BUG-11-session-start-first-incomplete-init.md`
 - `docs/bugs/BUG-12-memory-system-not-initialized.md`
+
+- ✅ **BUG-13 RESOLVIDO** (2026-05-13): Copilot perde instruções constantemente
+  - ✅ Arquivo renomeado: `.copilot-instructions.md` → `copilot-instructions.md` (padrão VS Code)
+  - ✅ Scaffold copia instruções: `copy_copilot_instructions()` implementado (step 5a)
+  - ✅ Session-start enforcement técnico: `read_file` obrigatório para .copilot-rules.md e copilot-instructions.md
+  - 📄 Documentação completa: `docs/bugs/BUG-13-copilot-instructions-not-persisted.md`
+  - 📦 Commit: 4caadd3
 
 
 
