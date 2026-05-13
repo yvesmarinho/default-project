@@ -9,9 +9,11 @@
 
 ---
 
-## Correção - IMPORTANTE
-- na pasta `./docs` os arquivos INDEX.md, TODAY_ACTIVITIES.md e TODO.md estão com data errada "2026-04-27....", executei o scaffold upgrade com a pasta `./docs` vazia.
+## Correção - IMPORTANTE - BUG
 - a pasta `logs` deve ficar na raiz do projeto e ser padrão, junto com a pata `./tmp`.
+- não criou .venv
+- O chat está em Inglês, deveria ser Portugues.
+
 
 
 ---
