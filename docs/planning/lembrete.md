@@ -11,10 +11,25 @@
 
 ## Correção - IMPORTANTE
 
-- Copilot Github perde as instruções constamente. verificar forma de fixar as instruções
-  para serem usadas durante toda a sessão de trabalho.
+- ✅ **BUG-13 DOCUMENTADO** (2026-05-13): Copilot perde instruções constantemente
+  - ❌ Arquivo com nome incorreto: `.copilot-instructions.md` → **CORRIGIR**: `copilot-instructions.md`
+  - ❌ Não copiado para novos projetos → **CORRIGIR**: Criar `copy_copilot_instructions()`
+  - ❌ Session-start não garante persistência → **CORRIGIR**: Adicionar `read_file` enforcement
+  - 📄 Documentação completa: `docs/bugs/BUG-13-copilot-instructions-not-persisted.md`
+
+**Próximo**: Implementar correções do BUG-13
 
 ### Teste Projeto `/home/yves_marinho/Documentos/DevOps/teste_projetos`
+
+
+---
+
+## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
+
+
+
+---
+## 📅 Ações Completas — 2026-05-13
 
 - ✅ **BUG-11 RESOLVIDO** (2026-05-13): Session systems não inicializados
   - ❌ session-time não populado → **CORRIGIDO**: Adicionado Passo 8.2 ao ritual
@@ -33,11 +48,6 @@
 - `docs/bugs/BUG-11-session-start-first-incomplete-init.md`
 - `docs/bugs/BUG-12-memory-system-not-initialized.md`
 
-**Próximo**: Testar ritual atualizado em novo projeto
-
----
-
-## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
 
 
 ---
