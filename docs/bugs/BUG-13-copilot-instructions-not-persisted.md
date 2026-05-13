@@ -1,9 +1,9 @@
 # BUG-13: Copilot Perde Instruções Constantemente Durante Sessões
 
-**Status**: 🔴 ABERTO  
-**Severidade**: P0 (Crítica — impacta todas as sessões de trabalho)  
-**Data Descoberta**: 2026-05-13  
-**Descoberto Por**: Usuário (docs/planning/lembrete.md linha 14-16)  
+**Status**: 🔴 ABERTO
+**Severidade**: P0 (Crítica — impacta todas as sessões de trabalho)
+**Data Descoberta**: 2026-05-13
+**Descoberto Por**: Usuário (docs/planning/lembrete.md linha 14-16)
 **Relacionado**: [BUG-03](../planning/lembrete.md#L73) (copilot-instructions.md não gerado)
 
 ---
@@ -44,7 +44,7 @@ O projeto possui múltiplos arquivos de instruções:
 
 ### Problema 1: Nome de Arquivo Incorreto
 
-**Padrão VS Code Copilot**: `.github/copilot-instructions.md` (SEM ponto inicial)  
+**Padrão VS Code Copilot**: `.github/copilot-instructions.md` (SEM ponto inicial)
 **Nome atual no template**: `.github/.copilot-instructions.md` (COM ponto inicial)
 
 ```bash
@@ -133,24 +133,24 @@ Confirmar que `.copilot-rules.md` está ativo e suas regras P0 estão na memóri
 def copy_copilot_instructions(config: ProjectConfig) -> CreatedItem:
     """
     Copia .github/copilot-instructions.md para o novo projeto.
-    
+
     Arquivo contém:
       - Resumo das regras P0 (críticas)
       - Referência para .copilot-rules.md completo
       - Frontmatter applyTo para escopo
-    
+
     Arquivo base no template: .github/copilot-instructions.md
     Destino: [projeto]/.github/copilot-instructions.md
-    
+
     Ref: BUG-13 — copilot instructions not persisted
     """
     results: list[CreatedItem] = []
     base = config.project_path
     src_root = _TEMPLATE_ROOT
-    
+
     src_file = src_root / ".github" / "copilot-instructions.md"
     dst_file = base / ".github" / "copilot-instructions.md"
-    
+
     result = _copy_file(src_file, dst_file)
     return result
 ```

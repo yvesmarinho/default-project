@@ -1,9 +1,9 @@
 # BUG-12: Memory System Not Initialized in New Projects
 
-**Status**: 🔴 ABERTO  
-**Severidade**: P1 (Alta — feature crítica não funciona em novos projetos)  
-**Data Descoberta**: 2026-05-13  
-**Descoberto Por**: Usuário (validação pós BUG-11)  
+**Status**: 🔴 ABERTO
+**Severidade**: P1 (Alta — feature crítica não funciona em novos projetos)
+**Data Descoberta**: 2026-05-13
+**Descoberto Por**: Usuário (validação pós BUG-11)
 **Relacionado**: [BUG-11](BUG-11-session-start-first-incomplete-init.md) (mesmo padrão de problema)
 
 ---
