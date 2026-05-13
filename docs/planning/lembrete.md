@@ -16,15 +16,22 @@
 
 ### Teste Projeto `/home/yves_marinho/Documentos/DevOps/teste_projetos`
 
-- ✅ **RESOLVIDO** (2026-05-13): Executado start-first, problemas identificados e corrigidos:
+- ✅ **BUG-11 RESOLVIDO** (2026-05-13): Session systems não inicializados
   - ❌ session-time não populado → **CORRIGIDO**: Adicionado Passo 8.2 ao ritual
   - ❌ session-index não populado → **CORRIGIDO**: Adicionado Passo 8.1 ao ritual
   - ❌ servidores mcp não iniciados → **CORRIGIDO**: Instruções claras para usuário executar "MCP: Refresh Servers"
-  - ✅ Verificado: Não há outros componentes faltando
+
+- ✅ **BUG-12 RESOLVIDO** (2026-05-13): Memory system não inicializado
+  - ❌ `.memory/` vazio → **CORRIGIDO**: Adicionado Passo 8.4 ao ritual
+  - ❌ scripts `mem_*.py` não copiados → **CORRIGIDO**: Função `copy_memory_scripts()` criada
+  - ❌ `create_memory_structure.py` não copiado → **CORRIGIDO**: Incluído na lista de scripts
 
 **Arquivos atualizados**:
-- `.github/prompts/session-start-first.prompt.md` (+3 passos de inicialização)
-- `docs/bugs/BUG-11-session-start-first-incomplete-init.md` (documentação completa)
+- `scripts/lib/project.py` (+copy_memory_scripts)
+- `scripts/lib/flows/new_project.py` (+step 5c)
+- `.github/prompts/session-start-first.prompt.md` (+Passo 8.4 + checklist fix)
+- `docs/bugs/BUG-11-session-start-first-incomplete-init.md`
+- `docs/bugs/BUG-12-memory-system-not-initialized.md`
 
 **Próximo**: Testar ritual atualizado em novo projeto
 
