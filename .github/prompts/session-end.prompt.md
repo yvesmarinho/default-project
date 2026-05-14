@@ -378,6 +378,52 @@ Tags (comma-separated): redis,api,rate-limiting,performance
 
 ---
 
+### Passo 11 — Encerrar Rastreamento de Sessão
+
+**Ação do agente**: Finalizar session-time tracker e gerar estatísticas desta sessão.
+
+#### 11.1 — Parar Session Time Tracker
+
+```bash
+# Encerrar sessão atual e registrar timestamp de fim
+python scripts/session-time-tracker.py end
+```
+
+**Resultado esperado**:
+```
+⏹ Session ended
+Duration: Xh Ym Zs
+End time: [YYYY-MM-DD HH:MM:SS]
+```
+
+#### 11.2 — Exibir Estatísticas da Sessão
+
+```bash
+# Mostrar resumo de todas as sessões
+python scripts/session-time-tracker.py stats
+```
+
+**Resultado esperado**: Tabela com todas as sessões, incluindo a que acabou de encerrar:
+```
+📊 Session Time Statistics
+
+Total sessions: N
+Total time: Xh Ym
+
+Recent sessions:
+  2026-05-14 09:30 → 12:45 | 3h 15m | [session-id]
+  2026-05-13 14:00 → 17:30 | 3h 30m | [session-id]
+  ...
+```
+
+**Resultado geral do passo**:
+```
+✅ Session time tracking encerrado
+✅ Duração desta sessão: Xh Ym registrada
+```
+
+---
+
 ## ✅ Checklist de Encerramento
 
 ### Documentação

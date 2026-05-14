@@ -243,6 +243,53 @@ Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIE
 
 ---
 
+### Passo 6.5 — Inicializar Rastreamento de Sessão
+
+**Ação do agente**: Garantir que session-index e session-time estão operacionais.
+
+#### 6.5.1 — Verificar Session Index
+
+```bash
+# Verificar se index.db existe
+if [ ! -f .session-index/index.db ]; then
+  echo "⚠ Session index não encontrado. Reconstruindo..."
+  python scripts/session-index.py --rebuild
+else
+  echo "✅ Session index OK"
+fi
+```
+
+**Resultado esperado**: `.session-index/index.db` presente (~50KB ou mais)
+
+#### 6.5.2 — Iniciar Session Time Tracker
+
+```bash
+# Iniciar rastreamento de tempo desta sessão
+python scripts/session-time-tracker.py start
+```
+
+**Resultado esperado**:
+```
+📊 Session time tracking started
+Session ID: [auto-generated]
+Start time: [YYYY-MM-DD HH:MM:SS]
+```
+
+**Verificar status**:
+```bash
+python scripts/session-time-tracker.py status
+```
+
+**Resultado esperado**: Deve mostrar 1 sessão ativa (sem end_time)
+
+**Resultado geral do passo**:
+```
+✅ Session index: operacional
+✅ Session time tracker: iniciado para esta sessão
+```
+
+---
+
 ### Passo 7 — Definir Escopo da Sessão
 
 Pergunte ao usuário sobre o escopo desta sessão:
