@@ -1,9 +1,9 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-11 — Sprint 3 + POC Upgrade + Scaffold Infrastructure Fix ✅
-**Project Status**: 🟢 Stable — Merge System 77% Complete + POC Production-Ready
+**Last Updated**: 2026-05-14 — Logging Automático Implementado ✅
+**Project Status**: 🟢 Stable — Merge System 77% Complete + Logging System Integrated
 **Version**: 1.3.0
-**Last Session**: 2026-05-11 — ✅ Sprint 3 Complete (2 mergers) + POC 100% + Template Permanent Fix
+**Last Session**: 2026-05-14 — ✅ Logging System Complete (automatic logging for all scaffold operations)
 
 ---
 
@@ -1040,6 +1040,12 @@ docs/
   - Compliance: SOC2, ISO27001, LGPD
 
 - **[ISSUE_MANAGEMENT_GUIDE.md](guides/ISSUE_MANAGEMENT_GUIDE.md)** - GitHub issue workflow
+
+- **[LOGGING_USAGE.md](guides/LOGGING_USAGE.md)** - ⭐ Scaffold operation logging guide
+  - Automatic logging for all scaffold operations
+  - Control via --no-log and --log-dir flags
+  - Log file format and structure
+  - Examples and best practices
 
 - **[MAKEFILE.md](guides/MAKEFILE.md)** - ⭐ Complete Makefile reference
   - 40+ commands documented
