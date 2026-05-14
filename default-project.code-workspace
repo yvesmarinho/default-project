@@ -1,5 +1,4 @@
-- start mcp memory and sequential-thinking
-- session.manager satart.session{
+{
   "folders": [
     {
       "name": "Enterprise Default Project Template",
@@ -194,33 +193,7 @@
     "workbench.editor.enablePreview": true,
     "workbench.editor.revealIfOpen": true,
     "files.defaultLanguage": "python",
-    "explorer.autoReveal": "focusNoScroll",
-    "*.yaml": "yaml",
-    "*.yml": "yaml",
-    "mcp.json": "jsonc",
-    "objetivo.yaml": "yaml",
-    "mcp-questions.yaml": "yaml",
-    "*config*.json": "jsonc",
-    "*_config.json": "jsonc",
-    "*template*.json": "jsonc",
-    "Dockerfile": "dockerfile",
-    "Dockerfile.*": "dockerfile",
-    "docker-compose.yml": "dockercompose",
-    "docker-compose.*.yml": "dockercompose",
-    "Makefile": "makefile",
-    "makefile": "makefile",
-    "GNUmakefile": "makefile",
-    "*.lock": "json",
-    "uv.lock": "toml",
-    "pyproject.toml": "toml",
-    "requirements*.txt": "pip-requirements",
-    ".env*": "properties",
-    ".envrc": "shellscript",
-    "activate-mcp.sh": "shellscript",
-    "*.migration.py": "python",
-    "*.migration.sql": "sql",
-    "*.test.py": "python",
-    ".python-version": "properties"
+    "explorer.autoReveal": "focusNoScroll"
   },
   "tasks": {
     "version": "2.0.0",
