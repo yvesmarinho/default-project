@@ -89,34 +89,43 @@ grep -q ".venv" .gitignore && echo "✅ .venv ignorado pelo Git" || echo "❌ AT
 
 ---
 
-### Passo 2 — Verificar Configuração MCP
+### Passo 2 — Verificar e Ativar Configuração MCP
 
-**Ação do agente**: ler `.vscode/mcp.json` e confirmar que os servidores `memory` e `sequential-thinking` estão configurados e **não comentados**.
+**Ação do agente**: Executar script de validação e ativação de servidores MCP.
 
+```bash
+./scripts/activate-mcp.sh --auto
 ```
-✅ MCP Config OK — memory ✅ | sequential-thinking ✅
+
+**O que o script faz:**
+1. ✅ Valida sintaxe de `.vscode/mcp.json` (JSONC)
+2. ✅ Verifica servidores `memory` e `sequential-thinking` configurados
+3. ✅ Lista todos os servidores detectados
+4. ✅ **Tenta abrir Command Palette automaticamente** (VS Code CLI)
+5. ✅ Exibe instruções caso automação falhe
+
+**Resultado esperado:**
+```
+✅ Configuração MCP OK — memory sequential-thinking
+✅ Command Palette aberto automaticamente
 ```
 
 Se o `.vscode/mcp.json` ainda não existir (projeto zerado), será criado pelo `scaffold.py` no Passo 4.
 
-**⚠️ IMPORTANTE — Ação Manual do Usuário Necessária:**
+**⚠️ Ação Manual Necessária (se --auto falhar):**
 
-Após o scaffold, os servidores MCP estão **configurados** mas **não iniciados**. O usuário DEVE executar:
+Se o script não conseguir abrir automaticamente, o usuário DEVE executar manualmente:
 
 1. `Command Palette → "MCP: Refresh Servers"` — inicializar servidores
 2. `Command Palette → "MCP: List Servers"` — verificar que aparecem 4 servidores
 
-**Instrução ao usuário**:
+**Resultado final esperado:**
 ```
-⚠️  MCP servers configurados mas não iniciados.
-
-AÇÃO NECESSÁRIA (manual):
-  1. Abra Command Palette (Ctrl+Shift+P ou Cmd+Shift+P)
-  2. Digite "MCP: Refresh Servers"
-  3. Aguarde inicialização (~10 segundos)
-  4. Verifique com "MCP: List Servers"
-
-Esperado: 4 servidores ativos (memory, sequential-thinking, filesystem, github)
+✅ 4 servidores MCP ativos:
+   - memory
+   - sequential-thinking
+   - filesystem
+   - github
 ```
 
 ---
