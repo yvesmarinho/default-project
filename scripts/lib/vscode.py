@@ -93,6 +93,20 @@ _SETTINGS_GLOBAL: dict = {
     # Idioma e regionalização
     "locale.language": "pt-br",
 
+    # GitHub Copilot e MCP
+    "chat.mcp.autostart": True,
+    "chat.promptFilesRecommendations": {
+        "speckit.constitution": True,
+        "speckit.specify": True,
+        "speckit.plan": True,
+        "speckit.tasks": True,
+        "speckit.implement": True,
+    },
+    "chat.tools.terminal.autoApprove": {
+        ".specify/scripts/bash/": True,
+        ".specify/scripts/powershell/": True,
+    },
+
     # Configurações gerais do editor
     "editor.tabSize": 4,
     "editor.insertSpaces": True,
