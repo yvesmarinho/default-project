@@ -243,15 +243,36 @@ Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIE
 
 ---
 
-### Passo 7 — Declarar Domínio e Objetivo
+### Passo 7 — Definir Escopo da Sessão
 
-Peça ao usuário (ou aguarde declaração):
+Pergunte ao usuário sobre o escopo desta sessão:
 
 ```
-Qual o modo de trabalho desta sessão?
+📋 Escopo da Sessão
 
+Você deseja:
+[1] Continuar tarefas pendentes da sessão anterior
+[2] Iniciar novas tarefas
+
+Escolha [1 ou 2]:
+```
+
+**Se escolher [1] — Continuar tarefas anteriores**:
+
+1. Extrair do `docs/TODO.md` todos os itens pendentes (não marcados como `[x]`)
+2. Listar por prioridade (P0 > P1 > P2 > P3)
+3. Perguntar qual tarefa priorizar ou se trabalhar em sequência
+4. Identificar o Domain Profile pelo tipo de tarefa:
+   - Feature/Bug/Test → PROGRAMMING
+   - CI/CD/Deploy/Infrastructure → INFRASTRUCTURE
+   - Debugging/Performance/Analysis → ANALYSIS
+5. Carregar Domain Profile correspondente
+
+**Se escolher [2] — Novas tarefas**:
+
+Pergunte:
+```
 Modo: [PROGRAMMING | INFRASTRUCTURE | ANALYSIS]
-Projeto: [nome do projeto]
 Objetivo: [1 frase descrevendo o foco da sessão]
 ```
 
@@ -259,6 +280,13 @@ Com base na resposta, carregar o Domain Profile correspondente:
 - `PROGRAMMING` → `.github/prompts/domain/devops-programming.prompt.md`
 - `INFRASTRUCTURE` → `.github/prompts/domain/devops-infrastructure.prompt.md`
 - `ANALYSIS` → `.github/prompts/domain/devops-analysis.prompt.md`
+
+**Resultado esperado**:
+```
+✅ Escopo definido: [Continuar | Novas tarefas]
+✅ Domain Profile carregado: [PROGRAMMING | INFRASTRUCTURE | ANALYSIS]
+✅ Objetivo: [descrição da tarefa]
+```
 
 ---
 

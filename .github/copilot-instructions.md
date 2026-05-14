@@ -10,6 +10,33 @@ applyTo: "**"
 
 ---
 
+## 🌐 Idioma e Comunicação
+
+**IMPORTANTE**: Este projeto é brasileiro. Todas as interações devem ser em **Português do Brasil (pt-BR)**.
+
+### Regras de Idioma
+
+1. **Respostas do Copilot**: Sempre em português (pt-BR)
+2. **Código e variáveis**: Inglês (padrão internacional)
+3. **Documentação e comentários**: Português
+4. **Mensagens de commit**: Português (exceto tipos convencionais: `feat`, `fix`, `docs`, etc.)
+5. **Nomes de arquivos**: Seguir padrão do projeto (ver seção 7 - Nomenclatura)
+
+### Terminologia Técnica
+
+- **Preferir termos em português** quando houver equivalente consagrado:
+  - "arquivo" (não "file")
+  - "pasta" (não "folder" ou "directory")
+  - "ramificação" ou "branch" (ambos aceitos)
+  - "confirmação" ou "commit" (ambos aceitos)
+
+- **Manter em inglês** quando não houver tradução natural:
+  - Nomes de tecnologias: Python, TypeScript, Docker, Kubernetes
+  - Comandos: `git`, `make`, `pytest`, `pip`
+  - Conceitos técnicos: merge, pull request, refactoring, debugging
+
+---
+
 ## 🚨 Regras P0 — CRÍTICO (nunca violar)
 
 ### 1. Criar/editar arquivos — NUNCA via terminal

@@ -86,6 +86,24 @@ LANGUAGE_EXTENSIONS: dict[str, list[str]] = {
 }
 
 # ---------------------------------------------------------------------------
+# Settings globais (aplicados a todos os projetos)
+# ---------------------------------------------------------------------------
+
+_SETTINGS_GLOBAL: dict = {
+    # Idioma e regionalização
+    "locale.language": "pt-br",
+    
+    # Configurações gerais do editor
+    "editor.tabSize": 4,
+    "editor.insertSpaces": True,
+    "editor.trimAutoWhitespace": True,
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": True,
+    "files.insertFinalNewline": True,
+}
+
+# ---------------------------------------------------------------------------
 # Settings por linguagem
 # ---------------------------------------------------------------------------
 
@@ -203,15 +221,22 @@ def generate_settings(config: ProjectConfig) -> CreatedItem:
     """
     Gera `.vscode/settings.json` personalizado pela linguagem e domínio.
     Não sobrescreve se já existe.
+    
+    Camadas aplicadas em ordem (últimas sobrescrevem primeiras):
+      1. _SETTINGS_GLOBAL      → configs universais (locale, encoding, etc.)
+      2. _SETTINGS_BY_DOMAIN   → por domínio (infrastructure, programming, analysis)
+      3. _SETTINGS_BY_LANGUAGE → por linguagem (python, typescript, go, other)
     """
     dest = config.project_path / ".vscode" / "settings.json"
     if dest.exists():
         return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
     settings: dict = {}
-    # Aplica settings do domínio primeiro
+    # Camada 1: Global (base)
+    settings.update(_SETTINGS_GLOBAL)
+    # Camada 2: Domínio
     settings.update(_SETTINGS_BY_DOMAIN.get(config.domain, {}))
-    # Depois os da linguagem (mais específicos sobrescrevem)
+    # Camada 3: Linguagem (mais específicos sobrescrevem)
     settings.update(_SETTINGS_BY_LANGUAGE.get(config.language, {}))
 
     return _write_json(dest, settings)

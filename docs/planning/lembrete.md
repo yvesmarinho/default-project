@@ -15,7 +15,6 @@
 - O chat está em Inglês, deveria ser Portugues.
 
 
-
 ---
 
 ## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)

@@ -33,29 +33,59 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ### Passo 1.1 — Criar Ambiente Virtual (projetos Python)
 
-**Para projetos Python-based**, criar ambiente virtual usando `uv`:
+**AÇÃO AUTOMÁTICA**: Verificar se `.venv/` existe. Se NÃO existir, criar automaticamente.
 
 ```bash
-# Criar ambiente virtual com uv
-uv venv
+# Verificar se .venv já existe
+if [ -d .venv ]; then
+    echo "✅ Ambiente virtual já existe (.venv/)"
+else
+    echo "🔧 Criando ambiente virtual com uv..."
+    uv venv
+    echo "✅ Ambiente virtual criado (.venv/)"
+fi
 
-# Ativar ambiente virtual
-source .venv/bin/activate  # Linux/Mac
-# ou .venv\Scripts\activate  # Windows
-
-# Instalar dependências do projeto
-uv pip install -e ".[dev,security]"
-
-# Verificar instalação
-uv pip list
+# Ativar ambiente virtual (informar ao usuário)
+echo ""
+echo "⚠️  AÇÃO MANUAL NECESSÁRIA:"
+echo "   Para ativar o ambiente virtual, execute:"
+echo "   source .venv/bin/activate  # Linux/Mac"
+echo "   # ou .venv\\Scripts\\activate  # Windows"
 ```
 
-**Verificar que `.venv/` está no `.gitignore`**:
+**INSTALAÇÃO DE DEPENDÊNCIAS** (apenas se pyproject.toml ou requirements.txt existir):
+
 ```bash
-grep -q ".venv" .gitignore && echo "✅ .venv ignorado pelo Git" || echo "❌ ADICIONAR .venv ao .gitignore"
+# Verificar se há dependências para instalar
+if [ -f pyproject.toml ]; then
+    echo "📦 Instalando dependências do pyproject.toml..."
+    uv pip install -e ".[dev,security]" || uv sync
+    echo "✅ Dependências instaladas"
+elif [ -f requirements.txt ]; then
+    echo "📦 Instalando dependências do requirements.txt..."
+    uv pip install -r requirements.txt
+    echo "✅ Dependências instaladas"
+else
+    echo "⚠️  Nenhum arquivo de dependências encontrado (pyproject.toml ou requirements.txt)"
+fi
+
+# Verificar instalação
+uv pip list | head -20
+```
+
+**VERIFICAR .gitignore**:
+```bash
+grep -q ".venv" .gitignore && echo "✅ .venv ignorado pelo Git" || echo "❌ ATENÇÃO: .venv NÃO está no .gitignore!"
 ```
 
 **Nota**: O `uv` gerencia dependências de forma mais eficiente que pip tradicional. Para projetos que já têm `pyproject.toml`, o comando `uv sync` pode ser usado como alternativa a `uv pip install -e .`.
+
+**Resultado esperado**:
+```
+✅ Ambiente virtual criado/verificado: .venv/
+✅ Dependências instaladas (se aplicável)
+✅ .venv/ no .gitignore
+```
 
 ---
 

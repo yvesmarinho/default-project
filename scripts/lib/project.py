@@ -228,7 +228,8 @@ Thumbs.db
 
 # Logs
 *.log
-logs/
+logs/*
+!logs/README.md
 !scripts/logs/.gitkeep
 
 # Infrastructure directories
@@ -1605,6 +1606,41 @@ jobs:
           comment-summary-in-pr: always
 """
 
+_LOGS_README = """\
+# Pasta logs/
+
+## Propósito
+Armazenamento de logs de execução:
+- Logs de aplicação (runtime logs)
+- Logs de scripts de automação
+- Logs de testes e validações
+- Outputs de diagnóstico
+
+## Conteúdo Esperado
+```
+logs/
+├── README.md
+├── app-YYYY-MM-DD.log              # Logs da aplicação
+├── scaffold-YYYY-MM-DD.log         # Logs do scaffold
+├── tests-YYYY-MM-DD.log            # Logs de testes
+└── session-*.log                   # Logs de sessão
+```
+
+## Rotation Policy
+- Logs mantidos por 90 dias (rotação automática)
+- Logs de erro mantidos indefinidamente
+- Logs de debug deletados após 7 dias
+
+## Git Status
+Esta pasta está no `.gitignore` (conteúdo não versionado).
+Apenas este README.md é commitado.
+
+## Logging Configuration
+- Python: configurado em `pyproject.toml` → `[tool.logging]`
+- Scripts: usar `logging.basicConfig()` com arquivo em `logs/`
+- Formato padrão: `YYYY-MM-DD HH:MM:SS [LEVEL] message`
+"""
+
 _TMP_README = """\
 # Pasta tmp/
 
@@ -1789,6 +1825,7 @@ DIRS_TO_CREATE = [
     "scripts/lib",
     "scripts/logs",
     "src",
+    "logs",
     "tmp",
     ".memory",
     ".session-index",
@@ -1817,6 +1854,7 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     # .vscode/mcp.json e settings.json são gerados dinamicamente por vscode.py (IMP-64)
     ("Makefile",                   _MAKEFILE),
     ("scripts/logs/.gitkeep",      ""),
+    ("logs/README.md",             _LOGS_README),
     ("tmp/README.md",              _TMP_README),
     (".memory/README.md",          _MEMORY_README),
     (".session-index/README.md",   _SESSION_INDEX_README),
