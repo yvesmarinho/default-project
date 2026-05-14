@@ -16,7 +16,7 @@ Durante operações de `scaffold.py upgrade --force`, arquivos de configuração
 
 ## 🔍 Causa Raiz
 
-**Arquivo**: `scripts/lib/project.py`  
+**Arquivo**: `scripts/lib/project.py`
 **Função**: `_copy_file()` (linhas ~2350-2400)
 
 **Comportamento atual**:
@@ -59,7 +59,7 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
    python ../a-default-project/scripts/scaffold.py upgrade --force
    ```
 
-4. **Resultado atual**: 
+4. **Resultado atual**:
    - ❌ Customizações perdidas (extraPaths, rulers desapareceram)
    - ⚠️ Backup criado em `.backups/`, mas usuário precisa merge manual
 
@@ -70,8 +70,8 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
 
 ## 🎯 Impacto
 
-**Severidade**: Média  
-**Frequência**: A cada upgrade de template  
+**Severidade**: Média
+**Frequência**: A cada upgrade de template
 **Afeta**: Todos os usuários que customizam configurações
 
 ### Cenários afetados:
@@ -102,7 +102,7 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
 def _consolidate_copilot_rules(project_root: Path) -> Path:
     """
     Detecta e consolida múltiplos arquivos .copilot-rules* automaticamente.
-    
+
     Estratégia:
     1. Detecta todos os arquivos .copilot-rules* na raiz
     2. Se múltiplos encontrados:
@@ -111,7 +111,7 @@ def _consolidate_copilot_rules(project_root: Path) -> Path:
        - Remove duplicatas de seções
        - Salva backup de cada arquivo original
     3. Retorna Path do arquivo consolidado (.copilot-rules.md)
-    
+
     Returns:
         Path do arquivo consolidado (ou único existente)
     """
@@ -122,49 +122,49 @@ def _consolidate_copilot_rules(project_root: Path) -> Path:
         "copilot-instructions.md",
         ".copilot-instructions.md"
     ]
-    
+
     found_files = []
     for pattern in patterns:
         matches = list(project_root.glob(pattern))
         found_files.extend(matches)
-    
+
     if len(found_files) == 0:
         return None  # Nenhum arquivo encontrado
-    
+
     if len(found_files) == 1:
         return found_files[0]  # Apenas 1, sem consolidação necessária
-    
+
     # Múltiplos arquivos - consolidar automaticamente
     log.info(
         f"🔄 Consolidando {len(found_files)} arquivos de regras Copilot: "
         f"{[f.name for f in found_files]}"
     )
-    
+
     # Priorizar .copilot-rules.md como base, resto alfabético
     primary = project_root / ".copilot-rules.md"
     others = sorted([f for f in found_files if f != primary])
     files_to_merge = [primary] if primary.exists() else []
     files_to_merge.extend(others)
-    
+
     # Merge de conteúdo (preservar seções únicas)
     consolidated_content = _merge_markdown_sections(files_to_merge)
-    
+
     # Backup de originais
     for file in found_files:
         backup_path = _create_backup(file)
         log.info(f"   📦 Backup: {file.name} → {backup_path}")
-    
+
     # Salvar consolidado
     output_file = project_root / ".copilot-rules.md"
     output_file.write_text(consolidated_content)
     log.info(f"   ✅ Consolidado em: {output_file.name}")
-    
+
     # Remover duplicatas (manter apenas consolidado)
     for file in found_files:
         if file != output_file:
             file.unlink()
             log.info(f"   🗑️  Removido: {file.name}")
-    
+
     return output_file
 ```
 
@@ -186,20 +186,20 @@ def _consolidate_copilot_rules(project_root: Path) -> Path:
 def _merge_json(base: Path, overlay: Path, strategy: str = "user-wins") -> dict:
     """
     Merge dois arquivos JSON com estratégia configurável.
-    
+
     Args:
         base: Arquivo do template (upstream)
         overlay: Arquivo do usuário (customizações)
         strategy: "user-wins" (default) | "template-wins" | "interactive"
-    
+
     Returns:
         dict mergeado
     """
     import json
-    
+
     base_data = json.loads(base.read_text())
     overlay_data = json.loads(overlay.read_text())
-    
+
     if strategy == "user-wins":
         # Deep merge: template como base, usuário sobrescreve
         merged = deep_merge(base_data, overlay_data)
@@ -209,7 +209,7 @@ def _merge_json(base: Path, overlay: Path, strategy: str = "user-wins") -> dict:
     elif strategy == "interactive":
         # Detectar conflitos e pedir confirmação
         merged = interactive_merge(base_data, overlay_data)
-    
+
     return merged
 ```
 
@@ -246,13 +246,13 @@ if dst.suffix == ".json" and dst.exists() and force:
 def _report_merge_results(results: list[MergeResult]) -> None:
     """
     Reporta resultados de merge de forma estruturada.
-    
+
     Args:
         results: Lista de resultados (arquivo, ação, conflitos, backup)
     """
     print("\n📊 Resultados do Merge:")
     print("=" * 60)
-    
+
     for result in results:
         icon = {
             "merged": "🔄",
@@ -260,19 +260,19 @@ def _report_merge_results(results: list[MergeResult]) -> None:
             "updated": "✅",
             "conflict": "⚠️"
         }.get(result.action, "❓")
-        
+
         print(f"{icon} {result.file}")
         print(f"   Ação: {result.action}")
-        
+
         if result.backup:
             print(f"   Backup: {result.backup}")
-        
+
         if result.conflicts:
             print(f"   ⚠️  Conflitos ({len(result.conflicts)}):")
             for key, values in result.conflicts.items():
                 print(f"      • {key}: user={values['user']}, template={values['template']}")
                 print(f"        Resolução: {values['resolution']} (user-wins)")
-    
+
     print("=" * 60)
 ```
 
@@ -565,7 +565,7 @@ def _report_merge_results(results: list[MergeResult]) -> None:
 
 ---
 
-**Estimativa total**: 24h (4 fases)  
-**Prioridade**: P1 (próximo ciclo de desenvolvimento)  
-**Bloqueador**: Não (workaround: restore manual do backup)  
+**Estimativa total**: 24h (4 fases)
+**Prioridade**: P1 (próximo ciclo de desenvolvimento)
+**Bloqueador**: Não (workaround: restore manual do backup)
 **ETA**: Sprint 2026-W21 (19-23 maio)

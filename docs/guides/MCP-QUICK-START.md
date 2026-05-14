@@ -1,7 +1,7 @@
 # 🚀 Como Ativar Servidores MCP (Primeira Vez)
 
-**Problema**: Servidores MCP não iniciam automaticamente mesmo com `chat.mcp.autostart: true`  
-**Motivo**: VS Code precisa de confirmação de **trust** na primeira execução (segurança)  
+**Problema**: Servidores MCP não iniciam automaticamente mesmo com `chat.mcp.autostart: true`
+**Motivo**: VS Code precisa de confirmação de **trust** na primeira execução (segurança)
 **Solução**: Seguir procedimento manual **uma única vez**
 
 ---
@@ -10,7 +10,7 @@
 
 ### 1️⃣ Abrir Command Palette
 
-**Windows/Linux**: `Ctrl + Shift + P`  
+**Windows/Linux**: `Ctrl + Shift + P`
 **macOS**: `Cmd + Shift + P`
 
 ### 2️⃣ Executar Comando MCP

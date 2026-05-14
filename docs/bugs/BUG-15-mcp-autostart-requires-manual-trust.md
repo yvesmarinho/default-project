@@ -98,21 +98,21 @@ Isso é **intencional** por razões de segurança, pois servidores MCP podem exe
 
 ## 🎯 Impacto
 
-**Severidade**: Baixa  
-**Frequência**: Apenas na primeira execução ou após modificar servidores  
+**Severidade**: Baixa
+**Frequência**: Apenas na primeira execução ou após modificar servidores
 **Afeta**: Experiência de desenvolvedor (DX)
 
 ### Cenários afetados:
 
 1. ✅ **Projeto novo** via scaffold → precisa trust manual uma vez
-2. ✅ **Clone de repositório** → precisa trust manual uma vez  
+2. ✅ **Clone de repositório** → precisa trust manual uma vez
 3. ✅ **Upgrade de template** → se servidores mudaram, precisa re-trust
 4. ✅ **Desenvolvimento regular** → autostart funciona após trust concedido
 
 ## ✅ Status
 
-**Classificação**: Limitação conhecida do VS Code  
-**Solução**: Procedimento manual documentado (workarounds acima)  
+**Classificação**: Limitação conhecida do VS Code
+**Solução**: Procedimento manual documentado (workarounds acima)
 **Próximos passos**:
 - Adicionar instruções de trust em `README.md`
 - Atualizar `session-start-first.prompt.md` com nota sobre trust

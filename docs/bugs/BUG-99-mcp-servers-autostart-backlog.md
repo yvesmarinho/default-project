@@ -99,5 +99,5 @@ Documentado em:
 
 ---
 
-**Status**: BACKLOG (sem prioridade até surgir solução viável)  
+**Status**: BACKLOG (sem prioridade até surgir solução viável)
 **Next Review**: 2026-11-14 (6 meses)
