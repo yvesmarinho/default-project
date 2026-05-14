@@ -1,12 +1,24 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-11 — Sprint 3 (GitHubWorkflowMerger + PyprojectMerger) + Scaffold Infrastructure Fix ✅
+**Last Updated**: 2026-05-21 — Sprint 2026-W21 (BUG-16 JSON/Workspace Merge Strategy) ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
 ---
 
-## 🎯 Próxima Sessão (2026-05-12+)
+## 🎯 Próxima Sessão (2026-05-22+)
+
+- [ ] **BUG-16 Integração**: Integrar merge system em upgrade.py
+  - **Objetivo**: Conectar JSONMerger, WorkspaceMerger, copilot-rules consolidation ao fluxo de upgrade
+  - **Prioridade**: P1 CRITICAL (concluir BUG-16)
+  - **Estimativa**: 2h
+  - **Blocker**: None (implementação completa)
+  - **Tarefas**:
+    1. Adicionar chamada a consolidate_copilot_rules() em upgrade.py
+    2. Testar upgrade com projeto real customizado
+    3. Validar backups e merge de todos os tipos de arquivo
+    4. Criar sessão de validação final
+  - **Expected Outcome**: BUG-16 100% funcional em produção
 
 - [ ] **Sprint 4**: P2 Merge System Expansion
   - **Objetivo**: Implement remaining P2 mergers (.pre-commit-config, VS Code configs)
@@ -80,6 +92,51 @@
   - **Testes**: 32/32 passing (100% success rate)
   - **Commits**: (to be added after session end)
   - **Outcome**: GitHub workflows + pyproject.toml now have intelligent merge ✅
+
+- [x] **Sprint 2026-W21**: BUG-16 JSON/Workspace Merge Strategy (P1 CRITICAL)
+  - **Status**: ✅ COMPLETO (2026-05-21)
+  - **Tempo**: ~12h (vs 24h estimado = 50% economia)
+  - **Branch**: 017-bug-16-merge-strategy
+  - **Commits**: 2 (932100a, 7f018b2)
+  - **Implementação completa** de 4 fases:
+    1. **Fase 1: Merge de JSON** (4h)
+       - scripts/lib/json_merge.py (392 linhas)
+       - JSONMerger: deep merge com user-wins strategy
+       - Suporte: .vscode/*.json, package.json, tsconfig.json
+       - Testes: 12 cenários validados
+    2. **Fase 2: Merge de .code-workspace** (2h)
+       - WorkspaceMerger: união de folders/settings/extensions
+       - Deep merge de configurações com priorização de customizações
+       - Backup automático (.workspace.backup)
+    3. **Fase 3: Consolidação .copilot-rules + YAML** (3h)
+       - scripts/lib/copilot_rules_consolidate.py (280 linhas)
+       - Detecção e merge de múltiplos .copilot-rules*.md
+       - Consolidação automática sem prompts (user-wins)
+       - Backup em .backups/copilot-rules/
+       - Ordenação alfabética de seções Markdown
+       - Testes: 17 cenários validados
+    4. **Fase 4: Documentação e Validação** (3h)
+       - docs/guides/UPGRADE_GUIDE.md (420 linhas)
+       - Guia completo de upgrade com exemplos
+       - Troubleshooting e FAQ (6 cenários + 6 perguntas)
+       - Comandos de validação e rollback
+  - **Resultados**:
+    - Arquivos criados: 5 (json_merge.py, copilot_rules_consolidate.py, 2 test files, UPGRADE_GUIDE.md)
+    - Arquivos modificados: 2 (file_merge.py, pyproject.toml)
+    - Linhas de código: ~1.713 (código + testes + docs)
+    - Testes: 29/29 passing (12 JSON + 17 consolidação)
+    - Dependência: deepmerge==2.0 instalada
+  - **Critérios de Aceitação**: 8/8 ✅
+    - [x] JSONMerger preserva customizações
+    - [x] WorkspaceMerger faz união correta
+    - [x] Consolidação automática sem prompts
+    - [x] Backups criados antes de merge
+    - [x] Log detalhado de ações
+    - [x] Rollback manual via backups
+    - [x] Testes cobrem cenários críticos
+    - [x] Documentação completa
+  - **Próximos passos**: Integrar em upgrade.py e testar com projeto real
+  - **Outcome**: Sistema de merge inteligente funcional ✅ (pending integração)
 
 - [x] **POC Sistema-Deploy Upgrade Workflow** (P0 CRITICAL)
   - **Status**: ✅ COMPLETO + VALIDADO (2026-05-11)

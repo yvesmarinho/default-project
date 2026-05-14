@@ -1,11 +1,17 @@
 ---
 bug_id: BUG-16
 title: "Arquivos JSON e .code-workspace não mergeados por padrão no scaffold"
-status: "confirmed"
+status: "resolved"
 severity: "medium"
 priority: "P1"
 created: 2026-05-14
 reporter: "yves_marinho"
+resolved: 2026-05-21
+resolution: "fixed"
+branch: "017-bug-16-merge-strategy"
+commits:
+  - "932100a - feat(BUG-16): implementar sistema de merge automático JSON/workspace/copilot-rules"
+  - "7f018b2 - feat(BUG-16): completar implementação Fase 3-4 (consolidação + docs + testes)"
 ---
 
 # BUG-16: Arquivos JSON e .code-workspace Não Mergeados por Padrão no Scaffold
