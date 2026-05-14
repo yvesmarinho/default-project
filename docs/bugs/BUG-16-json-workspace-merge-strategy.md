@@ -82,6 +82,57 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
 4. ✅ **`.code-workspace`**: Pastas adicionais, configurações de workspace
 5. ✅ **`package.json`** (Node.js): Scripts, dependências customizadas
 6. ✅ **`pyproject.toml`** (Python): Dependências, configurações de tools
+7. ✅ **`.copilot-rules*` (raiz)**: Múltiplos arquivos de regras Copilot duplicados
+
+### ⚠️ Caso Especial: Múltiplos Arquivos `.copilot-rules`
+
+**Problema detectado**: Projetos podem conter múltiplos arquivos de regras Copilot na raiz:
+- `.copilot-rules.md`
+- `.copilot-strict-rules.md`
+- `.copilot-strict-enforcement.md`
+- `copilot-instructions.md` (padrão VS Code)
+
+**Comportamento atual durante upgrade**:
+- ❌ Cada arquivo pode ser sobrescrito independentemente
+- ❌ Não há detecção de duplicatas ou conflitos
+- ❌ Customizações podem ser perdidas se houver renomeação de arquivos
+
+**Verificação necessária** (Fase 1):
+```python
+def _validate_copilot_rules(project_root: Path) -> list[Path]:
+    """
+    Detecta múltiplos arquivos .copilot-rules* na raiz do projeto.
+    
+    Returns:
+        Lista de arquivos encontrados (vazio se apenas 1 ou nenhum)
+    """
+    patterns = [
+        ".copilot-rules*.md",
+        "copilot-instructions.md",
+        ".copilot-instructions.md"
+    ]
+    
+    found_files = []
+    for pattern in patterns:
+        found_files.extend(project_root.glob(pattern))
+    
+    if len(found_files) > 1:
+        log.warning(
+            f"⚠️  Múltiplos arquivos de regras Copilot detectados: "
+            f"{[f.name for f in found_files]}"
+        )
+        log.warning(
+            "   Recomendação: Consolidar em 1 arquivo (.copilot-rules.md) "
+            "antes do upgrade"
+        )
+    
+    return found_files if len(found_files) > 1 else []
+```
+
+**Estratégia de merge recomendada**:
+1. **Detectar** duplicatas antes do upgrade (warning obrigatório)
+2. **Consolidar** manualmente ou via prompt interativo
+3. **Mergear** arquivo único resultante (user-wins strategy)
 
 ## 🛠️ Solução Proposta
 
