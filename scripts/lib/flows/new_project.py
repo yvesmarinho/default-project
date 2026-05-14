@@ -132,8 +132,8 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🏷️  Criando tag de versão scaffold...[/blue]")
     results.append(git.tag_scaffold(cfg, version="1.0.0"))
 
-    # Resumo final
-    print_final_summary(results)
+    # Resumo final (com logging automático)
+    print_final_summary(results, project_path=cfg.project_path, save_log=True)
 
     errors = [r for r in results if hasattr(
         r, "status") and r.status == "error"]

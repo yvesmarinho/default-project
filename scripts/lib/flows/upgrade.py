@@ -347,7 +347,8 @@ def flow_upgrade(args: argparse.Namespace) -> int:
         print(_json.dumps(output, indent=2, ensure_ascii=False))
         return 0 if not errors else 1
 
-    print_final_summary(results)
+    # Resumo final (com logging automático)
+    print_final_summary(results, project_path=cfg.project_path, save_log=True)
 
     created = [r for r in results if hasattr(
         r, "status") and r.status == "created"]

@@ -30,5 +30,5 @@ def flow_generate_rules(args: argparse.Namespace) -> int:
         return 1
 
     result = templates.generate_copilot_rules(cfg)
-    print_final_summary([result])
+    print_final_summary([result], project_path=cfg.project_path, save_log=True)
     return 0 if result.status != "error" else 1

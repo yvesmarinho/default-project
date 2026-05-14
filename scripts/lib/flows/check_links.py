@@ -16,7 +16,7 @@ def flow_check_links(args: argparse.Namespace) -> int:
     shared = Path(args.shared_dir) if args.shared_dir else get_default_shared_dir()
 
     statuses = links.check_symlinks(target, shared)
-    print_final_summary(statuses)
+    print_final_summary(statuses, project_path=target, save_log=False)
 
     broken_or_missing = [s for s in statuses if s.status in ("broken", "missing")]
     return 1 if broken_or_missing else 0

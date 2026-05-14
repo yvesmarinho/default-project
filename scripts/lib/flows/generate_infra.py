@@ -35,7 +35,7 @@ def flow_generate_infra(args: argparse.Namespace) -> int:
         infra.generate_docker_compose(cfg),
         infra.generate_runbook(cfg),
     ]
-    print_final_summary(results)
+    print_final_summary(results, project_path=cfg.project_path, save_log=True)
 
     errors = [r for r in results if hasattr(r, "status") and r.status == "error"]
     if errors:
