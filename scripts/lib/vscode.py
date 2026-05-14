@@ -92,7 +92,7 @@ LANGUAGE_EXTENSIONS: dict[str, list[str]] = {
 _SETTINGS_GLOBAL: dict = {
     # Idioma e regionalização
     "locale.language": "pt-br",
-    
+
     # Configurações gerais do editor
     "editor.tabSize": 4,
     "editor.insertSpaces": True,
@@ -221,7 +221,7 @@ def generate_settings(config: ProjectConfig) -> CreatedItem:
     """
     Gera `.vscode/settings.json` personalizado pela linguagem e domínio.
     Não sobrescreve se já existe.
-    
+
     Camadas aplicadas em ordem (últimas sobrescrevem primeiras):
       1. _SETTINGS_GLOBAL      → configs universais (locale, encoding, etc.)
       2. _SETTINGS_BY_DOMAIN   → por domínio (infrastructure, programming, analysis)

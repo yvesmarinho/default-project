@@ -78,7 +78,7 @@
 
 **Resultado**: Todos os projetos futuros terão pasta `logs/` criada automaticamente com README.md documentado
 
-**Decisões técnicas**: 
+**Decisões técnicas**:
 - Usar README.md em vez de .gitkeep (mais informativo)
 - Documentar rotation policy (90 dias) e logging configuration
 - Adicionar exceção no .gitignore para preservar README.md
@@ -148,7 +148,7 @@
    - Regras de idioma (pt-BR obrigatório)
    - Terminologia técnica (quando usar PT vs EN)
 
-**Resultado**: 
+**Resultado**:
 - Todos os projetos futuros terão locale pt-BR configurado
 - Copilot instruído a sempre responder em português
 - Terminologia técnica padronizada
