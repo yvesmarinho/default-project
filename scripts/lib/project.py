@@ -2388,6 +2388,8 @@ def _copy_domain_profile(
 
 def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
     """Copia src → dst com logging. Detecta drift e permite force com backup.
+    
+    Integração BUG-16: Usa sistema de merge inteligente quando disponível.
 
     Args:
         src: Arquivo de origem (upstream template)
@@ -2397,6 +2399,7 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
     Returns:
         CreatedItem com status:
         - created: arquivo criado ou atualizado
+        - merged: arquivo mergeado com sistema de merge inteligente (BUG-16)
         - skipped: arquivo existe e sem drift ou force=False
         - drift: arquivo existe com drift detectado (apenas se force=False)
         - error: erro ao copiar
@@ -2420,10 +2423,30 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
             message=f"Preservado symlink → {dst.resolve()}"
         )
 
+    # Ler conteúdo do template
+    try:
+        template_content = src.read_text(encoding="utf-8")
+    except Exception as exc:
+        msg = f"Erro ao ler template {src}: {exc}"
+        log.warning("⚠️  %s", msg)
+        return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
     # Calcular hash do arquivo upstream
     src_hash = hashlib.sha256(src.read_bytes()).hexdigest()[:8]
 
     if dst.exists():
+        # BUG-16: Tentar merge inteligente primeiro (antes de force)
+        # Verificar se há merger disponível para este tipo de arquivo
+        merge_result = file_merge.merge_or_skip(dst, template_content, interactive=False)
+        
+        if merge_result.status == "merged" or merge_result.status == "created":
+            # Merge bem-sucedido via sistema de merge inteligente
+            log.info("🔀 merged via %s", merge_result.message or "intelligent merge system")
+            return merge_result
+        
+        # Se chegou aqui, não há merger disponível ou merge foi skipped
+        # Continuar com lógica antiga de drift detection
+        
         # Calcular hash do arquivo local
         dst_hash = hashlib.sha256(dst.read_bytes()).hexdigest()[:8]
 
@@ -2453,8 +2476,8 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
     # Criar ou sobrescrever arquivo
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-        action = "atualizado" if dst.exists() and force else "copiado"
+        dst.write_text(template_content, encoding="utf-8")
+        action = "atualizado" if dst.exists() and force else "criado"
         log.info("✅ %s: %s → %s", action, src.name, dst)
         return CreatedItem(path=dst, kind="file", status="created")
     except OSError as exc:

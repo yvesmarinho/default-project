@@ -10,6 +10,7 @@ from .. import composer as _composer_module
 from .. import links, project, templates, vscode
 from ..project import config_from_state, read_scaffold_state, write_scaffold_state
 from ..ui import console, print_final_summary
+from ..copilot_rules_consolidate import consolidate_copilot_rules
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 _PROFILE_DESCRIPTORS_DIR = _PROJECT_ROOT / "profile-descriptors"
@@ -243,6 +244,24 @@ def flow_upgrade(args: argparse.Namespace) -> int:
 
     # Aplicar copy_speckit com force (se especificado)
     results.extend(project.copy_speckit(cfg, force=force))
+
+    # BUG-16: Consolidação automática de .copilot-rules antes de copiar template
+    if not use_json:
+        console.print(
+            "  [blue]🔀 Consolidando arquivos .copilot-rules...[/blue]")
+    
+    # Consolidar múltiplos .copilot-rules*.md em um único arquivo
+    consolidated_path = consolidate_copilot_rules(cfg.project_path)
+    if consolidated_path:
+        if not use_json:
+            console.print(
+                f"  [green]✅ Consolidado: {consolidated_path.name}[/green]")
+        results.append(project.CreatedItem(
+            path=consolidated_path,
+            kind="file",
+            status="merged",
+            message="Consolidação automática de múltiplos .copilot-rules*.md"
+        ))
 
     # BUG-13: Copilot Instructions (copilot-instructions.md, .copilot-rules.md)
     if not use_json:
