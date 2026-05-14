@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 from .. import infra
 from ..ui import collect_project_info, console, print_final_summary
@@ -35,7 +36,10 @@ def flow_generate_infra(args: argparse.Namespace) -> int:
         infra.generate_docker_compose(cfg),
         infra.generate_runbook(cfg),
     ]
-    print_final_summary(results, project_path=cfg.project_path, save_log=True)
+    # Logging automático se não for --no-log
+    save_log = not getattr(args, "no_log", False)
+    log_dir = Path(getattr(args, "log_dir", None)) if getattr(args, "log_dir", None) else None
+    print_final_summary(results, project_path=cfg.project_path, save_log=save_log, log_dir=log_dir)
 
     errors = [r for r in results if hasattr(r, "status") and r.status == "error"]
     if errors:

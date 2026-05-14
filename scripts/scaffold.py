@@ -327,6 +327,18 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="modo não-interativo — usa flags, sem prompts",
     )
+    mode_group.add_argument(
+        "--no-log",
+        action="store_true",
+        dest="no_log",
+        help="desabilita o salvamento automático de logs de operações",
+    )
+    mode_group.add_argument(
+        "--log-dir",
+        metavar="PATH",
+        dest="log_dir",
+        help="diretório para salvar logs (default: <projeto>/logs/)",
+    )
 
     # Campos do projeto
     fields_group = parser.add_argument_group("campos do projeto")

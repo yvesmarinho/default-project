@@ -170,6 +170,98 @@
 
 ---
 
+### Implementação de Logging Automático no Scaffold
+
+**14:30 — ✅ COMPLETO**
+
+**Objetivo**: Adicionar funcionalidade de logging automático de operações do scaffold com controle via CLI
+
+**Contexto**: UI melhorada com folder grouping estava funcionando, mas logs não eram salvos automaticamente. Usuário solicitou integração completa no scaffold.
+
+**Passos executados**:
+
+1. **Adicionar opções CLI** (`scripts/scaffold.py`):
+   - `--no-log`: desabilita salvamento automático de logs
+   - `--log-dir PATH`: especifica diretório customizado para logs
+
+2. **Atualizar função de logging** (`scripts/lib/ui.py`):
+   - Adicionar parâmetro `log_dir` em `save_operation_log()`
+   - Adicionar parâmetro `log_dir` em `print_final_summary()`
+   - Lógica para usar log_dir customizado ou padrão `<projeto>/logs/`
+   - Display inteligente de path (relativo ou absoluto conforme contexto)
+
+3. **Integrar logging em todos os flows**:
+   - `flow_new_project`: logging com controle via args
+   - `flow_upgrade`: logging com controle via args
+   - `flow_generate_infra`: logging com controle via args
+   - `flow_generate_rules`: logging com controle via args
+   - Adicionar import `from pathlib import Path` onde necessário
+
+4. **Criar documentação**:
+   - `docs/guides/LOGGING_USAGE.md`: Guia completo de uso
+   - Exemplos de comandos com diferentes configurações
+   - Formato do arquivo de log explicado
+   - Benefícios e estrutura de pastas
+
+5. **Atualizar script de demonstração** (`scripts/tmp/test_new_output.py`):
+   - 3 demonstrações: log padrão, log customizado, sem log
+   - Validar criação de logs em diferentes diretórios
+
+**Resultado**:
+- ✅ Logging automático em todas as operações do scaffold
+- ✅ Controle via `--no-log` e `--log-dir`
+- ✅ Logs salvos em formato estruturado (header + stats + detalhes)
+- ✅ Saída na tela mostra caminho do log salvo
+- ✅ Demonstração validada com 3 cenários
+
+**Decisões técnicas**:
+- **D-25**: Logging habilitado por padrão (opt-out via `--no-log`)
+- **D-26**: Log dir padrão: `<projeto>/logs/` (já está no .gitignore)
+- **D-27**: Timestamp em UTC (YYYY-MM-DD_HH-MM-SS)
+- **D-28**: Formato de log: markdown-like para facilitar leitura
+
+**Arquivos modificados/criados**:
+- `scripts/scaffold.py` (+14 linhas)
+  - Novas flags: --no-log, --log-dir
+- `scripts/lib/ui.py` (+35/-10 linhas)
+  - save_operation_log() com log_dir customizado
+  - print_final_summary() com log_dir parameter
+  - Display inteligente de log path
+- `scripts/lib/flows/new_project.py` (+3/-2 linhas)
+  - Integração com args.no_log e args.log_dir
+  - Import de Path
+- `scripts/lib/flows/upgrade.py` (+3/-2 linhas)
+  - Integração com args.no_log e args.log_dir
+- `scripts/lib/flows/generate_infra.py` (+4/-2 linhas)
+  - Integração com logging
+  - Import de Path
+- `scripts/lib/flows/generate_rules.py` (+4/-2 linhas)
+  - Integração com logging
+  - Import de Path
+- `scripts/tmp/test_new_output.py` (+25/-5 linhas)
+  - 3 demonstrações de logging
+- `docs/guides/LOGGING_USAGE.md` (NOVO, 185 linhas)
+  - Guia completo de uso de logging
+  - Exemplos práticos
+  - Formato de log explicado
+
+**Testes executados**:
+```bash
+python3 scripts/tmp/test_new_output.py
+# ✅ Demo 1: Log padrão → /tmp/test-scaffold-demo/logs/scaffold_*.log
+# ✅ Demo 2: Log customizado → /tmp/custom-scaffold-logs/scaffold_*.log
+# ✅ Demo 3: Sem log → nenhum arquivo criado
+```
+
+**Status**: ✅ Completo
+
+**Destaques para próxima sessão**:
+- Logging está funcionando end-to-end
+- Usuário pode controlar via `--no-log` e `--log-dir`
+- Documentação completa em `docs/guides/LOGGING_USAGE.md`
+
+---
+
 <!-- Activities will be appended here following SESSION_DOCS_STYLE_GUIDE.md format -->
 
 ---

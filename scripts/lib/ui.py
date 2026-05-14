@@ -715,43 +715,45 @@ def confirm_summary(config: ProjectConfig) -> bool:
     return Confirm.ask("  Confirmar e criar projeto?", default=True)
 
 
-def save_operation_log(items: list[CreatedItem | LinkStatus], project_path: Path, operation: str = "scaffold") -> Path | None:
+def save_operation_log(items: list[CreatedItem | LinkStatus], project_path: Path, operation: str = "scaffold", log_dir: Path | None = None) -> Path | None:
     """
     Salva log detalhado da operação em arquivo no projeto.
-    
+
     Args:
         items: Lista de itens criados/operados
         project_path: Caminho do projeto
         operation: Nome da operação (scaffold, upgrade, etc.)
-    
+        log_dir: Diretório customizado para logs (default: <projeto>/logs/)
+
     Returns:
         Path do arquivo de log criado ou None se falhar
     """
     try:
-        logs_dir = project_path / "logs"
-        logs_dir.mkdir(exist_ok=True)
-        
+        # Usar log_dir customizado ou padrão <projeto>/logs
+        logs_dir = Path(log_dir) if log_dir else (project_path / "logs")
+        logs_dir.mkdir(parents=True, exist_ok=True)
+
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
         log_file = logs_dir / f"{operation}_{timestamp}.log"
-        
+
         with log_file.open("w", encoding="utf-8") as f:
             f.write(f"# {operation.upper()} Operation Log\n")
             f.write(f"# Timestamp: {timestamp}\n")
             f.write(f"# Project: {project_path.name}\n")
             f.write(f"# Total items: {len(items)}\n\n")
-            
+
             # Estatísticas
             stats = {"created": 0, "skipped": 0, "error": 0, "ok": 0, "broken": 0, "missing": 0}
             for item in items:
                 status = item.status if isinstance(item, CreatedItem) else item.status
                 stats[status] = stats.get(status, 0) + 1
-            
+
             f.write("## Statistics\n")
             for status, count in stats.items():
                 if count > 0:
                     f.write(f"- {status}: {count}\n")
             f.write("\n## Detailed Items\n\n")
-            
+
             # Detalhes de cada item
             for item in items:
                 if isinstance(item, CreatedItem):
@@ -762,28 +764,29 @@ def save_operation_log(items: list[CreatedItem | LinkStatus], project_path: Path
                 else:  # LinkStatus
                     target_str = str(item.target) if item.target else "(no target)"
                     f.write(f"[{item.status.upper()}] symlink | {item.name} -> {target_str}\n")
-        
+
         return log_file
     except Exception as e:
         console.print(f"[yellow]⚠️  Não foi possível salvar log: {e}[/yellow]")
         return None
 
 
-def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Path | None = None, save_log: bool = True) -> None:
+def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Path | None = None, save_log: bool = True, log_dir: Path | None = None) -> None:
     """
     Exibe tabela Rich agrupada por pasta com status de cada item.
-    
+
     Args:
         items: Lista de itens criados/operados
         project_path: Caminho do projeto (para salvar log)
         save_log: Se True, salva log detalhado em arquivo
+        log_dir: Diretório customizado para logs (default: <projeto>/logs/)
     """
     console.print()
-    
+
     # Agrupar itens por pasta
     from collections import defaultdict
     folders: dict[str, list[tuple[str, str, str, str]]] = defaultdict(list)
-    
+
     status_styles = {
         "created": "[green]created[/green]",
         "skipped": "[yellow]skipped[/yellow]",
@@ -792,25 +795,25 @@ def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Pat
         "broken":  "[red]broken[/red]",
         "missing": "[yellow]missing[/yellow]",
     }
-    
+
     for item in items:
         if isinstance(item, CreatedItem):
             path = Path(item.path)
-            
+
             # Converter para path relativo se project_path fornecido
             if project_path and path.is_absolute():
                 try:
                     path = path.relative_to(project_path)
                 except ValueError:
                     pass  # Se não for relativo, manter absoluto
-            
+
             # Agrupar por primeira pasta (ex: .vscode, docs, scripts) ou (root)
             parts = path.parts
             if len(parts) > 1:
                 folder = parts[0]  # Primeira pasta (.vscode, docs, etc.)
             else:
                 folder = "(root)"  # Arquivo na raiz
-            
+
             # Adicionar à lista da pasta
             folders[folder].append((
                 item.kind,        # Tipo: "file", "dir", etc.
@@ -826,7 +829,7 @@ def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Pat
                 status_styles.get(item.status, item.status),
                 target_str
             ))
-    
+
     # Criar tabela agrupada
     table = Table(
         title="✅ Resultado da Operação (Agrupado por Pasta)",
@@ -837,7 +840,7 @@ def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Pat
     table.add_column("Arquivo", style="white")
     table.add_column("Status", width=10)
     table.add_column("Mensagem", style="dim", overflow="fold")
-    
+
     # Ordenar pastas (root primeiro, symlinks por último, depois alfabeticamente)
     def sort_key(folder: str) -> tuple:
         if folder == "(root)":
@@ -846,14 +849,14 @@ def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Pat
             return (2, "")
         else:
             return (1, folder)
-    
+
     sorted_folders = sorted(folders.keys(), key=sort_key)
-    
+
     for folder in sorted_folders:
         files = folders[folder]
         # Adicionar header da pasta
         table.add_row(f"[bold blue]📁 {folder}[/bold blue]", "", "", f"[dim]{len(files)} arquivo(s)[/dim]")
-        
+
         # Adicionar arquivos
         for kind, filename, status, message in files:
             table.add_row(
@@ -862,15 +865,15 @@ def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Pat
                 status,
                 message
             )
-    
+
     console.print(table)
-    
+
     # Estatísticas resumidas
     stats = {"created": 0, "skipped": 0, "error": 0, "ok": 0}
     for item in items:
         status = item.status if isinstance(item, CreatedItem) else item.status
         stats[status] = stats.get(status, 0) + 1
-    
+
     summary_parts = []
     if stats.get("created", 0) > 0:
         summary_parts.append(f"[green]{stats['created']} criado(s)[/green]")
@@ -880,14 +883,22 @@ def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Pat
         summary_parts.append(f"[red]{stats['error']} erro(s)[/red]")
     if stats.get("ok", 0) > 0:
         summary_parts.append(f"[green]{stats['ok']} ok[/green]")
-    
+
     if summary_parts:
         console.print(f"\n  {' | '.join(summary_parts)}")
-    
+
     # Salvar log se solicitado
     if save_log and project_path:
-        log_file = save_operation_log(items, project_path)
+        log_file = save_operation_log(items, project_path, log_dir=log_dir)
         if log_file:
-            console.print(f"  [dim]Log salvo em: {log_file.relative_to(project_path)}[/dim]")
-    
+            # Mostrar path relativo ao projeto ou absoluto se log_dir customizado
+            if log_dir:
+                console.print(f"  [dim]Log salvo em: {log_file}[/dim]")
+            else:
+                try:
+                    rel_path = log_file.relative_to(project_path)
+                    console.print(f"  [dim]Log salvo em: {rel_path}[/dim]")
+                except ValueError:
+                    console.print(f"  [dim]Log salvo em: {log_file}[/dim]")
+
     console.print()

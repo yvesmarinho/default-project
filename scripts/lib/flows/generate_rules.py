@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 from .. import templates
 from ..ui import collect_project_info, console, print_final_summary
@@ -30,5 +31,8 @@ def flow_generate_rules(args: argparse.Namespace) -> int:
         return 1
 
     result = templates.generate_copilot_rules(cfg)
-    print_final_summary([result], project_path=cfg.project_path, save_log=True)
+    # Logging automático se não for --no-log
+    save_log = not getattr(args, "no_log", False)
+    log_dir = Path(getattr(args, "log_dir", None)) if getattr(args, "log_dir", None) else None
+    print_final_summary([result], project_path=cfg.project_path, save_log=save_log, log_dir=log_dir)
     return 0 if result.status != "error" else 1

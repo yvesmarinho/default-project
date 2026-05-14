@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 from .. import git, links, project, templates, vscode
 from ..project import write_scaffold_state
@@ -132,8 +133,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🏷️  Criando tag de versão scaffold...[/blue]")
     results.append(git.tag_scaffold(cfg, version="1.0.0"))
 
-    # Resumo final (com logging automático)
-    print_final_summary(results, project_path=cfg.project_path, save_log=True)
+    # Resumo final (com logging automático se não for --no-log)
+    save_log = not getattr(args, "no_log", False)
+    log_dir = Path(getattr(args, "log_dir", None)) if getattr(args, "log_dir", None) else None
+    print_final_summary(results, project_path=cfg.project_path, save_log=save_log, log_dir=log_dir)
 
     errors = [r for r in results if hasattr(
         r, "status") and r.status == "error"]
@@ -144,7 +147,6 @@ def flow_new_project(args: argparse.Namespace) -> int:
 
     # 10. Log scaffold operation (IMP-65-LITE)
     try:
-        from pathlib import Path
         import sys
         sys.path.insert(0, str(Path(__file__).parent.parent.parent))
         from scaffold_logger import ScaffoldLogger, get_current_user, get_template_version
