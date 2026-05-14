@@ -1,5 +1,6 @@
 {
     "chat.mcp.autostart": true,
+    "github.copilot.chat.enableMcp": true,
     "chat.promptFilesRecommendations": {
         "speckit.constitution": true,
         "speckit.specify": true,

@@ -95,6 +95,7 @@ _SETTINGS_GLOBAL: dict = {
 
     # GitHub Copilot e MCP
     "chat.mcp.autostart": True,
+    "github.copilot.chat.enableMcp": True,
     "chat.promptFilesRecommendations": {
         "speckit.constitution": True,
         "speckit.specify": True,
