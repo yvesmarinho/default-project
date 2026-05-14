@@ -265,6 +265,11 @@ def flow_upgrade(args: argparse.Namespace) -> int:
         console.print("  [blue]🧠 Verificando scripts de memory...[/blue]")
     results.extend(project.copy_memory_scripts(cfg, force=force))
 
+    # Utility Scripts (activate-mcp.sh, git-commit-with-file.sh, cleanup-tmp.sh, validate-docs-links.sh)
+    if not use_json:
+        console.print("  [blue]🔧 Verificando scripts utilitários...[/blue]")
+    results.extend(project.copy_utility_scripts(cfg, force=force))
+
     # BUG-09: Templates de documentação
     if not use_json:
         console.print(

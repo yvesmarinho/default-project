@@ -2282,6 +2282,55 @@ def copy_memory_scripts(config: ProjectConfig, force: bool = False) -> list[Crea
     return results
 
 
+def copy_utility_scripts(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia scripts shell utilitários para o novo projeto.
+
+    Scripts copiados:
+      1. activate-mcp.sh → scripts/activate-mcp.sh
+      2. git-commit-with-file.sh → scripts/git-commit-with-file.sh
+      3. cleanup-tmp.sh → scripts/cleanup-tmp.sh
+      4. validate-docs-links.sh → scripts/validate-docs-links.sh
+
+    Esses scripts são necessários para:
+      - Validar e ativar servidores MCP (activate-mcp.sh)
+      - Git commits com arquivo de mensagem (git-commit-with-file.sh)
+      - Limpar arquivos temporários (cleanup-tmp.sh)
+      - Validar links em documentação (validate-docs-links.sh)
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: Validação pós-scaffold - scripts shell essenciais
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT / "scripts"
+
+    scripts_to_copy = [
+        "activate-mcp.sh",
+        "git-commit-with-file.sh",
+        "cleanup-tmp.sh",
+        "validate-docs-links.sh",
+    ]
+
+    for script_name in scripts_to_copy:
+        src_script = src_root / script_name
+        dst_script = base / "scripts" / script_name
+        result = _copy_file(src_script, dst_script, force=force)
+        # Garantir permissões executáveis (755)
+        if result.status in ("created", "updated") and dst_script.exists():
+            try:
+                dst_script.chmod(0o755)
+                log.debug("✅ Permissões executáveis aplicadas: %s", dst_script.name)
+            except OSError as exc:
+                log.warning("⚠️  Não foi possível aplicar chmod 755 em %s: %s", dst_script, exc)
+        results.append(result)
+
+    return results
+
+
 def copy_copilot_instructions(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
     Copia arquivos de instruções customizadas do Copilot para o novo projeto.

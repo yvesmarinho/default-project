@@ -82,6 +82,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🧠 Copiando scripts de memory...[/blue]")
     results.extend(project.copy_memory_scripts(cfg))
 
+    # 5e. Utility Scripts: activate-mcp.sh, git-commit-with-file.sh, cleanup-tmp.sh, validate-docs-links.sh
+    console.print("  [blue]🔧 Copiando scripts utilitários...[/blue]")
+    results.extend(project.copy_utility_scripts(cfg))
+
     # 5d. Templates de documentação (BUG-09 fix - corrigido conceito)
     console.print("  [blue]📋 Configurando templates de documentação...[/blue]")
     results.extend(project.setup_project_docs(cfg))
