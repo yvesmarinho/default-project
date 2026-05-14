@@ -26,6 +26,7 @@ from .copilot_prompt_merge import CopilotPromptMerger
 from .copilot_rules_merge import CopilotRulesMerger
 from .github_workflow_merge import GitHubWorkflowMerger
 from .pyproject_merge import PyprojectMerger
+from .json_merge import JSONMerger, WorkspaceMerger
 
 log = logging.getLogger(__name__)
 
@@ -423,6 +424,8 @@ class ReadmeMerger:
 
 # Registry global de mergers (ordem importa: mais específico primeiro)
 _MERGERS: List[FileMerger] = [
+    WorkspaceMerger(),      # Sprint W21: BUG-16 (.code-workspace merge)
+    JSONMerger(),           # Sprint W21: BUG-16 (JSON files merge)
     CopilotAgentMerger(),   # Sprint 1: P0 CRITICAL (32 agents)
     CopilotPromptMerger(),  # Sprint 2: P0 HIGH (26 prompts)
     CopilotRulesMerger(),   # Sprint 2: P0 HIGH (2 rules files)

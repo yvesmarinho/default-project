@@ -10,10 +10,6 @@
 ---
 
 ## Correção - IMPORTANTE - BUG
-- a pasta `logs` deve ficar na raiz do projeto e ser padrão, junto com a pata `./tmp`.
-- não criou .venv
-- O chat está em Inglês, deveria ser Portugues.
-
 
 ---
 
