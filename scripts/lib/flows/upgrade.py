@@ -249,7 +249,7 @@ def flow_upgrade(args: argparse.Namespace) -> int:
     if not use_json:
         console.print(
             "  [blue]🔀 Consolidando arquivos .copilot-rules...[/blue]")
-    
+
     # Consolidar múltiplos .copilot-rules*.md em um único arquivo
     consolidated_path = consolidate_copilot_rules(cfg.project_path)
     if consolidated_path:

@@ -91,11 +91,11 @@ def merge_markdown_sections(files: List[Path]) -> str:
     """
     if not files:
         return ""
-    
+
     # Coletar cabeçalhos (tudo antes do primeiro ##)
     headers = []
     all_sections: Dict[str, Tuple[str, int]] = {}  # título -> (conteúdo, prioridade_arquivo)
-    
+
     for idx, file in enumerate(files):
         content = file.read_text(encoding="utf-8")
 

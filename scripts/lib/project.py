@@ -2388,7 +2388,7 @@ def _copy_domain_profile(
 
 def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
     """Copia src → dst com logging. Detecta drift e permite force com backup.
-    
+
     Integração BUG-16: Usa sistema de merge inteligente quando disponível.
 
     Args:
@@ -2438,15 +2438,15 @@ def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
         # BUG-16: Tentar merge inteligente primeiro (antes de force)
         # Verificar se há merger disponível para este tipo de arquivo
         merge_result = file_merge.merge_or_skip(dst, template_content, interactive=False)
-        
+
         if merge_result.status == "merged" or merge_result.status == "created":
             # Merge bem-sucedido via sistema de merge inteligente
             log.info("🔀 merged via %s", merge_result.message or "intelligent merge system")
             return merge_result
-        
+
         # Se chegou aqui, não há merger disponível ou merge foi skipped
         # Continuar com lógica antiga de drift detection
-        
+
         # Calcular hash do arquivo local
         dst_hash = hashlib.sha256(dst.read_bytes()).hexdigest()[:8]
 
