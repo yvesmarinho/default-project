@@ -436,16 +436,29 @@ def test_merge_or_skip_uses_readme_merger(temp_dir):
 def test_get_registered_mergers():
     """
     Cenário: Consultar mergers registrados
-    Expectativa: 3 mergers essenciais (Gitignore, Makefile, README)
+    Expectativa: 13 mergers no sistema (3 essenciais + 10 específicos)
     """
     # Act
     mergers = get_registered_mergers()
 
-    # Assert
+    # Assert - Mergers essenciais
     assert "GitignoreMerger" in mergers
     assert "MakefileMerger" in mergers
     assert "ReadmeMerger" in mergers
-    assert len(mergers) == 3
+    
+    # Mergers específicos
+    assert "WorkspaceMerger" in mergers
+    assert "JSONMerger" in mergers
+    assert "CopilotAgentMerger" in mergers
+    assert "CopilotPromptMerger" in mergers
+    assert "CopilotRulesMerger" in mergers
+    assert "GitHubWorkflowMerger" in mergers
+    assert "PyprojectMerger" in mergers
+    assert "PreCommitMerger" in mergers
+    assert "VSCodeConfigMerger" in mergers
+    assert "IssueTemplateMerger" in mergers
+    
+    assert len(mergers) == 13
 
 
 # =============================================================================
