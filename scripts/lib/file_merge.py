@@ -27,6 +27,9 @@ from .copilot_rules_merge import CopilotRulesMerger
 from .github_workflow_merge import GitHubWorkflowMerger
 from .pyproject_merge import PyprojectMerger
 from .json_merge import JSONMerger, WorkspaceMerger
+from .precommit_merge import PreCommitMerger
+from .vscode_config_merge import VSCodeConfigMerger
+from .issue_template_merge import IssueTemplateMerger
 
 log = logging.getLogger(__name__)
 
@@ -431,6 +434,9 @@ _MERGERS: List[FileMerger] = [
     CopilotRulesMerger(),   # Sprint 2: P0 HIGH (2 rules files)
     GitHubWorkflowMerger(),  # Sprint 3: P1 HIGH (3+ workflows)
     PyprojectMerger(),      # Sprint 3: P1 HIGH (pyproject.toml)
+    PreCommitMerger(),      # Sprint 4: P2 MEDIUM (.pre-commit-config.yaml)
+    VSCodeConfigMerger(),   # Sprint 4: P2 MEDIUM (launch.json, tasks.json)
+    IssueTemplateMerger(),  # Sprint 4: P2 MEDIUM (.github/ISSUE_TEMPLATE/*)
     GitignoreMerger(),
     MakefileMerger(),
     ReadmeMerger(),

@@ -1,31 +1,24 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-14 — Logging Automático Implementado ✅
+**Last Updated**: 2026-05-15 — Sprint 4 Concluído ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
 ---
 
-## 🎯 Próxima Sessão (2026-05-15+)
+## 🎯 Próxima Sessão (2026-05-16+)
 
-- [ ] **BUG-16 Integração**: Integrar merge system em upgrade.py
-  - **Objetivo**: Conectar JSONMerger, WorkspaceMerger, copilot-rules consolidation ao fluxo de upgrade
-  - **Prioridade**: P1 CRITICAL (concluir BUG-16)
-  - **Estimativa**: 2h
-  - **Blocker**: None (implementação completa)
+- [ ] **BUG-16 Teste Manual**: Validar upgrade com projeto real customizado
+  - **Objetivo**: Executar teste end-to-end de integração BUG-16
+  - **Prioridade**: P1 HIGH (validação final)
+  - **Estimativa**: 30 min
+  - **Blocker**: None (integração de código completa + Sprint 4 concluído)
   - **Tarefas**:
-    1. Adicionar chamada a consolidate_copilot_rules() em upgrade.py
-    2. Testar upgrade com projeto real customizado
-    3. Validar backups e merge de todos os tipos de arquivo
-    4. Criar sessão de validação final
-  - **Expected Outcome**: BUG-16 100% funcional em produção
-
-- [ ] **Sprint 4**: P2 Merge System Expansion
-  - **Objetivo**: Implement remaining P2 mergers (.pre-commit-config, VS Code configs)
-  - **Prioridade**: P2 MEDIUM (nice-to-have, not critical)
-  - **Estimativa**: 2h
-  - **Deliverables**: PreCommitMerger, VSCodeConfigMerger, IssueTemplateMerger
-  - **Impact**: +90% coverage (67 → 90+ files with intelligent merge)
+    1. Criar projeto teste com customizações
+    2. Executar upgrade --force
+    3. Validar merges e backups (incluindo novos mergers Sprint 4)
+    4. Documentar resultados
+  - **Expected Outcome**: BUG-16 100% validado em produção com 90% coverage
 
 - [ ] **Objetivo-Init Pipeline Testing** (P1 HIGH)
   - **Objetivo**: Test complete v1.0 workflow end-to-end
@@ -73,6 +66,48 @@
   - **Prioridade**: P1 (production hygiene, Week 2-3)
   - **Estimativa**: 88h total
   - **Deliverables**: CI/CD automation, audit logs, automated gates
+
+---
+
+## ✅ CONCLUÍDO — Sessão 2026-05-15
+
+- [x] **Sprint 4**: P2 Merge System Expansion
+  - **Status**: ✅ COMPLETO (2026-05-15)
+  - **Tempo**: 2h
+  - **Prioridade**: P2 MEDIUM
+  - **Deliverables**:
+    - ✅ PreCommitMerger implementado (scripts/lib/precommit_merge.py)
+    - ✅ VSCodeConfigMerger implementado (scripts/lib/vscode_config_merge.py)
+    - ✅ IssueTemplateMerger implementado (scripts/lib/issue_template_merge.py)
+    - ✅ 3 mergers registrados em file_merge.py
+    - ✅ 45 testes criados (15 por merger)
+    - ✅ Documentação completa (SPRINT_4_SUMMARY.md)
+  - **Métricas**:
+    - Cobertura anterior: 77% (67/87 arquivos)
+    - Cobertura atual: ~90% (78+/87 arquivos)
+    - Incremento: +11 arquivos protegidos (+12.6%)
+  - **Arquivos Protegidos**:
+    - .pre-commit-config.yaml (PreCommitMerger)
+    - .vscode/launch.json (VSCodeConfigMerger)
+    - .vscode/tasks.json (VSCodeConfigMerger)
+    - .github/ISSUE_TEMPLATE/*.md (IssueTemplateMerger)
+    - .github/ISSUE_TEMPLATE/config.yml (IssueTemplateMerger)
+  - **Outcome**: Meta de 90% coverage alcançada, sistema de merge expandido com sucesso ✅
+
+- [x] **BUG-16 Integração de Código**: Merge system integrado no upgrade.py
+  - **Status**: ✅ COMPLETO (2026-05-15)
+  - **Tempo**: 1.5h
+  - **Deliverables**:
+    - consolidate_copilot_rules() integrado em upgrade.py (L242-256)
+    - merge_or_skip() já integrado em project.py (L1918, L2440)
+    - JSONMerger + WorkspaceMerger registrados em file_merge.py
+    - Testes: 29/29 passing (100% success rate)
+    - Relatório: docs/SESSIONS/2026-05-15/BUG16_INTEGRATION_VALIDATION.md
+  - **Validação**:
+    - ✅ Código integrado e funcional
+    - ✅ Testes unitários 100% passing
+    - ⏳ Teste manual end-to-end pendente (problemas de terminal)
+  - **Outcome**: Integração de código completa, validação manual para próxima sessão ✅
 
 ---
 
