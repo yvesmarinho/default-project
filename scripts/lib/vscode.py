@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 
 from .config import CreatedItem, DomainType, LanguageType, ProjectConfig
+from . import file_merge
 
 # ---------------------------------------------------------------------------
 # Extensões — 3 camadas: BASE + DOMAIN + LANGUAGE
@@ -62,6 +63,7 @@ LANGUAGE_EXTENSIONS: dict[str, list[str]] = {
     "python": [
         "ms-python.python",
         "ms-python.pylance",
+        "astral-sh.uv",
         "ms-python.black-formatter",
         "ms-python.flake8",
         "ms-python.mypy-type-checker",
@@ -85,12 +87,54 @@ LANGUAGE_EXTENSIONS: dict[str, list[str]] = {
 }
 
 # ---------------------------------------------------------------------------
+# Settings globais (aplicados a todos os projetos)
+# ---------------------------------------------------------------------------
+
+_SETTINGS_GLOBAL: dict = {
+    # Idioma e regionalização
+    "locale.language": "pt-br",
+
+    # GitHub Copilot e MCP
+    "chat.mcp.autostart": True,
+    "github.copilot.chat.enableMcp": True,
+    "chat.promptFilesRecommendations": {
+        "speckit.constitution": True,
+        "speckit.specify": True,
+        "speckit.plan": True,
+        "speckit.tasks": True,
+        "speckit.implement": True,
+    },
+    "chat.tools.terminal.autoApprove": {
+        ".specify/scripts/bash/": True,
+        ".specify/scripts/powershell/": True,
+    },
+
+    # Configurações gerais do editor
+    "editor.tabSize": 4,
+    "editor.insertSpaces": True,
+    "editor.trimAutoWhitespace": True,
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": True,
+    "files.insertFinalNewline": True,
+}
+
+# ---------------------------------------------------------------------------
 # Settings por linguagem
 # ---------------------------------------------------------------------------
 
 _SETTINGS_BY_LANGUAGE: dict[str, dict] = {
     "python": {
-        "python.defaultInterpreterPath": ".venv/bin/python",
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python-envs.pythonProjects": [
+            {
+                "path": ".",
+                "envManager": "astral-sh.uv:uv",
+                "packageManager": "astral-sh.uv:uv",
+            }
+        ],
+        "flake8.path": ["${workspaceFolder}/.venv/bin/flake8"],
+        "flake8.args": [],
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": True,
         "python.linting.enabled": True,
@@ -192,17 +236,29 @@ _MCP_BY_DOMAIN: dict[str, list[str]] = {
 def generate_settings(config: ProjectConfig) -> CreatedItem:
     """
     Gera `.vscode/settings.json` personalizado pela linguagem e domínio.
-    Não sobrescreve se já existe.
+
+    Se arquivo existe, usa merge inteligente (BUG-16 fix).
+
+    Camadas aplicadas em ordem (últimas sobrescrevem primeiras):
+      1. _SETTINGS_GLOBAL      → configs universais (locale, encoding, etc.)
+      2. _SETTINGS_BY_DOMAIN   → por domínio (infrastructure, programming, analysis)
+      3. _SETTINGS_BY_LANGUAGE → por linguagem (python, typescript, go, other)
     """
     dest = config.project_path / ".vscode" / "settings.json"
-    if dest.exists():
-        return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
+    # Gerar conteúdo do template
     settings: dict = {}
-    # Aplica settings do domínio primeiro
+    # Camada 1: Global (base)
+    settings.update(_SETTINGS_GLOBAL)
+    # Camada 2: Domínio
     settings.update(_SETTINGS_BY_DOMAIN.get(config.domain, {}))
-    # Depois os da linguagem (mais específicos sobrescrevem)
+    # Camada 3: Linguagem (mais específicos sobrescrevem)
     settings.update(_SETTINGS_BY_LANGUAGE.get(config.language, {}))
+
+    if dest.exists():
+        # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
+        template_content = json.dumps(settings, indent=2, ensure_ascii=False) + "\n"
+        return file_merge.merge_or_skip(dest, template_content, interactive=False)
 
     return _write_json(dest, settings)
 
@@ -210,14 +266,20 @@ def generate_settings(config: ProjectConfig) -> CreatedItem:
 def generate_mcp(config: ProjectConfig) -> CreatedItem:
     """
     Gera `.vscode/mcp.json` com servidores pré-selecionados pelo domínio.
-    Não sobrescreve se já existe.
+
+    Se arquivo existe, usa merge inteligente (BUG-16 fix).
     """
     dest = config.project_path / ".vscode" / "mcp.json"
-    if dest.exists():
-        return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
-    server_names = _MCP_BY_DOMAIN.get(config.domain, ["memory", "sequential-thinking"])
-    servers = {name: _ALL_MCP_SERVERS[name] for name in server_names if name in _ALL_MCP_SERVERS}
+    server_names = _MCP_BY_DOMAIN.get(
+        config.domain, ["memory", "sequential-thinking", "filesystem", "github"])
+    servers = {name: _ALL_MCP_SERVERS[name]
+               for name in server_names if name in _ALL_MCP_SERVERS}
+
+    if dest.exists():
+        # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
+        template_content = json.dumps({"servers": servers}, indent=2, ensure_ascii=False) + "\n"
+        return file_merge.merge_or_skip(dest, template_content, interactive=False)
 
     return _write_json(dest, {"servers": servers})
 
@@ -231,11 +293,9 @@ def generate_extensions(config: ProjectConfig) -> CreatedItem:
       2. DOMAIN_EXTENSIONS    → por domínio
       3. LANGUAGE_EXTENSIONS  → por linguagem
 
-    Lista final deduplicada e ordenada. Não sobrescreve se já existe.
+    Lista final deduplicada e ordenada. Se arquivo existe, usa merge inteligente (BUG-16 fix).
     """
     dest = config.project_path / ".vscode" / "extensions.json"
-    if dest.exists():
-        return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
     combined: list[str] = list(BASE_EXTENSIONS)  # cópia
     combined.extend(DOMAIN_EXTENSIONS.get(config.domain, []))
@@ -250,6 +310,12 @@ def generate_extensions(config: ProjectConfig) -> CreatedItem:
             unique.append(ext)
 
     payload = {"recommendations": sorted(unique)}
+
+    if dest.exists():
+        # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
+        template_content = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+        return file_merge.merge_or_skip(dest, template_content, interactive=False)
+
     return _write_json(dest, payload)
 
 
@@ -262,11 +328,9 @@ def generate_tasks(config: ProjectConfig) -> CreatedItem:
     Gera `.vscode/tasks.json` com os targets padrão do Makefile como tasks VS Code.
 
     Tasks: install-deps, dev, build, test (isDefault), lint, format, clean.
-    Não sobrescreve se já existe.
+    Se arquivo existe, usa merge inteligente via VSCodeConfigMerger (BUG-16 fix).
     """
     dest = config.project_path / ".vscode" / "tasks.json"
-    if dest.exists():
-        return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
     tasks = [
         {
@@ -320,7 +384,14 @@ def generate_tasks(config: ProjectConfig) -> CreatedItem:
         },
     ]
 
-    return _write_json(dest, {"version": "2.0.0", "tasks": tasks})
+    payload = {"version": "2.0.0", "tasks": tasks}
+
+    if dest.exists():
+        # FIX BUG P0: Usar merge_or_skip (VSCodeConfigMerger) ao invés de skip incondicional
+        template_content = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+        return file_merge.merge_or_skip(dest, template_content, interactive=False)
+
+    return _write_json(dest, payload)
 
 
 def generate_launch(config: ProjectConfig) -> CreatedItem:
@@ -332,17 +403,22 @@ def generate_launch(config: ProjectConfig) -> CreatedItem:
     Go: dlv (teste + execução direta)
     other: generic shell run
 
-    Não sobrescreve se já existe.
+    Se arquivo existe, usa merge inteligente via VSCodeConfigMerger (BUG-16 fix).
     """
     dest = config.project_path / ".vscode" / "launch.json"
-    if dest.exists():
-        return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
 
     configurations: list[dict] = _LAUNCH_BY_LANGUAGE.get(
         config.language, _LAUNCH_BY_LANGUAGE["other"]
     )
 
-    return _write_json(dest, {"version": "0.2.0", "configurations": configurations})
+    payload = {"version": "0.2.0", "configurations": configurations}
+
+    if dest.exists():
+        # FIX BUG P0: Usar merge_or_skip (VSCodeConfigMerger) ao invés de skip incondicional
+        template_content = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+        return file_merge.merge_or_skip(dest, template_content, interactive=False)
+
+    return _write_json(dest, payload)
 
 
 # ---------------------------------------------------------------------------
@@ -416,6 +492,111 @@ _LAUNCH_BY_LANGUAGE: dict[str, list[dict]] = {
 }
 
 
+def generate_workspace(config: ProjectConfig) -> CreatedItem:
+    """
+    Gera `[project-name].code-workspace` com configurações MCP integradas.
+
+    Inclui:
+    - Folders (path atual)
+    - Settings básicos (formatOnSave, rulers, etc)
+    - Tasks do Makefile
+    - Launch configurations vazias
+    - **MCP servers** (dinamicamente por domínio) ⭐ FIX BUG
+
+    Não sobrescreve se já existe.
+    """
+    dest = config.project_path / f"{config.project_name}.code-workspace"
+    if dest.exists():
+        return CreatedItem(path=dest, kind="file", status="skipped", message="já existe")
+
+    # Get MCP servers for this domain
+    server_names = _MCP_BY_DOMAIN.get(
+        config.domain, ["memory", "sequential-thinking", "filesystem", "github"])
+    mcp_servers = {name: _ALL_MCP_SERVERS[name]
+                   for name in server_names if name in _ALL_MCP_SERVERS}
+
+    # Get settings for this language/domain
+    settings: dict = {}
+    settings.update(_SETTINGS_BY_DOMAIN.get(config.domain, {}))
+    settings.update(_SETTINGS_BY_LANGUAGE.get(config.language, {}))
+
+    # Add base settings
+    settings.update({
+        "editor.formatOnSave": True,
+        "editor.rulers": [88, 120],
+        "files.trimTrailingWhitespace": True,
+        "files.insertFinalNewline": True,
+    })
+
+    workspace_config = {
+        "folders": [{"path": "."}],
+        "settings": settings,
+        "mcp": {
+            "servers": mcp_servers
+        },
+        "tasks": {
+            "version": "2.0.0",
+            "tasks": [
+                {
+                    "label": "make: install-deps",
+                    "type": "shell",
+                    "command": "make install-deps",
+                    "group": "build",
+                    "problemMatcher": []
+                },
+                {
+                    "label": "make: dev",
+                    "type": "shell",
+                    "command": "make dev",
+                    "group": {"kind": "build", "isDefault": True},
+                    "problemMatcher": []
+                },
+                {
+                    "label": "make: build",
+                    "type": "shell",
+                    "command": "make build",
+                    "group": "build",
+                    "problemMatcher": []
+                },
+                {
+                    "label": "make: test",
+                    "type": "shell",
+                    "command": "make test",
+                    "group": {"kind": "test", "isDefault": True},
+                    "problemMatcher": []
+                },
+                {
+                    "label": "make: lint",
+                    "type": "shell",
+                    "command": "make lint",
+                    "group": "test",
+                    "problemMatcher": []
+                },
+                {
+                    "label": "make: format",
+                    "type": "shell",
+                    "command": "make format",
+                    "group": "build",
+                    "problemMatcher": []
+                },
+                {
+                    "label": "make: clean",
+                    "type": "shell",
+                    "command": "make clean",
+                    "group": "build",
+                    "problemMatcher": []
+                }
+            ]
+        },
+        "launch": {
+            "version": "0.2.0",
+            "configurations": []
+        }
+    }
+
+    return _write_json(dest, workspace_config)
+
+
 # ---------------------------------------------------------------------------
 # Auxiliar interno
 # ---------------------------------------------------------------------------
@@ -424,7 +605,8 @@ def _write_json(dest: Path, data: dict) -> CreatedItem:
     """Serializa dict como JSON formatado e grava em dest."""
     try:
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        dest.write_text(json.dumps(
+            data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         return CreatedItem(path=dest, kind="file", status="created")
     except OSError as e:
         return CreatedItem(path=dest, kind="file", status="error", message=str(e))
