@@ -191,7 +191,8 @@ def flow_upgrade(args: argparse.Namespace) -> int:
     if not use_json:
         console.print("  [blue]📝 Verificando regras Copilot...[/blue]")
     results.append(templates.generate_copilot_rules(cfg))
-    results.append(templates.generate_copilot_instructions(cfg))
+    # FIX BUG P0: Removida chamada duplicada - copilot-instructions.md já processado em copy_copilot_instructions() L273
+    # results.append(templates.generate_copilot_instructions(cfg))
 
     if not use_json:
         console.print("  [blue]🔧 Verificando configuração VS Code...[/blue]")
