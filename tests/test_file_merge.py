@@ -445,7 +445,7 @@ def test_get_registered_mergers():
     assert "GitignoreMerger" in mergers
     assert "MakefileMerger" in mergers
     assert "ReadmeMerger" in mergers
-    
+
     # Mergers específicos
     assert "WorkspaceMerger" in mergers
     assert "JSONMerger" in mergers
@@ -457,7 +457,7 @@ def test_get_registered_mergers():
     assert "PreCommitMerger" in mergers
     assert "VSCodeConfigMerger" in mergers
     assert "IssueTemplateMerger" in mergers
-    
+
     assert len(mergers) == 13
 
 

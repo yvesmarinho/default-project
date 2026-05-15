@@ -76,7 +76,7 @@ class VSCodeConfigMerger:
             # 1. Parse existente
             existing_content = existing_path.read_text(encoding="utf-8")
             existing_data = json.loads(existing_content)
-            
+
             # 2. Parse template
             template_data = json.loads(template_content)
 
@@ -183,15 +183,15 @@ class VSCodeConfigMerger:
                 # Item sem ID ou duplicado, preservar mesmo assim
                 merged.append(item)
                 continue
-            
+
             seen.add(item_id)
-            
+
             # Verificar se há versão no template
             template_item = next(
                 (t for t in template if t.get(id_field) == item_id),
                 None
             )
-            
+
             if template_item:
                 # Merge deep (user wins)
                 merged_item = self._deep_merge(template_item, item)
@@ -199,7 +199,7 @@ class VSCodeConfigMerger:
             else:
                 # Item customizado, preservar
                 merged.append(item)
-        
+
         # Adicionar items novos do template
         for template_item in template:
             item_id = template_item.get(id_field)
@@ -207,7 +207,7 @@ class VSCodeConfigMerger:
                 seen.add(item_id)
                 merged.append(template_item)
                 changes.append(f"+{item_id}")
-        
+
         return merged, changes
 
     def _deep_merge(
@@ -217,12 +217,12 @@ class VSCodeConfigMerger:
     ) -> Dict[str, Any]:
         """
         Deep merge de dicts (user wins strategy).
-        
+
         Template wins para novos campos, user wins para conflitos.
         """
         import copy
         result = copy.deepcopy(override)  # Start with template
-        
+
         for key, value in base.items():
             if key not in result:
                 # User has field that template doesn't → preserve
@@ -238,5 +238,5 @@ class VSCodeConfigMerger:
                         merged_list.append(copy.deepcopy(item))
                 result[key] = merged_list
             # Else: template wins (use result[key] from template)
-        
+
         return result

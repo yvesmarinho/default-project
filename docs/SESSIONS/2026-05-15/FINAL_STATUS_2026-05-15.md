@@ -3,6 +3,10 @@
 **Branch**: 017-bug-16-merge-strategy
 **Sessão**: Completa — Sprint 4 Concluído ✅
 **Projeto**: Enterprise Default Project Template (a-default-project)
+**Testes Finais**: 178/178 passing (100%) ✅
+**Commits**: 3 commits (Sprint 4 + Test fix + P0 vscode fix)
+**Push**: ✅ Sincronizado com origin
+**Bug P0**: ✅ Corrigido e commitado
 
 ---
 
@@ -98,7 +102,32 @@
 - **Estimativa**: 2h
 - **Deliverables**: PreCommitMerger, VSCodeConfigMerger, IssueTemplateMerger
 
-### 3. Objetivo-Init Pipeline Testing (P1 HIGH)
+### 3. Bug P0 CRÍTICO: .vscode Configs Skip Incondicional (100% COMPLETO)
+
+**Descoberta**: Análise de log de scaffold real (`test-workspace-fix`) identificou que arquivos `.vscode/*` faziam skip incondicional sem tentar merge.
+
+**Problema**:
+- ❌ `.vscode/settings.json` - Skip incondicional (JSONMerger disponível não usado)
+- ❌ `.vscode/mcp.json` - Skip incondicional (JSONMerger disponível não usado)
+- ❌ `.vscode/extensions.json` - Skip incondicional (JSONMerger disponível não usado)
+- ❌ `.vscode/tasks.json` - Skip incondicional (VSCodeConfigMerger disponível não usado)
+- ❌ `.vscode/launch.json` - Skip incondicional (VSCodeConfigMerger disponível não usado)
+
+**Causa Raiz**: Funções em `vscode.py` faziam `return CreatedItem(status="skipped")` sem chamar `merge_or_skip()`
+
+**Correções Aplicadas**:
+1. ✅ `scripts/lib/vscode.py` - 5 funções corrigidas para usar `merge_or_skip()`
+2. ✅ `scripts/lib/flows/upgrade.py` - Removida duplicação de `generate_copilot_instructions()`
+3. ✅ Testes validados: 178/178 passing
+
+**Resultado**:
+- Arquivos `.vscode/*` agora recebem merges inteligentes
+- Customizações preservadas + novos fields do template adicionados
+- Logs mais limpos (sem duplicação)
+
+**Documentação**: [BUG_ANALYSIS_VSCODE_MERGE.md](BUG_ANALYSIS_VSCODE_MERGE.md)
+
+### 4. Objetivo-Init Pipeline Testing (P1 HIGH)
 - **Objetivo**: Validar pipeline v1.0 end-to-end
 - **Estimativa**: 2h
 
@@ -187,4 +216,62 @@ docs(session): BUG-16 integração validada — 29/29 testes passing
 - 29/29 testes unitários passing (100%)
 - Teste manual end-to-end pendente (não bloqueante)
 
-**Próxima prioridade**: Teste manual de validação final (30 min) ou Sprint 4 (P2 Mergers)
+**Sprint 4 — P2 Merge System Expansion**: ✅ **COMPLETO**
+- 3 novos mergers implementados (PreCommit, VSCode, IssueTemplate)
+- 45 novos testes criados (15 por merger)
+- Cobertura: 77% → 90% (+13%)
+- Total: 13 mergers no sistema
+
+**Testes Sistema Completo**: ✅ **178/178 PASSING (100%)**
+
+---
+
+## 🔄 Git Commits da Sessão
+
+### Commit 1: Sprint 4 Implementation
+```
+7b53f0d - feat(merge): Sprint 4 - expansão P2 do sistema de merge (cobertura 90%)
+
+Arquivos:
+- 14 arquivos modificados
+- 3.179 linhas adicionadas
+- 3 novos mergers + 3 testes + documentação
+```
+
+### Commit 2: Test Fix
+```
+4eee11d - test(merge): atualiza teste de contagem de mergers para 13
+
+Arquivos:
+- 1 arquivo modificado (tests/test_file_merge.py)
+- Teste atualizado para refletir 13 mergers totais
+- Resultado: 178/178 testes passing (100%)
+```
+
+### Commit 3: Bug P0 Fix (.vscode merge)
+```
+b8c8b20 - fix(vscode): P0 CRÍTICO - aplicar merge inteligente em .vscode configs
+
+Arquivos:
+- 3 arquivos modificados (vscode.py, upgrade.py, BUG_ANALYSIS_VSCODE_MERGE.md)
+- 366 linhas adicionadas, 22 removidas
+- 5 funções corrigidas para usar merge_or_skip
+- Duplicação de copilot-instructions removida
+```
+
+**Push Status**: ✅ Todos 3 commits sincronizados com `origin/017-bug-16-merge-strategy`
+
+---
+
+## 🎯 Próximos Passos Recomendados
+
+### Prioridade Alta (próxima sessão)
+1. **Teste E2E Manual** (30 min) — Validar sistema completo com projeto real
+2. **Atualizar UPGRADE_GUIDE.md** (20 min) — Documentar 3 novos mergers
+3. **Code Review Final** (15 min) — Validar qualidade antes do PR
+4. **Preparar Pull Request** (15 min) — Merge para main com changelog
+
+### Opcional
+- Executar coverage report completo
+- Screenshots de exemplos de merge
+- Vídeo demo do sistema funcionando

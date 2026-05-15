@@ -236,7 +236,7 @@ _MCP_BY_DOMAIN: dict[str, list[str]] = {
 def generate_settings(config: ProjectConfig) -> CreatedItem:
     """
     Gera `.vscode/settings.json` personalizado pela linguagem e domínio.
-    
+
     Se arquivo existe, usa merge inteligente (BUG-16 fix).
 
     Camadas aplicadas em ordem (últimas sobrescrevem primeiras):
@@ -245,7 +245,7 @@ def generate_settings(config: ProjectConfig) -> CreatedItem:
       3. _SETTINGS_BY_LANGUAGE → por linguagem (python, typescript, go, other)
     """
     dest = config.project_path / ".vscode" / "settings.json"
-    
+
     # Gerar conteúdo do template
     settings: dict = {}
     # Camada 1: Global (base)
@@ -254,7 +254,7 @@ def generate_settings(config: ProjectConfig) -> CreatedItem:
     settings.update(_SETTINGS_BY_DOMAIN.get(config.domain, {}))
     # Camada 3: Linguagem (mais específicos sobrescrevem)
     settings.update(_SETTINGS_BY_LANGUAGE.get(config.language, {}))
-    
+
     if dest.exists():
         # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
         template_content = json.dumps(settings, indent=2, ensure_ascii=False) + "\n"
@@ -266,16 +266,16 @@ def generate_settings(config: ProjectConfig) -> CreatedItem:
 def generate_mcp(config: ProjectConfig) -> CreatedItem:
     """
     Gera `.vscode/mcp.json` com servidores pré-selecionados pelo domínio.
-    
+
     Se arquivo existe, usa merge inteligente (BUG-16 fix).
     """
     dest = config.project_path / ".vscode" / "mcp.json"
-    
+
     server_names = _MCP_BY_DOMAIN.get(
         config.domain, ["memory", "sequential-thinking", "filesystem", "github"])
     servers = {name: _ALL_MCP_SERVERS[name]
                for name in server_names if name in _ALL_MCP_SERVERS}
-    
+
     if dest.exists():
         # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
         template_content = json.dumps({"servers": servers}, indent=2, ensure_ascii=False) + "\n"
@@ -296,7 +296,7 @@ def generate_extensions(config: ProjectConfig) -> CreatedItem:
     Lista final deduplicada e ordenada. Se arquivo existe, usa merge inteligente (BUG-16 fix).
     """
     dest = config.project_path / ".vscode" / "extensions.json"
-    
+
     combined: list[str] = list(BASE_EXTENSIONS)  # cópia
     combined.extend(DOMAIN_EXTENSIONS.get(config.domain, []))
     combined.extend(LANGUAGE_EXTENSIONS.get(config.language, []))
@@ -310,12 +310,12 @@ def generate_extensions(config: ProjectConfig) -> CreatedItem:
             unique.append(ext)
 
     payload = {"recommendations": sorted(unique)}
-    
+
     if dest.exists():
         # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
         template_content = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
         return file_merge.merge_or_skip(dest, template_content, interactive=False)
-    
+
     return _write_json(dest, payload)
 
 
@@ -383,9 +383,9 @@ def generate_tasks(config: ProjectConfig) -> CreatedItem:
             "problemMatcher": [],
         },
     ]
-    
+
     payload = {"version": "2.0.0", "tasks": tasks}
-    
+
     if dest.exists():
         # FIX BUG P0: Usar merge_or_skip (VSCodeConfigMerger) ao invés de skip incondicional
         template_content = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
@@ -406,13 +406,13 @@ def generate_launch(config: ProjectConfig) -> CreatedItem:
     Se arquivo existe, usa merge inteligente via VSCodeConfigMerger (BUG-16 fix).
     """
     dest = config.project_path / ".vscode" / "launch.json"
-    
+
     configurations: list[dict] = _LAUNCH_BY_LANGUAGE.get(
         config.language, _LAUNCH_BY_LANGUAGE["other"]
     )
-    
+
     payload = {"version": "0.2.0", "configurations": configurations}
-    
+
     if dest.exists():
         # FIX BUG P0: Usar merge_or_skip (VSCodeConfigMerger) ao invés de skip incondicional
         template_content = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"

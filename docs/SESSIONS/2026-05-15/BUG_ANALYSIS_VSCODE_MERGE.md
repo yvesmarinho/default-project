@@ -99,20 +99,20 @@ Substituir skip incondicional por chamada a `merge_or_skip()`:
 def generate_settings(config: ProjectConfig) -> CreatedItem:
     """Gera `.vscode/settings.json` personalizado..."""
     dest = config.project_path / ".vscode" / "settings.json"
-    
+
     # Gerar conteúdo do template
     settings: dict = {}
     settings.update(_SETTINGS_GLOBAL)
     settings.update(_SETTINGS_BY_DOMAIN.get(config.domain, {}))
     settings.update(_SETTINGS_BY_LANGUAGE.get(config.language, {}))
-    
+
     if dest.exists():
         # ✅ FIX: Usar merge_or_skip ao invés de skip incondicional
         import json
         from . import file_merge
         template_content = json.dumps(settings, indent=2, ensure_ascii=False)
         return file_merge.merge_or_skip(dest, template_content, interactive=False)
-    
+
     # Arquivo não existe - criar novo
     return _write_json(dest, settings)
 ```

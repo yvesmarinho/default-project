@@ -171,7 +171,7 @@ class IssueTemplateMerger:
 
         # Decidir sobre corpo: se customizado significativamente, preservar
         similarity = self._calculate_similarity(existing_body, template_body)
-        
+
         if similarity > 0.7:
             # Muito similar ao template, usar versão atualizada
             merged_body = template_body
@@ -216,12 +216,12 @@ class IssueTemplateMerger:
     def _parse_frontmatter(self, content: str) -> Tuple[Optional[Dict[str, Any]], str]:
         """
         Parse frontmatter YAML e corpo markdown.
-        
+
         Retorna: (frontmatter_dict, body_content)
         """
         # Regex para frontmatter: ---\n...\n---
         match = re.match(r'^---\s*\n(.*?)\n---\s*\n(.*)$', content, re.DOTALL)
-        
+
         if match:
             frontmatter_str = match.group(1)
             body = match.group(2)
@@ -239,39 +239,39 @@ class IssueTemplateMerger:
         """Formata markdown com frontmatter."""
         if not frontmatter:
             return body
-        
+
         fm_yaml = yaml.dump(
             frontmatter,
             default_flow_style=False,
             allow_unicode=True,
             sort_keys=False
         ).strip()
-        
+
         return f"---\n{fm_yaml}\n---\n{body}"
 
     def _calculate_similarity(self, text1: str, text2: str) -> float:
         """
         Calcula similaridade simples entre dois textos.
-        
+
         Retorna: valor entre 0.0 (totalmente diferente) e 1.0 (idêntico)
         """
         # Normalizar: lowercase, remover espaços extras
         t1 = " ".join(text1.lower().split())
         t2 = " ".join(text2.lower().split())
-        
+
         if t1 == t2:
             return 1.0
-        
+
         # Similaridade por palavras em comum
         words1 = set(t1.split())
         words2 = set(t2.split())
-        
+
         if not words1 or not words2:
             return 0.0
-        
+
         intersection = len(words1 & words2)
         union = len(words1 | words2)
-        
+
         return intersection / union if union > 0 else 0.0
 
     def _deep_merge(
@@ -284,7 +284,7 @@ class IssueTemplateMerger:
         """
         import copy
         result = copy.deepcopy(base)
-        
+
         for key, value in override.items():
             if key not in result:
                 result[key] = copy.deepcopy(value)
@@ -300,5 +300,5 @@ class IssueTemplateMerger:
             else:
                 # User wins
                 result[key] = copy.deepcopy(value)
-        
+
         return result

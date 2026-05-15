@@ -1,4 +1,4 @@
-# Alterações necessárias
+# Alterações necessárias Futuras
 
 - Analisar as informações dos sites abaixo para fazer as devidas atualizações.
   - [Github Copilot Instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
@@ -6,6 +6,12 @@
   - [Custom Agents ](https://code.visualstudio.com/docs/copilot/customization/custom-agents)
   - [manage MCP servers in VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers) habilitar Github MCP para acesso aos repositórios.
   - [Github Copilot in Visual Studio](https://github.blog/changelog/2026-04-30-github-copilot-in-visual-studio-april-update/)
+
+---
+
+# Alterações necessárias presente
+
+- time-tracker integrado ao prompt do session.manager
 
 ---
 

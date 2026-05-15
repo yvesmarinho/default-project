@@ -99,7 +99,7 @@ class PreCommitMerger:
             # 1. Parse existente
             existing_content = existing_path.read_text(encoding="utf-8")
             existing_data = yaml.safe_load(existing_content)
-            
+
             # 2. Parse template
             template_data = yaml.safe_load(template_content)
 
@@ -147,7 +147,7 @@ class PreCommitMerger:
 
             # 7. Gerar YAML mesclado
             merged_data = {"repos": [self._repo_to_dict(r) for r in merged_repos]}
-            
+
             # Preservar outras chaves top-level se existirem
             for key in existing_data:
                 if key != "repos":
@@ -205,11 +205,11 @@ class PreCommitMerger:
                     args=hook_dict.get("args", []),
                     exclude=hook_dict.get("exclude"),
                     files=hook_dict.get("files"),
-                    other={k: v for k, v in hook_dict.items() 
+                    other={k: v for k, v in hook_dict.items()
                            if k not in ["id", "name", "args", "exclude", "files"]}
                 )
                 hooks.append(hook)
-            
+
             result.append(PreCommitRepo(
                 repo=repo_dict.get("repo", ""),
                 rev=repo_dict.get("rev", ""),
@@ -224,7 +224,7 @@ class PreCommitMerger:
     ) -> List[PreCommitRepo]:
         """
         Merge repos: adiciona novos, atualiza existentes.
-        
+
         Estratégia:
         - Repos são identificados por URL
         - Se repo existe, merge hooks
@@ -235,13 +235,13 @@ class PreCommitMerger:
 
         # Processar todos repos (manter ordem do existente)
         seen = set()
-        
+
         # Primeiro, adicionar repos existentes (preservar ordem)
         for repo in existing:
             if repo.repo in seen:
                 continue
             seen.add(repo.repo)
-            
+
             # Verificar se há versão no template
             template_repo = next((t for t in template if t.repo == repo.repo), None)
             if template_repo:
@@ -257,13 +257,13 @@ class PreCommitMerger:
             else:
                 # Repo customizado, preservar
                 merged.append(repo)
-        
+
         # Adicionar repos novos do template
         for template_repo in template:
             if template_repo.repo not in seen:
                 seen.add(template_repo.repo)
                 merged.append(template_repo)
-        
+
         return merged
 
     def _merge_hooks(
@@ -273,7 +273,7 @@ class PreCommitMerger:
     ) -> List[PreCommitHook]:
         """
         Merge hooks dentro de um repo.
-        
+
         Estratégia:
         - Hooks identificados por ID
         - Preservar hooks customizados
@@ -289,7 +289,7 @@ class PreCommitMerger:
             if hook.id in seen:
                 continue
             seen.add(hook.id)
-            
+
             # Verificar se há versão no template
             template_hook = next((t for t in template if t.id == hook.id), None)
             if template_hook:
@@ -307,13 +307,13 @@ class PreCommitMerger:
             else:
                 # Hook customizado, preservar
                 merged.append(hook)
-        
+
         # Adicionar hooks novos do template
         for template_hook in template:
             if template_hook.id not in seen:
                 seen.add(template_hook.id)
                 merged.append(template_hook)
-        
+
         return merged
 
     def _detect_changes(
@@ -323,20 +323,20 @@ class PreCommitMerger:
     ) -> List[str]:
         """Detecta mudanças entre configurações."""
         changes = []
-        
+
         original_urls = {r.repo for r in original}
         merged_urls = {r.repo for r in merged}
-        
+
         new_repos = merged_urls - original_urls
         if new_repos:
             changes.append(f"+{len(new_repos)} repos")
-        
+
         # Detectar hooks novos ou args atualizados
         original_hooks = sum(len(r.hooks) for r in original)
         merged_hooks = sum(len(r.hooks) for r in merged)
         if merged_hooks > original_hooks:
             changes.append(f"+{merged_hooks - original_hooks} hooks")
-        
+
         # Detectar mudanças em args de hooks existentes
         for repo in merged:
             orig_repo = next((r for r in original if r.repo == repo.repo), None)
@@ -347,7 +347,7 @@ class PreCommitMerger:
                         if "args updated" not in changes:
                             changes.append("args updated")
                         break
-        
+
         # Detectar versões atualizadas
         updated_revs = 0
         for repo in merged:
@@ -356,7 +356,7 @@ class PreCommitMerger:
                 updated_revs += 1
         if updated_revs > 0:
             changes.append(f"~{updated_revs} versions")
-        
+
         return changes
 
     def _repo_to_dict(self, repo: PreCommitRepo) -> Dict[str, Any]:
@@ -375,7 +375,7 @@ class PreCommitMerger:
             # Adicionar outros campos customizados
             hook_dict.update(hook.other)
             hooks_list.append(hook_dict)
-        
+
         return {
             "repo": repo.repo,
             "rev": repo.rev,
