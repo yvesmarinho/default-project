@@ -302,6 +302,49 @@ Remover arquivos temporários gerados durante a sessão:
 
 ---
 
+### Passo 11 — Finalizar Time Tracking
+
+**Ação do agente**:
+
+```bash
+python scripts/session-time-tracker.py end
+```
+
+**Resultado esperado**:
+```
+============================================================
+📊 Session Report — [YYYY-MM-DD]
+============================================================
+Start:  [HH:MM:SS]
+End:    [HH:MM:SS]
+Total:  [HH:MM:SS]
+Active: [HH:MM:SS]
+Paused: [HH:MM:SS]
+Breaks: [N]
+============================================================
+✅ Session ended. Report saved to: .session-time/session_[YYYY-MM-DD].json
+```
+
+**Adicionar métricas ao FINAL_STATUS** (se existir):
+
+Adicionar seção no `docs/SESSIONS/[YYYY-MM-DD]/FINAL_STATUS_[YYYY-MM-DD].md`:
+
+```markdown
+## ⏱️ Session Metrics
+
+| Métrica | Valor |
+|---------|-------|
+| **Start** | [HH:MM:SS] |
+| **End** | [HH:MM:SS] |
+| **Total Duration** | [HH:MM:SS] |
+| **Active Time** | [HH:MM:SS] |
+| **Breaks** | [N] pauses ([HH:MM:SS]) |
+```
+
+**Referência**: Para comandos de pausa/resume durante a sessão, consulte `session.manager` agent.
+
+---
+
 ## ✅ Checklist de Encerramento
 
 ### Documentação
@@ -326,6 +369,11 @@ Remover arquivos temporários gerados durante a sessão:
 - [ ] `git commit -F /tmp/git-msg.txt` executado com sucesso
 - [ ] `git push` executado com sucesso
 - [ ] `git status` pós-push: "up to date"
+
+### Time Tracking
+- [ ] `python scripts/session-time-tracker.py end` executado
+- [ ] Métricas de tempo adicionadas ao FINAL_STATUS (se existir)
+- [ ] Relatório de sessão salvo em `.session-time/session_[data].json`
 
 ---
 

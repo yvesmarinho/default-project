@@ -35,6 +35,30 @@ Se algum servidor estiver ausente ou comentado no arquivo → reportar e instrui
 
 ---
 
+### Passo 1.5 — Iniciar Time Tracking
+
+**Ação do agente**:
+
+```bash
+python scripts/session-time-tracker.py start
+```
+
+**Resultado esperado**:
+```
+✅ Session started at [HH:MM:SS]
+📁 State saved to: .session-time/current.json
+```
+
+**Se já houver sessão ativa**:
+- Executar `python scripts/session-time-tracker.py status` para ver status atual
+- Perguntar ao usuário se deseja finalizar sessão anterior ou continuar
+
+**Objetivo**: Rastrear tempo ativo de trabalho, pausas e gerar métricas de produtividade.
+
+**Referência**: Para gerenciar pausas durante a sessão, consulte o agente `session.manager`.
+
+---
+
 ### Passo 2 — Recuperar Contexto da Sessão Anterior
 
 Leia os seguintes arquivos na ordem indicada:

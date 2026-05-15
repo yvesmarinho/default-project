@@ -97,6 +97,7 @@ backups/
 .env.local
 .env.*.local
 .session-index/
+.session-time/
 
 # Logs
 logs/
