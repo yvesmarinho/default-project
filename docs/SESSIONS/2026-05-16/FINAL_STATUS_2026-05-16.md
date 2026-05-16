@@ -34,6 +34,22 @@
 | **Recovery Time** | 3 minutos (vs 15 min estimados) |
 | **ROI da Recovery** | 240.000% (4.000:1 saving) |
 
+### ⏰ Time Tracking Metrics (IMP-58)
+
+**Sessão registrada**: 2026-05-16 (session_2026-05-16.json)
+
+| Métrica | Valor |
+|---------|-------|
+| **Início** | 10:28:54 |
+| **Fim** | 10:31:34 |
+| **Duração Total** | 2m 40s (160s) |
+| **Pausas** | 1 pausa (15.7s) |
+| **Tempo Ativo** | 2m 24s (144.3s) |
+| **Eficiência** | 90.3% |
+
+**Pausa registrada**:
+- 10:29:28 → 10:29:44 (15.7s) — "Testing pause functionality"
+
 ---
 
 ## Linha do Tempo da Sessão
