@@ -1,0 +1,34 @@
+# ============================================================
+# values-staging.yaml — Overrides para ambiente staging.
+# Uso: helm upgrade --install myapp helm/ -f helm/values.yaml -f helm/values-staging.yaml
+# ============================================================
+
+replicaCount: 1
+
+image:
+  # Always pull latest image tag in staging to catch regressions early
+  pullPolicy: Always
+
+# Reduced resources for cost savings in non-production
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# HPA disabled in staging — simpler to debug with fixed replica count
+autoscaling:
+  enabled: false
+
+ingress:
+  hosts:
+    - host: my-app.staging.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: my-app-staging-tls
+      hosts:
+        - my-app.staging.example.com

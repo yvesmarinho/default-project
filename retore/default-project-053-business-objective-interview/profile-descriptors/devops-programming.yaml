@@ -1,0 +1,193 @@
+# ============================================================
+# Profile Descriptor — Enterprise Default Project Template
+# Schema versão 1.0.0
+# ============================================================
+
+# ------------------------------------------------------------------
+# Identificação
+# ------------------------------------------------------------------
+name: devops-programming
+description: >
+  Perfil base para projetos de programação (Python, TypeScript, Go, other).
+  Ativa regras de qualidade de código, convenções de linguagem e estrutura de
+  pastas orientada a src/tests/docs.
+
+VERSION: "1.0.0"
+LAST_TESTED_DATE: "2026-03-07"
+
+# ------------------------------------------------------------------
+# Dependências
+# ------------------------------------------------------------------
+requires:
+  - "git installed"
+  - "uv installed" # gerenciador Python preferencial (ver convenções em templates.py)
+  # linguagem-específicos:
+  #   python: python >= 3.11
+  #   typescript: node >= 20, npm/yarn/pnpm
+  #   go: go >= 1.22
+
+# ------------------------------------------------------------------
+# Artefatos gerados
+# ------------------------------------------------------------------
+generates:
+  files:
+    - path: ".copilot-rules.md"
+      source: ".copilot-shared/.copilot-rules.md"
+      description: "Regras genéricas compartilhadas do Copilot (symlink ou cópia)"
+      required: true
+      when: null
+
+    - path: ".copilot-rules-{project_name}.md"
+      source: "templates.py:generate_copilot_rules()"
+      description: >
+        Regras específicas do projeto: identidade, perfis ativos, estrutura de pastas,
+        regras P0/P1 do domínio, convenções de linguagem, segurança, decisões técnicas.
+      required: true
+      when: null
+
+    - path: ".github/copilot-instructions.md"
+      source: "templates.py:generate_copilot_instructions()"
+      description: >
+        Instrução auto-injetada pelo VS Code em toda sessão Copilot. Referencia as regras
+        completas e declara o perfil de domínio ativo.
+      required: true
+      when: null
+
+    - path: ".github/prompts/session-start.prompt.md"
+      source: ".copilot-shared/.github/prompts/session-start.prompt.md"
+      description: "Ritual de início de sessão: carrega contexto, verifica .secrets/, abre TODOs"
+      required: true
+      when: null
+
+    - path: ".github/prompts/session-end.prompt.md"
+      source: ".copilot-shared/.github/prompts/session-end.prompt.md"
+      description: "Ritual de encerramento: gera relatório, atualiza TODO/INDEX, comita docs"
+      required: true
+      when: null
+
+    - path: ".github/prompts/domain/devops-programming.prompt.md"
+      source: ".copilot-shared/.github/prompts/domain/devops-programming.prompt.md"
+      description: "Domain profile: comportamento do Copilot no modo PROGRAMMING"
+      required: true
+      when: null
+
+    - path: ".github/prompts/domain/devops-security.prompt.md"
+      source: ".copilot-shared/.github/prompts/domain/devops-security.prompt.md"
+      description: "Domain profile transversal: controles de segurança (aplicado sempre)"
+      required: true
+      when: null
+
+    - path: "docs/INDEX.md"
+      source: "templates inline (scaffold.py)"
+      description: "Índice do projeto com links para sessões, decisões e documentos"
+      required: true
+      when: null
+
+    - path: "docs/TODO.md"
+      source: "templates inline (scaffold.py)"
+      description: "Lista de tarefas incremental do projeto"
+      required: true
+      when: null
+
+    - path: "docs/SESSIONS/"
+      source: "scaffold.py cria estrutura vazia"
+      description: "Diretório de sessões de trabalho (DAILY_ACTIVITIES, SESSION_REPORT, etc.)"
+      required: true
+      when: null
+
+    - path: ".vscode/settings.json"
+      source: "templates inline (scaffold.py)"
+      description: "Configurações VS Code: extensions recomendadas, formatação, Copilot"
+      required: true
+      when: null
+
+    - path: ".gitignore"
+      source: "templates inline (scaffold.py)"
+      description: "Gitignore padrão (node_modules, .venv, .data, .secrets, dist)"
+      required: true
+      when: null
+
+    - path: "pyproject.toml"
+      source: "templates inline (scaffold.py)"
+      description: "Configuração Python PEP 621: nome, versão, deps, ruff, pytest"
+      required: false
+      when: "language == python"
+
+    - path: "package.json"
+      source: "templates inline (scaffold.py)"
+      description: "Configuração Node.js: scripts, devDependencies básicas"
+      required: false
+      when: "language == typescript"
+
+    - path: "go.mod"
+      source: "templates inline (scaffold.py)"
+      description: "Módulo Go com versão fixada"
+      required: false
+      when: "language == go"
+
+  patches:
+    - file: ".gitignore"
+      description: >
+        Acrescenta entradas de segurança: .secrets/, .data/, .venv/, *.key,
+        *.pem, *token*, *password*
+      operation: "append"
+
+# ------------------------------------------------------------------
+# Compatibilidade entre perfis
+# ------------------------------------------------------------------
+excludes_with:
+  - devops-infrastructure # conflito: estrutura de pastas (src/ vs terraform/)
+  - devops-analysis # conflito: convenções de dados vs. convenções de código
+
+combines_with:
+  - name: devops-security
+    notes: "Sempre combinado — perfil transversal aplicado a todos os projetos"
+  - name: python-fastapi
+    notes: "[IMP-20] Layer 2 Python — FastAPI async API (language == python obrigatório)"
+  - name: python-flask
+    notes: "[IMP-20b] Layer 2 Python — Flask microframework (language == python obrigatório)"
+
+# ------------------------------------------------------------------
+# Segurança
+# ------------------------------------------------------------------
+security:
+  enforces:
+    - control: "OWASP-A09"
+      description: "Secrets scan a cada sessão — padrões .env*, *.key, *.pem, *secret*, *password*, *token*"
+      tool: "copilot-rules"
+      severity: "critical"
+      automated: false
+    - control: "CWE-798"
+      description: "Sem valores hardcoded — regra P0 injetada em .copilot-rules-{project_name}.md"
+      tool: "copilot-rules"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A06"
+      description: "bandit scan para projetos Python (pre-commit ou CI)"
+      tool: "bandit"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A06"
+      description: "pip-audit para projetos Python (uv run pip-audit em Makefile)"
+      tool: "pip-audit"
+      severity: "high"
+      automated: true
+    - control: "CWE-312"
+      description: "Sem credenciais em variáveis de ambiente inline — usar .secrets/.env"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+
+# ------------------------------------------------------------------
+# Metadados
+# ------------------------------------------------------------------
+tags:
+  - programming
+  - python
+  - typescript
+  - go
+  - core
+  - scaffold
+
+layer: core
+maintainer: "template-architect"

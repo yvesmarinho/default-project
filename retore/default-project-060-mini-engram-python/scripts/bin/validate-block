@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""
+Block Validator CLI - IMP-65 Phase 4.3
+
+Validate template block files.
+
+Usage:
+    validate-block <block-path> [--verbose]
+
+Examples:
+    # Validate single block
+    validate-block .specify/templates/blocks/user-scenarios-v2.0.md
+
+    # Validate with details
+    validate-block .specify/templates/blocks/user-scenarios-v2.0.md --verbose
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+# Add scripts to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from lib.template_blocks import (
+    validate_block_file,
+    load_block,
+    BlockNotFoundError,
+    BlockValidationError,
+)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Validate template block files",
+        epilog="Part of IMP-65 Phase 4 - Modular Template System"
+    )
+
+    parser.add_argument(
+        "block",
+        type=Path,
+        help="Path to block file to validate"
+    )
+
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Show detailed validation results"
+    )
+
+    args = parser.parse_args()
+
+    try:
+        # Validate block
+        is_valid, errors = validate_block_file(args.block)
+
+        if is_valid:
+            print(f"✅ Valid block: {args.block.name}")
+
+            if args.verbose:
+                # Load and show metadata
+                metadata, content = load_block(args.block)
+                print(f"\n📋 Metadata:")
+                print(f"   Block name: {metadata.block_name}")
+                print(f"   Version: {metadata.version}")
+                print(f"   Created: {metadata.created}")
+                print(f"   Description: {metadata.description}")
+                if metadata.author:
+                    print(f"   Author: {metadata.author}")
+                if metadata.tags:
+                    print(f"   Tags: {', '.join(metadata.tags)}")
+
+                print(f"\n📄 Content:")
+                print(f"   Size: {len(content)} chars")
+                print(f"   Lines: {content.count(chr(10))}")
+
+            sys.exit(0)
+        else:
+            print(f"❌ Invalid block: {args.block.name}")
+            print(f"\nErrors ({len(errors)}):")
+            for error in errors:
+                print(f"   - {error}")
+            sys.exit(1)
+
+    except BlockNotFoundError as e:
+        print(f"❌ Error: {e}", file=sys.stderr)
+        sys.exit(2)
+
+    except BlockValidationError as e:
+        print(f"❌ Validation error: {e}", file=sys.stderr)
+        sys.exit(3)
+
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}", file=sys.stderr)
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(99)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,224 @@
+schema_version: "1.0.0"
+
+name: qa-automation-engineer
+layer: 2
+version: "1.0.0"
+last_tested: "2026-04-14"
+status: stable
+
+description: >
+  Perfil Layer 2 para QA Automation Engineer. Combina expertise em test
+  automation (unit, integration, E2E), test strategy, CI/CD integration,
+  performance testing, e quality gates. Ideal para projetos que exigem cobertura
+  de testes automatizados, quality assurance desde o início do desenvolvimento,
+  e feedback rápido via pipelines CI/CD.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: testing-agnostic
+  framework: pytest-jest-cypress
+  tags:
+    - qa-automation
+    - test-automation
+    - ci-cd
+    - quality-gates
+    - performance-testing
+    - test-strategy
+    - layer2
+
+expertise_domains:
+  test_automation_frameworks:
+    - Unit testing (Jest, pytest, JUnit, xUnit, mocking, fixtures)
+    - Integration testing (API testing, database testing, service integration)
+    - E2E testing (Cypress, Playwright, Selenium, TestCafe)
+    - Component testing (React Testing Library, Vue Test Utils, Storybook tests)
+    - Visual regression testing (Percy, Chromatic, BackstopJS)
+    - API testing (Postman, REST Assured, SuperTest, Insomnia)
+    - Mobile testing (Appium, Detox, Espresso for Android, XCUITest for iOS)
+    - Contract testing (Pact, Spring Cloud Contract, API contracts)
+
+  test_pyramid_and_strategy:
+    - Test pyramid (70% unit, 20% integration, 10% E2E)
+    - Test trophy (prioritize integration tests for web apps)
+    - Risk-based testing (prioritize tests for critical paths, high-risk
+      features)
+    - Shift-left testing (test early, test often, involve QA in design phase)
+    - Test coverage metrics (line coverage, branch coverage, mutation testing)
+    - Test data management (fixtures, factories, test databases, anonymization)
+    - Flaky test management (retries, timeouts, isolation, root cause analysis)
+    - Test documentation (test plans, test cases, bug reports, regression suites)
+
+  ci_cd_integration:
+    - Test automation in CI/CD (GitHub Actions, GitLab CI, Jenkins, CircleCI)
+    - Parallel test execution (split tests across multiple runners, reduce CI
+      time)
+    - Test reporting (JUnit XML, HTML reports, dashboards, trends)
+    - Quality gates (break build on test failures, coverage thresholds, lint
+      errors)
+    - Pre-commit hooks (run fast tests locally before push)
+    - Post-deployment testing (smoke tests, health checks, canary validation)
+    - Test result analysis (failure trends, test duration, flakiness detection)
+    - Test environment management (ephemeral environments, Docker, Kubernetes)
+
+  performance_and_load_testing:
+    - Load testing (JMeter, Gatling, k6, Locust, simulate realistic traffic)
+    - Stress testing (push system beyond limits, identify breaking points)
+    - Spike testing (sudden traffic spikes, autoscaling validation)
+    - Soak testing (sustained load over hours/days, memory leaks, resource
+      degradation)
+    - Performance metrics (response time p50/p95/p99, throughput, error rate)
+    - Bottleneck identification (profiling, flamegraphs, database query analysis)
+    - Performance regression testing (compare against baseline, alert on
+      degradation)
+    - Chaos engineering (failure injection, resilience testing, Chaos Monkey)
+
+  accessibility_and_security_testing:
+    - Accessibility testing (axe DevTools, WAVE, Pa11y, WCAG 2.1 AA compliance)
+    - Security testing (OWASP ZAP, Burp Suite, SQL injection, XSS, CSRF)
+    - Vulnerability scanning (Snyk, Dependabot, OWASP Dependency-Check)
+    - Penetration testing (ethical hacking, exploit validation, remediation
+      verification)
+    - GDPR/LGPD compliance testing (data privacy, consent, data deletion)
+    - Authentication testing (OAuth flows, token expiration, session management)
+    - Authorization testing (RBAC, privilege escalation, IDOR)
+    - Input validation testing (fuzz testing, boundary value analysis)
+
+  test_reporting_and_metrics:
+    - Test coverage reports (Istanbul, Coverage.py, JaCoCo, SonarQube)
+    - Test dashboards (Allure, TestRail, Qase, ReportPortal)
+    - Defect metrics (defect density, defect removal efficiency, escaped defects)
+    - Test execution metrics (pass rate, failure rate, test duration)
+    - Quality metrics (code coverage, mutation score, cyclomatic complexity)
+    - Trend analysis (test failures over time, test duration trends, flaky tests)
+    - Test ROI calculation (test maintenance cost, bug prevention cost savings)
+    - KPIs (mean time to detect bugs, mean time to resolution, deployment
+      frequency)
+
+stack:
+  unit_testing:
+    - Jest (JavaScript/TypeScript)
+    - pytest (Python)
+    - JUnit (Java), xUnit (.NET)
+    - Vitest (Vite-based)
+
+  e2e_testing:
+    - Playwright (preferred, cross-browser)
+    - Cypress (fast, developer-friendly)
+    - Selenium (mature, widely supported)
+
+  api_testing:
+    - Postman + Newman (collections, CI/CD)
+    - REST Assured (Java)
+    - SuperTest (Node.js)
+
+  performance_testing:
+    - k6 (modern, JavaScript-based)
+    - JMeter (mature, feature-rich)
+    - Gatling (Scala, high performance)
+
+  accessibility:
+    - axe DevTools (browser extension)
+    - Pa11y (CLI, CI/CD integration)
+    - WAVE (web accessibility evaluation)
+
+combines_with:
+  - frontend-architect
+  - backend-architect
+  - appsec-engineer
+  - devops-programming
+  - devops-infrastructure
+
+templates_path: ".github/templates/qa-automation-engineer"
+
+templates:
+  - path: "qa/test-plan-template.md"
+    description: "Test plan: scope, strategy, test pyramid, coverage targets, schedule"
+
+  - path: "qa/test-case-template.md"
+    description: "Test case: ID, preconditions, steps, expected result, actual result"
+
+  - path: "qa/bug-report-template.md"
+    description: "Bug report: severity, priority, steps to reproduce, environment,
+      screenshots"
+
+  - path: "qa/performance-test-plan.md"
+    description: "Performance test plan: load scenarios, metrics, thresholds, tools"
+
+workflows:
+  test_automation:
+    - name: "Test Automation Implementation"
+      steps:
+        - "Identify testable features: critical paths, high-risk areas,
+          regression prone"
+        - "Select test framework: Jest for unit, Playwright for E2E, k6 for
+          performance"
+        - "Write tests: follow AAA pattern (Arrange, Act, Assert), use
+          descriptive names"
+        - "Integrate in CI/CD: run tests on every PR, parallel execution, fail
+          fast"
+        - "Monitor test metrics: coverage, pass rate, duration, flakiness"
+        - "Maintain tests: refactor for reusability, remove obsolete tests, fix
+          flaky tests"
+
+  quality_gates:
+    - name: "CI/CD Quality Gates"
+      steps:
+        - "Unit tests: >= 80% code coverage, all tests passing"
+        - "Integration tests: API contracts validated, database integration
+          tested"
+        - "E2E tests: critical user flows automated (login, checkout, signup)"
+        - "Lint/format: ESLint, Prettier, no warnings/errors"
+        - "Security: SAST scan passing, no high/critical vulnerabilities"
+        - "Performance: load test passing, response time p95 < 500ms"
+        - "Accessibility: axe scan passing, WCAG 2.1 AA compliance"
+
+best_practices:
+  - "Principle: Write tests first (TDD) or alongside code (test-driven
+    development)"
+  - "Principle: Test behaviors, not implementation (avoid brittle tests)"
+  - "Principle: Fast feedback (unit tests < 1s, integration < 10s, E2E < 2min)"
+  - "Principle: Isolation (each test independent, no shared state,
+    order-agnostic)"
+  - "Principle: Readability (descriptive test names, clear assertions, good test
+    structure)"
+  - "Principle: Maintainability (DRY, use fixtures/factories, page object model
+    for E2E)"
+  - "Principle: Test coverage is not a goal (80% is good, 100% is wasteful)"
+  - "Principle: Automate regression tests (frequent failures should be
+    automated)"
+  - "Principle: Fail fast (run fast tests first, stop on first failure in CI)"
+  - "Principle: Monitor test health (track flaky tests, slow tests, test trends)"
+
+examples:
+  - name: "E-commerce Application Test Suite"
+    bounded_contexts:
+      - "Unit tests: 85% coverage, Jest + React Testing Library, ~800 tests,
+        <30s runtime"
+      - "Integration tests: API endpoints, database queries, ~150 tests, <2min
+        runtime"
+      - "E2E tests: Playwright, critical flows (login, search, add to cart,
+        checkout), 25 tests, <5min"
+      - "Performance: k6 load test, 1000 req/sec, p95 < 500ms, error rate < 1%"
+      - "Accessibility: axe DevTools, WCAG 2.1 AA compliance, 0 violations"
+      - "CI/CD: GitHub Actions, parallel test execution, quality gates enforced"
+
+    adrs:
+      - id: "ADR-QA-001"
+        title: "Use Playwright instead of Cypress for E2E tests"
+        rationale: "Playwright supports multiple browsers (Chrome, Firefox, Safari), has
+          better wait mechanisms, faster execution"
+
+      - id: "ADR-QA-002"
+        title: "80% code coverage target, not 100%"
+        rationale: "Diminishing returns after 80%, focus on critical paths and high-risk
+          areas, avoid testing trivial code"
+
+quality_gates:
+  - "Test plan documented: scope, strategy, test pyramid, coverage targets"
+  - "Unit test coverage >= 80% for core business logic"
+  - "Integration tests: API endpoints, database queries, external service mocks"
+  - "E2E tests: critical user flows automated (top 5 user journeys)"
+  - "Performance tests: load test handles 2x peak traffic, p95 < 500ms"
+  - "Accessibility tests: axe scan passing, WCAG 2.1 AA compliance"
+  - "CI/CD integration: tests run on every PR, quality gates enforced"
+  - "Test documentation: test cases, bug reports, regression suites"

@@ -1,0 +1,327 @@
+---
+version: "2.0"  # Formato: objetivo.yaml v2.0 (Markdown Híbrido)
+project:
+  name: "knowledge-harvester-library"  # ID único (kebab-case, ex: user-management-api)
+  title: "Knowledge Harvester Library"  # Nome legível (ex: API de Gerenciamento de Usuários)
+  type: "cli-tool"  # Comum: backend-api, frontend-spa, cli-tool, library, deployment-chart, infrastructure-code
+  domain: "programming"  # Options: programming, infrastructure, data-engineering
+  language: "python"  # Linguagem principal (python, typescript, go, hcl, etc)
+
+created_at: "2026-04-28"  # Data de criação (YYYY-MM-DD)
+created_by: "yvesmarinho"  # Autor/responsável
+
+generation:
+  profiles_auto_detect: true  # Auto-detecta profiles baseado em domain/language
+  validate_on_save: true  # Valida quando arquivo é salvo (VS Code)
+  generate_spec_on_change: false  # Auto-gera objetivo-spec.yaml ao salvar (futuro)
+
+validation:
+  level: "strict"  # Options: strict (bloqueia erros), permissive (warns), off
+  fail_on_warning: false  # Se true, warnings são tratados como erros
+  require_p0: true  # P0 obrigatório (seções 1-3)
+  require_p1: false  # P1 opcional (seções 4-5)
+---
+
+# 🎯 Objetivo: [Nome do Projeto]
+
+<!-- Progressive Disclosure:
+     P0 (essencial): Seções 1-3 — Obrigatório
+     P1 (contextual): Seções 4-5 — Recomendado
+     P2 (avançado): Seções 6-9 — Opcional
+-->
+
+## 1️⃣ O que este projeto faz? <!-- P0 - Essencial -->
+
+**Em uma frase**: [Descreva em 1 frase clara o que o projeto faz]
+
+**Componentes principais**:
+- **Componente 1**: Descrição breve
+- **Componente 2**: Descrição breve
+- **Componente 3**: Descrição breve
+
+**Stack técnico**:
+- Linguagem/framework principal
+- Banco de dados / storage
+- Bibliotecas críticas
+
+---
+
+## 2️⃣ Qual problema resolve? <!-- P0 - Essencial -->
+
+### Problema Atual
+
+[Descreva o problema que existe hoje, antes desta solução]
+
+- **Dor 1**: Descrição
+- **Dor 2**: Descrição
+- **Dor 3**: Descrição
+
+### Impacto Medido
+
+**Métrica** | **Antes** | **Depois** | **Δ**
+--- | --- | --- | ---
+Tempo de X | valor | valor | %
+Taxa de erro | valor | valor | %
+Custo mensal | valor | valor | %
+
+### Audiência Afetada
+
+1. **Persona 1** (quantidade) — Como é afetada
+2. **Persona 2** (quantidade) — Como é afetada
+3. **Persona 3** (quantidade) — Como é afetada
+
+---
+
+## 3️⃣ Escopo do Projeto <!-- P0 - Essencial -->
+
+### Incluído ✅
+
+**Feature 1**
+- Item 1
+- Item 2
+
+**Feature 2**
+- Item 1
+- Item 2
+
+### Excluído ❌
+
+- **Feature X** — Motivo (ex: feature futura, fora de escopo inicial)
+- **Feature Y** — Motivo
+- **Feature Z** — Motivo
+
+### Fora de Escopo ⚠️
+
+- Item que definitivamente não será feito nesta versão
+
+---
+
+## 4️⃣ Restrições e Requisitos Não-Funcionais <!-- P1 - Contextual -->
+
+### Performance
+
+- **Métrica 1**: Valor esperado (ex: latência p95 <200ms)
+- **Métrica 2**: Valor esperado
+- **Métrica 3**: Valor esperado
+
+### Escalabilidade
+
+- Requisitos de escala (ex: suportar 1000 req/s)
+
+### Segurança
+
+- Requisitos de segurança obrigatórios
+- Compliance (ex: LGPD, GDPR)
+
+### Disponibilidade
+
+- Uptime SLO (ex: 99.9% = 43 min downtime/mês)
+- Estratégia de HA
+
+### Observabilidade
+
+- Logs, metrics, traces requeridos
+
+### Compatibilidade
+
+- Versões de linguagem, frameworks, browsers, etc
+
+---
+
+## 5️⃣ Regras de Negócio <!-- P1 - Contextual -->
+
+<!-- Organize como:
+     ### Regra #1: Nome Descritivo
+     **Cenário**: Quando X acontece...
+     **Validações**:
+     - ✅ Item válido
+     - ❌ Item inválido
+     **Output esperado**: Exemplo concreto (JSON, YAML, etc)
+     Máximo 5 regras, 1-2 exemplos de código por regra
+-->
+
+### Regra #1: [Nome da Regra]
+
+**Cenário**: [Quando esta regra se aplica]
+
+**Validações**:
+- ✅ [Condição válida]
+- ✅ [Condição válida]
+- ❌ [Condição inválida]
+- ⚠️ [Condição de atenção]
+
+**Output esperado**:
+```json
+{
+  "exemplo": "de output esperado"
+}
+```
+
+**Regras adicionais**:
+- Detalhes específicos desta regra
+
+---
+
+### Regra #2: [Nome da Regra]
+
+[Repetir estrutura acima]
+
+---
+
+## 6️⃣ Estrutura de Pastas <!-- P2 - Avançado -->
+
+<!-- Use comentários # inline para explicar o propósito de cada arquivo.
+     Alinhe comentários multi-linha para melhor legibilidade.
+-->
+
+```
+projeto/
+├── src/
+│   ├── main.py                      # Ponto de entrada principal
+│   │                                # Descrição adicional se necessário
+│   │
+│   ├── core/
+│   │   └── config.py                # Configurações via env vars
+│   │
+│   └── api/
+│       └── routes.py                # Definição de rotas HTTP
+│
+├── tests/
+│   ├── conftest.py                  # Fixtures pytest
+│   └── test_integration.py          # Testes de integração
+│
+├── docs/
+│   └── README.md                    # Documentação principal
+│
+├── .env.example                     # Template de variáveis de ambiente
+├── pyproject.toml                   # Dependências e config do projeto
+├── Dockerfile                       # Container para deploy
+└── Makefile                         # Comandos úteis (dev, test, lint)
+```
+
+---
+
+## 7️⃣ Tecnologias e Ferramentas <!-- P2 - Avançado -->
+
+### Core Stack
+
+**Linguagem e Framework**:
+- **[Nome]** versão — Motivo da escolha
+
+**Banco de Dados**:
+- **[Nome]** versão — Motivo
+
+**Bibliotecas principais**:
+- **[Nome]** versão — Para que serve
+
+### Ferramentas de Desenvolvimento
+
+- **Testes**: Framework usado
+- **Linting**: Ferramenta
+- **CI/CD**: Pipeline
+
+### Infraestrutura
+
+- **Container**: Docker, Kubernetes, etc
+- **Cloud**: AWS, GCP, Azure
+- **Observabilidade**: Logs, metrics, APM
+
+---
+
+## 8️⃣ Próximos Passos <!-- P2 - Avançado -->
+
+<!-- Organize por Fases com tempo estimado:
+     ### Fase 1: Nome da Fase (tempo estimado)
+     **Grupo de tarefas**:
+     - [ ] Tarefa 1
+     - [ ] Tarefa 2
+-->
+
+### Fase 1: [Nome da Fase] (tempo estimado)
+
+**Grupo de tarefas 1**:
+- [ ] Tarefa 1
+- [ ] Tarefa 2
+- [ ] Tarefa 3
+
+**Grupo de tarefas 2**:
+- [ ] Tarefa 1
+- [ ] Tarefa 2
+
+**Checkpoint**: Objetivo desta fase ✅
+
+---
+
+### Fase 2: [Nome da Fase] (tempo estimado)
+
+[Repetir estrutura acima]
+
+---
+
+## 9️⃣ Contexto Adicional <!-- P2 - Avançado -->
+
+<!-- Sub-headers sugeridas:
+     ### Histórico do Projeto
+     ### Arquitetura de Referência
+     ### Decisões de Design (Por que X em vez de Y?)
+     ### Referências Externas
+     ### Meta-Observação
+-->
+
+### Histórico do Projeto
+
+**[Data]**:
+- Como o projeto surgiu
+- Parte de qual iniciativa
+- Motivação principal
+
+---
+
+### Arquitetura de Referência
+
+**Pattern usado**: [Nome do pattern]
+
+```
+[Diagrama ASCII ou descrição da arquitetura]
+Request → Component A → Component B → Database
+```
+
+**Por que este pattern?**
+- Vantagem 1
+- Vantagem 2
+
+---
+
+### Decisões de Design
+
+**Por que [Tecnologia X] em vez de [Tecnologia Y]?**
+- Razão 1
+- Razão 2
+- Trade-offs
+
+---
+
+### Referências Externas
+
+**Documentação oficial**:
+- [Link para docs]
+
+**Security best practices**:
+- [Link para guidelines]
+
+**Projeto similar (referência)**:
+- [Link para exemplo]
+
+---
+
+### Meta-Observação
+
+**Este arquivo valida objetivo.yaml v2.0**:
+- ✅ Formato Markdown Híbrido (YAML frontmatter + MD body)
+- ✅ Progressive disclosure (P0/P1/P2)
+- ✅ Emojis orientadores
+- ✅ Exemplos inline
+- ✅ Seção 8️⃣ com checkboxes
+
+**Tempo de preenchimento estimado**: [tempo] min
+**Target de linhas**: ~500 linhas para projetos reais

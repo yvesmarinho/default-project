@@ -1,0 +1,4 @@
+# Diretório de snapshots para os testes de template.
+# Arquivos .md aqui são gerados automaticamente na primeira execução com
+#   pytest tests/test_templates_snapshot.py --update-snapshots
+# e devem ser commitados para servir como baseline de regressão.

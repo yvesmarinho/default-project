@@ -1,0 +1,149 @@
+schema_version: "1.0.0"
+
+name: terraform-aws
+layer: 3
+version: "1.0.0"
+last_tested: "2026-03-07"
+status: stable
+
+description: >
+  Perfil Layer 3 para provisionamento de infraestrutura AWS com Terraform.
+  Módulos reutilizáveis para VPC, ECS Fargate e RDS PostgreSQL com IAM
+  least privilege por padrão. State remoto via S3 + DynamoDB. Nunca expõe
+  credenciais — passwords gerados com random_password e armazenados em SSM.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: hcl
+  framework: terraform
+  tags:
+    - terraform
+    - aws
+    - infrastructure
+    - iac
+    - vpc
+    - ecs
+    - rds
+    - layer3
+
+stack:
+  tool: "Terraform >= 1.6.0"
+  provider: "hashicorp/aws ~> 5.0"
+  modules:
+    - vpc
+    - ecs
+    - rds
+
+templates_path: ".github/templates/terraform-aws"
+
+templates:
+  - path: "terraform/versions.tf"
+    description: "required_providers (aws ~> 5.0, random ~> 3.6) + S3 backend stub (comentado)"
+
+  - path: "terraform/variables.tf"
+    description: "Variáveis do root module: project_name, env, aws_region, vpc_cidr, ECS e RDS settings"
+
+  - path: "terraform/main.tf"
+    description: "Root module: chama módulos vpc, ecs (condicional), rds (condicional)"
+
+  - path: "terraform/outputs.tf"
+    description: "Outputs documentados: vpc_id, alb_dns_name, ecs_cluster_name, rds_endpoint (sensitive)"
+
+  - path: "terraform/modules/vpc/main.tf"
+    description: "VPC com subnets públicas/privadas por AZ, IGW, NAT Gateway, route tables"
+
+  - path: "terraform/modules/vpc/variables.tf"
+    description: "Variáveis VPC: project_name, env, vpc_cidr, availability_zones, single_nat_gateway"
+
+  - path: "terraform/modules/vpc/outputs.tf"
+    description: "Outputs VPC: vpc_id, public_subnet_ids, private_subnet_ids, nat_gateway_ids"
+
+  - path: "terraform/modules/ecs/main.tf"
+    description: "ECS Fargate: cluster, IAM execution+task roles (least privilege), ALB, SGs, task def, service"
+
+  - path: "terraform/modules/ecs/variables.tf"
+    description: "Variáveis ECS: container_image, container_port, cpu, memory, desired_count, health_check_path"
+
+  - path: "terraform/modules/ecs/outputs.tf"
+    description: "Outputs ECS: cluster_name, service_name, alb_dns_name, ecs_security_group_id, log_group_name"
+
+  - path: "terraform/modules/rds/main.tf"
+    description: "RDS PostgreSQL: random_password, SSM SecureString, SG (ECS-only), subnet group, instance"
+
+  - path: "terraform/modules/rds/variables.tf"
+    description: "Variáveis RDS: db_instance_class, db_name, db_username, backup_retention_days, deletion_protection"
+
+  - path: "terraform/modules/rds/outputs.tf"
+    description: "Outputs RDS: db_endpoint (sensitive), db_name, db_password_ssm_path, db_security_group_id"
+
+  - path: "terraform/envs/staging.tfvars.example"
+    description: "Template de valores staging: ECS habilitado, RDS desabilitado, recursos reduzidos"
+
+  - path: "terraform/envs/prod.tfvars.example"
+    description: "Template de valores prod: ECS + RDS habilitados, deletion_protection=true"
+
+  - path: "Makefile.terraform"
+    description: "Targets: tf-init, tf-fmt, tf-validate, tf-plan, tf-apply, tf-destroy, tf-security-scan"
+
+security:
+  enforces:
+    - control: "OWASP-A01"
+      description: "IAM task role com Resource ARN específico — nunca Resource: '*'"
+      tool: "tfsec"
+      severity: "critical"
+      automated: true
+    - control: "CKV_AWS_17"
+      description: "RDS: publicly_accessible=false obrigatório"
+      tool: "checkov"
+      severity: "critical"
+      automated: true
+    - control: "CKV_AWS_17"
+      description: "RDS: storage_encrypted=true obrigatório"
+      tool: "checkov"
+      severity: "high"
+      automated: true
+    - control: "CKV_AWS_17"
+      description: "RDS: deletion_protection=true em produção"
+      tool: "checkov"
+      severity: "high"
+      automated: false
+    - control: "CWE-312"
+      description: "Passwords gerados com random_password + armazenados em SSM SecureString"
+      tool: "terraform"
+      severity: "critical"
+      automated: true
+    - control: "CWE-312"
+      description: "Sem *.tfvars commitados — gitignored (.gitignore cobre *.tfvars)"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "OWASP-A01"
+      description: "ECS tasks em subnets privadas (sem public IP)"
+      tool: "tfsec"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A05"
+      description: "ALB SG permite 80/443; ECS SG permite apenas ingress do ALB"
+      tool: "tfsec"
+      severity: "high"
+      automated: true
+    - control: "OWASP-A09"
+      description: "ECS: containerInsights=enabled para observabilidade"
+      tool: "terraform"
+      severity: "medium"
+      automated: true
+    - control: "CKV_AWS"
+      description: "Backend S3 com encrypt=true e DynamoDB locking"
+      tool: "checkov"
+      severity: "high"
+      automated: true
+
+combines_with:
+  - python-fastapi
+  - python-flask
+  - typescript-next
+
+requires:
+  - "terraform >= 1.6.0"
+  - "aws credentials configured (IAM role, env vars, or ~/.aws/credentials)"
+  - "S3 bucket + DynamoDB table for remote state (configure backend in versions.tf)"

@@ -1,0 +1,62 @@
+prompt:
+  role: user
+  content:
+    description: "Sistema automatizado de deploy que permite equipes DevOps configurar e executar deploys via interface web/CLI, com rollback automático em caso de falha e monitoramento integrado."
+    specification:
+      - project_name: "sistema-deploy-automatizado"
+      - response: "código Python 3.11+ com FastAPI, PostgreSQL para persistência, Redis para cache/queue, Celery para tasks assíncronas, Docker/Kubernetes para deploy, padrão hexagonal/clean architecture"
+      - docstyle: "Google Style Docstrings com type hints completos, Sphinx para geração de docs, ADRs para decisões arquiteturais, OpenAPI/Swagger para documentação de API"
+      - workflow-objetivo: "Workflow baseado em objetivo.yaml v2.0 com SpecKit"
+      - workflow-specify: "Geração automática de spec.md, plan.md e tasks.md"
+      - out-scope: "Itens fora do escopo serão documentados separadamente"
+      - rules:
+          - Regras para o projeto:
+              - "Apenas usuários com role 'deployer' podem executar deploys em produção"
+              - "Deploys em produção requerem aprovação de 2 reviewers"
+              - "Janela de deploy em produção: seg-qui 9h-17h, sexta até 15h"
+          - "Todos os arquivos gerados devem ser armazenados nas devidas pastas,
+            na raiz do projeto só os arquivos extremamente necessários"
+          - "Códigos gerados devem seguir padrões de qualidade e estilo, com
+            linting e formatação automática"
+          - "Fluxo de trabalho deve ser guiado por prompts para GitHub Copilot"
+          - "Configuração MCP deve ser gerada automaticamente baseada nas
+            especificações"
+          - "Sistema de versionamento e histórico deve rastrear todas as
+            mudanças"
+          - "Utilizar as melhores práticas de desenvolvimento de software,
+            incluindo testes automatizados, documentação clara e manutenção de
+            código"
+          - "Utilizar as melhores práticas de segurança, incluindo a gestão
+            segura de credenciais e a proteção contra vulnerabilidades comuns"
+    folder_structure:
+      - ".github - Agents, Workflows e ações para CI/CD (gerados
+        automaticamente)"
+      - ".git-hooks - Hooks personalizados para Git (gerados automaticamente)"
+      - ".secrets - Armazenamento seguro de chaves e tokens (não versionado)"
+      - ".specify - Configurações específicas do projeto (geradas
+        automaticamente)"
+      - ".vscode - Configurações VS Code e MCP (geradas automaticamente)"
+      - ""
+      - "docs - Documentação (gerada automaticamente)"
+      - "scripts - Scripts de automação inteligente"
+      - "src - Código-fonte do projeto (estrutura específica por tipo)"
+      - "test - Testes automatizados (framework baseado na linguagem)"
+      - "tmp - Arquivos temporários e de backup (não versionados e removidos
+        automaticamente no final da sessão)"
+      - "objetivo.yaml - Especificação detalhada do projeto"
+    expected_outcome:
+      - "100% dos deploys via sistema automatizado (zero deploys manuais)"
+      - "Tempo médio de deploy reduzido de 2-3h para <15min"
+      - "Taxa de erro de deploy reduzida de 15% para <2%"
+    infrastructure:
+      - "Cluster Kubernetes 1.28+ em AWS EKS (3 nodes t3.medium)"
+      - "Banco PostgreSQL 15 em RDS (db.t3.medium, 100GB storage)"
+    profile:
+      - role: "copilot-assisted-developer"
+        skill_level: "intermediate"
+        description: "Desenvolvedor usando GitHub Copilot para acelerar desenvolvimento"
+    features_to_implement:
+      - "Processamento automático de deploy com validação de pré-requisitos (P0)"
+      - "Interface web para configuração e monitoramento de deploys (P1)"
+      - "API REST para integração com CI/CD pipelines (P0)"
+    pending_tasks: []

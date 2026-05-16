@@ -1,0 +1,62 @@
+prompt:
+  role: user
+  content:
+    description: "{{DESCRIPTION}}"
+    specification:
+      - project_name: "{{PROJECT_NAME}}"
+      - response: "{{RESPONSE}}"
+      - docstyle: "{{DOCSTYLE}}"
+      - workflow-objetivo: "{{WORKFLOW_OBJETIVO}}"
+      - workflow-specify: "{{WORKFLOW_SPECIFY}}"
+      - out-scope: "{{OUT_SCOPE}}"
+      - rules:
+          - Regras para o projeto:
+              - "{{RULE_1}}"
+              - "{{RULE_2}}"
+              - "{{RULE_3}}"
+          - "Todos os arquivos gerados devem ser armazenados nas devidas pastas,
+            na raiz do projeto só os arquivos extremamente necessários"
+          - "Códigos gerados devem seguir padrões de qualidade e estilo, com
+            linting e formatação automática"
+          - "Fluxo de trabalho deve ser guiado por prompts para GitHub Copilot"
+          - "Configuração MCP deve ser gerada automaticamente baseada nas
+            especificações"
+          - "Sistema de versionamento e histórico deve rastrear todas as
+            mudanças"
+          - "Utilizar as melhores práticas de desenvolvimento de software,
+            incluindo testes automatizados, documentação clara e manutenção de
+            código"
+          - "Utilizar as melhores práticas de segurança, incluindo a gestão
+            segura de credenciais e a proteção contra vulnerabilidades comuns"
+    folder_structure:
+      - ".github - Agents, Workflows e ações para CI/CD (gerados
+        automaticamente)"
+      - ".git-hooks - Hooks personalizados para Git (gerados automaticamente)"
+      - ".secrets - Armazenamento seguro de chaves e tokens (não versionado)"
+      - ".specify - Configurações específicas do projeto (geradas
+        automaticamente)"
+      - ".vscode - Configurações VS Code e MCP (geradas automaticamente)"
+      - "{{FOLDER_STRUCTURE_CUSTOM}}"
+      - "docs - Documentação (gerada automaticamente)"
+      - "scripts - Scripts de automação inteligente"
+      - "src - Código-fonte do projeto (estrutura específica por tipo)"
+      - "test - Testes automatizados (framework baseado na linguagem)"
+      - "tmp - Arquivos temporários e de backup (não versionados e removidos
+        automaticamente no final da sessão)"
+      - "objetivo.yaml - Especificação detalhada do projeto"
+    expected_outcome:
+      - "{{EXPECTED_OUTCOME_1}}"
+      - "{{EXPECTED_OUTCOME_2}}"
+      - "{{EXPECTED_OUTCOME_3}}"
+    infrastructure:
+      - "{{INFRASTRUCTURE_1}}"
+      - "{{INFRASTRUCTURE_2}}"
+    profile:
+      - role: "copilot-assisted-developer"
+        skill_level: "intermediate"
+        description: "Desenvolvedor usando GitHub Copilot para acelerar desenvolvimento"
+    features_to_implement:
+      - "{{FEATURE_1}}"
+      - "{{FEATURE_2}}"
+      - "{{FEATURE_3}}"
+    pending_tasks: []

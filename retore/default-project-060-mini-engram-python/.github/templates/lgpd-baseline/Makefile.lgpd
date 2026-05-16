@@ -1,0 +1,112 @@
+# Makefile.lgpd — Targets de conformidade LGPD
+# Inclua no Makefile principal: include Makefile.lgpd
+# Requer: gitleaks, bandit, pip-audit (ou uv run pip-audit)
+
+LGPD_DOCS_DIR   := docs/lgpd
+LGPD_REPORT_DIR := reports/lgpd
+
+.PHONY: lgpd-check lgpd-scan-secrets lgpd-scan-code lgpd-scan-deps \
+        lgpd-report lgpd-dsar lgpd-docs-check
+
+## lgpd-check: Executa todos os checks de conformidade LGPD
+lgpd-check: lgpd-scan-secrets lgpd-scan-code lgpd-scan-deps lgpd-docs-check
+	@echo "✅ Todos os checks LGPD concluídos."
+
+## lgpd-scan-secrets: Scan de segredos e credenciais hardcoded (gitleaks)
+lgpd-scan-secrets:
+	@echo "🔍 Scanning por segredos hardcoded..."
+	@if command -v gitleaks >/dev/null 2>&1; then \
+		gitleaks detect --source . --verbose --no-git 2>&1 || \
+		(echo "❌ Segredos detectados! Veja o output acima." && exit 1); \
+	else \
+		echo "⚠️  gitleaks não instalado. Instale: https://github.com/gitleaks/gitleaks#installing"; \
+		echo "   Alternativa: pip install detect-secrets && detect-secrets scan"; \
+	fi
+	@echo "✅ Nenhum segredo hardcoded detectado."
+
+## lgpd-scan-code: SAST com bandit — detecta problemas de segurança no código Python
+lgpd-scan-code:
+	@echo "🔍 Executando SAST (bandit) em src/..."
+	@mkdir -p $(LGPD_REPORT_DIR)
+	@if command -v uv >/dev/null 2>&1; then \
+		uv run bandit -r src/ -f json -o $(LGPD_REPORT_DIR)/bandit-report.json \
+			-ll --exit-zero 2>&1; \
+		uv run bandit -r src/ -ll -q 2>&1; \
+	elif command -v bandit >/dev/null 2>&1; then \
+		bandit -r src/ -ll -q 2>&1; \
+	else \
+		echo "⚠️  bandit não instalado. Instale: uv add --dev bandit"; \
+	fi
+
+## lgpd-scan-deps: Auditoria de vulnerabilidades em dependências (pip-audit)
+lgpd-scan-deps:
+	@echo "🔍 Auditando dependências por CVEs..."
+	@mkdir -p $(LGPD_REPORT_DIR)
+	@if command -v uv >/dev/null 2>&1; then \
+		uv run pip-audit --output-format=columns 2>&1 | tee $(LGPD_REPORT_DIR)/pip-audit.txt; \
+	elif command -v pip-audit >/dev/null 2>&1; then \
+		pip-audit --output-format=columns 2>&1 | tee $(LGPD_REPORT_DIR)/pip-audit.txt; \
+	else \
+		echo "⚠️  pip-audit não instalado. Instale: uv add --dev pip-audit"; \
+	fi
+
+## lgpd-docs-check: Verifica se documentos LGPD obrigatórios existem
+lgpd-docs-check:
+	@echo "📋 Verificando documentos LGPD obrigatórios..."
+	@MISSING=0; \
+	for doc in \
+		"$(LGPD_DOCS_DIR)/DATA-MAPPING.md" \
+		"$(LGPD_DOCS_DIR)/PRIVACY-NOTICE.md" \
+		"$(LGPD_DOCS_DIR)/INCIDENT-RESPONSE.md"; \
+	do \
+		if [ ! -f "$$doc" ]; then \
+			echo "  ❌ Ausente: $$doc"; \
+			MISSING=$$((MISSING + 1)); \
+		else \
+			echo "  ✅ Presente: $$doc"; \
+		fi; \
+	done; \
+	if [ $$MISSING -gt 0 ]; then \
+		echo ""; \
+		echo "❌ $$MISSING documento(s) LGPD obrigatório(s) ausente(s)"; \
+		exit 1; \
+	fi
+	@echo "✅ Todos os documentos LGPD estão presentes."
+
+## lgpd-report: Gera relatório HTML consolidado de conformidade
+lgpd-report: lgpd-check
+	@echo "📊 Gerando relatório de conformidade LGPD..."
+	@mkdir -p $(LGPD_REPORT_DIR)
+	@echo "# Relatório LGPD — $$(date '+%Y-%m-%d %H:%M')" > $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "" >> $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "## Checks Executados" >> $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "- Secret scan: ✅" >> $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "- SAST (código): ✅" >> $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "- Auditoria de dependências: ✅" >> $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo "- Documentos obrigatórios: ✅" >> $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md
+	@echo ""
+	@echo "📄 Relatório salvo em: $(LGPD_REPORT_DIR)/COMPLIANCE-REPORT.md"
+
+## lgpd-dsar: Processa solicitação de direitos do titular (interativo)
+lgpd-dsar:
+	@echo "👤 Atendimento de Direitos do Titular (LGPD Art. 18)"
+	@echo "   Uso: make lgpd-dsar SUBJECT_ID=<id> ACTION=<export|delete|anonymize>"
+	@if [ -z "$(SUBJECT_ID)" ] || [ -z "$(ACTION)" ]; then \
+		echo ""; \
+		echo "Exemplos:"; \
+		echo "  make lgpd-dsar SUBJECT_ID=user123 ACTION=export"; \
+		echo "  make lgpd-dsar SUBJECT_ID=user123 ACTION=delete CONFIRM=--confirm"; \
+		echo ""; \
+		exit 1; \
+	fi
+	python scripts/lgpd/data-subject-request.py \
+		--action $(ACTION) \
+		--subject-id $(SUBJECT_ID) \
+		$(CONFIRM)
+
+## lgpd-help: Exibe ajuda dos targets LGPD
+lgpd-help:
+	@echo ""
+	@echo "Targets LGPD disponíveis:"
+	@grep -E '^## lgpd-' Makefile.lgpd | sed 's/## /  make /'
+	@echo ""

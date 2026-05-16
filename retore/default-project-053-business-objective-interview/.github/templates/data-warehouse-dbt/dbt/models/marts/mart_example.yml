@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: mart_example
+    description: >
+      Daily order summary by status. Used by the Revenue dashboard.
+      Granularity: one row per (order_date, status).
+    columns:
+      - name: order_date
+        description: "Truncated to day."
+        data_tests:
+          - not_null
+
+      - name: status
+        description: "Order status."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ["pending", "processing", "completed", "cancelled"]
+
+      - name: order_count
+        description: "Number of orders."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+      - name: total_amount
+        description: "Sum of order totals in the mart's reporting currency (converted from cents)."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: distinct_users
+        description: "Number of unique users who placed orders."
+        data_tests:
+          - not_null

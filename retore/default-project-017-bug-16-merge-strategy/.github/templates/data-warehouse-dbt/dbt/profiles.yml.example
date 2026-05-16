@@ -1,0 +1,40 @@
+# profiles.yml.example — dbt connection profiles
+# Copy to ~/.dbt/profiles.yml and fill in real values.
+# NEVER commit this file with real credentials.
+# Use environment variables for secrets ({{ env_var('DBT_PASSWORD') }}).
+
+"{{project_name}}":
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      port: 5432
+      user: "{{ env_var('DBT_USER', 'postgres') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'analytics') }}"
+      schema: dev
+      threads: 4
+
+    staging:
+      type: postgres
+      host: "{{ env_var('DBT_STAGING_HOST') }}"
+      port: 5432
+      user: "{{ env_var('DBT_STAGING_USER') }}"
+      password: "{{ env_var('DBT_STAGING_PASSWORD') }}"
+      dbname: "{{ env_var('DBT_STAGING_DBNAME', 'analytics') }}"
+      schema: staging
+      threads: 4
+
+    prod:
+      type: postgres
+      host: "{{ env_var('DBT_PROD_HOST') }}"
+      port: 5432
+      user: "{{ env_var('DBT_PROD_USER') }}"
+      password: "{{ env_var('DBT_PROD_PASSWORD') }}"
+      dbname: "{{ env_var('DBT_PROD_DBNAME', 'analytics') }}"
+      schema: prod
+      threads: 8
+
+# For BigQuery, Snowflake, Redshift, etc. see:
+# https://docs.getdbt.com/docs/supported-data-platforms

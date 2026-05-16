@@ -1,0 +1,333 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vya.digital/schemas/objetivo-spec-v1.0.json",
+  "title": "Objetivo Technical Spec v1.0",
+  "description": "JSON Schema for validating objetivo-spec.yaml files generated from objetivo.yaml v2.0",
+  "type": "object",
+  "required": [
+    "version",
+    "project",
+    "profiles"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version (must be 1.0)"
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "name",
+        "title",
+        "type",
+        "domain",
+        "language"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+          "minLength": 3,
+          "maxLength": 50,
+          "description": "Project name in kebab-case"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 100,
+          "description": "Human-readable project title"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "backend-api",
+            "frontend-spa",
+            "cli-tool",
+            "library",
+            "deployment-chart",
+            "infrastructure-code",
+            "data-pipeline",
+            "data-migration",
+            "mobile-app",
+            "desktop-app"
+          ],
+          "description": "Type of project"
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "programming",
+            "infrastructure",
+            "data-engineering",
+            "security",
+            "devops",
+            "qa",
+            "design"
+          ],
+          "description": "Primary domain of the project"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 30,
+          "description": "Primary programming language (e.g., python, typescript, go)"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500,
+          "description": "Short project description (from Section 1)"
+        }
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "description": "List of profile descriptors to apply",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+        "description": "Profile name (e.g., python-fastapi, k8s-helm)"
+      }
+    },
+    "features": {
+      "type": "array",
+      "description": "List of features extracted from Section 3 (Incluído)",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "priority"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200,
+            "description": "Feature description"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P0",
+              "P1",
+              "P2"
+            ],
+            "description": "Feature priority (P0 = must-have, P1 = should-have, P2 = nice-to-have)"
+          },
+          "estimated_effort": {
+            "type": "string",
+            "pattern": "^[0-9]+(h|d|w)$",
+            "description": "Estimated effort (e.g., 2h, 3d, 1w)"
+          }
+        }
+      }
+    },
+    "personas": {
+      "type": "array",
+      "description": "List of user personas extracted from Section 5",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "role"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 50,
+            "description": "Persona name (e.g., DevOps Engineer, End User)"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "description": "Role description"
+          },
+          "goals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 200
+            },
+            "description": "List of persona goals"
+          },
+          "pain_points": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 200
+            },
+            "description": "List of persona pain points"
+          }
+        }
+      }
+    },
+    "restrictions": {
+      "type": "object",
+      "description": "Technical restrictions from Section 4",
+      "properties": {
+        "budget": {
+          "type": "string",
+          "description": "Budget constraint (e.g., R$ 50k, $10k/month)"
+        },
+        "timeline": {
+          "type": "string",
+          "description": "Timeline constraint (e.g., 3 meses, Q2 2026)"
+        },
+        "performance": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200
+          },
+          "description": "Performance requirements (e.g., <200ms p95, 10k RPS)"
+        },
+        "security": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200
+          },
+          "description": "Security requirements (e.g., LGPD compliance, SOC2)"
+        },
+        "compliance": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200
+          },
+          "description": "Compliance requirements (e.g., LGPD, GDPR, SOC2)"
+        },
+        "technical": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200
+          },
+          "description": "Technical constraints (e.g., Python 3.12+, AWS only)"
+        }
+      }
+    },
+    "business_rules": {
+      "type": "array",
+      "description": "Business rules from Section 5",
+      "items": {
+        "type": "string",
+        "minLength": 10,
+        "maxLength": 500,
+        "description": "Business rule description"
+      }
+    },
+    "source": {
+      "type": "object",
+      "description": "Source information (auto-generated)",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Source objetivo.yaml file path"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when spec was generated"
+        },
+        "generated_by": {
+          "type": "string",
+          "description": "Tool that generated the spec (e.g., scaffold.py objetivo-generate)"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Warnings during generation"
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "version": "1.0",
+      "project": {
+        "name": "user-auth-api",
+        "title": "User Authentication API",
+        "type": "backend-api",
+        "domain": "programming",
+        "language": "python",
+        "description": "RESTful API for user authentication with JWT and OAuth2"
+      },
+      "profiles": [
+        "python-fastapi",
+        "backend-architect"
+      ],
+      "features": [
+        {
+          "name": "JWT authentication",
+          "priority": "P0",
+          "estimated_effort": "2d"
+        },
+        {
+          "name": "OAuth2 Google/GitHub",
+          "priority": "P1",
+          "estimated_effort": "3d"
+        },
+        {
+          "name": "2FA via SMS",
+          "priority": "P2",
+          "estimated_effort": "2d"
+        }
+      ],
+      "personas": [
+        {
+          "name": "API Consumer",
+          "role": "Frontend developer using the API",
+          "goals": [
+            "Authenticate users quickly",
+            "Handle token refresh automatically"
+          ],
+          "pain_points": [
+            "Current auth is slow (>2s)",
+            "No OAuth2 support"
+          ]
+        }
+      ],
+      "restrictions": {
+        "budget": "R$ 50k",
+        "timeline": "3 meses",
+        "performance": [
+          "<200ms p95 response time",
+          "10k concurrent users"
+        ],
+        "security": [
+          "LGPD compliance required",
+          "JWT tokens must expire in 15min"
+        ],
+        "technical": [
+          "Python 3.12+",
+          "AWS Lambda deployment"
+        ]
+      },
+      "business_rules": [
+        "Premium users get extended token expiration (24h)",
+        "Failed login attempts > 5 trigger temporary ban (15min)"
+      ],
+      "source": {
+        "file": "objetivo.yaml",
+        "generated_at": "2026-04-28T10:30:00Z",
+        "generated_by": "scaffold.py objetivo-generate v1.0",
+        "warnings": []
+      }
+    }
+  ]
+}
