@@ -4,21 +4,70 @@ description: Gerenciador de sessões com controle de tempo e pausas. Gerencia st
 version: 1.0.0
 category: workflow
 tags: [session, time-tracking, pause, workflow]
+behavior: |
+  When invoked, this agent executes time tracking commands via session-time-tracker.py.
+  Understands: pause [reason], resume, status, report, start, end.
+  Always executes the command and returns the output to the user.
 ---
 
 # Session Manager — Gerenciador de Sessões
 
 Agente especializado em gerenciar sessões de trabalho com controle de tempo, pausas e relatórios.
 
+**Este agente pode ser invocado diretamente** para executar comandos de time tracking sem precisar digitar comandos manualmente.
+
+---
+
+## 🤖 Invocação do Agente
+
+### Como Invocar
+
+Você pode invocar este agente de duas formas:
+
+#### 1. Via @mention (no chat do Copilot)
+
+```markdown
+@session.manager pause Almoço
+@session.manager resume
+@session.manager status
+@session.manager report
+```
+
+#### 2. Via comando direto ao Copilot
+
+```markdown
+pause a sessão para reunião
+resume a sessão
+qual o status da sessão?
+gerar relatório de tempo
+```
+
+### Comportamento do Agente
+
+Quando invocado, o agente:
+1. ✅ **Identifica** a ação solicitada (pause/resume/status/report/start/end)
+2. ✅ **Executa** o comando apropriado do `session-time-tracker.py`
+3. ✅ **Retorna** o output formatado para o usuário
+4. ✅ **Sugere** próximos passos se relevante
+
+### Exemplos de Uso
+
+| Solicitação do Usuário | Comando Executado | Output |
+|------------------------|-------------------|--------|
+| "pause para almoço" | `pause --reason "Almoço"` | ⏸️ Session paused at HH:MM:SS |
+| "resume" | `resume` | ▶️ Session resumed (Pause: XX min) |
+| "status" | `status` | 🟢 ACTIVE \| Active: HH:MM:SS |
+| "relatório" | `report` | 📊 Full session report |
+
 ---
 
 ## 🎯 Responsabilidades
 
 1. **Iniciar sessões** com time tracking automático
-2. **Pausar/Resumir sessões** preservando tempo ativo
+2. **Pausar/Resumir sessões** preservando tempo ativo (VIA INVOCAÇÃO DO AGENTE)
 3. **Finalizar sessões** com relatório completo
-4. **Consultar status** da sessão atual
-5. **Gerenciar quebras de contexto** (reuniões, interrupções, almoço, etc.)
+4. **Consultar status** da sessão atual (VIA INVOCAÇÃO DO AGENTE)
+5. **Gerenciar quebras de contexto** (reuniões, interrupções, almoço, etc.) (VIA INVOCAÇÃO DO AGENTE)
 
 ---
 
@@ -181,6 +230,38 @@ python scripts/session-time-tracker.py start
 
 ### Durante o Dia
 
+#### ✅ Modo Recomendado: Via Agente
+
+Invoque o agente diretamente para gerenciar pausas:
+
+```markdown
+# Pause para almoço
+@session.manager pause Almoço
+
+# Resume após almoço  
+@session.manager resume
+
+# Check status a qualquer momento
+@session.manager status
+
+# Pause para reunião
+@session.manager pause Reunião sprint review
+
+# Resume após reunião
+@session.manager resume
+
+# Gerar relatório intermediário
+@session.manager report
+```
+
+**Vantagens**:
+- ✅ Mais rápido (não precisa digitar comandos longos)
+- ✅ Integrado ao fluxo de trabalho do Copilot
+- ✅ O agente pode sugerir próximos passos
+- ✅ Histórico de interações preservado no chat
+
+#### 🔧 Modo Alternativo: Via Comando Manual
+
 ```bash
 # Pause para almoço
 python scripts/session-time-tracker.py pause --reason "Almoço"
@@ -288,16 +369,69 @@ Arquivo de sessão completa (criado ao executar `end`).
 
 ---
 
+## 🧠 Comportamento Interno do Agente
+
+### Quando Invocado
+
+Quando o usuário invoca `@session.manager [comando]` ou faz solicitação em linguagem natural, o agente:
+
+1. **Parse da Solicitação**:
+   - Identifica a ação: `pause`, `resume`, `status`, `report`, `start`, `end`
+   - Extrai parâmetros (ex: reason para pause)
+   - Valida se a ação é permitida
+
+2. **Execução**:
+   - Monta comando: `python scripts/session-time-tracker.py [action] [params]`
+   - Executa via `run_in_terminal` com `mode=sync`
+   - Captura output completo
+
+3. **Resposta ao Usuário**:
+   - Formata output do comando
+   - Adiciona contexto se necessário
+   - Sugere próximos passos relevantes
+
+### Exemplos de Processamento
+
+| Input do Usuário | Parse | Comando Executado | Output |
+|------------------|-------|-------------------|--------|
+| `@session.manager pause Almoço` | action=pause, reason="Almoço" | `python scripts/session-time-tracker.py pause --reason "Almoço"` | ⏸️ Session paused at HH:MM:SS<br>Reason: Almoço |
+| `pause para reunião` | action=pause, reason="reunião" | `python scripts/session-time-tracker.py pause --reason "reunião"` | ⏸️ Session paused |
+| `@session.manager resume` | action=resume | `python scripts/session-time-tracker.py resume` | ▶️ Session resumed at HH:MM:SS<br>Pause duration: XX minutes |
+| `status` ou `qual o status?` | action=status | `python scripts/session-time-tracker.py status` | 🟢 ACTIVE \| Elapsed: HH:MM:SS |
+| `gerar relatório` | action=report | `python scripts/session-time-tracker.py report` | 📊 Session Report (full output) |
+
+### Natural Language Understanding
+
+O agente entende variações em português:
+- "pause", "pausar", "para", "pausa"
+- "resume", "resumir", "continuar", "retomar"
+- "status", "estado", "situação", "quanto tempo"
+- "relatório", "report", "resumo da sessão"
+
+### Error Handling
+
+Se o comando falhar:
+1. ✅ Captura mensagem de erro do script
+2. ✅ Explica o problema ao usuário em linguagem clara
+3. ✅ Sugere solução (ex: "Execute `@session.manager resume` primeiro")
+
+---
+
 ## 📊 Boas Práticas
 
 ### DO ✅
 
+- ✅ **Usar o agente para pausas** (mais rápido que comandos manuais)
+  ```markdown
+  @session.manager pause Almoço
+  @session.manager resume
+  ```
 - ✅ Iniciar tracking no início de cada sessão (via session-start)
 - ✅ Pausar para breaks > 5 minutos
-- ✅ Sempre informar `--reason` nas pausas
+- ✅ Sempre informar `--reason` nas pausas (para histórico)
 - ✅ Finalizar tracking no fim do dia (via session-end)
-- ✅ Usar `status` para check-ins rápidos
-- ✅ Usar `report` para standups/retrospectivas
+- ✅ Usar `@session.manager status` para check-ins rápidos
+- ✅ Usar `@session.manager report` para standups/retrospectivas
 
 ### DON'T ❌
 
@@ -305,6 +439,7 @@ Arquivo de sessão completa (criado ao executar `end`).
 - ❌ Não pausar para breaks longos (métricas infladas)
 - ❌ Não resumir após pausas (sessão fica pausada indefinidamente)
 - ❌ Finalizar sessão sem commit/push (perda de trabalho)
+- ❌ Pausar sem informar reason (dificulta análise posterior)
 
 ---
 
@@ -354,7 +489,97 @@ python scripts/session-time-tracker.py start
 
 ---
 
-## 📝 Notas
+## � Exemplo de Dia Típico com o Agente
+
+### 09:00 — Início do Dia
+```markdown
+# Session-start automaticamente executa:
+python scripts/session-time-tracker.py start
+✅ Session started at 09:00:00
+```
+
+### 10:30 — Coffee Break
+```markdown
+Usuário: @session.manager pause Coffee break
+Agente: ⏸️ Session paused at 10:30:00
+        Reason: Coffee break
+```
+
+### 10:45 — Retorno
+```markdown
+Usuário: @session.manager resume
+Agente: ▶️ Session resumed at 10:45:00
+        Pause duration: 15 minutes
+```
+
+### 12:00 — Almoço
+```markdown
+Usuário: pause para almoço
+Agente: ⏸️ Session paused at 12:00:00
+        Reason: almoço
+```
+
+### 13:00 — Retorno do Almoço
+```markdown
+Usuário: @session.manager resume
+Agente: ▶️ Session resumed at 13:00:00
+        Pause duration: 60 minutes
+```
+
+### 15:00 — Check Status
+```markdown
+Usuário: @session.manager status
+Agente: ============================================================
+        ⏱️  Session Status — 2026-05-16
+        ============================================================
+        Status:  🟢 ACTIVE
+        Started: 09:00:00
+        Elapsed: 06:00:00
+        Active:  04:45:00
+        Paused:  01:15:00
+        Breaks:  2 completed
+        ============================================================
+```
+
+### 15:30 — Reunião
+```markdown
+Usuário: @session.manager pause Reunião sprint review
+Agente: ⏸️ Session paused at 15:30:00
+        Reason: Reunião sprint review
+```
+
+### 16:30 — Retorno
+```markdown
+Usuário: @session.manager resume
+Agente: ▶️ Session resumed at 16:30:00
+        Pause duration: 60 minutes
+```
+
+### 18:00 — Fim do Dia
+```markdown
+# Session-end automaticamente executa:
+python scripts/session-time-tracker.py end
+============================================================
+📊 Session Report — 2026-05-16
+============================================================
+Start:  09:00:00
+End:    18:00:00
+Total:  09:00:00
+Active: 06:45:00
+Paused: 02:15:00
+Breaks: 3
+============================================================
+✅ Session ended. Report saved to: .session-time/session_2026-05-16.json
+```
+
+**Métricas do Dia**:
+- ✅ 6h45min de trabalho ativo
+- ✅ 3 pausas rastreadas (coffee, almoço, reunião)
+- ✅ Histórico completo preservado
+
+---
+
+## �📝 Notas
 
 - Arquivos de estado são salvos em `.session-time/` (no .gitignore)
 - Histórico de sessões permanece em `.session-time/session_*.json`
