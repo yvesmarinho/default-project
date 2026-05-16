@@ -370,9 +370,12 @@ ls -la docs/SESSIONS/2026-{04-15,05-14,05-15}/
 - ✅ save_operation_log definida em ui.py (linha 718)
 - ✅ print_final_summary chama save_operation_log (linha 892)
 
-**Commits**: Nenhum (operação local, workspace recovery v2)
+**Commits**: 
+- Branch: `061-recovery-017-correction`
+- Hash: `37678c2`
+- Push: ✅ origin/061-recovery-017-correction
 
-**Status**: ✅ Completo
+**Status**: ✅ Completo + Versionado
 
 **Métricas**:
 - Tempo total: 35 minutos (análise profunda + recuperação v2 + validação)
