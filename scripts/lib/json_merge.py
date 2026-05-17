@@ -10,6 +10,7 @@ Implementação: Sprint 2026-W21 (Fase 1 e 2)
 
 from pathlib import Path
 from typing import Any, Dict, List
+from collections import Counter
 import json
 import logging
 
@@ -126,14 +127,63 @@ def load_json_safe(file_path: Path) -> Dict[str, Any]:
         raise
 
 
+def _detect_duplications(data, path="root"):
+    """
+    Detecta duplicações em estrutura JSON (versão simplificada).
+
+    Args:
+        data: Estrutura JSON a validar
+        path: Caminho atual para contexto
+
+    Returns:
+        Lista de issues com duplicações
+    """
+    issues = []
+
+    if isinstance(data, dict):
+        for key, value in data.items():
+            issues.extend(_detect_duplications(value, f"{path}.{key}"))
+    elif isinstance(data, list):
+        # Contar itens (objetos comparados por JSON)
+        items = [
+            json.dumps(i, sort_keys=True) if isinstance(i, (dict, list)) else i
+            for i in data
+        ]
+        counts = Counter(items)
+        duplicates = {k: v for k, v in counts.items() if v > 1}
+
+        if duplicates:
+            issues.append(
+                {
+                    "path": path,
+                    "duplication_rate": (len(data) - len(counts)) / len(data) * 100,
+                }
+            )
+
+    return issues
+
+
 def save_json_formatted(file_path: Path, data: Dict[str, Any]) -> None:
     """
-    Salva JSON com formatação consistente.
+    Salva JSON com formatação consistente e validação anti-duplicação.
+
+    Validações:
+    - Sintaxe JSON válida
+    - Detecção de arrays duplicados (warning)
 
     Args:
         file_path: Caminho do arquivo JSON
         data: Dados a serem salvos
     """
+    # Validar duplicações antes de salvar
+    issues = _detect_duplications(data)
+    if issues:
+        log.warning(f"⚠️  Duplicações detectadas em {file_path.name}:")
+        for issue in issues:
+            log.warning(f"   {issue['path']}: {issue['duplication_rate']:.1f}% duplicado")
+        log.warning("   Execute: python scripts/fix-json-duplications.py")
+
+    # Salvar com formatação consistente
     content = json.dumps(data, indent=2, ensure_ascii=False, sort_keys=False)
     file_path.write_text(content + "\n", encoding="utf-8")
 

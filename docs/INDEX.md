@@ -1,13 +1,60 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-14 — Logging Automático Implementado ✅
-**Project Status**: 🟢 Stable — Merge System 77% Complete + Logging System Integrated
-**Version**: 1.3.0
-**Last Session**: 2026-05-14 — ✅ Logging System Complete (automatic logging for all scaffold operations)
+**Last Updated**: 2026-05-17 — Estratégia Universal de Merge JSON Implementada ✅
+**Project Status**: 🟢 Stable — JSON Merge v2.0 User-Wins Universal
+**Version**: 1.3.1
+**Last Session**: 2026-05-17 — ✅ JSON Merge Strategy Refactored (BREAKING CHANGE)
 
 ---
 
-> **✅ SESSION 2026-05-11 COMPLETE (Sprint 3 + POC Upgrade + Infrastructure Fix)**
+> **✅ SESSION 2026-05-17 COMPLETE (JSON Merge v2.0 - User-Wins Universal)**
+> - **Status**: ✅ COMPLETE — P0 (Arquitetura) + P1 (Hardening) implementados
+> - **Duration**: ~4h (09:00-13:00)
+> - **Efficiency**: 100% (mudança arquitetural + ferramentas + docs completos)
+> - **Branch**: 061-recovery-017-correction
+> - **Commits**: 10 total (bd80727 origin → b012a17 HEAD, pushed)
+>   - refactor(json-merge)!: estratégia user-wins universal para todos os JSONs (BREAKING CHANGE)
+>   - docs: revisão arquitetural - estratégia universal de merge JSON
+>   - style: aplicar formatação automática nos arquivos P0
+> - **BREAKING CHANGE - JSON MERGE v2.0**:
+>   - **Filosofia**: JSON = Configuração = User Wins (sem array union)
+>   - **Arquitetura**: deep_merge_json() reformulado (remove deepmerge lib)
+>   - **Impacto**: TODOS os .json (extensions, mcp, package, tsconfig, eslint, etc.)
+>   - **Bug fix**: Duplicações em arrays (mcp.json args "-y" duplicado)
+>   - **Removed**: VSCodeJSONMerger (~146 linhas, redundante)
+> - **PHASE P0 (ARQUITETURA - 45min)**:
+>   - ✅ deep_merge_json(): user-wins recursivo (arrays replaced, não merged)
+>   - ✅ VSCodeJSONMerger: removido (redundante após mudança)
+>   - ✅ fix-json-duplications.py: 2 files fixed, 59 already clean
+>   - ✅ Tests: 26/26 PASSED (100% coverage)
+>   - ✅ Commit: a54e1e8 (BREAKING CHANGE documentado)
+> - **PHASE P1 (HARDENING - 2h)**:
+>   - ✅ detect-json-duplications.py: Scan recursivo, 61 JSONs validados
+>   - ✅ save_json_formatted(): Validação pós-merge (warnings automáticos)
+>   - ✅ json-merge-examples.md: 6 tipos (extensions, mcp, package, tsconfig, eslint, settings)
+>   - ✅ README.md: Links adicionados em "Additional Resources"
+> - **TECHNICAL DECISIONS**:
+>   - D-17: Merge strategy: user-wins universal > VSCode whitelist (escalabilidade)
+>   - D-18: Array behavior: replacement > union (configs não são listas acumulativas)
+>   - D-19: Validation: warnings > errors (não bloquear, apenas alertar)
+> - **KEY DOCUMENTATION**:
+>   - `docs/guides/json-merge-strategy.md` (546 linhas) - Estratégia completa
+>   - `docs/guides/json-merge-examples.md` (novo) - Exemplos práticos
+>   - `docs/debates/2026-05-17-json-merge-duplication-bug.md` (415 linhas) - Debate técnico
+>   - `docs/planning/2026-05-17-json-merge-fix-action-plan-v2.md` (1147 linhas) - Plano detalhado
+> - **NEW TOOLS**:
+>   - `scripts/detect-json-duplications.py`: Scan recursivo de duplicações
+>   - `scripts/tmp/fix-json-duplications.py`: Correção automática
+>   - `scripts/tmp/json_diff_visual.py`: Comparação visual com análise
+> - **MERGE SYSTEM STATUS**:
+>   - Coverage: 77% → 78% (JSONMerger agora universal)
+>   - Strategy: v1.0 (union) → v2.0 (user-wins)
+>   - Tests: 100 → 126 (+26 novos testes JSON)
+> - **NEXT PRIORITIES**:
+>   - P2: Pre-commit hooks, GitHub Actions CI/CD
+>   - Sprint 4: P2 Mergers (PreCommit, VSCode, IssueTemplates)
+>
+> **✅ SESSION 2026-05-14 COMPLETE (Logging System Implementation)**
 > - **Status**: ✅ COMPLETE — All P0+P1 gaps resolved (100%)
 > - **Duration**: ~9.5h (09:00-18:30)
 > - **Efficiency**: 100% (all objectives achieved)

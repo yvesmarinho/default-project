@@ -919,6 +919,8 @@ npm run test:coverage
 - [API Documentation](docs/api/README.md)
 - [Development Guide](docs/guides/development.md)
 - [Deployment Guide](docs/guides/deployment.md)
+- [JSON Merge Strategy](docs/guides/json-merge-strategy.md) - Estratégia universal de merge JSON
+- [JSON Merge Examples](docs/guides/json-merge-examples.md) - Exemplos práticos por tipo de arquivo
 
 ### Tools & Extensions
 
