@@ -108,7 +108,15 @@ else
 fi
 
 if [ "$COVERAGE" = true ]; then
-    PYTEST_CMD="$PYTEST_CMD --cov=scripts/lib --cov=scripts/lib/flows --cov-report=term-missing --cov-report=html"
+    # Verificar se pytest-cov está instalado
+    if python -c "import pytest_cov" 2>/dev/null; then
+        PYTEST_CMD="$PYTEST_CMD --cov=scripts/lib --cov=scripts/lib/flows --cov-report=term-missing --cov-report=html"
+    else
+        echo -e "${YELLOW}⚠️  pytest-cov não instalado. Rodando sem coverage.${NC}"
+        echo -e "${YELLOW}   Instale com: pip install pytest-cov${NC}"
+        echo ""
+        COVERAGE=false
+    fi
 fi
 
 if [ "$PARALLEL" = true ]; then
