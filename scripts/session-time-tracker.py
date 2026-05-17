@@ -67,13 +67,72 @@ def _format_duration(seconds: float) -> str:
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
+def _force_finish_orphan(state: dict[str, Any]):
+    """Finaliza sessão órfã automaticamente."""
+    # Se houver pausa pendente, finalizá-la primeiro
+    if state.get("current_pause"):
+        now = _iso_now()
+        pause = state["current_pause"]
+        pause["end"] = now
+        start = datetime.fromisoformat(pause["start"].replace("Z", "+00:00"))
+        end = datetime.fromisoformat(now.replace("Z", "+00:00"))
+        pause["duration_seconds"] = (end - start).total_seconds()
+        state["pauses"].append(pause)
+        state["current_pause"] = None
+
+    # Finalizar sessão
+    now = _iso_now()
+    state["end_time"] = now
+    state["status"] = "auto_completed_orphan"
+
+    # Calcular durações
+    start = datetime.fromisoformat(state["start_time"].replace("Z", "+00:00"))
+    end = datetime.fromisoformat(now.replace("Z", "+00:00"))
+    total_seconds = (end - start).total_seconds()
+    pause_seconds = sum(p.get("duration_seconds", 0) for p in state.get("pauses", []))
+    net_seconds = total_seconds - pause_seconds
+
+    state["total_duration_seconds"] = total_seconds
+    state["pause_duration_seconds"] = pause_seconds
+    state["net_duration_seconds"] = net_seconds
+
+    # Salvar no CSV
+    _save_to_csv(state)
+    
+    # Remover arquivo órfão
+    STATE_FILE.unlink()
+
+
 def cmd_start():
     """Inicia nova sessão de trabalho."""
     _ensure_dirs()
 
+    # Verificar se há sessão em andamento
     if STATE_FILE.exists():
-        print("❌ Sessão já em andamento. Use 'stop' para finalizar antes de iniciar nova.", file=sys.stderr)
-        return 1
+        with open(STATE_FILE, "r", encoding="utf-8") as f:
+            state = json.load(f)
+        
+        current_date = datetime.utcnow().strftime("%Y-%m-%d")
+        session_date = state.get("session_date", "")
+        
+        # Detectar sessão órfã (de outro dia)
+        if session_date and session_date != current_date:
+            print(f"⚠️  Sessão órfã detectada de {session_date} (hoje: {current_date})", file=sys.stderr)
+            print(f"   Iniciada em: {state.get('start_time', 'desconhecido')}", file=sys.stderr)
+            print(f"   Status: {state.get('status', 'unknown')}", file=sys.stderr)
+            print("\n🔧 Auto-finalizando sessão órfã...", file=sys.stderr)
+            
+            # Auto-finalizar sessão órfã
+            _force_finish_orphan(state)
+            print("✅ Sessão órfã finalizada. Iniciando nova sessão...\n")
+        else:
+            # Sessão do mesmo dia ainda ativa
+            print("❌ Sessão já em andamento. Use 'stop' para finalizar antes de iniciar nova.", file=sys.stderr)
+            print(f"   Data: {session_date}", file=sys.stderr)
+            print(f"   Início: {state.get('start_time', 'desconhecido')}", file=sys.stderr)
+            print(f"   Status: {state.get('status', 'unknown')}", file=sys.stderr)
+            print("\n💡 Use 'python scripts/session-time-tracker.py cleanup' para forçar limpeza.", file=sys.stderr)
+            return 1
 
     now = _iso_now()
     date = datetime.utcnow().strftime("%Y-%m-%d")
@@ -325,6 +384,85 @@ def cmd_export(output: str | None = None):
     return 0
 
 
+def cmd_status():
+    """Exibe status da sessão atual."""
+    if not STATE_FILE.exists():
+        print("📊 Status: Nenhuma sessão ativa")
+        return 0
+
+    with open(STATE_FILE, "r", encoding="utf-8") as f:
+        state = json.load(f)
+
+    current_date = datetime.utcnow().strftime("%Y-%m-%d")
+    session_date = state.get("session_date", "unknown")
+    is_orphan = session_date != current_date
+
+    print("\n📊 Status da Sessão Atual")
+    print("=" * 40)
+    print(f"Data da sessão: {session_date}")
+    print(f"Data atual:     {current_date}")
+    
+    if is_orphan:
+        print(f"⚠️  Status:        ÓRFÃ (sessão de outro dia)")
+    else:
+        print(f"✅ Status:        {state.get('status', 'unknown').upper()}")
+    
+    print(f"Início:         {state.get('start_time', 'desconhecido')}")
+    
+    # Calcular tempo decorrido
+    start = datetime.fromisoformat(state["start_time"].replace("Z", "+00:00"))
+    now_dt = datetime.fromisoformat(_iso_now().replace("Z", "+00:00"))
+    elapsed_seconds = (now_dt - start).total_seconds()
+    
+    print(f"Tempo decorrido: {_format_duration(elapsed_seconds)}")
+    print(f"Número de pausas: {len(state.get('pauses', []))}")
+    
+    if state.get("current_pause"):
+        print(f"Pausa ativa:    {state['current_pause'].get('reason', 'sem motivo')}")
+        pause_start = datetime.fromisoformat(state["current_pause"]["start"].replace("Z", "+00:00"))
+        pause_elapsed = (now_dt - pause_start).total_seconds()
+        print(f"Duração da pausa: {_format_duration(pause_elapsed)}")
+    
+    if is_orphan:
+        print("\n💡 Ações disponíveis:")
+        print("   - 'cleanup' para forçar limpeza")
+        print("   - 'start' para auto-finalizar e iniciar nova sessão")
+    
+    print()
+    return 0
+
+
+def cmd_cleanup(force: bool = False):
+    """Limpa sessão órfã ou corrompida."""
+    if not STATE_FILE.exists():
+        print("✅ Nenhuma sessão órfã encontrada.")
+        return 0
+
+    with open(STATE_FILE, "r", encoding="utf-8") as f:
+        state = json.load(f)
+
+    current_date = datetime.utcnow().strftime("%Y-%m-%d")
+    session_date = state.get("session_date", "")
+
+    print("\n🗑️  Cleanup de Sessão")
+    print("=" * 40)
+    print(f"Data da sessão: {session_date}")
+    print(f"Início:         {state.get('start_time', 'desconhecido')}")
+    print(f"Status:         {state.get('status', 'unknown')}")
+    
+    if not force and session_date == current_date:
+        print("\n⚠️  AVISO: Esta sessão é do dia atual!")
+        print("   Use '--force' para forçar limpeza mesmo assim.")
+        return 1
+
+    print("\n🔧 Finalizando e salvando sessão no histórico...")
+    _force_finish_orphan(state)
+    
+    print("✅ Sessão limpa com sucesso.")
+    print("   A sessão foi salva no histórico antes da remoção.")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Session Time Tracker — Rastreamento de tempo com pausas",
@@ -356,6 +494,14 @@ def main():
     export_parser = subparsers.add_parser("export", help="Exportar CSV")
     export_parser.add_argument("--output", help="Caminho do arquivo de saída")
 
+    # status
+    subparsers.add_parser("status", help="Exibir status da sessão atual")
+
+    # cleanup
+    cleanup_parser = subparsers.add_parser("cleanup", help="Limpar sessão órfã")
+    cleanup_parser.add_argument("--force", action="store_true", 
+                                help="Forçar limpeza mesmo se for sessão do dia atual")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -374,6 +520,10 @@ def main():
         return cmd_stats(args.date)
     elif args.command == "export":
         return cmd_export(args.output)
+    elif args.command == "status":
+        return cmd_status()
+    elif args.command == "cleanup":
+        return cmd_cleanup(args.force)
     else:
         parser.print_help()
         return 1

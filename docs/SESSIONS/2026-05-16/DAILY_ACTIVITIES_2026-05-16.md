@@ -292,7 +292,7 @@ ls -la docs/SESSIONS/2026-{04-15,05-14,05-15}/
 
 **Resultado**: ✅ Validação 100% aprovada — estrutura idêntica a 060-mini-engram-python
 
-**Decisões técnicas**: 
+**Decisões técnicas**:
 - Preservados: `.git` (histórico), `.secrets` (credenciais), `.venv` (ambiente Python), `retore/` (fonte), `docs/SESSIONS/2026-05-16/` (sessão atual)
 - Método: Python stdlib (shutil + pathlib) seguindo regra P0 (.copilot-rules.md)
 - Backup em `tmp/session-2026-05-16-backup/` durante operação
@@ -370,7 +370,7 @@ ls -la docs/SESSIONS/2026-{04-15,05-14,05-15}/
 - ✅ save_operation_log definida em ui.py (linha 718)
 - ✅ print_final_summary chama save_operation_log (linha 892)
 
-**Commits**: 
+**Commits**:
 - Branch: `061-recovery-017-correction`
 - Hash: `37678c2`
 - Push: ✅ origin/061-recovery-017-correction
