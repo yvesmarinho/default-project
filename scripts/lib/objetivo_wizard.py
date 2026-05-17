@@ -341,7 +341,7 @@ class ObjetivoWizard:
         # 1. Substitute metadata placeholders
         template = template.replace('"{{PROJECT_NAME}}"', f'"{answers.project_name}"')
         template = template.replace('{{PROJECT_NAME}}', answers.project_name)
-        
+
         # Substitute YAML frontmatter fields
         template = template.replace('name: ""', f'name: "{answers.project_name}"')
         template = template.replace('title: ""', f'title: "{answers.project_title}"')
@@ -349,7 +349,7 @@ class ObjetivoWizard:
         template = template.replace('domain: ""', f'domain: "{answers.project_domain}"')
         template = template.replace('language: ""', f'language: "{answers.project_language}"')
         template = template.replace('created_by: ""', f'created_by: "{answers.created_by}"')
-        
+
         # Add created_at timestamp if missing
         from datetime import datetime
         if 'created_at: ""' in template:

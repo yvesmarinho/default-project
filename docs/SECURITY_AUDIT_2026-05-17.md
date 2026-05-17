@@ -2,9 +2,9 @@
 
 ## 🔍 Auditoria de Segurança - PR #21
 
-**Data**: 2026-05-17  
-**Branch**: `061-recovery-017-correction`  
-**PR**: #21 - Recovery & GitHub Best Practices Implementation  
+**Data**: 2026-05-17
+**Branch**: `061-recovery-017-correction`
+**PR**: #21 - Recovery & GitHub Best Practices Implementation
 **Auditor**: Sistema automatizado + revisão manual
 
 ---
@@ -77,13 +77,13 @@ paths-ignore:
 matches-ignore:
   - name: GitHub Token Placeholder
     match: ghp_\.\.\.
-    
+
   - name: Example GitHub Token
     match: ghp_0123456789abcdefghijklmnopqrstuvwxyz
-    
+
   - name: Environment Variable References
     match: \$\{?[A-Z_]+_TOKEN\}?
-    
+
   - name: Bash Variable References
     match: \$[A-Z_]+_(TOKEN|KEY|SECRET|PASSWORD)
 ```
@@ -122,7 +122,7 @@ repos:
     hooks:
       - id: gitleaks
         name: Gitleaks Secret Scanner
-        
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     hooks:
       - id: detect-private-key
@@ -174,24 +174,24 @@ $ git log --all --grep='secret\|password\|token\|key\|credential' -i | wc -l
 ## 🔐 Boas Práticas Seguidas
 
 ### 1. Separation of Secrets
-✅ Secrets armazenados em `.secrets/` (não versionado)  
-✅ Variáveis de ambiente usadas em runtime  
+✅ Secrets armazenados em `.secrets/` (não versionado)
+✅ Variáveis de ambiente usadas em runtime
 ✅ Placeholders claros em documentação (`ghp_...`, `YOUR_TOKEN`)
 
 ### 2. Documentation Security
-✅ Exemplos sempre com placeholders óbvios  
-✅ Instruções claras de "substituir com seu token"  
+✅ Exemplos sempre com placeholders óbvios
+✅ Instruções claras de "substituir com seu token"
 ✅ Warnings sobre não commitar secrets reais
 
 ### 3. Automation
-✅ GitGuardian configurado para CI/CD  
-✅ Pre-commit hooks instalados  
-✅ Gitleaks scanner ativo  
+✅ GitGuardian configurado para CI/CD
+✅ Pre-commit hooks instalados
+✅ Gitleaks scanner ativo
 ✅ `.gitguardian.yaml` versionado e documentado
 
 ### 4. Defense in Depth
-✅ Múltiplas camadas: `.gitignore` + hooks + CI + GitGuardian  
-✅ Exclusões específicas para reduzir falsos positivos  
+✅ Múltiplas camadas: `.gitignore` + hooks + CI + GitGuardian
+✅ Exclusões específicas para reduzir falsos positivos
 ✅ Paths sensíveis excluídos de varredura automática
 
 ---
@@ -233,14 +233,14 @@ $ git log --all --grep='secret\|password\|token\|key\|credential' -i | wc -l
 
 ## ✍️ Aprovação
 
-**Revisado por**: Sistema automatizado + validação manual  
-**Data**: 2026-05-17  
-**Status**: ✅ **APROVADO**  
+**Revisado por**: Sistema automatizado + validação manual
+**Data**: 2026-05-17
+**Status**: ✅ **APROVADO**
 **Próxima ação**: Merge da PR #21 com confiança de segurança
 
 ---
 
-**Assinatura Digital**: 
+**Assinatura Digital**:
 ```
 Commit: afd7fcc - fix(tests): corrigir 5 testes falhando - template rendering e mocking
 Branch: 061-recovery-017-correction

@@ -349,7 +349,7 @@ class TestSessionSearcher:
         # Note: Phrase search implementation may need improvement
         # For now, just verify it returns some results
         assert len(results) >= 0  # At least doesn't crash
-        
+
         # If results are returned, snippets should be non-empty
         if results:
             assert all(r.snippet for r in results)
