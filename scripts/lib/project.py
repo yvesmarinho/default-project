@@ -91,6 +91,23 @@ make dev
 - [Índice](docs/INDEX.md)
 - [Tarefas](docs/TODO.md)
 
+## 🤝 Contribuindo
+
+Este projeto segue as melhores práticas de Git/GitHub para garantir qualidade e colaboração eficiente.
+
+### Workflow Git
+
+Consulte [CONTRIBUTING.md](CONTRIBUTING.md) para:
+- Convenções de branches (`feature/NNN-descricao`, `fix/descricao`)
+- Padrões de commits (Conventional Commits)
+- Processo de Pull Request
+- Estratégias de merge
+- Proteção de branches
+
+### Configuração de Branch Protection
+
+Para configurar proteção de branches no GitHub, consulte [docs/BRANCH_PROTECTION_SETUP.md](docs/BRANCH_PROTECTION_SETUP.md).
+
 ## 🏗️ Estrutura
 
 Consulte os [documentos de arquitetura](docs/) para detalhes.
@@ -2366,6 +2383,121 @@ def copy_copilot_instructions(config: ProjectConfig, force: bool = False) -> lis
     results.append(result)
 
     return results
+
+
+def copy_github_templates(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia templates de GitHub Best Practices para o novo projeto.
+
+    Templates copiados:
+      1. CONTRIBUTING.md → raiz do projeto (com substituição de variáveis)
+      2. PULL_REQUEST_TEMPLATE.md → .github/
+      3. CODEOWNERS → .github/
+      4. BRANCH_PROTECTION_SETUP.md → docs/
+
+    Variáveis substituídas:
+      - {{ project_name }} → config.project_name
+      - {{ current_date }} → config.created_at
+
+    Esses templates fornecem:
+      - Guia de contribuição com GitHub Flow e Conventional Commits
+      - Template de PR com checklist completo
+      - Definição de code owners por área
+      - Guia de configuração de branch protection
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: P1 - GitHub Best Practices Integration
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT / ".github" / "templates" / "common"
+
+    # Mapeamento de variáveis customizadas para templates GitHub
+    template_vars = {
+        "{{ project_name }}": config.project_name,
+        "{{ current_date }}": config.created_at.split("T")[0],  # YYYY-MM-DD apenas
+    }
+
+    # 1. CONTRIBUTING.md → raiz (com substituição de variáveis)
+    src_contributing = src_root / "CONTRIBUTING.md"
+    dst_contributing = base / "CONTRIBUTING.md"
+    result = _copy_file_with_vars(src_contributing, dst_contributing, template_vars, force=force)
+    results.append(result)
+
+    # 2. PULL_REQUEST_TEMPLATE.md → .github/
+    src_pr_template = src_root / "PULL_REQUEST_TEMPLATE.md"
+    dst_pr_template = base / ".github" / "PULL_REQUEST_TEMPLATE.md"
+    result = _copy_file(src_pr_template, dst_pr_template, force=force)
+    results.append(result)
+
+    # 3. CODEOWNERS → .github/
+    src_codeowners = src_root / "CODEOWNERS"
+    dst_codeowners = base / ".github" / "CODEOWNERS"
+    result = _copy_file_with_vars(src_codeowners, dst_codeowners, template_vars, force=force)
+    results.append(result)
+
+    # 4. BRANCH_PROTECTION_SETUP.md → docs/
+    src_guide = _TEMPLATE_ROOT / "docs" / "guides" / "BRANCH_PROTECTION_SETUP.md"
+    dst_guide = base / "docs" / "BRANCH_PROTECTION_SETUP.md"
+    result = _copy_file_with_vars(src_guide, dst_guide, template_vars, force=force)
+    results.append(result)
+
+    return results
+
+
+def _copy_file_with_vars(
+    src: Path,
+    dst: Path,
+    template_vars: dict[str, str],
+    force: bool = False
+) -> CreatedItem:
+    """
+    Copia arquivo aplicando substituição de variáveis.
+
+    Args:
+        src: Arquivo de origem
+        dst: Arquivo de destino
+        template_vars: Dicionário de variáveis a substituir
+        force: Se True, sobrescreve arquivo existente
+
+    Returns:
+        CreatedItem com status da operação
+    """
+    if not src.exists():
+        msg = f"origem não encontrada: {src}"
+        log.warning("⚠️  %s", msg)
+        return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
+    # Verificar se destino existe
+    if dst.exists() and not force:
+        msg = "já existe (use --force para sobrescrever)"
+        log.info("⏭️  %s: %s", dst.name, msg)
+        return CreatedItem(path=dst, kind="file", status="skipped", message=msg)
+
+    try:
+        # Criar diretório pai se necessário
+        dst.parent.mkdir(parents=True, exist_ok=True)
+
+        # Ler conteúdo do template
+        content = src.read_text(encoding="utf-8")
+
+        # Aplicar substituições
+        for var, value in template_vars.items():
+            content = content.replace(var, value)
+
+        # Escrever arquivo processado
+        dst.write_text(content, encoding="utf-8")
+
+        log.info("✅ %s (com substituição de variáveis)", dst.name)
+        return CreatedItem(path=dst, kind="file", status="created")
+
+    except (OSError, UnicodeDecodeError) as exc:
+        msg = f"erro ao copiar: {exc}"
+        log.error("❌ %s: %s", dst.name, msg)
+        return CreatedItem(path=dst, kind="file", status="error", message=msg)
 
 
 def _copy_domain_profile(

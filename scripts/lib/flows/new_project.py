@@ -87,6 +87,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🔧 Copiando scripts utilitários...[/blue]")
     results.extend(project.copy_utility_scripts(cfg))
 
+    # 5f. GitHub Templates: CONTRIBUTING.md, PR template, CODEOWNERS, Branch Protection guide
+    console.print("  [blue]🐙 Copiando templates GitHub (best practices)...[/blue]")
+    results.extend(project.copy_github_templates(cfg))
+
     # 5d. Templates de documentação (BUG-09 fix - corrigido conceito)
     console.print("  [blue]📋 Configurando templates de documentação...[/blue]")
     results.extend(project.setup_project_docs(cfg))

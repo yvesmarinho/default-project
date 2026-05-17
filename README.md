@@ -922,6 +922,22 @@ npm run test:coverage
 - [JSON Merge Strategy](docs/guides/json-merge-strategy.md) - Estratégia universal de merge JSON
 - [JSON Merge Examples](docs/guides/json-merge-examples.md) - Exemplos práticos por tipo de arquivo
 
+### Git & GitHub Workflows
+
+**✨ NOVO**: Templates de GitHub são copiados automaticamente ao criar novo projeto via scaffold!
+
+- [GitHub Best Practices](docs/guides/GitHub_Melhores_praticas_de_atualizacao_repositprios.md) - Documento base de boas práticas
+- [Branch Protection Setup](docs/guides/BRANCH_PROTECTION_SETUP.md) - Guia de configuração de proteção de branches
+- [GitHub Best Practices Integration](docs/guides/GITHUB_BEST_PRACTICES_INTEGRATION.md) - Como as práticas foram integradas no template
+- Templates prontos (copiados automaticamente pelo scaffold):
+  - [CONTRIBUTING.md](.github/templates/common/CONTRIBUTING.md) - Guia de contribuição
+  - [PULL_REQUEST_TEMPLATE.md](.github/templates/common/PULL_REQUEST_TEMPLATE.md) - Template de PR
+  - [CODEOWNERS](.github/templates/common/CODEOWNERS) - Definição de responsáveis
+- Implementação:
+  - `scripts/lib/project.py`: Função `copy_github_templates()`
+  - Processamento automático de variáveis `{{ project_name }}` e `{{ current_date }}`
+  - Template README atualizado com seção "Contribuindo"
+
 ### Tools & Extensions
 
 - **Speckit**: Specification management and documentation
@@ -929,6 +945,7 @@ npm run test:coverage
 - **ESLint/Pylint**: Code linting
 - **Husky**: Git hooks for pre-commit checks
 - **Commitlint**: Commit message validation
+- **git_validators**: Validação automática de branches e commits (Python)
 
 ## 📅 Version History
 

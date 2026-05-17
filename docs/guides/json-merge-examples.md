@@ -19,8 +19,8 @@ Exemplos práticos de como a estratégia **user-wins sem array union** funciona 
 
 ## .vscode/extensions.json
 
-**Tipo**: Recomendações de extensões do VS Code  
-**Arrays**: `recommendations`, `unwantedRecommendations`  
+**Tipo**: Recomendações de extensões do VS Code
+**Arrays**: `recommendations`, `unwantedRecommendations`
 **Comportamento**: User-wins (substituição completa)
 
 ### Exemplo
@@ -61,8 +61,8 @@ Exemplos práticos de como a estratégia **user-wins sem array union** funciona 
 
 ## .vscode/mcp.json
 
-**Tipo**: Configuração de servidores MCP  
-**Arrays**: `mcpServers[].args`, `mcpServers[].env`  
+**Tipo**: Configuração de servidores MCP
+**Arrays**: `mcpServers[].args`, `mcpServers[].env`
 **Comportamento**: User-wins (substituição completa)
 
 ### Exemplo
@@ -132,8 +132,8 @@ Exemplos práticos de como a estratégia **user-wins sem array union** funciona 
 
 ## .vscode/settings.json
 
-**Tipo**: Configurações do VS Code  
-**Arrays**: `editor.rulers`, `files.exclude`, etc.  
+**Tipo**: Configurações do VS Code
+**Arrays**: `editor.rulers`, `files.exclude`, etc.
 **Comportamento**: User-wins (substituição completa)
 
 ### Exemplo
@@ -184,8 +184,8 @@ Exemplos práticos de como a estratégia **user-wins sem array union** funciona 
 
 ## package.json
 
-**Tipo**: Manifesto de projeto Node.js  
-**Arrays**: `scripts`, `dependencies`, `devDependencies`  
+**Tipo**: Manifesto de projeto Node.js
+**Arrays**: `scripts`, `dependencies`, `devDependencies`
 **Comportamento**: User-wins (substituição completa)
 
 ### Exemplo
@@ -250,8 +250,8 @@ Exemplos práticos de como a estratégia **user-wins sem array union** funciona 
 
 ## tsconfig.json
 
-**Tipo**: Configuração TypeScript  
-**Arrays**: `compilerOptions.paths`, `include`, `exclude`  
+**Tipo**: Configuração TypeScript
+**Arrays**: `compilerOptions.paths`, `include`, `exclude`
 **Comportamento**: User-wins (substituição completa)
 
 ### Exemplo
@@ -311,8 +311,8 @@ Exemplos práticos de como a estratégia **user-wins sem array union** funciona 
 
 ## .eslintrc.json
 
-**Tipo**: Configuração ESLint  
-**Arrays**: `extends`, `plugins`, `rules`  
+**Tipo**: Configuração ESLint
+**Arrays**: `extends`, `plugins`, `rules`
 **Comportamento**: User-wins (substituição completa)
 
 ### Exemplo
@@ -409,5 +409,5 @@ python scripts/tmp/fix-json-duplications.py .
 
 ---
 
-**Última atualização**: 2026-05-17  
+**Última atualização**: 2026-05-17
 **Status**: ✅ Implementado e validado

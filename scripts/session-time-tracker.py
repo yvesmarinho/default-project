@@ -30,10 +30,15 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import subprocess
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
+
+# Local imports
+sys.path.insert(0, str(Path(__file__).parent))
+from lib.git_validators import validate_branch_name, format_validation_errors
 
 try:
     from rich.console import Console
@@ -52,6 +57,21 @@ HISTORY_CSV = Path(__file__).parent.parent / ".session-time" / "history.csv"
 def _ensure_dirs():
     """Garante que diretórios necessários existem."""
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+
+def _get_current_branch() -> str | None:
+    """Retorna nome da branch Git atual, ou None se não estiver em repo Git."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd=Path.cwd()
+        )
+        return result.stdout.strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
 
 
 def _iso_now() -> str:
@@ -98,7 +118,7 @@ def _force_finish_orphan(state: dict[str, Any]):
 
     # Salvar no CSV
     _save_to_csv(state)
-    
+
     # Remover arquivo órfão
     STATE_FILE.unlink()
 
@@ -111,17 +131,17 @@ def cmd_start():
     if STATE_FILE.exists():
         with open(STATE_FILE, "r", encoding="utf-8") as f:
             state = json.load(f)
-        
+
         current_date = datetime.utcnow().strftime("%Y-%m-%d")
         session_date = state.get("session_date", "")
-        
+
         # Detectar sessão órfã (de outro dia)
         if session_date and session_date != current_date:
             print(f"⚠️  Sessão órfã detectada de {session_date} (hoje: {current_date})", file=sys.stderr)
             print(f"   Iniciada em: {state.get('start_time', 'desconhecido')}", file=sys.stderr)
             print(f"   Status: {state.get('status', 'unknown')}", file=sys.stderr)
             print("\n🔧 Auto-finalizando sessão órfã...", file=sys.stderr)
-            
+
             # Auto-finalizar sessão órfã
             _force_finish_orphan(state)
             print("✅ Sessão órfã finalizada. Iniciando nova sessão...\n")
@@ -133,6 +153,32 @@ def cmd_start():
             print(f"   Status: {state.get('status', 'unknown')}", file=sys.stderr)
             print("\n💡 Use 'python scripts/session-time-tracker.py cleanup' para forçar limpeza.", file=sys.stderr)
             return 1
+
+    # Validar nome da branch Git (melhores práticas GitHub)
+    current_branch = _get_current_branch()
+    if current_branch:
+        validation = validate_branch_name(current_branch)
+
+        if not validation.is_valid:
+            print(f"\n⚠️  Branch '{current_branch}' não segue convenções do projeto:", file=sys.stderr)
+            print(format_validation_errors(validation), file=sys.stderr)
+            print("\n💡 Dicas:", file=sys.stderr)
+            print("   - Use formato: feature/NNN-descricao, fix/descricao, etc.", file=sys.stderr)
+            print("   - Apenas lowercase com hífens", file=sys.stderr)
+            print("   - Veja CONTRIBUTING.md para detalhes", file=sys.stderr)
+            print("\n❓ Continuar mesmo assim? (y/N): ", end="", file=sys.stderr)
+
+            response = input().strip().lower()
+            if response not in ("y", "yes", "s", "sim"):
+                print("❌ Sessão não iniciada. Corrija o nome da branch primeiro.", file=sys.stderr)
+                return 1
+            print("⚠️  Continuando com branch não-padrão...\n", file=sys.stderr)
+
+        elif validation.warnings:
+            print(f"\n⚠️  Avisos para branch '{current_branch}':", file=sys.stderr)
+            for warning in validation.warnings:
+                print(f"   - {warning}", file=sys.stderr)
+            print("")  # linha em branco
 
     now = _iso_now()
     date = datetime.utcnow().strftime("%Y-%m-%d")
@@ -401,33 +447,33 @@ def cmd_status():
     print("=" * 40)
     print(f"Data da sessão: {session_date}")
     print(f"Data atual:     {current_date}")
-    
+
     if is_orphan:
         print(f"⚠️  Status:        ÓRFÃ (sessão de outro dia)")
     else:
         print(f"✅ Status:        {state.get('status', 'unknown').upper()}")
-    
+
     print(f"Início:         {state.get('start_time', 'desconhecido')}")
-    
+
     # Calcular tempo decorrido
     start = datetime.fromisoformat(state["start_time"].replace("Z", "+00:00"))
     now_dt = datetime.fromisoformat(_iso_now().replace("Z", "+00:00"))
     elapsed_seconds = (now_dt - start).total_seconds()
-    
+
     print(f"Tempo decorrido: {_format_duration(elapsed_seconds)}")
     print(f"Número de pausas: {len(state.get('pauses', []))}")
-    
+
     if state.get("current_pause"):
         print(f"Pausa ativa:    {state['current_pause'].get('reason', 'sem motivo')}")
         pause_start = datetime.fromisoformat(state["current_pause"]["start"].replace("Z", "+00:00"))
         pause_elapsed = (now_dt - pause_start).total_seconds()
         print(f"Duração da pausa: {_format_duration(pause_elapsed)}")
-    
+
     if is_orphan:
         print("\n💡 Ações disponíveis:")
         print("   - 'cleanup' para forçar limpeza")
         print("   - 'start' para auto-finalizar e iniciar nova sessão")
-    
+
     print()
     return 0
 
@@ -449,7 +495,7 @@ def cmd_cleanup(force: bool = False):
     print(f"Data da sessão: {session_date}")
     print(f"Início:         {state.get('start_time', 'desconhecido')}")
     print(f"Status:         {state.get('status', 'unknown')}")
-    
+
     if not force and session_date == current_date:
         print("\n⚠️  AVISO: Esta sessão é do dia atual!")
         print("   Use '--force' para forçar limpeza mesmo assim.")
@@ -457,7 +503,7 @@ def cmd_cleanup(force: bool = False):
 
     print("\n🔧 Finalizando e salvando sessão no histórico...")
     _force_finish_orphan(state)
-    
+
     print("✅ Sessão limpa com sucesso.")
     print("   A sessão foi salva no histórico antes da remoção.")
     return 0
@@ -499,7 +545,7 @@ def main():
 
     # cleanup
     cleanup_parser = subparsers.add_parser("cleanup", help="Limpar sessão órfã")
-    cleanup_parser.add_argument("--force", action="store_true", 
+    cleanup_parser.add_argument("--force", action="store_true",
                                 help="Forçar limpeza mesmo se for sessão do dia atual")
 
     args = parser.parse_args()

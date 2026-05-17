@@ -11,7 +11,9 @@
 
 # Alterações necessárias presente
 
-- time-tracker integrado ao prompt do session.manager
+- time-tracker integrado ao prompt do session.manager, não foi deployado no projeto test-workspace-fix
+- objetivo-init.yaml não foi deployado
+- é possivel integrar a atualizações do spec-kit no projeto comando "specify init --here --force --integration copilot"
 
 ---
 
