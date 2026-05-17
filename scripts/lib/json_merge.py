@@ -356,3 +356,140 @@ class WorkspaceMerger:
                 merged[key] = overlay[key]
 
         return merged
+
+
+# =============================================================================
+# VSCodeJSONMerger - Merge user-wins para mcp.json e settings.json
+# =============================================================================
+
+class VSCodeJSONMerger:
+    """
+    Merger específico para .vscode/mcp.json e .vscode/settings.json.
+
+    Diferente do JSONMerger genérico, este merger usa estratégia user-wins
+    SEM fazer union de arrays. Overlay (usuário) sobrescreve base (template)
+    completamente para arrays, evitando duplicação.
+
+    Bug fix: Duplicação de argumentos em mcp.json ao fazer merge
+    Causa: always_merger.merge() faz union de listas
+    Solução: User-wins completo sem union (overlay sobrescreve base)
+    """
+
+    def can_merge(self, file_path: Path) -> bool:
+        """Verifica se é mcp.json ou settings.json em .vscode/."""
+        return (
+            file_path.name in ["mcp.json", "settings.json"] and
+            ".vscode" in file_path.parts
+        )
+
+    def merge(
+        self,
+        existing_path: Path,
+        template_content: str,
+        interactive: bool = True
+    ) -> CreatedItem:
+        """
+        Faz merge user-wins sem union de arrays.
+
+        Estratégia:
+        - Valores do overlay (usuário) sobrescrevem base (template)
+        - Arrays são sobrescritos completamente (NÃO faz union)
+        - Objetos aninhados são mergeados recursivamente
+        - Apenas adiciona chaves novas do template que não existem no overlay
+
+        Args:
+            existing_path: Arquivo JSON existente (overlay/usuário)
+            template_content: Conteúdo do template (base)
+            interactive: Não usado
+
+        Returns:
+            CreatedItem com status do merge
+        """
+        try:
+            # Backup do arquivo original
+            backup_path = existing_path.with_suffix(existing_path.suffix + ".backup")
+            existing_path.rename(backup_path)
+            log.info(f"📦 Backup: {existing_path.name} → {backup_path.name}")
+
+            # Carregar dados
+            base_data = json.loads(template_content)
+            overlay_data = load_json_safe(backup_path)
+
+            # Merge user-wins sem union de arrays
+            merged_data = self._merge_user_wins(base_data, overlay_data)
+
+            # Salvar resultado
+            save_json_formatted(existing_path, merged_data)
+
+            log.info(f"🔄 Merged: {existing_path.name} (user-wins, no array union)")
+
+            return CreatedItem(
+                path=existing_path,
+                kind="file",
+                status="created",
+                message=f"Merged with user-wins (backup: {backup_path.name})"
+            )
+
+        except ValueError as e:
+            # JSON inválido - restaurar backup
+            log.error(f"❌ Merge falhou: {e}")
+            if backup_path.exists():
+                backup_path.rename(existing_path)
+                log.info(f"♻️  Restaurado backup: {backup_path.name}")
+
+            return CreatedItem(
+                path=existing_path,
+                kind="file",
+                status="error",
+                message=f"Invalid JSON, restored backup: {e}"
+            )
+
+        except Exception as e:
+            log.error(f"❌ Erro inesperado no merge de {existing_path.name}: {e}")
+            return CreatedItem(
+                path=existing_path,
+                kind="file",
+                status="error",
+                message=str(e)
+            )
+
+    def _merge_user_wins(
+        self,
+        base: Dict[str, Any],
+        overlay: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Merge recursivo com user-wins SEM union de arrays.
+
+        Regras:
+        - Se key existe em overlay: usa valor do overlay (user wins)
+        - Se key só existe em base: adiciona do base (novos campos do template)
+        - Arrays: overlay sobrescreve completamente (NÃO faz union)
+        - Dicts: merge recursivo
+
+        Args:
+            base: Template (upstream)
+            overlay: Usuário (customizações)
+
+        Returns:
+            Dicionário mergeado
+        """
+        merged = {}
+
+        # Primeiro, copiar tudo do overlay (user-wins)
+        for key, overlay_value in overlay.items():
+            base_value = base.get(key)
+
+            # Se ambos são dicts, merge recursivo
+            if isinstance(overlay_value, dict) and isinstance(base_value, dict):
+                merged[key] = self._merge_user_wins(base_value, overlay_value)
+            else:
+                # Caso contrário, overlay wins (incluindo arrays!)
+                merged[key] = overlay_value
+
+        # Depois, adicionar chaves novas do base que não existem no overlay
+        for key, base_value in base.items():
+            if key not in merged:
+                merged[key] = base_value
+
+        return merged
