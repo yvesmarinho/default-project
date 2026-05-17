@@ -18,6 +18,8 @@ from .config import (
     CreatedItem,
     ProjectConfig,
 )
+from . import vscode
+from . import file_merge
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -42,6 +44,9 @@ PLACEHOLDERS = {
 
 def _apply_placeholders(text: str, config: ProjectConfig) -> str:
     """Substitui todos os placeholders pelo valor real da config."""
+    # Valor para GitHub repo: mostrar link se configurado, senão "(não configurado)"
+    github_repo_display = config.github_repo if config.github_repo else "(não configurado)"
+
     replacements = {
         "{{PROJECT_NAME}}":        config.project_name,
         "{{PROJECT_TITLE}}":       config.project_title,
@@ -49,7 +54,7 @@ def _apply_placeholders(text: str, config: ProjectConfig) -> str:
         "{{CREATED_AT}}":          config.created_at,
         "{{DOMAIN}}":              config.domain,
         "{{LANGUAGE}}":            config.language,
-        "{{GITHUB_REPO}}":         config.github_repo or "",
+        "{{GITHUB_REPO}}":         github_repo_display,
     }
     for key, value in replacements.items():
         text = text.replace(key, value)
@@ -62,6 +67,10 @@ def _apply_placeholders(text: str, config: ProjectConfig) -> str:
 
 _README_MD = """\
 # {{PROJECT_TITLE}}
+
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![GitHub Flow](https://img.shields.io/badge/Workflow-GitHub%20Flow-blue.svg)](https://docs.github.com/en/get-started/quickstart/github-flow)
+![Branch Protection](https://img.shields.io/badge/Branch%20Protection-Recommended-green)
 
 > {{PROJECT_DESCRIPTION}}
 
@@ -85,6 +94,23 @@ make dev
 
 - [Índice](docs/INDEX.md)
 - [Tarefas](docs/TODO.md)
+
+## 🤝 Contribuindo
+
+Este projeto segue as melhores práticas de Git/GitHub para garantir qualidade e colaboração eficiente.
+
+### Workflow Git
+
+Consulte [CONTRIBUTING.md](CONTRIBUTING.md) para:
+- Convenções de branches (`feature/NNN-descricao`, `fix/descricao`)
+- Padrões de commits (Conventional Commits)
+- Processo de Pull Request
+- Estratégias de merge
+- Proteção de branches
+
+### Configuração de Branch Protection
+
+Para configurar proteção de branches no GitHub, consulte [docs/BRANCH_PROTECTION_SETUP.md](docs/BRANCH_PROTECTION_SETUP.md).
 
 ## 🏗️ Estrutura
 
@@ -223,8 +249,19 @@ Thumbs.db
 
 # Logs
 *.log
-logs/
+logs/*
+!logs/README.md
 !scripts/logs/.gitkeep
+
+# Infrastructure directories
+tmp/*
+!tmp/README.md
+.memory/*
+!.memory/README.md
+.session-index/*
+!.session-index/README.md
+.session-time/*
+!.session-time/README.md
 """
 
 _SECRETS_README = """\
@@ -382,11 +419,12 @@ if git diff --cached --name-only | grep -q '^\.secrets/'; then
     git diff --cached --name-only | grep '^\.secrets/' | sed 's/^/  - /'
     echo ""
     echo "💡 Solução: remova os arquivos do staging:"
-    echo "   git reset HEAD .secrets/"
+    echo "   git restore --staged .secrets/"
+    echo "   # ou: git reset .secrets/"
     exit 1
 fi
 
-# 2. Verificar padrões de arquivos sensíveis
+# 2. Verificar padrões de arquivos sensíveis (excluindo .git-hooks/)
 SENSITIVE_PATTERNS=(
     '\.env'
     '\.env\.'
@@ -404,6 +442,10 @@ SENSITIVE_PATTERNS=(
 BLOCKED_FILES=()
 for pattern in "${SENSITIVE_PATTERNS[@]}"; do
     while IFS= read -r file; do
+        # Ignorar arquivos em .git-hooks/ (são scripts de validação, não secrets)
+        if [[ "$file" =~ ^\.git-hooks/ ]]; then
+            continue
+        fi
         [[ -n "$file" ]] && BLOCKED_FILES+=("$file")
     done < <(git diff --cached --name-only | grep -iE "$pattern" || true)
 done
@@ -1252,85 +1294,11 @@ clean:
 mcp:
 	@bash scripts/load-mcp.sh"""
 
-_CODE_WORKSPACE = """\
-{
-  "folders": [
-    {
-      "path": "."
-    }
-  ],
-  "settings": {
-    "editor.formatOnSave": true,
-    "editor.rulers": [88, 120],
-    "files.trimTrailingWhitespace": true,
-    "files.insertFinalNewline": true
-  },
-  "tasks": {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "make: install-deps",
-        "type": "shell",
-        "command": "make install-deps",
-        "group": "build",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: dev",
-        "type": "shell",
-        "command": "make dev",
-        "group": { "kind": "build", "isDefault": true },
-        "problemMatcher": []
-      },
-      {
-        "label": "make: build",
-        "type": "shell",
-        "command": "make build",
-        "group": "build",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: test",
-        "type": "shell",
-        "command": "make test",
-        "group": { "kind": "test", "isDefault": true },
-        "problemMatcher": []
-      },
-      {
-        "label": "make: lint",
-        "type": "shell",
-        "command": "make lint",
-        "group": "test",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: format",
-        "type": "shell",
-        "command": "make format",
-        "group": "build",
-        "problemMatcher": []
-      },
-      {
-        "label": "make: clean",
-        "type": "shell",
-        "command": "make clean",
-        "group": "build",
-        "problemMatcher": []
-      }
-    ]
-  },
-  "launch": {
-    "version": "0.2.0",
-    "configurations": []
-  }
-}
-"""
-
 # ---------------------------------------------------------------------------
 # Templates de segurança GitHub (BUG-06)
 # ---------------------------------------------------------------------------
 
-_SECURITY_MD = """\
+_SECURITY_MD_WITH_GITHUB = """\
 # Security Policy
 
 ## Supported Versions
@@ -1371,6 +1339,100 @@ This project follows security best practices:
 - ✅ Secret scanning enabled
 - ✅ Branch protection rules
 - ✅ Required code review
+
+## Security Contacts
+
+For security-related questions, contact: [security contact info]
+"""
+
+_SECURITY_MD_WITHOUT_GITHUB = """
+# Security Policy
+
+## Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| Latest  | :white_check_mark: |
+
+## Reporting a Vulnerability
+
+**DO NOT** open public issues for security vulnerabilities.
+
+Instead, please report them privately through one of these channels:
+
+1. **Email**: Send details to your project security contact
+2. **Internal ticketing**: Create a confidential security ticket
+3. **Direct contact**: Reach out to project maintainers directly
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if available)
+
+### Response Timeline
+
+- **Initial response**: Within 48 hours
+- **Status update**: Within 7 days
+- **Fix timeline**: Depends on severity (Critical: 24-48h, High: 1 week, Medium: 2 weeks, Low: 1 month)
+
+## Security Best Practices
+
+This project follows security best practices:
+
+- ✅ Regular security audits
+- ✅ Dependency updates and scanning
+- ✅ Code review for all changes
+- ✅ Secure credential management
+- ✅ Principle of least privilege
+
+## Security Contacts
+
+For security-related questions, contact: [security contact info]
+"""
+
+_SECURITY_MD_WITHOUT_GITHUB = """
+# Security Policy
+
+## Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| Latest  | :white_check_mark: |
+
+## Reporting a Vulnerability
+
+**DO NOT** open public issues for security vulnerabilities.
+
+Instead, please report them privately through one of these channels:
+
+1. **Email**: Send details to your project security contact
+2. **Internal ticketing**: Create a confidential security ticket
+3. **Direct contact**: Reach out to project maintainers directly
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if available)
+
+### Response Timeline
+
+- **Initial response**: Within 48 hours
+- **Status update**: Within 7 days
+- **Fix timeline**: Depends on severity (Critical: 24-48h, High: 1 week, Medium: 2 weeks, Low: 1 month)
+
+## Security Best Practices
+
+This project follows security best practices:
+
+- ✅ Regular security audits
+- ✅ Dependency updates and scanning
+- ✅ Code review for all changes
+- ✅ Secure credential management
+- ✅ Principle of least privilege
 
 ## Security Contacts
 
@@ -1565,6 +1627,201 @@ jobs:
           comment-summary-in-pr: always
 """
 
+_LOGS_README = """\
+# Pasta logs/
+
+## Propósito
+Armazenamento de logs de execução:
+- Logs de aplicação (runtime logs)
+- Logs de scripts de automação
+- Logs de testes e validações
+- Outputs de diagnóstico
+
+## Conteúdo Esperado
+```
+logs/
+├── README.md
+├── app-YYYY-MM-DD.log              # Logs da aplicação
+├── scaffold-YYYY-MM-DD.log         # Logs do scaffold
+├── tests-YYYY-MM-DD.log            # Logs de testes
+└── session-*.log                   # Logs de sessão
+```
+
+## Rotation Policy
+- Logs mantidos por 90 dias (rotação automática)
+- Logs de erro mantidos indefinidamente
+- Logs de debug deletados após 7 dias
+
+## Git Status
+Esta pasta está no `.gitignore` (conteúdo não versionado).
+Apenas este README.md é commitado.
+
+## Logging Configuration
+- Python: configurado em `pyproject.toml` → `[tool.logging]`
+- Scripts: usar `logging.basicConfig()` com arquivo em `logs/`
+- Formato padrão: `YYYY-MM-DD HH:MM:SS [LEVEL] message`
+"""
+
+_TMP_README = """\
+# Pasta tmp/
+
+## Propósito
+Armazenamento temporário para:
+- Backups de upgrade (`backup-*`)
+- Relatórios de atualização (`UPGRADE_REPORT_*`)
+- Outputs temporários de testes
+- Arquivos intermediários de processamento
+
+## Conteúdo Esperado
+```
+tmp/
+├── README.md
+├── backup-sistema-deploy-YYYYMMDD-HHmmss/  # Backups automáticos
+├── UPGRADE_REPORT_*.md                      # Relatórios de upgrade
+└── *.tmp                                    # Arquivos temporários
+```
+
+## Lifecycle
+- Backups: mantidos por 30 dias
+- Reports: mantidos permanentemente (documentação)
+- Arquivos .tmp: deletados após uso
+
+## Git Status
+Esta pasta está no `.gitignore` (conteúdo não versionado).
+Apenas este README.md é commitado.
+
+## Scripts Relacionados
+- `scripts/scaffold.py --upgrade` (gera backups aqui)
+- `scripts/cleanup-tmp.sh` (limpa arquivos antigos)
+"""
+
+_MEMORY_README = """\
+# Pasta .memory/
+
+## Propósito
+Storage para MCP servers de memória:
+- `memory` server: contexto de conversas
+- `sequential-thinking` server: raciocínios salvos
+
+## Estrutura
+```
+.memory/
+├── README.md
+├── *.json          # Memórias estruturadas
+└── *.txt           # Memórias em texto livre
+```
+
+## Formato
+- JSON: metadados + conteúdo estruturado
+- TXT: raciocínios, notas, observações
+
+## Indexação
+MCP servers indexam automaticamente este diretório.
+Busca disponível via interface de memória.
+
+## Git Status
+Esta pasta está no `.gitignore` (memórias são locais).
+Apenas este README.md é commitado.
+
+## MCP Configuration
+Configurado em `.vscode/mcp.json`:
+```json
+{
+  \"memory\": {
+    \"command\": \"npx\",
+    \"args\": [\"-y\", \"@modelcontextprotocol/server-memory\"]
+  }
+}
+```
+"""
+
+_SESSION_INDEX_README = """\
+# Pasta .session-index/
+
+## Propósito
+SQLite FTS5 database para busca em documentação de sessões.
+
+## Estrutura
+```
+.session-index/
+├── README.md
+└── sessions.db     # SQLite database (FTS5)
+```
+
+## Database Schema
+- Tabela `sessions_fts`: full-text search
+- Índice BM25 ranking
+- Campos: date, filename, content, metadata
+
+## Uso
+```bash
+# Buscar em sessões
+python scripts/session-search.py \"IMP-65\"
+
+# Reconstruir índice
+python scripts/session-index.py --rebuild
+```
+
+## Performance
+- Queries: <0.01s (FTS5 otimizado)
+- Tamanho típico: ~5MB/100 sessões
+
+## Git Status
+Database não é versionado (`.gitignore`).
+Apenas README.md commitado.
+
+## Sistema Relacionado
+- IMP-51: Session Search System
+- Scripts: `session-search.py`, `session-index.py`
+"""
+
+_SESSION_TIME_README = """\
+# Pasta .session-time/
+
+## Propósito
+Time tracking de sessões de desenvolvimento.
+
+## Estrutura
+```
+.session-time/
+├── README.md
+└── sessions.csv    # Registro de tempo
+```
+
+## Formato CSV
+```csv
+date,start,end,duration_minutes,pauses
+2026-05-11,09:00,12:30,210,30
+```
+
+## Campos
+- `date`: YYYY-MM-DD
+- `start`: HH:MM
+- `end`: HH:MM
+- `duration_minutes`: tempo líquido
+- `pauses`: tempo de pausas (café, almoço)
+
+## Uso
+```bash
+# Registrar sessão
+python scripts/session-time.py start
+python scripts/session-time.py pause
+python scripts/session-time.py resume
+python scripts/session-time.py end
+
+# Ver relatório
+python scripts/session-time.py report --week
+```
+
+## Git Status
+CSV não é versionado (dados pessoais).
+Apenas README.md commitado.
+
+## Sistema Relacionado
+- Feature: Session Management System
+- Script: `scripts/session-time.py`
+"""
+
 # ---------------------------------------------------------------------------
 # Pastas a criar
 # ---------------------------------------------------------------------------
@@ -1589,6 +1846,11 @@ DIRS_TO_CREATE = [
     "scripts/lib",
     "scripts/logs",
     "src",
+    "logs",
+    "tmp",
+    ".memory",
+    ".session-index",
+    ".session-time",
 ]
 
 # ---------------------------------------------------------------------------
@@ -1613,6 +1875,11 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     # .vscode/mcp.json e settings.json são gerados dinamicamente por vscode.py (IMP-64)
     ("Makefile",                   _MAKEFILE),
     ("scripts/logs/.gitkeep",      ""),
+    ("logs/README.md",             _LOGS_README),
+    ("tmp/README.md",              _TMP_README),
+    (".memory/README.md",          _MEMORY_README),
+    (".session-index/README.md",   _SESSION_INDEX_README),
+    (".session-time/README.md",    _SESSION_TIME_README),
 ]
 
 
@@ -1654,9 +1921,27 @@ def create_structure(config: ProjectConfig) -> list[CreatedItem]:
     for file_rel, template in FILES_TO_CREATE:
         file_path = base / file_rel
         if file_path.exists():
-            results.append(CreatedItem(
-                path=file_path, kind="file", status="skipped",
-            ))
+            # EXCEÇÃO: Sempre sobrescrever hooks de segurança (garantir versão atualizada)
+            # Ref: Fix BUG de hook pre-commit bloqueando .git-hooks/ (2026-04-29)
+            if file_rel == ".git-hooks/pre-commit.secrets":
+                content = _prepare_content(template, file_rel, config)
+                file_path.write_text(content, encoding="utf-8")
+                file_path.chmod(0o755)  # rwxr-xr-x
+                results.append(CreatedItem(
+                    path=file_path, kind="file", status="updated",
+                    message="hook de segurança atualizado com versão mais recente"
+                ))
+                continue
+
+            # NOVO: Tentar merge inteligente ao invés de skip incondicional
+            # Fix: BUG-#1.1 (P0 sistêmico - arquivos críticos não mesclados)
+            content = _prepare_content(template, file_rel, config)
+            merge_result = file_merge.merge_or_skip(
+                file_path=file_path,
+                template_content=content,
+                interactive=False  # Modo CI (não interativo por padrão)
+            )
+            results.append(merge_result)
             continue
         try:
             # Substitui {{PROJECT_*}} antes de escrever
@@ -1671,16 +1956,9 @@ def create_structure(config: ProjectConfig) -> list[CreatedItem]:
                 path=file_path, kind="file", status="error", message=str(e),
             ))
 
-    # 3. [nome].code-workspace (nome dinâmico)
-    ws_path = base / f"{config.project_name}.code-workspace"
-    if ws_path.exists():
-        results.append(CreatedItem(path=ws_path, kind="file", status="skipped"))
-    else:
-        try:
-            ws_path.write_text(_CODE_WORKSPACE, encoding="utf-8")
-            results.append(CreatedItem(path=ws_path, kind="file", status="created"))
-        except OSError as e:
-            results.append(CreatedItem(path=ws_path, kind="file", status="error", message=str(e)))
+    # 3. [nome].code-workspace (nome dinâmico) - agora com MCP integrado
+    ws_result = vscode.generate_workspace(config)
+    results.append(ws_result)
 
     return results
 
@@ -1701,7 +1979,7 @@ def _prepare_content(template: str, file_rel: str, config: ProjectConfig) -> str
 # SpecKit — cópia de agents, prompts e perfis de domínio
 # ---------------------------------------------------------------------------
 
-def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
+def copy_speckit(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
     Copia assets SpecKit do template para o projeto gerado.
 
@@ -1715,7 +1993,14 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
       - Perfis extras selecionados (cfg.extra_profiles)
       - Sempre: SPECKIT_TRANSVERSAL_PROFILES (ex: devops-security)
 
-    Arquivos já existentes no destino são saltados (idempotente).
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes (com backup)
+
+    Arquivos já existentes no destino:
+      - Se idênticos: saltados
+      - Se diferentes e force=False: marcados com 'drift'
+      - Se diferentes e force=True: backupados e sobrescritos
     """
     results: list[CreatedItem] = []
     errors: list[str] = []
@@ -1738,7 +2023,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
             continue
         for src_file in sorted(src_dir.glob(pattern)):
             dst_file = base / rel_dir / src_file.name
-            result = _copy_file(src_file, dst_file)
+            result = _copy_file(src_file, dst_file, force=force)
             if result.status == "error":
                 errors.append(str(src_file))
             results.append(result)
@@ -1750,7 +2035,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
             if src_file.is_file():
                 rel = src_file.relative_to(src_root)
                 dst_file = base / rel
-                result = _copy_file(src_file, dst_file)
+                result = _copy_file(src_file, dst_file, force=force)
                 if result.status == "error":
                     errors.append(str(src_file))
                 results.append(result)
@@ -1761,7 +2046,7 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
     src_cfg = src_root / ".specify" / "config.json"
     if src_cfg.is_file():
         dst_cfg = base / ".specify" / "config.json"
-        result = _copy_file(src_cfg, dst_cfg)
+        result = _copy_file(src_cfg, dst_cfg, force=force)
         if result.status == "error":
             errors.append(str(src_cfg))
         results.append(result)
@@ -1770,22 +2055,26 @@ def copy_speckit(config: ProjectConfig) -> list[CreatedItem]:
     # 1) principal (pelo domínio)
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(config.domain)
     if domain_profile:
-        result = _copy_domain_profile(src_root, base, domain_profile, errors)
+        result = _copy_domain_profile(
+            src_root, base, domain_profile, errors, force=force)
         results.append(result)
 
     # 2) extras selecionados pelo utilizador (D-21)
     for profile_name in config.extra_profiles:
         if profile_name != domain_profile:  # evita duplicata
-            result = _copy_domain_profile(src_root, base, profile_name, errors)
+            result = _copy_domain_profile(
+                src_root, base, profile_name, errors, force=force)
             results.append(result)
 
     # 3) transversais — sempre copiados (D-20)
     for profile_name in SPECKIT_TRANSVERSAL_PROFILES:
-        result = _copy_domain_profile(src_root, base, profile_name, errors)
+        result = _copy_domain_profile(
+            src_root, base, profile_name, errors, force=force)
         results.append(result)
 
     if errors:
-        log.warning("⚠️  %d erro(s) ao copiar SpecKit: %s", len(errors), errors)
+        log.warning("⚠️  %d erro(s) ao copiar SpecKit: %s",
+                    len(errors), errors)
 
     return results
 
@@ -1819,7 +2108,8 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     src_templates = src_root / "docs" / "templates"
 
     if not src_templates.is_dir():
-        log.warning("⚠️  Diretório de origem não encontrado: %s", src_templates)
+        log.warning("⚠️  Diretório de origem não encontrado: %s",
+                    src_templates)
         return results
 
     # 1. objetivo.yaml (raiz, com substituições)
@@ -1828,22 +2118,30 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     try:
         if dst_objetivo.exists():
             log.info("⏭️  já existe: objetivo.yaml")
-            results.append(CreatedItem(path=dst_objetivo, kind="file", status="skipped"))
+            results.append(CreatedItem(path=dst_objetivo,
+                           kind="file", status="skipped"))
         else:
             content = src_objetivo.read_text(encoding="utf-8")
             # Substituir placeholders
-            content = content.replace('name: "CHANGE_ME"', f'name: "{config.project_name}"')
-            content = content.replace('summary: "CHANGE_ME (1-2 linhas)"', f'summary: "{config.description}"')
-            content = content.replace('problem_statement: "CHANGE_ME (qual dor real será resolvida?)"', f'problem_statement: "{config.description}"')
-            content = content.replace('team_or_person: "CHANGE_ME"', f'team_or_person: "{config.project_name} team"')
-            content = content.replace('- "CHANGE_ME"', f'- "{config.project_name} owner"')
+            content = content.replace(
+                'name: "CHANGE_ME"', f'name: "{config.project_name}"')
+            content = content.replace(
+                'summary: "CHANGE_ME (1-2 linhas)"', f'summary: "{config.description}"')
+            content = content.replace(
+                'problem_statement: "CHANGE_ME (qual dor real será resolvida?)"', f'problem_statement: "{config.description}"')
+            content = content.replace(
+                'team_or_person: "CHANGE_ME"', f'team_or_person: "{config.project_name} team"')
+            content = content.replace(
+                '- "CHANGE_ME"', f'- "{config.project_name} owner"')
 
             dst_objetivo.write_text(content, encoding="utf-8")
             log.info("✅ criado: objetivo.yaml")
-            results.append(CreatedItem(path=dst_objetivo, kind="file", status="created"))
+            results.append(CreatedItem(path=dst_objetivo,
+                           kind="file", status="created"))
     except OSError as exc:
         log.warning("⚠️  erro ao criar objetivo.yaml: %s", exc)
-        results.append(CreatedItem(path=dst_objetivo, kind="file", status="error", message=str(exc)))
+        results.append(CreatedItem(path=dst_objetivo,
+                       kind="file", status="error", message=str(exc)))
 
     # 2. mcp-questions.yaml (raiz, cópia direta)
     src_mcp = src_templates / "mcp-questions-template.yaml"
@@ -1864,34 +2162,516 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     return results
 
 
+# ---------------------------------------------------------------------------
+# Session Support Libraries — módulos compartilhados necessários para scripts
+# ---------------------------------------------------------------------------
+
+def copy_session_libs(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia módulos compartilhados necessários para scripts de sessão e memory.
+
+    Módulos copiados:
+      1. scripts/lib/__init__.py
+      2. scripts/lib/search.py (usado por session-index, session-search, session-chat)
+      3. scripts/lib/chat_capture.py (usado por session-chat)
+      4. scripts/lib/memory.py (usado por memory scripts)
+
+    Esses módulos são dependências dos scripts de sessão e memory system.
+    Sem eles, os scripts falham com ModuleNotFoundError.
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: BUG-14 — session scripts missing lib dependencies
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_lib = _TEMPLATE_ROOT / "scripts" / "lib"
+    dst_lib = base / "scripts" / "lib"
+
+    # Criar diretório scripts/lib/ se não existir
+    dst_lib.mkdir(parents=True, exist_ok=True)
+
+    libs_to_copy = [
+        "__init__.py",
+        "search.py",
+        "chat_capture.py",
+        "memory.py",
+    ]
+
+    for lib_name in libs_to_copy:
+        src_file = src_lib / lib_name
+        dst_file = dst_lib / lib_name
+        result = _copy_file(src_file, dst_file, force=force)
+        results.append(result)
+
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Session Scripts — cópia de scripts de rastreamento para novo projeto
+# ---------------------------------------------------------------------------
+
+def copy_session_scripts(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia scripts de rastreamento de sessão para o novo projeto.
+
+    Scripts copiados:
+      1. session-index.py → scripts/session-index.py
+      2. session-time-tracker.py → scripts/session-time-tracker.py
+      3. session-search.py → scripts/session-search.py
+      4. session-chat.py → scripts/session-chat.py
+      5. session-validate.py → scripts/session-validate.py
+
+    Esses scripts são necessários para:
+      - Indexar documentação de sessões (session-index.py)
+      - Rastrear tempo de trabalho (session-time-tracker.py)
+      - Buscar em sessões indexadas (session-search.py)
+      - Chat interativo com sessões (session-chat.py)
+      - Validar estrutura de sessões (session-validate.py)
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: BUG-11 — session-start-first incomplete initialization
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT / "scripts"
+
+    scripts_to_copy = [
+        "session-index.py",
+        "session-time-tracker.py",
+        "session-search.py",
+        "session-chat.py",
+        "session-validate.py",
+    ]
+
+    for script_name in scripts_to_copy:
+        src_script = src_root / script_name
+        dst_script = base / "scripts" / script_name
+        result = _copy_file(src_script, dst_script, force=force)
+        results.append(result)
+
+    return results
+
+
+def copy_memory_scripts(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia scripts do memory system para o novo projeto.
+
+    Scripts copiados:
+      1. create_memory_structure.py → scripts/create_memory_structure.py
+      2. mem_context.py → scripts/mem_context.py
+      3. mem_search.py → scripts/mem_search.py
+      4. mem_save.py → scripts/mem_save.py
+      5. test_memory_smoke.py → scripts/test_memory_smoke.py
+
+    Esses scripts são necessários para:
+      - Criar estrutura .memory/ (create_memory_structure.py)
+      - Buscar memories por contexto (mem_context.py)
+      - Buscar memories por query (mem_search.py)
+      - Salvar novo memory (mem_save.py)
+      - Testar funcionalidade do memory system (test_memory_smoke.py)
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: BUG-12 — memory system not initialized
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT / "scripts"
+
+    scripts_to_copy = [
+        "create_memory_structure.py",
+        "mem_context.py",
+        "mem_search.py",
+        "mem_save.py",
+        "test_memory_smoke.py",
+    ]
+
+    for script_name in scripts_to_copy:
+        src_script = src_root / script_name
+        dst_script = base / "scripts" / script_name
+        result = _copy_file(src_script, dst_script, force=force)
+        results.append(result)
+
+    return results
+
+
+def copy_utility_scripts(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia scripts shell utilitários para o novo projeto.
+
+    Scripts copiados:
+      1. activate-mcp.sh → scripts/activate-mcp.sh
+      2. git-commit-with-file.sh → scripts/git-commit-with-file.sh
+      3. cleanup-tmp.sh → scripts/cleanup-tmp.sh
+      4. validate-docs-links.sh → scripts/validate-docs-links.sh
+
+    Esses scripts são necessários para:
+      - Validar e ativar servidores MCP (activate-mcp.sh)
+      - Git commits com arquivo de mensagem (git-commit-with-file.sh)
+      - Limpar arquivos temporários (cleanup-tmp.sh)
+      - Validar links em documentação (validate-docs-links.sh)
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: Validação pós-scaffold - scripts shell essenciais
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT / "scripts"
+
+    scripts_to_copy = [
+        "activate-mcp.sh",
+        "git-commit-with-file.sh",
+        "cleanup-tmp.sh",
+        "validate-docs-links.sh",
+    ]
+
+    for script_name in scripts_to_copy:
+        src_script = src_root / script_name
+        dst_script = base / "scripts" / script_name
+        result = _copy_file(src_script, dst_script, force=force)
+        # Garantir permissões executáveis (755)
+        if result.status in ("created", "updated") and dst_script.exists():
+            try:
+                dst_script.chmod(0o755)
+                log.debug("✅ Permissões executáveis aplicadas: %s", dst_script.name)
+            except OSError as exc:
+                log.warning("⚠️  Não foi possível aplicar chmod 755 em %s: %s", dst_script, exc)
+        results.append(result)
+
+    return results
+
+
+def copy_copilot_instructions(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia arquivos de instruções customizadas do Copilot para o novo projeto.
+
+    Arquivos copiados:
+      1. copilot-instructions.md → .github/copilot-instructions.md
+      2. .copilot-rules.md → .copilot-rules.md (raiz)
+
+    Esses arquivos são necessários para:
+      - Persistir instruções customizadas do Copilot (copilot-instructions.md)
+      - Definir regras críticas P0/P1 do projeto (.copilot-rules.md)
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: BUG-13 — copilot instructions not persisted
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT
+
+    # Copiar copilot-instructions.md para .github/
+    src_instructions = src_root / ".github" / "copilot-instructions.md"
+    dst_instructions = base / ".github" / "copilot-instructions.md"
+    result = _copy_file(src_instructions, dst_instructions, force=force)
+    results.append(result)
+
+    # Copiar .copilot-rules.md para raiz do projeto
+    src_rules = src_root / ".copilot-rules.md"
+    dst_rules = base / ".copilot-rules.md"
+    result = _copy_file(src_rules, dst_rules, force=force)
+    results.append(result)
+
+    return results
+
+
+def copy_github_templates(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia templates de GitHub Best Practices para o novo projeto.
+
+    Templates copiados (P1):
+      1. CONTRIBUTING.md → raiz do projeto (com substituição de variáveis)
+      2. PULL_REQUEST_TEMPLATE.md → .github/
+      3. CODEOWNERS → .github/
+      4. BRANCH_PROTECTION_SETUP.md → docs/
+
+    Templates adicionais (P2):
+      5. Issue templates → .github/ISSUE_TEMPLATE/ (bug, feature, docs, question)
+      6. GitHub Actions workflows → .github/workflows/
+      7. Git hooks → scripts/git-hooks/
+      8. Badge guide → .github/BADGES.md
+      9. Branch protection script → scripts/
+
+    Variáveis substituídas:
+      - {{ project_name }} → config.project_name
+      - {{ current_date }} → config.created_at
+      - {{ github_repo }} → config.github_repo (se configurado)
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: P1/P2 - GitHub Best Practices Integration
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_root = _TEMPLATE_ROOT / ".github" / "templates" / "common"
+
+    # Mapeamento de variáveis customizadas para templates GitHub
+    github_owner_repo = config.github_repo if config.github_repo else "owner/repo"
+    github_parts = github_owner_repo.split("/") if "/" in github_owner_repo else ["owner", "repo"]
+
+    template_vars = {
+        "{{ project_name }}": config.project_name,
+        "{{ current_date }}": config.created_at.split("T")[0],  # YYYY-MM-DD apenas
+        "{{ github_repo }}": github_parts[1] if len(github_parts) > 1 else "repo",
+        "{{ github_owner }}": github_parts[0] if len(github_parts) > 0 else "owner",
+    }
+
+    # === P1 Templates ===
+
+    # 1. CONTRIBUTING.md → raiz (com substituição de variáveis)
+    src_contributing = src_root / "CONTRIBUTING.md"
+    dst_contributing = base / "CONTRIBUTING.md"
+    result = _copy_file_with_vars(src_contributing, dst_contributing, template_vars, force=force)
+    results.append(result)
+
+    # 2. PULL_REQUEST_TEMPLATE.md → .github/
+    src_pr_template = src_root / "PULL_REQUEST_TEMPLATE.md"
+    dst_pr_template = base / ".github" / "PULL_REQUEST_TEMPLATE.md"
+    result = _copy_file(src_pr_template, dst_pr_template, force=force)
+    results.append(result)
+
+    # 3. CODEOWNERS → .github/
+    src_codeowners = src_root / "CODEOWNERS"
+    dst_codeowners = base / ".github" / "CODEOWNERS"
+    result = _copy_file_with_vars(src_codeowners, dst_codeowners, template_vars, force=force)
+    results.append(result)
+
+    # 4. BRANCH_PROTECTION_SETUP.md → docs/
+    src_guide = _TEMPLATE_ROOT / "docs" / "guides" / "BRANCH_PROTECTION_SETUP.md"
+    dst_guide = base / "docs" / "BRANCH_PROTECTION_SETUP.md"
+    result = _copy_file_with_vars(src_guide, dst_guide, template_vars, force=force)
+    results.append(result)
+
+    # === P2 Templates ===
+
+    # 5. Issue templates → .github/ISSUE_TEMPLATE/
+    issue_templates = ["bug_report.yml", "feature_request.yml", "documentation.yml", "question.yml", "config.yml"]
+    for template_name in issue_templates:
+        src_issue = src_root / "ISSUE_TEMPLATE" / template_name
+        dst_issue = base / ".github" / "ISSUE_TEMPLATE" / template_name
+        result = _copy_file_with_vars(src_issue, dst_issue, template_vars, force=force)
+        results.append(result)
+
+    # 6. GitHub Actions workflows → .github/workflows/
+    src_workflow = src_root / "workflows" / "git-validation.yml"
+    dst_workflow = base / ".github" / "workflows" / "git-validation.yml"
+    result = _copy_file_with_vars(src_workflow, dst_workflow, template_vars, force=force)
+    results.append(result)
+
+    # 7. Git hooks → scripts/git-hooks/
+    src_hook = _TEMPLATE_ROOT / "scripts" / "git-hooks" / "commit-msg"
+    dst_hook = base / "scripts" / "git-hooks" / "commit-msg"
+    result = _copy_file(src_hook, dst_hook, force=force)
+    # Garantir permissões executáveis
+    if result.status in ("created", "updated") and dst_hook.exists():
+        try:
+            dst_hook.chmod(0o755)
+            log.debug("✅ Permissões executáveis aplicadas: %s", dst_hook.name)
+        except OSError as exc:
+            log.warning("⚠️  Não foi possível aplicar chmod 755 em %s: %s", dst_hook, exc)
+    results.append(result)
+
+    # 8. Badge guide → .github/BADGES.md
+    src_badges = src_root / "BADGES.md"
+    dst_badges = base / ".github" / "BADGES.md"
+    result = _copy_file_with_vars(src_badges, dst_badges, template_vars, force=force)
+    results.append(result)
+
+    # 9. Branch protection script → scripts/
+    src_script = _TEMPLATE_ROOT / "scripts" / "setup-branch-protection.py"
+    dst_script = base / "scripts" / "setup-branch-protection.py"
+    result = _copy_file(src_script, dst_script, force=force)
+    # Garantir permissões executáveis
+    if result.status in ("created", "updated") and dst_script.exists():
+        try:
+            dst_script.chmod(0o755)
+            log.debug("✅ Permissões executáveis aplicadas: %s", dst_script.name)
+        except OSError as exc:
+            log.warning("⚠️  Não foi possível aplicar chmod 755 em %s: %s", dst_script, exc)
+    results.append(result)
+
+    return results
+
+
+def _copy_file_with_vars(
+    src: Path,
+    dst: Path,
+    template_vars: dict[str, str],
+    force: bool = False
+) -> CreatedItem:
+    """
+    Copia arquivo aplicando substituição de variáveis.
+
+    Args:
+        src: Arquivo de origem
+        dst: Arquivo de destino
+        template_vars: Dicionário de variáveis a substituir
+        force: Se True, sobrescreve arquivo existente
+
+    Returns:
+        CreatedItem com status da operação
+    """
+    if not src.exists():
+        msg = f"origem não encontrada: {src}"
+        log.warning("⚠️  %s", msg)
+        return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
+    # Verificar se destino existe
+    if dst.exists() and not force:
+        msg = "já existe (use --force para sobrescrever)"
+        log.info("⏭️  %s: %s", dst.name, msg)
+        return CreatedItem(path=dst, kind="file", status="skipped", message=msg)
+
+    try:
+        # Criar diretório pai se necessário
+        dst.parent.mkdir(parents=True, exist_ok=True)
+
+        # Ler conteúdo do template
+        content = src.read_text(encoding="utf-8")
+
+        # Aplicar substituições
+        for var, value in template_vars.items():
+            content = content.replace(var, value)
+
+        # Escrever arquivo processado
+        dst.write_text(content, encoding="utf-8")
+
+        log.info("✅ %s (com substituição de variáveis)", dst.name)
+        return CreatedItem(path=dst, kind="file", status="created")
+
+    except (OSError, UnicodeDecodeError) as exc:
+        msg = f"erro ao copiar: {exc}"
+        log.error("❌ %s: %s", dst.name, msg)
+        return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
+
 def _copy_domain_profile(
     src_root: Path,
     base: Path,
     profile_name: str,
     errors: list[str],
+    force: bool = False,
 ) -> CreatedItem:
     """Copia um perfil de domínio individual."""
-    src_file = src_root / ".github" / "prompts" / "domain" / f"{profile_name}.prompt.md"
-    dst_file = base / ".github" / "prompts" / "domain" / f"{profile_name}.prompt.md"
-    result = _copy_file(src_file, dst_file)
+    src_file = src_root / ".github" / "prompts" / \
+        "domain" / f"{profile_name}.prompt.md"
+    dst_file = base / ".github" / "prompts" / \
+        "domain" / f"{profile_name}.prompt.md"
+    result = _copy_file(src_file, dst_file, force=force)
     if result.status == "error":
         errors.append(str(src_file))
     return result
 
 
-def _copy_file(src: Path, dst: Path) -> CreatedItem:
-    """Copia src → dst com logging. Salta se dst já existe."""
-    if dst.exists():
-        log.info("⏭️  skipped (já existe): %s", dst)
-        return CreatedItem(path=dst, kind="file", status="skipped")
+def _copy_file(src: Path, dst: Path, force: bool = False) -> CreatedItem:
+    """Copia src → dst com logging. Detecta drift e permite force com backup.
+
+    Integração BUG-16: Usa sistema de merge inteligente quando disponível.
+
+    Args:
+        src: Arquivo de origem (upstream template)
+        dst: Arquivo de destino (projeto local)
+        force: Se True, sobrescreve arquivo existente após backup
+
+    Returns:
+        CreatedItem com status:
+        - created: arquivo criado ou atualizado
+        - merged: arquivo mergeado com sistema de merge inteligente (BUG-16)
+        - skipped: arquivo existe e sem drift ou force=False
+        - drift: arquivo existe com drift detectado (apenas se force=False)
+        - error: erro ao copiar
+
+    Nota: Se dst for um symlink, NUNCA sobrescreve (preserva symlink).
+    """
+    import hashlib
+
     if not src.exists():
         msg = f"origem não encontrada: {src}"
         log.warning("⚠️  %s", msg)
         return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
+    # PROTEÇÃO: Nunca sobrescrever symlinks (preservar configuração de shared files)
+    if dst.is_symlink():
+        log.info("🔗 skipped (symlink): %s → %s", dst.name, dst.resolve())
+        return CreatedItem(
+            path=dst,
+            kind="symlink",
+            status="skipped",
+            message=f"Preservado symlink → {dst.resolve()}"
+        )
+
+    # Ler conteúdo do template
+    try:
+        template_content = src.read_text(encoding="utf-8")
+    except Exception as exc:
+        msg = f"Erro ao ler template {src}: {exc}"
+        log.warning("⚠️  %s", msg)
+        return CreatedItem(path=dst, kind="file", status="error", message=msg)
+
+    # Calcular hash do arquivo upstream
+    src_hash = hashlib.sha256(src.read_bytes()).hexdigest()[:8]
+
+    if dst.exists():
+        # BUG-16: Tentar merge inteligente primeiro (antes de force)
+        # Verificar se há merger disponível para este tipo de arquivo
+        merge_result = file_merge.merge_or_skip(dst, template_content, interactive=False)
+
+        if merge_result.status == "merged" or merge_result.status == "created":
+            # Merge bem-sucedido via sistema de merge inteligente
+            log.info("🔀 merged via %s", merge_result.message or "intelligent merge system")
+            return merge_result
+
+        # Se chegou aqui, não há merger disponível ou merge foi skipped
+        # Continuar com lógica antiga de drift detection
+
+        # Calcular hash do arquivo local
+        dst_hash = hashlib.sha256(dst.read_bytes()).hexdigest()[:8]
+
+        # Detectar drift (Opção 3)
+        if src_hash != dst_hash:
+            if not force:
+                log.warning(
+                    "📊 drift detectado: %s (upstream: %s, local: %s)",
+                    dst.name, src_hash, dst_hash
+                )
+                return CreatedItem(
+                    path=dst,
+                    kind="file",
+                    status="drift",
+                    message=f"Arquivo difere do upstream (upstream: {src_hash}, local: {dst_hash})"
+                )
+            else:
+                # Opção 1: backup antes de sobrescrever
+                backup_path = dst.with_suffix(dst.suffix + ".backup")
+                shutil.copy2(dst, backup_path)
+                log.info("📦 backup: %s → %s", dst.name, backup_path.name)
+        else:
+            # Arquivo idêntico ao upstream
+            log.info("⏭️  skipped (idêntico ao upstream): %s", dst)
+            return CreatedItem(path=dst, kind="file", status="skipped")
+
+    # Criar ou sobrescrever arquivo
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-        log.info("✅ copiado: %s → %s", src.name, dst)
+        dst.write_text(template_content, encoding="utf-8")
+        action = "atualizado" if dst.exists() and force else "criado"
+        log.info("✅ %s: %s → %s", action, src.name, dst)
         return CreatedItem(path=dst, kind="file", status="created")
     except OSError as exc:
         log.warning("⚠️  erro ao copiar %s: %s", src, exc)
@@ -1926,9 +2706,12 @@ def generate_constitution(config: ProjectConfig) -> CreatedItem:
         template_content = src.read_text(encoding="utf-8")
 
         # Substitui os marcadores de template do SpecKit
-        content = template_content.replace("[PROJECT_NAME]", config.project_title)
-        content = content.replace("[RATIFICATION_DATE]", config.created_at[:10])
-        content = content.replace("[LAST_AMENDED_DATE]", config.created_at[:10])
+        content = template_content.replace(
+            "[PROJECT_NAME]", config.project_title)
+        content = content.replace(
+            "[RATIFICATION_DATE]", config.created_at[:10])
+        content = content.replace(
+            "[LAST_AMENDED_DATE]", config.created_at[:10])
         content = content.replace("[CONSTITUTION_VERSION]", "1.0.0")
 
         # Cabeçalho com metadados do scaffold
@@ -2136,19 +2919,43 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
                 message=".secrets/ ausente no .gitignore"
             ))
 
-    # 4. Informar sobre pre-commit hook (opcional)
+    # 4. Ativar pre-commit hook automaticamente (BUG-#4 fix)
     hook_template = base / ".git-hooks" / "pre-commit.secrets"
+    hook_target = base / ".git" / "hooks" / "pre-commit"
+
     if hook_template.exists():
-        log.info("💡 Pre-commit hook disponível")
-        log.info("   cp .git-hooks/pre-commit.secrets ")
-        log.info("      .git/hooks/pre-commit")
-        log.info("   chmod +x .git/hooks/pre-commit")
-        results.append(CreatedItem(
-            path=hook_template,
-            kind="file",
-            status="available",
-            message="pre-commit hook criado (ativar manualmente)"
-        ))
+        try:
+            # Verificar se .git/hooks/ existe
+            hooks_dir = base / ".git" / "hooks"
+            if not hooks_dir.exists():
+                log.warning(
+                    "⚠️  .git/hooks/ não existe — pulando ativação de hook")
+                results.append(CreatedItem(
+                    path=hook_template,
+                    kind="file",
+                    status="available",
+                    message="hook disponível (sem .git/hooks/ para instalar)"
+                ))
+            else:
+                # Copiar hook template para .git/hooks/pre-commit
+                shutil.copy2(hook_template, hook_target)
+                hook_target.chmod(0o755)  # rwxr-xr-x
+
+                log.info("✅ Pre-commit hook ativado automaticamente")
+                results.append(CreatedItem(
+                    path=hook_target,
+                    kind="file",
+                    status="activated",
+                    message="pre-commit hook instalado em .git/hooks/"
+                ))
+        except Exception as e:
+            log.warning("⚠️  Falha ao ativar pre-commit hook: %s", e)
+            results.append(CreatedItem(
+                path=hook_template,
+                kind="file",
+                status="available",
+                message=f"hook disponível (ativação manual necessária): {e}"
+            ))
 
     return results
 
@@ -2163,10 +2970,12 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
 
     Cria:
       - SECURITY.md (política de reporte de vulnerabilidades)
-      - .github/CODEOWNERS (ownership de código)
-      - .github/dependabot.yml (atualizações automáticas)
-      - .github/workflows/security-scan.yml (CodeQL + secret scan)
-      - .github/workflows/dependency-review.yml (análise de dependências em PRs)
+      - .github/CODEOWNERS (ownership de código) — apenas se github_repo configurado
+      - .github/dependabot.yml (atualizações automáticas) — apenas se github_repo configurado
+      - .github/workflows/security-scan.yml (CodeQL + secret scan) — apenas se github_repo configurado
+      - .github/workflows/dependency-review.yml (análise de dependências em PRs) — apenas se github_repo configurado
+
+    Se github_repo não estiver configurado, cria apenas SECURITY.md com versão genérica.
 
     OWNER placeholder é substituído pelo dono do repo GitHub (se disponível).
 
@@ -2183,9 +2992,17 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
             owner = f"@{parts[-2]}"
 
     # Arquivo 1: SECURITY.md (raiz do projeto)
+    # Usa template com GitHub se repositório configurado, senão usa versão genérica
     security_md = base / "SECURITY.md"
-    content = _apply_placeholders(_SECURITY_MD, config)
+    if config.github_repo:
+        content = _apply_placeholders(_SECURITY_MD_WITH_GITHUB, config)
+    else:
+        content = _SECURITY_MD_WITHOUT_GITHUB
     results.append(_write_file(security_md, content))
+
+    # Arquivos 2-5: Apenas criar se houver repositório GitHub configurado
+    if not config.github_repo:
+        return results
 
     # Arquivo 2: .github/CODEOWNERS
     codeowners = base / ".github" / "CODEOWNERS"
@@ -2244,7 +3061,8 @@ def generate_project_creation_summary(config: ProjectConfig) -> CreatedItem:
     if config.extra_profiles:
         if isinstance(config.extra_profiles, str):
             # Se for string, fazer split por vírgula
-            extra = [p.strip() for p in config.extra_profiles.split(",") if p.strip()]
+            extra = [p.strip()
+                     for p in config.extra_profiles.split(",") if p.strip()]
             profiles.extend(extra)
         elif isinstance(config.extra_profiles, list):
             profiles.extend(config.extra_profiles)
@@ -2339,7 +3157,9 @@ def write_scaffold_state(
             merged_profiles.append(p)
 
     # IMP-65 Fase 1: Scan current template versions
+    # BUG-03 FIX: Also collect template bases for merge tracking (IMP-65 Phase 3)
     template_versions = {}
+    template_bases = {}
     template_dir = config.project_path / ".specify" / "templates"
     if template_dir.exists():
         try:
@@ -2349,6 +3169,14 @@ def write_scaffold_state(
                 name: info.version
                 for name, info in templates.items()
             }
+
+            # Collect base content for three-way merge support
+            for name, info in templates.items():
+                content = info.path.read_text(encoding="utf-8")
+                template_bases[name] = {
+                    "version": info.version,
+                    "content": content,
+                }
         except Exception as exc:
             log.warning("⚠️  Failed to scan template versions: %s", exc)
 
@@ -2370,12 +3198,14 @@ def write_scaffold_state(
         },
         "profiles_applied": merged_profiles,
         "template_versions": template_versions,  # IMP-65 Fase 1
+        "template_bases": template_bases,        # BUG-03 FIX: IMP-65 Phase 3
     }
 
     try:
         import yaml
         state_path.write_text(
-            yaml.dump(state, allow_unicode=True, default_flow_style=False, sort_keys=False),
+            yaml.dump(state, allow_unicode=True,
+                      default_flow_style=False, sort_keys=False),
             encoding="utf-8",
         )
         log.info("✅ scaffold state gravado: %s", state_path)
@@ -2418,11 +3248,19 @@ def config_from_state(state: dict, override_target: Path | None = None) -> Proje
     paths = state.get("paths", {})
     project_name = proj.get("name", "unknown")
 
-    # Correção IMP-47: detectar se override_target é o próprio projeto
+    # Correção IMP-47 + BUG-10: detectar se override_target é o próprio projeto
     if override_target:
-        # Se override_target termina com o nome do projeto,
-        # então está apontando para o projeto, não para o diretório pai
-        if override_target.name == project_name:
+        # Verificar se .scaffold-state.yaml existe em override_target
+        # Se sim, override_target É O PROJETO (upgrade in-place)
+        state_file = override_target / ".scaffold-state.yaml"
+
+        if state_file.exists():
+            # Upgrade in-place: override_target tem .scaffold-state.yaml
+            # target_dir deve ser override_target (sem parent)
+            # project_path será = target_dir (sem concatenação)
+            target = override_target
+        elif override_target.name == project_name:
+            # override_target termina com project_name → é o projeto
             target = override_target.parent
         else:
             # Fallback: assume que override_target é o diretório pai
@@ -2444,6 +3282,7 @@ def config_from_state(state: dict, override_target: Path | None = None) -> Proje
         github_repo=proj.get("github_repo") or None,
         shared_dir=shared,
         target_dir=target,
-        created_at=state.get("created_at", datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
+        created_at=state.get("created_at", datetime.now(
+            timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
         extra_profiles=state.get("profiles_applied", []),
     )

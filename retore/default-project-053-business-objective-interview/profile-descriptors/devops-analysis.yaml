@@ -1,0 +1,113 @@
+# ============================================================
+# Profile Descriptor — Enterprise Default Project Template
+# Schema versão 1.0.0
+# ============================================================
+
+# ------------------------------------------------------------------
+# Identificação
+# ------------------------------------------------------------------
+name: devops-analysis
+description: >
+  Perfil base para projetos de análise de dados, machine learning e engenharia
+  de dados. Estrutura de pastas orientada a dados (notebooks/, data/, models/).
+  Não compatível com devops-programming (convenções de src/app) e
+  devops-infrastructure (convenções de terraform/k8s/).
+
+VERSION: "1.0.0"
+LAST_TESTED_DATE: "2026-03-14"
+
+# ------------------------------------------------------------------
+# Dependências
+# ------------------------------------------------------------------
+requires:
+  - "git installed"
+  # Ferramentas recomendadas:
+  # - python >= 3.11 (Jupyter, pandas, numpy, scikit-learn)
+  # - dbt >= 1.7      (data warehouse transformations)
+  # - airflow >= 2.8  (data pipeline orchestration)
+  # - mlflow >= 2.10  (ML experiment tracking)
+
+  # ------------------------------------------------------------------
+  # Artefatos gerados
+  # ------------------------------------------------------------------
+generates:
+  files:
+    - path: ".github/prompts/domain/devops-analysis.prompt.md"
+      source: ".copilot-shared/.github/prompts/domain/devops-analysis.prompt.md"
+      description: >
+        Domain profile analysis: comportamento do Copilot para projetos de
+        dados, ML, engenharia de dados, Jupyter, dbt e Airflow.
+      required: true
+      when: null
+
+  patches:
+    - file: "Makefile"
+      description: >
+        Targets de análise: notebook, dbt-run, dbt-test, airflow-dags-list.
+      operation: "append"
+
+# ------------------------------------------------------------------
+# Compatibilidade entre perfis
+# ------------------------------------------------------------------
+excludes_with:
+  - devops-programming # conflito: convenções de dados vs convenções de código
+  - devops-infrastructure # conflito: convenções de dados vs convenções de infra
+
+combines_with:
+  - name: devops-security
+    notes: "Transversal — sempre combinado; ativa secrets scan em DAGs e notebooks"
+  - name: data-warehouse-dbt
+    notes: "[Layer 3] Especialização: transformações de data warehouse com dbt"
+  - name: lgpd-baseline
+    notes: "Compliance LGPD obrigatório em projetos com dados pessoais"
+  - name: soc2-baseline
+    notes: "Compliance SOC 2 para dados de clientes e auditoria"
+
+# ------------------------------------------------------------------
+# Segurança
+# ------------------------------------------------------------------
+security:
+  enforces:
+    - control: "CWE-312"
+      description: "Sem credenciais hardcoded em notebooks ou DAGs — usar .secrets/.env"
+      tool: "manual"
+      severity: "critical"
+      automated: false
+    - control: "LGPD-Art46"
+      description: "PII mascarado em datasets de desenvolvimento e testes"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "LGPD-Art7"
+      description: "LGPD: dados pessoais em staging/prod exigem lgpd-baseline ativo"
+      tool: "manual"
+      severity: "high"
+      automated: false
+    - control: "CWE-312"
+      description: "Secrets scan em arquivos .ipynb (notebooks armazenam outputs com dados)"
+      tool: "detect-secrets"
+      severity: "high"
+      automated: true
+    - control: "CWE-312"
+      description: "mlflow tracking sem log de dados sensíveis ou tokens"
+      tool: "manual"
+      severity: "high"
+      automated: false
+
+# ------------------------------------------------------------------
+# Metadados
+# ------------------------------------------------------------------
+layer: core
+tags:
+  - analysis
+  - data
+  - jupyter
+  - airflow
+  - dbt
+  - machine-learning
+  - mlflow
+maintainer: "template-architect"
+status: "stub"
+notes: >
+  Descriptor stub — gerado para resolver referências em excludes_with de outros
+  perfis core. Expansão planejada com scope completo de projetos de dados/ML.

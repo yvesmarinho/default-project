@@ -10,9 +10,9 @@ Implementação: Sprint 2026-W21 (Fase 1 e 2)
 
 from pathlib import Path
 from typing import Any, Dict, List
+from collections import Counter
 import json
 import logging
-from deepmerge import always_merger
 
 from .config import CreatedItem
 
@@ -25,21 +25,27 @@ log = logging.getLogger(__name__)
 
 def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Deep merge de dois dicionários JSON com estratégia user-wins.
+    Deep merge com estratégia user-wins SEM union de arrays.
+
+    Mudança arquitetural (v2.0): JSON é padrão de configuração no projeto.
+    Todos os JSONs devem usar user-wins sem duplicação de arrays.
 
     Estratégia:
-    - base: Dados do template (upstream)
-    - overlay: Dados do usuário (customizações)
-    - Valores do overlay sobrescrevem valores do base
-    - Listas são unidas (sem duplicatas quando primitivos)
-    - Objetos aninhados são mergeados recursivamente
+    - Overlay (usuário) sobrescreve base (template)
+    - Arrays substituídos completamente (NÃO faz union)
+    - Objetos aninhados mergeados recursivamente
+    - Chaves novas do template são adicionadas
+
+    Histórico:
+    - v1.0: Usava always_merger.merge() (union de arrays) ❌ BUG
+    - v2.0: Implementa user-wins sem union ✅ FIX ARQUITETURAL
 
     Args:
-        base: Dicionário base (template)
-        overlay: Dicionário overlay (usuário)
+        base: Template (upstream)
+        overlay: Usuário (customizações)
 
     Returns:
-        Dicionário mergeado
+        Dicionário mergeado com estratégia user-wins
 
     Exemplos:
         >>> base = {"a": 1, "b": {"c": 2}}
@@ -48,13 +54,53 @@ def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, 
         {'a': 1, 'b': {'c': 2, 'd': 3}, 'e': 4}
 
         >>> base = {"list": [1, 2]}
-        >>> overlay = {"list": [2, 3]}
+        >>> overlay = {"list": [3, 4]}
         >>> deep_merge_json(base, overlay)
-        {'list': [1, 2, 3]}
+        {'list': [3, 4]}  # User array wins, NÃO faz union
     """
-    # Usar deepmerge library para merge robusto
-    # always_merger faz union de listas e merge recursivo de dicts
-    return always_merger.merge(base.copy(), overlay)
+    return _merge_user_wins_recursive(base, overlay)
+
+
+def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
+    """
+    Implementação do merge user-wins recursivo.
+
+    Algoritmo:
+    1. Copiar todos valores do overlay (user wins)
+    2. Para objetos aninhados: merge recursivo
+    3. Adicionar chaves novas do base que não existem no overlay
+
+    Comportamento por tipo:
+    - Primitivos: overlay wins
+    - Arrays: overlay wins (NÃO faz union)
+    - Objects: merge recursivo
+
+    Args:
+        base: Template
+        overlay: Usuário
+
+    Returns:
+        Dicionário mergeado
+    """
+    merged = {}
+
+    # Passo 1: User wins - copiar tudo do overlay
+    for key, overlay_value in overlay.items():
+        base_value = base.get(key)
+
+        # Se ambos são dicts, merge recursivo
+        if isinstance(overlay_value, dict) and isinstance(base_value, dict):
+            merged[key] = _merge_user_wins_recursive(base_value, overlay_value)
+        else:
+            # Primitivos e arrays: user wins completamente
+            merged[key] = overlay_value
+
+    # Passo 2: Adicionar chaves novas do template
+    for key, base_value in base.items():
+        if key not in merged:
+            merged[key] = base_value
+
+    return merged
 
 
 def load_json_safe(file_path: Path) -> Dict[str, Any]:
@@ -81,14 +127,63 @@ def load_json_safe(file_path: Path) -> Dict[str, Any]:
         raise
 
 
+def _detect_duplications(data, path="root"):
+    """
+    Detecta duplicações em estrutura JSON (versão simplificada).
+
+    Args:
+        data: Estrutura JSON a validar
+        path: Caminho atual para contexto
+
+    Returns:
+        Lista de issues com duplicações
+    """
+    issues = []
+
+    if isinstance(data, dict):
+        for key, value in data.items():
+            issues.extend(_detect_duplications(value, f"{path}.{key}"))
+    elif isinstance(data, list):
+        # Contar itens (objetos comparados por JSON)
+        items = [
+            json.dumps(i, sort_keys=True) if isinstance(i, (dict, list)) else i
+            for i in data
+        ]
+        counts = Counter(items)
+        duplicates = {k: v for k, v in counts.items() if v > 1}
+
+        if duplicates:
+            issues.append(
+                {
+                    "path": path,
+                    "duplication_rate": (len(data) - len(counts)) / len(data) * 100,
+                }
+            )
+
+    return issues
+
+
 def save_json_formatted(file_path: Path, data: Dict[str, Any]) -> None:
     """
-    Salva JSON com formatação consistente.
+    Salva JSON com formatação consistente e validação anti-duplicação.
+
+    Validações:
+    - Sintaxe JSON válida
+    - Detecção de arrays duplicados (warning)
 
     Args:
         file_path: Caminho do arquivo JSON
         data: Dados a serem salvos
     """
+    # Validar duplicações antes de salvar
+    issues = _detect_duplications(data)
+    if issues:
+        log.warning(f"⚠️  Duplicações detectadas em {file_path.name}:")
+        for issue in issues:
+            log.warning(f"   {issue['path']}: {issue['duplication_rate']:.1f}% duplicado")
+        log.warning("   Execute: python scripts/fix-json-duplications.py")
+
+    # Salvar com formatação consistente
     content = json.dumps(data, indent=2, ensure_ascii=False, sort_keys=False)
     file_path.write_text(content + "\n", encoding="utf-8")
 

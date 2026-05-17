@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""
+Patch Lister CLI - IMP-65 Phase 4.3
+
+List all patches for a template.
+
+Usage:
+    list-patches <patches-dir> [--template-name <name>] [--verbose]
+
+Examples:
+    # List all patches
+    list-patches .specify/templates/patches
+
+    # List patches for specific template
+    list-patches .specify/templates/patches --template-name spec-template
+
+    # Verbose mode (show operations per patch)
+    list-patches .specify/templates/patches --template-name spec-template --verbose
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+# Add scripts to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from lib.template_patches import list_patches
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="List patches for a template",
+        epilog="Part of IMP-65 Phase 4 - Modular Template System"
+    )
+
+    parser.add_argument(
+        "patches_dir",
+        type=Path,
+        help="Directory containing patches"
+    )
+
+    parser.add_argument(
+        "-t", "--template-name",
+        help="Template name to filter patches"
+    )
+
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Show detailed patch information"
+    )
+
+    args = parser.parse_args()
+
+    # Validate input
+    if not args.patches_dir.exists():
+        print(f"❌ Error: Patches directory not found: {args.patches_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        # List patches
+        patches = list_patches(args.patches_dir, args.template_name)
+
+        if not patches:
+            print(f"ℹ️  No patches found", file=sys.stderr)
+            if args.template_name:
+                print(f"   Template: {args.template_name}", file=sys.stderr)
+            print(f"   Directory: {args.patches_dir}", file=sys.stderr)
+            sys.exit(0)
+
+        # Display patches
+        print(f"📦 Found {len(patches)} patch(es)")
+        if args.template_name:
+            print(f"   Template: {args.template_name}")
+        print(f"   Directory: {args.patches_dir}")
+        print()
+
+        for i, patch in enumerate(patches, 1):
+            print(f"{i}. {patch.source_file.name}")
+            print(f"   Name: {patch.metadata.patch_name} v{patch.metadata.patch_version}")
+            print(f"   Target: {patch.metadata.target_template}", end="")
+            if patch.metadata.target_block:
+                print(f" → {patch.metadata.target_block}", end="")
+            print()
+            print(f"   Description: {patch.metadata.description}")
+            print(f"   Created: {patch.metadata.created}")
+            if patch.metadata.author:
+                print(f"   Author: {patch.metadata.author}")
+
+            if args.verbose:
+                print(f"   Operations ({len(patch.operations)}):")
+                for j, op in enumerate(patch.operations, 1):
+                    print(f"      {j}. {op.operation_type.value.upper()}: '{op.anchor}'")
+            else:
+                print(f"   Operations: {len(patch.operations)}")
+
+            print()
+
+        sys.exit(0)
+
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}", file=sys.stderr)
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(99)
+
+
+if __name__ == '__main__':
+    main()

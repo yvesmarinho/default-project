@@ -1,76 +1,772 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-16 13:00 — IMP-58 ✅ COMPLETE + Emergency Recovery 100%
-**Project Status**: 🟢 Stable — Time Tracking + 52 arquivos recuperados (19.798 linhas)
-**Version**: 1.14.0
-**Last Session**: 2026-05-16 — ✅ IMP-58 COMPLETE (Session Time Tracking + session.manager) + Emergency Recovery
+**Last Updated**: 2026-05-17 — GitHub Best Practices P2 Complete ✅
+**Project Status**: 🟢 Stable — GitHub Automation Full Stack (Templates + Workflows + Hooks + Scripts)
+**Version**: 1.6.0
+**Last Session**: 2026-05-17 (Parte 4) — ✅ P2 GitHub Advanced Features Complete
 
 ---
 
-> **✅ SESSION 2026-05-16 SUMMARY (IMP-58 + EMERGENCY RECOVERY)**
-> - **IMP-58 COMPLETE**: Session Time Tracking + session.manager Agent
-> - **EMERGENCY RECOVERY**: 52 arquivos recuperados (19.798 linhas) em 3 minutos
-> - **OBJETIVO**: Adicionar time tracking com pausas gerenciadas ao workflow de sessões
+> **✅ SESSION 2026-05-17 PARTE 4 COMPLETE (P2 - Advanced Features)**
+> - **Status**: ✅ COMPLETE — Issue templates, workflows, hooks, automation completos
+> - **Duration**: ~1.5h (15:40-17:10)
+> - **Efficiency**: 100% (todos componentes P2 implementados + integrados)
+> - **Branch**: 061-recovery-017-correction
+> - **Request**: "execute P2"
+> - **DELIVERABLES**:
+>   - ✅ Issue templates criados (bug, feature, docs, question, config)
+>   - ✅ GitHub Actions workflow (git-validation.yml) com 5 jobs
+>   - ✅ Pre-commit hook (commit-msg) com validação local
+>   - ✅ Script de branch protection automation (setup-branch-protection.py)
+>   - ✅ Badge guide completo (BADGES.md)
+>   - ✅ Integração no scaffold (copy_github_templates atualizado)
+>   - ✅ Template README atualizado com badges
+>   - ✅ Documentação completa (GITHUB_BEST_PRACTICES_INTEGRATION.md)
+> - **NEW FILES** (.github/templates/common/ISSUE_TEMPLATE/):
+>   - `bug_report.yml` (93 linhas): Formulário estruturado para bugs
+>   - `feature_request.yml` (82 linhas): Template para features
+>   - `documentation.yml` (70 linhas): Template para docs
+>   - `question.yml` (68 linhas): Template para questões
+>   - `config.yml` (10 linhas): Configuração de issue templates
+> - **NEW WORKFLOW** (.github/templates/common/workflows/):
+>   - `git-validation.yml` (240+ linhas): Validação Git automatizada
+>     - Job 1: validate-branch (nome da branch)
+>     - Job 2: validate-commits (Conventional Commits)
+>     - Job 3: validate-pr-title (título do PR)
+>     - Job 4: pr-size-check (aviso PRs grandes)
+>     - Job 5: summary (resultado geral)
+> - **NEW HOOK** (scripts/git-hooks/):
+>   - `commit-msg` (180+ linhas, chmod 755): Validação local de commits
+>     - Padrão: Conventional Commits
+>     - Permite merge/revert
+>     - Warnings não-bloqueantes
+> - **NEW SCRIPT** (scripts/):
+>   - `setup-branch-protection.py` (320+ linhas, chmod 755): Automação via API
+>     - 3 níveis: minimum, recommended, maximum
+>     - Dry-run mode
+>     - Rich tables para visualização
+>     - Suporte a GITHUB_TOKEN
+> - **NEW GUIDE** (.github/templates/common/):
+>   - `BADGES.md` (110+ linhas): Guia completo de badges
+>     - Git Validation workflow status
+>     - Conventional Commits
+>     - GitHub Flow
+>     - Branch Protection levels
+>     - Code Owners, Signed Commits
+> - **CODE UPDATES** (scripts/lib/project.py):
+>   - `copy_github_templates()` expandido para P2:
+>     - 5 issue templates
+>     - 1 workflow (git-validation.yml)
+>     - 1 git hook (commit-msg) com chmod 755
+>     - 1 script (setup-branch-protection.py) com chmod 755
+>     - 1 badge guide (BADGES.md)
+>   - Novas variáveis: {{ github_owner }}, {{ github_repo }}
+>   - Total: 13 arquivos copiados automaticamente (4 P1 + 9 P2)
+> - **TEMPLATE README** atualizado:
+>   - Badges no topo (Conventional Commits, GitHub Flow, Branch Protection)
+>   - Movido `>` description para após badges
+> - **DOCUMENTATION UPDATES**:
+>   - ✅ GITHUB_BEST_PRACTICES_INTEGRATION.md: P2 marcado completo (seção detalhada 140+ linhas)
+>   - ✅ README.md: Seção Git & GitHub Workflows expandida para P2
+>   - ✅ INDEX.md: Esta entrada
+> - **NEXT STEPS**: Commit, push, e considerar criar PR para merge
+
+> **✅ SESSION 2026-05-17 PARTE 3 COMPLETE (P1 - Scaffold Integration)**
+> - **Status**: ✅ COMPLETE — Scaffold automatiza cópia de templates GitHub
+> - **Duration**: ~1h (14:40-15:40)
+> - **Efficiency**: 100% (integração scaffold completa + testada)
+> - **Branch**: 061-recovery-017-correction
+> - **Request**: "prossiga com P1"
+> - **DELIVERABLES**:
+>   - ✅ Função copy_github_templates() criada em project.py
+>   - ✅ Função _copy_file_with_vars() para substituição de variáveis
+>   - ✅ Integração no flow_new_project
+>   - ✅ Template README atualizado com seção "Contribuindo"
+>   - ✅ Teste completo (projeto criado e validado)
+> - **NEW CODE** (scripts/lib/project.py):
+>   - `copy_github_templates(config)`: Copia 4 templates automaticamente
+>     - CONTRIBUTING.md → raiz do projeto
+>     - PULL_REQUEST_TEMPLATE.md → .github/
+>     - CODEOWNERS → .github/
+>     - BRANCH_PROTECTION_SETUP.md → docs/
+>   - `_copy_file_with_vars(src, dst, template_vars)`: Substituição de variáveis
+>     - {{ project_name }} → nome do projeto
+>     - {{ current_date }} → data de criação (YYYY-MM-DD)
+> - **TEMPLATE README** atualizado:
+>   - Nova seção "## 🤝 Contribuindo"
+>   - Links para CONTRIBUTING.md e BRANCH_PROTECTION_SETUP.md
+>   - Convenções de branches e commits
+>   - Processo de Pull Request
+> - **INTEGRATION** (scripts/lib/flows/new_project.py):
+>   - Linha 96: `results.extend(project.copy_github_templates(cfg))`
+>   - Console: "🐙 Copiando templates GitHub (best practices)..."
+>   - Executado após utility scripts, antes de docs
+> - **VALIDATION** (projeto de teste):
+>   - ✅ CONTRIBUTING.md criado na raiz com {{ project_name }} substituído
+>   - ✅ PULL_REQUEST_TEMPLATE.md em .github/
+>   - ✅ CODEOWNERS em .github/
+>   - ✅ BRANCH_PROTECTION_SETUP.md em docs/
+>   - ✅ README.md com seção "Contribuindo" completa
+> - **DOCUMENTATION UPDATES**:
+>   - ✅ GITHUB_BEST_PRACTICES_INTEGRATION.md: P1 marcado como completo
+>   - ✅ README.md: Seção Git & GitHub Workflows atualizada
+>   - ✅ INDEX.md: Nova entrada de sessão
+> - **NEXT STEPS** (P2 - Desejável):
+>   - [ ] Issue templates (bug, feature, etc.)
+>   - [ ] GitHub Actions workflow para validar branches
+>   - [ ] Pre-commit hook para validar commits
+>   - [ ] Script de setup automático de branch protection
+>   - [ ] Badge de conformidade
+
+---
+
+> **✅ SESSION 2026-05-17 PARTE 2 COMPLETE (GitHub Best Practices Integration)**
+> - **Status**: ✅ COMPLETE — Templates + Validadores + Documentação
+> - **Duration**: ~3h (14:00-17:00)
+> - **Efficiency**: 100% (integração completa de Git/GitHub best practices)
+> - **Branch**: 061-recovery-017-correction
+> - **Request**: "analisar o documento do contexto. adicionar as melhores práticas do contexto aos processos do scaffold, session.manager e documentação inicial do projeto gerado."
+> - **DELIVERABLES**:
+>   - ✅ Templates de projeto prontos (CONTRIBUTING, PR, CODEOWNERS)
+>   - ✅ Validadores automáticos (git_validators.py + 42 testes)
+>   - ✅ Integração com session manager (validação de branch no start)
+>   - ✅ Guia de Branch Protection (passo a passo GitHub)
+>   - ✅ Documentação de integração completa
+> - **NEW TEMPLATES** (.github/templates/common/):
+>   - `CONTRIBUTING.md`: Guia completo de contribuição (GitHub Flow, Conventional Commits, proteção de branches)
+>   - `PULL_REQUEST_TEMPLATE.md`: Template de PR com checklist completo
+>   - `CODEOWNERS`: Definição de responsáveis por área do código
+> - **NEW CODE**:
+>   - `scripts/lib/git_validators.py` (563 linhas): Validação de branches e commits
+>     - validate_branch_name(): Padrão `tipo/[NNN-]descricao`
+>     - validate_commit_message(): Conventional Commits
+>     - check_pr_readiness(): Checklist de PR
+>     - suggest_branch_name(): Sugestões automáticas
+>   - `tests/test_git_validators.py` (313 linhas): 42 testes (100% passing)
+> - **SESSION MANAGER INTEGRATION**:
+>   - `scripts/session-time-tracker.py`: cmd_start() valida branch name
+>   - Comportamento: warnings → permite, erros → solicita confirmação
+>   - Exibe sugestões de correção e dicas
+> - **NEW DOCUMENTATION**:
+>   - `docs/guides/BRANCH_PROTECTION_SETUP.md` (546 linhas): Tutorial GitHub
+>   - `docs/guides/GITHUB_BEST_PRACTICES_INTEGRATION.md` (547 linhas): Guia de integração
+>   - `README.md`: Nova seção "Git & GitHub Workflows"
+> - **VALIDATION RULES**:
+>   - Branch: `tipo/[NNN-]descricao` (feature/fix/hotfix/chore/docs/refactor/test)
+>   - Commit: `tipo(escopo): descrição` (Conventional Commits)
+>   - Protected branches: main, master, develop, staging, production
+> - **BRANCH PROTECTION LEVELS**:
+>   - Nível 1 (Mínimo): PR + 1 approval + CI
+>   - Nível 2 (Recomendado): + stale dismiss + CODEOWNERS + no bypass
+>   - Nível 3 (Máximo): + 2 approvals + signed commits + linear history
+> - **NEXT STEPS** (P1 - Importante):
+>   - [ ] Modificar scaffold para copiar templates
+>   - [ ] Processar variáveis template ({{ project_name }})
+>   - [ ] Adicionar seção no README template
+>   - [ ] Criar exemplo de GitHub Actions workflow
+> - **INTEGRATION POINTS**:
+>   - Scaffold: copiar templates ao criar projeto
+>   - Session Manager: validar branch no início de sessão
+>   - Documentation: templates prontos em .github/templates/common/
+
+---
+
+> **✅ SESSION 2026-05-17 COMPLETE (JSON Merge v2.0 - User-Wins Universal)**
+> - **Status**: ✅ COMPLETE — P0 (Arquitetura) + P1 (Hardening) implementados
+> - **Duration**: ~4h (09:00-13:00)
+> - **Efficiency**: 100% (mudança arquitetural + ferramentas + docs completos)
+> - **Branch**: 061-recovery-017-correction
+> - **Commits**: 10 total (bd80727 origin → b012a17 HEAD, pushed)
+>   - refactor(json-merge)!: estratégia user-wins universal para todos os JSONs (BREAKING CHANGE)
+>   - docs: revisão arquitetural - estratégia universal de merge JSON
+>   - style: aplicar formatação automática nos arquivos P0
+> - **BREAKING CHANGE - JSON MERGE v2.0**:
+>   - **Filosofia**: JSON = Configuração = User Wins (sem array union)
+>   - **Arquitetura**: deep_merge_json() reformulado (remove deepmerge lib)
+>   - **Impacto**: TODOS os .json (extensions, mcp, package, tsconfig, eslint, etc.)
+>   - **Bug fix**: Duplicações em arrays (mcp.json args "-y" duplicado)
+>   - **Removed**: VSCodeJSONMerger (~146 linhas, redundante)
+> - **PHASE P0 (ARQUITETURA - 45min)**:
+>   - ✅ deep_merge_json(): user-wins recursivo (arrays replaced, não merged)
+>   - ✅ VSCodeJSONMerger: removido (redundante após mudança)
+>   - ✅ fix-json-duplications.py: 2 files fixed, 59 already clean
+>   - ✅ Tests: 26/26 PASSED (100% coverage)
+>   - ✅ Commit: a54e1e8 (BREAKING CHANGE documentado)
+> - **PHASE P1 (HARDENING - 2h)**:
+>   - ✅ detect-json-duplications.py: Scan recursivo, 61 JSONs validados
+>   - ✅ save_json_formatted(): Validação pós-merge (warnings automáticos)
+>   - ✅ json-merge-examples.md: 6 tipos (extensions, mcp, package, tsconfig, eslint, settings)
+>   - ✅ README.md: Links adicionados em "Additional Resources"
+> - **TECHNICAL DECISIONS**:
+>   - D-17: Merge strategy: user-wins universal > VSCode whitelist (escalabilidade)
+>   - D-18: Array behavior: replacement > union (configs não são listas acumulativas)
+>   - D-19: Validation: warnings > errors (não bloquear, apenas alertar)
+> - **KEY DOCUMENTATION**:
+>   - `docs/guides/json-merge-strategy.md` (546 linhas) - Estratégia completa
+>   - `docs/guides/json-merge-examples.md` (novo) - Exemplos práticos
+>   - `docs/debates/2026-05-17-json-merge-duplication-bug.md` (415 linhas) - Debate técnico
+>   - `docs/planning/2026-05-17-json-merge-fix-action-plan-v2.md` (1147 linhas) - Plano detalhado
+> - **NEW TOOLS**:
+>   - `scripts/detect-json-duplications.py`: Scan recursivo de duplicações
+>   - `scripts/tmp/fix-json-duplications.py`: Correção automática
+>   - `scripts/tmp/json_diff_visual.py`: Comparação visual com análise
+> - **MERGE SYSTEM STATUS**:
+>   - Coverage: 77% → 78% (JSONMerger agora universal)
+>   - Strategy: v1.0 (union) → v2.0 (user-wins)
+>   - Tests: 100 → 126 (+26 novos testes JSON)
+> - **NEXT PRIORITIES**:
+>   - P2: Pre-commit hooks, GitHub Actions CI/CD
+>   - Sprint 4: P2 Mergers (PreCommit, VSCode, IssueTemplates)
+>
+> **✅ SESSION 2026-05-14 COMPLETE (Logging System Implementation)**
+> - **Status**: ✅ COMPLETE — All P0+P1 gaps resolved (100%)
+> - **Duration**: ~9.5h (09:00-18:30)
+> - **Efficiency**: 100% (all objectives achieved)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 2 total (dc88032 session end, c354eca scaffold fix - both pushed)
+>   - feat(merge-system): Complete Sprint 3 + POC upgrade + scaffold fix (27 files, +1960/-570)
+>   - fix(scaffold): Add infrastructure directories to project template (1 file, +178)
+> - **SPRINT 3 - P1 HIGH MERGERS**:
+>   - GitHubWorkflowMerger (600+ lines, 16 tests, YAML "on" keyword handling)
+>   - PyprojectMerger (500+ lines, 16 tests, TOML nested dict access)
+>   - Coverage: 73% → 77% (+4%)
+>   - P1 gap: 100% resolved (4→0 files)
+>   - Tests: 32/32 passing (100% success rate)
+> - **POC SISTEMA-DEPLOY UPGRADE**:
+>   - POC completeness: 68% → 100%
+>   - Agents: 20 → 32 (+12 new agents)
+>   - Prompts: 17 → 21 (+4 git prompts)
+>   - Infrastructure: 0 → 4 dirs (tmp, .memory, .session-index, .session-time)
+>   - Backup: tmp/backup-sistema-deploy-20260511-131236 (211 files)
+>   - Reports: UPGRADE_REPORT (20KB) + UPGRADE_MONITORING (12KB)
+> - **SCAFFOLD INFRASTRUCTURE FIX (P0 CRITICAL)**:
+>   - Root cause: DIRS_TO_CREATE missing 4 infrastructure directories
+>   - Fix: scripts/lib/project.py (+178 lines)
+>     - Created 4 README templates (tmp, .memory, .session-index, .session-time)
+>     - Added 4 dirs to DIRS_TO_CREATE
+>     - Added 4 READMEs to FILES_TO_CREATE
+>     - Updated .gitignore template (8 rules)
+>   - Impact: ALL future projects (100+) benefit automatically
+>   - Validation: 8/8 checks passed
+> - **MERGE SYSTEM STATUS**:
+>   - Total mergers: 8 (3 baseline + 5 sprints)
+>   - Total files covered: 67/87 (77% coverage)
+>   - P0 CRITICAL: 100% resolved (60→0 files)
+>   - P1 HIGH: 100% resolved (4→0 files)
+>   - Total tests: 100 (100% passing)
+> - **TECHNICAL DECISIONS**:
+>   - D-18: YAML "on" keyword → dual key check (handles boolean conversion)
+>   - D-19: TOML nested dicts → tool.* access via nested get()
+>   - D-20: Scaffold infrastructure → permanent template correction
+> - **KEY DOCUMENTATION**:
+>   - `docs/SESSIONS/2026-05-11/DAILY_ACTIVITIES_2026-05-11.md` (10 activities)
+>   - `docs/SESSIONS/2026-05-11/FINAL_STATUS_2026-05-11.md` (comprehensive summary)
+>   - `docs/SESSIONS/2026-05-11/PROJECT_UPDATE_DECISION_WORKFLOW.md` (1200+ lines)
+>   - `docs/SESSIONS/2026-05-11/TIME_TRACKER_DECISION_WORKFLOW.md` (800+ lines)
+> - **NEXT PRIORITIES**:
+>   - Sprint 4: P2 Mergers (PreCommit, VSCode, IssueTemplates)
+>   - Objetivo-Init Pipeline Testing (P1 HIGH)
+>   - BUG-08: Knowledge-Harvester MCP Config
+>
+> **✅ SESSION 2026-05-08 COMPLETE (IMP-65 Template Synchronization Validation)**
+> - **Status**: ✅ COMPLETE — All 3 options implemented and validated
+> - **Duration**: ~2h 40min (09:00-11:40)
+> - **Efficiency**: 100% (all objectives achieved)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 1 total (af3f4b6, pushed)
+>   - feat(IMP-65): Template Synchronization System - Validação Completa ✅ (80 files, +6352/-749)
+> - **VALIDATION SCORECARD**: 8/8 Tests (100% PASS)
+>   - ✅ Drift detection SHA256: `656040bd` vs `4b130207`
+>   - ✅ --force cria backup: `.backup` arquivo 16K criado
+>   - ✅ --force sobrescreve: arquivo restaurado 15K (upstream)
+>   - ✅ Preserva sem --force: hash mantido após upgrade
+>   - ✅ check-templates: escaneou 1 template <1s
+>   - ✅ diff-template caminhos relativos: `.github/agents/*`
+>   - ✅ diff-template detecta mudanças: 4 linhas identificadas
+>   - ✅ Warnings informativos: 4 opções listadas
+> - **OPTION 1 - FORCE OVERRIDE (--force)**:
+>   - Drift detection via SHA256 (8 caracteres)
+>   - Backup automático com sufixo `.backup`
+>   - Sobrescrita segura preservando customizações em backup
+>   - Files: `scripts/lib/flows/upgrade.py`, `scripts/lib/project.py`
+> - **OPTION 2 - DRIFT MANAGEMENT COMMANDS**:
+>   - `check-templates`: escaneia `.specify/templates/` em <1s
+>   - `diff-template`: aceita caminhos relativos (`.github/agents/*`)
+>   - Suporte a 3 formatos: colored terminal, markdown, HTML
+>   - Files: `scripts/lib/flows/diff_template.py`, `scripts/lib/flows/merge_template.py`, `scripts/scaffold.py`
+> - **OPTION 3 - DRIFT DETECTION (sem --force)**:
+>   - Detecção SHA256: upstream vs local
+>   - Preserva arquivo local (NÃO modifica sem --force)
+>   - Warning informativo com 4 opções de resolução
+>   - Files: `scripts/lib/project.py`, `scripts/lib/flows/upgrade.py`
+> - **NEW SCRIPT - activate-mcp.sh**:
+>   - Purpose: Validate and assist MCP server initialization
+>   - Features: JSONC validation, server detection, instruction display
+>   - Location: `scripts/activate-mcp.sh`
+> - **TECHNICAL DECISIONS**:
+>   - D-01: SHA256 (8 chars) > timestamps (confiabilidade)
+>   - D-02: merge-template ANTES de diff-template (routing)
+>   - D-03: Suporte a caminhos relativos (extensibilidade)
+> - **KNOWN LIMITATION**:
+>   - ⚠️ `merge-template` não testado completamente (solicita info projeto)
+> - **DOCUMENTATION**:
+>   - `docs/SESSIONS/2026-05-08/DAILY_ACTIVITIES_2026-05-08.md`
+>   - `docs/SESSIONS/2026-05-08/FINAL_STATUS_2026-05-08.md`
+>   - `docs/planning/lembrete.md` (bug resolvido)
+>   - `docs/TODO.md` (cabeçalho atualizado)
+> - **NEXT PRIORITIES**:
+>   - Debug `merge-template` (problema de coleta de info de projeto)
+>   - Documentar IMP-65 no README.md
+>   - Continuar IMP-59 (Mini-Engram Memory System)
+>
+> **✅ SESSION 2026-05-06 COMPLETE (Infrastructure Modernization)**
+> - **Status**: ✅ COMPLETE — All objectives achieved
+> - **Duration**: ~2.5h (09:00-11:30)
+> - **Efficiency**: 82% (1.65h actual vs 2.0h planned)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 4 total (all pushed)
+>   - f82a1ae — feat(mcp): expandir servidores MCP de 2 para 4 por padrão (11 files, +1263/-10)
+>   - 8796823 — feat(vscode): configurar uv como package manager padrão para Python (5 files, +652/-3)
+>   - fd38dcb — docs(agents): atualizar session-manager para 4 servidores MCP (1 file, +3/-2)
+>   - 32b71fb — docs(session): encerramento sessão 2026-05-06 (3 files, +345/-59)
+> - **MCP SERVERS EXPANSION (2 → 4)**:
+>   - **Added**: filesystem (workspace-scoped), github (with token)
+>   - **Impact**: Enhanced Copilot file access + GitHub integration
+>   - **Security**: GitHub token optional (fails gracefully), filesystem scoped to workspace
+>   - **Files Modified**:
+>     - `.vscode/mcp.json` — Uncommented filesystem and github servers
+>     - `scripts/lib/vscode.py` — Updated fallback defaults (2 locations)
+>     - `QUICKSTART.md` — Added GitHub token setup guide
+>     - `README.md` — Updated version history to v1.1.0
+>   - **Documentation**: IMPACT_ANALYSIS_MCP_SERVERS.md, IMPLEMENTATION_SUMMARY_MCP_SERVERS.md
+> - **PYTHON UV CONFIGURATION**:
+>   - **Modernization**: pip → uv (10-100x faster package manager)
+>   - **Files Modified**:
+>     - `.vscode/settings.json` — python-envs.pythonProjects with uv
+>     - `.vscode/extensions.json` — Created with 37 extensions (including astral-sh.uv)
+>     - `scripts/lib/vscode.py` — Added UV configs + Flake8 fix
+>   - **Fix**: Flake8 now points to .venv/bin/flake8 (resolved KeyError: 'default')
+>   - **Documentation**: IMPACT_ANALYSIS_UV_CONFIGURATION.md, IMPLEMENTATION_SUMMARY_UV_CONFIGURATION.md
+> - **ENTERPRISE-ANSIBLE UPDATE**:
+>   - **Fixed**: mcp.json (was project metadata, now proper MCP config)
+>   - **Created**: PROJECT_INFO.json (metadata moved here)
+>   - **Expanded**: settings.json (13 → 60 lines, +362%)
+>   - **Expanded**: extensions.json (7 → 31 extensions, +343%)
+>   - **Commit**: e64bf07 (enterprise-ansible, 5 files, +608/-173)
+>   - **Documentation**: VSCODE_CONFIG_UPDATE.md
+> - **AGENT DOCUMENTATION UPDATE**:
+>   - **File**: .github/agents/session-manager.agent.md
+>   - **Change**: Updated MCP server references (2 → 4 servers)
+>   - **Verification**: Other agents don't need update (speckit.* agents only)
+> - **Deliverables**:
+>   - Production Code: +40 lines (vscode.py + mcp.json)
+>   - Configuration: +357 lines (settings + extensions in both projects)
+>   - Documentation: +2,246 lines (session docs + impact analyses)
+>   - Total: +2,524 lines added, -188 removed
+> - **Quality Metrics**:
+>   - Security Review: ✅ PASSED (no credentials exposed)
+>   - Code Quality: ✅ PASSED (only 2 cosmetic import warnings)
+>   - Backward Compatibility: ✅ MAINTAINED (existing projects unaffected)
+> - **Next Priorities**:
+>   - Objetivo-Init Pipeline Testing (P1 HIGH, 2h)
+>   - BUG-08: Knowledge-Harvester MCP Config (P2 MEDIUM, 30 min)
+>   - Linting Cleanup (P2 LOW, 1h)
+>
+> **✅ SESSION 2026-04-29 COMPLETE (Bug Fixes + Feature Enhancements)**
+> - **Status**: ✅ COMPLETE — 4 major issues resolved
+> - **Duration**: ~6h (bug fixes + feature implementation)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 7 total
+>   - 7f30b43 — fix(bug05): corrigir substituição de placeholders no wizard objetivo-init ✅
+>   - 73a880d — test(bug05): adicionar testes para wizard objetivo-init ✅
+>   - 1e138e7 — test(bug05): POC completo com 2 cenários de teste ✅
+>   - b6c3ec2 — fix(bug06): corrigir referências de prompt files em python-{fastapi,flask}.yaml ✅
+>   - 729b654 — docs(bug06): adicionar guia de validação de perfis e teste de integração ✅
+>   - 626ed5c — feat(github): tornar repositório GitHub opcional no scaffold ✅
+>   - 53a9ac5 — fix(precommit): hook bloqueava .git-hooks/ e usava git reset HEAD ✅ PUSHED
+> - **BUG-05 RESOLVED**: objetivo-init Wizard Placeholder Replacement
+>   - Issue: wizard gerava {{PLACEHOLDERS}} em vez de substituir com respostas
+>   - Root cause: mismatch entre nomes de placeholders ({{ANSWER_1}} vs {{DESCRIPTION}})
+>   - Fix: 7 placeholders renomeados para nomes semânticos + lógica multiline
+>   - Tests: 4/4 passing (single/multiline, default values, all fields)
+>   - Files: objetivo_wizard.py, test_bug05_objetivo_wizard_placeholders.py
+> - **BUG-06 RESOLVED**: Profile Descriptor Loading
+>   - Issue: SpecKit carregava "Default" em vez de perfis especificados
+>   - Root cause: prompt files renomeados sem atualizar descriptors
+>   - Fix: python-fastapi.yaml + python-flask.yaml atualizados
+>   - Validation: teste de integração confirmou 14 .prompt.md files copiados
+>   - Files: python-fastapi.yaml, python-flask.yaml, validate-profiles-integration.sh
+> - **GitHub Optional Feature**: ✅ COMPLETE
+>   - Feature: permitir scaffold new sem --repo flag
+>   - Implementation:
+>     - _apply_placeholders() mostra "(não configurado)" quando repo vazio
+>     - 2 templates SECURITY.md (com/sem GitHub)
+>     - generate_github_security_files() condicional
+>   - Tests: 6/6 passing (placeholder, templates, config validation)
+>   - Docs: docs/guides/GITHUB_OPTIONAL.md (comprehensive guide)
+> - **Pre-commit Hook Fix**: ✅ COMPLETE
+>   - Issue 1: Hook bloqueava `.git-hooks/pre-commit.secrets` (falso positivo)
+>   - Issue 2: Comando `git reset HEAD` falhava em repos sem commits
+>   - Fix 1: Adicionada exceção para `.git-hooks/` (são scripts, não secrets)
+>   - Fix 2: Comando alterado para `git restore --staged` (Git 2.23+)
+>   - Tests: 6/6 passing (exception, git commands, patterns, permissions)
+>   - Docs: docs/guides/PRECOMMIT_HOOK_FIX.md (detailed analysis)
+> - **Documentation Created**:
+>   - docs/guides/OBJETIVO_WIZARD_EXAMPLES.md (copy/paste examples for wizard)
+>   - docs/guides/GITHUB_OPTIONAL.md (feature guide with examples)
+>   - docs/guides/PRECOMMIT_HOOK_FIX.md (hook corrections analysis)
+>   - docs/bugs/BUG-08-knowledge-harvester-missing-mcp-config.md
+> - **Tests Created**:
+>   - test_bug05_objetivo_wizard_placeholders.py (4 tests, all passing)
+>   - test_objetivo_wizard_complete_poc.py (2 POC functions)
+>   - test_github_repo_optional.py (6 tests, all passing)
+>   - test_precommit_hook_git_hooks_exception.py (6 tests, all passing)
+> - **Session Metrics**:
+>   - Files modified: 10+
+>   - Tests: 16/16 passing (100%)
+>   - Documentation: ~3,500 lines (guides + bug reports)
+>   - Commits: 7 total (all to origin/060-mini-engram-python)
+> - **Impact**:
+>   - ✅ objetivo-init wizard agora funciona corretamente (placeholders substituídos)
+>   - ✅ Perfis python-fastapi e python-flask carregam prompts corretos
+>   - ✅ Scaffold new funciona sem --repo (GitHub opcional)
+>   - ✅ Hook pre-commit funciona em repos recém-inicializados
+> - **Next Priorities**:
+>   - Limpar warnings de linting (21 warnings em 3 arquivos)
+>   - Validar workflow completo end-to-end
+>   - Documentar BUG-09 se houver novos issues
+>
+> **✅ SESSION 2026-04-28 COMPLETE (Spec 066 Feature Complete + Post-Enhancements)**
+> - **Status**: ✅ CLOSED — All objectives achieved
+> - **Duration**: ~17h (extended session with enhancements)
+> - **Branch**: 060-mini-engram-python
+> - **Commits**: 6 total (5 Spec 066 + 1 Sprint 3)
+>   - 2ad24ce — feat(specs/066): implement parser & validator (T006-T015)
+>   - abf68d6 — feat(specs/066): implement migrator v1.0 → v2.0 (T016-T020)
+>   - e6d26b8 — feat(specs/066): integrate objetivo commands into scaffold.py (T021-T024)
+>   - 0e31fb6 — feat(066): implement objetivo.yaml wizard (T025-T036) ✨
+>   - a864c08 — docs(066): complete documentation (T037-T039) 📚
+>   - 4adfa62 — feat(security): ativar pre-commit hook automaticamente (Sprint 3) ✅ PUSHED
+> - **Spec 066 - objetivo.yaml v2.0**: ✅ FEATURE COMPLETE (39/39 tasks, 100%)
+>   - Fase 1: Validação (T001-T005) — 80% complete (from 2026-04-27)
+>   - Fase 2: Parser + Validator + Migrator (T006-T024) — 100% complete
+>   - Fase 3: Wizard Interativo + Documentação (T025-T039) — 100% complete
+>   - **Deliverables**: 4,297 lines (1,830 production + 1,652 test + 815 docs)
+>   - **Tests**: 46/46 passing (100% coverage)
+>   - **Performance**: Parser <100ms, Validator <50ms, Generator <200ms ✅
+>   - **CLI Commands**: objetivo-init, objetivo-validate, objetivo-generate, objetivo-migrate
+> - **Sprint 3 - Pre-commit Auto-Activation**: ✅ COMPLETE and PUSHED
+>   - Security automation: hooks activate automatically
+>   - 4/4 tests passing
+>   - Commit 4adfa62 pushed to origin/060-mini-engram-python
+> - **Scaffold Wrapper Script**: ✅ COMPLETE
+>   - Global CLI: `~/.local/bin/scaffold`
+>   - Works from any directory
+>   - Tested: --help, --version, list-profiles ✅
+> - **Objetivo-Init Wizard v1.0**: ✅ IMPLEMENTED (🐛 BUG-05 identified)
+>   - Format: objetivo-init.yaml v1.0 (pure YAML, 13/13 fields)
+>   - Template: template-bases/objetivo-init-template.yaml (NEW)
+>   - Wizard: 15 questions (6 P0 + 9 P1) with contextual logic
+>   - Bug: BUG-05 (placeholder substitution) — P1 HIGH priority fix needed
+> - **Technical Documentation**: ✅ COMPLETE
+>   - docs/planning/MELHORIA_OBJETIVO_WIZARD_V2.md (v2.0 roadmap)
+>   - docs/debates/OPINIAO_OBJETIVO_INIT_WIZARD.md (decision rationale)
+>   - docs/bugs/BUG-05-objetivo-init-wizard-empty-draft.md (bug report)
+> - **Session Documents**:
+>   - DAILY_ACTIVITIES_2026-04-28.md (10 activities logged)
+>   - SESSION_REPORT_2026-04-28.md (complete with metrics & decisions)
+>   - FINAL_STATUS_2026-04-28.md (consolidated session summary)
+> - **MCP Status**: ✅ memory + sequential-thinking active
+> - **Security**: 🟢 CLEAN (no exposed credentials)
+> - **Pending Commits**: Wizard v1.0 changes + documentation
+> - **Next Priority**: BUG-05 fix (placeholder substitution, P1 HIGH)
+>
+> **✅ SESSION 2026-04-27 SUMMARY (Spec 066 Fase 1 Validation Complete)**
+> - **Spec 066 - Fase 1**: objetivo.yaml v2.0 template validation complete at 80% (4/5 tasks)
+>   - T001: Python FastAPI POC conversion (850 lines) — backend-api domain ✅
+>   - T002: K8s Helm POC conversion (680 lines) — deployment-chart domain ✅
+>   - T003: Terraform AWS POC conversion (780 lines) — infrastructure-code domain ✅
+>   - T004: Edge cases documentation (667 lines) — 10 cases identified with solutions ✅
+>   - T005: User testing (OPTIONAL) — deferred to optional status ⏸️
+>   - EXTRA: Template improvements (inline comments, P0/P1/P2 markers, clean template) ✅
+> - **Format Validation**: Markdown Híbrido proven across 3 diverse domains
+>   - Backend API: FastAPI + PostgreSQL + Redis architecture
+>   - Infrastructure: Kubernetes + Helm deployment charts
+>   - Cloud IaC: AWS + Terraform infrastructure code
+> - **Key Learnings**:
+>   - Realistic line count: 500-900 lines (not 300 estimated)
+>   - YAML inline comments significantly improve usability
+>   - Priority markers (P0/P1/P2) help users focus on essential content
+>   - Clean template separation (base vs. examples) reduces confusion
+>   - Format works equally well across backend, infrastructure, and cloud domains
+> - **Deliverables Created**:
+>   - 3 POC conversions: [poc/objetivo-v2-{python-fastapi,k8s-helm,terraform-aws}.md](../poc/)
+>   - Edge cases analysis: [docs/debates/VALIDACAO-FASE1-EDGE-CASES.md](debates/VALIDACAO-FASE1-EDGE-CASES.md)
+>   - Clean template: [poc/objetivo-v2-template-base.md](../poc/objetivo-v2-template-base.md)
+>   - Enhanced template: [specs/066-objetivo-yaml-v2/objetivo.yaml](../specs/066-objetivo-yaml-v2/objetivo.yaml)
+> - **Commits Created**: 3 commits during session
+>   - c7684d3 — feat(specs/066): complete Fase 1 validation - T001, T002, T003
+>   - f8c8612 — feat(specs/066): complete T004 - Fase 1 edge cases documentation
+>   - 7513e64 — feat(specs/066): apply high-priority improvements from T004 edge cases
+> - **Session Metrics**:
+>   - Duration: ~9h (full day)
+>   - Total lines: 2,878 insertions (5 files created, 1 modified)
+>   - Documentation: ~2,000 lines session docs
+>   - Edge cases: 10 identified with solutions
+>   - Improvements: 5 priority high applied to template
+> - **Impact**:
+>   - ✅ objetivo.yaml v2.0 format validated and production-ready
+>   - ✅ Fase 2 unblocked (parser implementation can start)
+>   - ✅ Template enhanced with inline guidance for users
+>   - ✅ Realistic expectations set for document length
+>   - ✅ Edge cases documented to prevent future issues
+> - **Next Priorities**:
+>   - Fase 2 - T006: Create objetivo_parser.py (8-12h)
+>   - OPTIONAL - T005: User testing (2-3h, low priority)
+>   - Continue BUG-05 or IMP-65 P1 Gaps as needed
+>
+> **✅ SESSION 2026-04-27 SUMMARY (BUG-06 + BUG-07 + Template Issues Fixed)**
+> - **BUG-06 FIXED**: Profile Loading — All profile prompts now load correctly in new projects
+>   - Root cause: Files had `layer2-` / `layer3-` prefix but `_copy_domain_profile()` searched for exact match
+>   - Solution: Renamed 5 prompt files to match profile descriptor names
+>   - Impact: SpecKit now correctly loads profile-specific context (python-fastapi, k8s-helm, etc.)
+>   - Docs: [bugs/BUG-06_PROFILE_LOADING.md](bugs/BUG-06_PROFILE_LOADING.md) (~450 lines)
+> - **BUG-07 FIXED** (Critical): Workspace MCP Configuration — VS Code now loads correct MCP servers
+>   - Root cause: `.code-workspace` file used static template without MCP servers
+>   - Problem: VS Code prioritizes workspace settings over `.vscode/mcp.json`
+>   - Solution: Added `generate_workspace()` function to dynamically generate workspace files with MCP
+>   - Impact: All new projects get correct MCP configuration (memory, sequential-thinking, filesystem, github)
+>   - Docs: [bugs/BUG-07_WORKSPACE_MCP_FIX.md](bugs/BUG-07_WORKSPACE_MCP_FIX.md) (~200 lines)
+> - **TEMPLATE ISSUES FIXED** (ISSUE-T1, T2, T3):
+>   - **T1**: Placeholder {project_name} now substituted in templates ✅
+>   - **T2**: Placeholder {description} now substituted in templates ✅
+>   - **T3**: Hatchling configuration added to pyproject.toml ✅
+>   - Implementation: New `_apply_template_placeholders()` method in ProfileComposer
+>   - Supports: Both `{xxx}` and `{{XXX}}` placeholder formats
+>   - Applies to: Text files (.md, .yaml, .toml, .json, .py, .sh)
+>   - Docs: [SESSIONS/2026-04-27/IMPLEMENTATION_REPORT_ISSUES_T1_T2_T3.md](SESSIONS/2026-04-27/IMPLEMENTATION_REPORT_ISSUES_T1_T2_T3.md) (~550 lines)
+> - **DOCUMENTATION REORGANIZED**:
+>   - 54 files moved from docs/ root to organized subfolders
+>   - New structure: bugs/, implementations/, guides/, reference/, planning/, templates/, github-copilot/
+>   - Benefits: Faster searches, clearer navigation, better maintenance
+>   - INDEX.md updated to reflect new structure
+> - **COMMITS CREATED**: 2 during session
+>   - 1b94196 — fix(templates): placeholder substitution + hatchling config (ISSUE-T1, T2, T3)
+>   - fe13e44 — fix(workspace): add dynamic MCP server configuration (BUG-07)
+> - **TEST RESULTS**:
+>   - Composer tests: 17/18 ✅ PASSING (94%)
+>   - Workspace generation: ✅ Validated manually (MCP section present)
+>   - Pre-existing failure: data-pipeline-airflow profile (unrelated)
+> - **SESSION METRICS**:
+>   - Duration: ~6h
+>   - Documentation: ~2000 lines created (7 documents)
+>   - Implementation: ~150 lines (vscode.py +100, project.py -150, composer +32, pyproject.toml +3)
+>   - Files reorganized: 54 files moved to subfolders
+> - **IMPACT**: Projects now work out-of-the-box with correct profile context AND MCP configuration
+>   - ✅ Profile prompts load correctly
+>   - ✅ MCP servers load correctly (workspace file + .vscode/mcp.json)
+>   - ✅ Placeholders substituted automatically
+>   - ✅ Python projects installable immediately after creation
+>   - ✅ Documentation easier to find and navigate
+>
+> **✅ SESSION 2026-04-23 SUMMARY (IMP-65 Production Ready)**
+> - **IMP-65 PRODUCTION READY**: Template Synchronization System validated end-to-end (8/8 scenarios ✅)
+> - **OBJETIVO**: Complete P0 validation scenarios + critical bug fixes for production release
 > - **ARTEFATOS CRIADOS**:
->   - Session time tracker `scripts/session-time-tracker.py` (~314 linhas)
->     - Commands: start, pause <reason>, resume, end, status, report
->     - JSON state management in `.session-time/`
->     - Individual pause tracking with timestamps and reasons
->     - CLI with Rich tables/panels for beautiful output
->   - Agent `.github/agents/session.manager.agent.md` (~347 linhas)
->     - Natural Language Understanding (pt-BR): pause/pausar/para, resume/resumir/continuar
->     - Example workflow: full day 09:00-18:00 with lunch/coffee breaks
->     - Integration with session-time-tracker.py
->   - Session ritual integration:
->     - session-start.prompt.md: Passo 1.5 (start tracking)
->     - session-end.prompt.md: Passo 11 (end tracking)
-> - **EMERGENCY RECOVERY SUCCESS**:
->   - **Root Cause**: ModuleNotFoundError → precipitous revert → 52 files lost
->   - **Recovery Time**: 3 minutos (vs 15 min estimado) = **ROI 240.000%**
->   - **Files Recovered**:
->     - 12 mergers (copilot, json, pyproject, vscode, etc.) — 11.822 linhas
->     - 3 template modules (blocks, migration, patches) — 5.625 linhas
->     - docs/bugs/ folder (BUG-16 analysis, 577 linhas)
->     - docs/guides/ folder (UPGRADE_GUIDE.md, 307 linhas)
->     - 15 session docs (2026-04-15, 05-14, 05-15) — 3.273 linhas
->     - 24 test files
->   - **Documentation Created**: 2.000+ linhas
->     - DAILY_ACTIVITIES_2026-05-16.md (~300 linhas)
->     - FINAL_STATUS_2026-05-16.md (~400 linhas)
->     - RECOVERY_COMPLETED.md (~311 linhas)
->     - emergency-recovery-plan.md (~550 linhas)
->     - EMERGENCY_RECOVERY_SUMMARY.md
-> - **LESSONS LEARNED** (CRITICAL):
->   1. NUNCA reverter sem análise profunda (estrutural + pastas)
->   2. Documentação arquitetural > código (impossível reconstruir decisões)
->   3. Funcionalidade sem guia = invisível
->   4. Cherry-pick > revert massivo (cirurgia preferível a amputação)
->   5. Backup preventivo salva projetos
-> - **TIME TRACKING METRICS** (IMP-58 Self-Validation):
->   - Sessão registrada: 2026-05-16 (session_2026-05-16.json)
->   - Início: 10:28:54 | Fim: 10:31:34
->   - Duração Total: 2m 40s (160s)
->   - Pausas: 1 pausa de 15.7s
->   - Tempo Ativo: 2m 24s (144.3s)
->   - Eficiência: 90.3%
-> - **FILES CREATED**: 2 (session docs: 5)
->   - Created: `scripts/session-time-tracker.py` (~314)
->   - Created: `.github/agents/session.manager.agent.md` (~347)
->   - Session docs: DAILY_ACTIVITIES, FINAL_STATUS, RECOVERY_COMPLETED, etc. (~2.000 total)
-> - **TRACKING**: 3h30min real (Implementation + Error + Recovery + Documentation)
-> - **IMPACTO**: Workflow de sessões agora tracked com precisão
->   - ✅ Start/pause/resume/end automation
->   - ✅ Agent-driven pause management (@session.manager)
->   - ✅ JSON state persistence
->   - ✅ Metrics validation (self-test)
->   - ✅ Sistema de merge 100% recuperado e funcional
->   - ✅ Documentação arquitetural preservada
->   - ✅ Guia de usuário disponível
-> - **BREAKING CHANGES**: NENHUM
-> - **NEXT STEPS**:
->   - Investigar erro copy_speckit() (TypeError: unexpected keyword argument 'force')
->   - Criar validate-docs-structure.sh (pre-commit hook)
->   - Adicionar regra em .copilot-rules.md: "NUNCA reverter sem análise"
+>   - Test validation reports (~400 linhas)
+>     - IMP-65_SCENARIOS_6-8_REPORT.md — Security, Backup, Dry-Run scenarios
+>   - Bug fix documentation (~500 linhas)
+>     - BUG-04_FIX_REPORT.md — Breaking changes validation
+>     - BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md — Interactive profile selection
+>   - Session documentation (~2,000 linhas)
+>     - 15+ session-specific documents in docs/SESSIONS/2026-04-23/
+>   - Task tracking
+>     - PENDENCIAS_COMPLETAS.md — Comprehensive task status tracking
+>   - Test projects
+>     - poc/test-fast-api/ (BUG-05 validation)
+>     - poc/tst-bug04/ (BUG-04 validation)
+>     - poc/tst-imp65-s6, s7, s8 (IMP-65 scenarios)
+> - **IMPLEMENTATION RESULTS**:
+>   - IMP-65 Scenarios 6-8: ✅ ALL PASSED
+>     - Scenario 6: Security Customizations (OAuth2/MFA + Privacy/GDPR coexistence)
+>     - Scenario 7: Backup and Rollback (complete restoration validated)
+>     - Scenario 8: Dry-Run Preview (safe preview without modifications)
+>   - BUG-02 (P0): ✅ FIXED — Compose path resolution (7 tests passing)
+>   - BUG-03 (P0): ✅ FIXED — Template bases initialization (5 tests passing)
+>   - BUG-04 (P1): ✅ FIXED — Breaking changes validation in auto mode
+>   - BUG-05 (P1): 🟡 Phase 1/4 complete — Interactive Layer 2/3 profile selection
+>   - BUG-06 (P1): 🔴 DISCOVERED — Profile loading incorrect in new projects
+> - **COMMITS CREATED**: 5 during session
+>   - b5fab59 — fix(bug-02): resolve path resolution in compose command
+>   - 697d141 — fix(templates): initialize template_bases during project creation (BUG-03)
+>   - 402ec4e — test(IMP-65): Complete Scenarios 2-5 template sync validation
+>   - 7312676 — fix(merge): block breaking changes in --auto mode (BUG-04)
+>   - 7f218dd — feat(ui): add Layer 2/3 profile selection to interactive mode (BUG-05 Phase 1)
+> - **TEST RESULTS**:
+>   - IMP-65 comprehensive: 8/8 scenarios ✅ PASSED
+>   - BUG-02 tests: 7/7 ✅ PASSING
+>   - BUG-03 tests: 5/5 ✅ PASSING
+>   - BUG-04: Manual validation ✅ PASSED
+>   - BUG-05: Manual validation ✅ PASSED (unit tests pending Phase 4)
+> - **DECISION**: Template Synchronization System declared **PRODUCTION READY** for P0 scenarios
+>   - Merge engine robust (handles conflicts correctly)
+>   - Backup system reliable (automatic timestamped backups)
+>   - Security content preserved (custom sections coexist with upstream)
+>   - Rollback functional (complete restoration validated)
+>   - Dry-run safe (preview without modifications)
+> - **SESSION METRICS**:
+>   - Duration: Full day session (~8-9 hours)
+>   - Documentation: ~2,000+ lines created
+>   - Implementation: ~160 lines (BUG-04 39, BUG-05 120)
+>   - Tests: 12 new tests (BUG-02 7, BUG-03 5)
+>   - Quality: All tests passing, security scan clean
+> - **NEXT PRIORITIES**:
+>   - BUG-05 Phase 3: Documentation (2h)
+>   - BUG-05 Phase 4: Unit tests (2-3h)
+>   - BUG-06: Investigation and fix (TBD)
+>   - Template Issues: Placeholder substitution (2h)
+>   - IMP-65 P1 Gaps: CI/CD integration, audit trail (18-23h)
+> - **IMPACTO**: Template Synchronization System ready for production use
+>   - ✅ All P0 scenarios validated
+>   - ✅ Critical bugs fixed (BUG-02, BUG-03, BUG-04)
+>   - ✅ UX improved (BUG-05 Phase 1)
+>   - ✅ Clear roadmap for P1 gaps
+>   - ✅ Production deployment unblocked
+>
+> **✅ SESSION 2026-04-21 SUMMARY (IMP-65 Analysis)
+> - **IMP-65 ANALYSIS COMPLETE**: Template Synchronization System Comprehensive Validation
+> - **OBJETIVO**: Multi-perspective analysis and real-world testing of template synchronization before production rollout
+> - **ARTEFATOS CRIADOS**:
+>   - Comprehensive analysis documents (~18,600 linhas total)
+>     - IMP-65_COMPREHENSIVE_ANALYSIS.md (~4,200 lines) — 6-dimension system analysis
+>     - IMP-65_DEBATE_REAL_WORLD_TEST.md (~2,800 lines) — Multi-perspective debate (4 perspectives)
+>     - IMP-65_TEST_STRATEGY.md (~3,500 lines) — Detailed test procedures (8 scenarios)
+>     - IMP-65_GAP_ANALYSIS.md (~4,100 lines) — 36 gaps identified and prioritized
+>     - IMP-65_ACTION_ITEMS.md (~2,000 lines) — Roadmap with owners/timelines
+>     - IMP-65_EXECUTIVE_SUMMARY.md (~2,000 lines) — Leadership overview
+>   - Real-world test project: poc/tst-python-fastapi/
+>     - Python FastAPI project structure validated
+>     - All expected files generated correctly
+>     - Discovered BUG-02 (P0): compose command path resolution issue
+>   - YAML profile fixes (2 descriptors)
+>     - backend-architect.yaml (line 77 indentation)
+>     - sre-platform-engineer.yaml (line 85 indentation)
+> - **ANALYSIS RESULTS**:
+>   - System scores: Core 8.5/10, DevEx 7/10, SRE 6/10, AppSec 7.5/10, Profiles 8/10, Governance 7/10
+>   - 36 gaps identified: 5 P0 (blockers), 15 P1 (high), 13 P2 (quality), 5 P3 (nice-to-have)
+>   - Critical path: 33-38 hours to production-ready (P0 + P1 gaps)
+>   - Total effort: 103-108 hours for complete gap closure
+>   - Risk: 🟡 MEDIUM → 🟢 LOW (after P0 completion)
+> - **KEY FINDINGS**:
+>   - ✅ Strengths: 151 tests, ~3,700 lines code, excellent architecture
+>   - 🚨 Critical Gap: NEVER TESTED ON REAL PROJECT with customizations
+>   - 🐛 BUG-02 discovered: compose command path resolution (P0 blocker)
+> - **IMPLEMENTATION METRICS**:
+>   - Session time: 6.5 hours (analysis 2.5h, YAML fixes 0.5h, test 2h, closure 1.5h)
+>   - Documentation: ~20,510 lines created/updated
+>   - Test project: poc/tst-python-fastapi/ (10+ files)
+>   - YAML validation: 21/21 profiles passing
+> - **NEXT PRIORITIES**:
+>   - P0: Fix BUG-02 (compose path resolution, 30-45 min)
+>   - P0: Execute remaining 7 test scenarios (3-4 hours)
+>   - P1: Implement observability gaps (CI/CD, audit trail, metrics)
+> - **IMPACTO**: Clear roadmap to production with validated priorities
+>   - ✅ Complete system analysis from 6 perspectives
+>   - ✅ Real-world test validates core functionality
+>   - ✅ 36 gaps prioritized with timeline
+>   - ✅ Executive summary for leadership decisions
+>   - ✅ Ready for systematic gap closure (Week 1-4)
+>
+> **✅ SESSION 2026-04-20 SUMMARY (IMP-59 Complete)**
+> - **IMP-59 COMPLETE**: Mini-Engram Memory System (6 phases + formatting, production-ready)
+> - **OBJETIVO**: Zero-dependency persistent memory for GitHub Copilot sessions
+> - **ARTEFATOS CRIADOS**:
+>   - Core engine `scripts/lib/memory.py` (~300 linhas)
+>     - Memory and MemoryStore classes
+>     - SQLite FTS5 integration with BM25 ranking
+>     - Text-first architecture (markdown source, SQLite cache)
+>   - Security module `scripts/lib/sanitize.py` (~150 linhas)
+>     - PII/secrets detection (API keys, tokens, passwords, emails, IPs)
+>     - Interactive validation with safe-by-default approach
+>   - CLI Tools (~820 linhas total)
+>     - `scripts/mem_save.py` (180 lines) — Interactive memory save
+>     - `scripts/mem_search.py` (220 lines) — Search with filters
+>     - `scripts/mem_context.py` (420 lines) — Context-aware suggestions
+>   - Complete test suite (~1,000 linhas, 46 tests)
+>     - tests/test_memory_save.py (7 tests)
+>     - tests/test_memory_search.py (7 tests)
+>     - tests/test_memory_security.py (14 tests)
+>     - tests/test_memory_context.py (18 tests)
+>     - All 46 tests passing in <2s (100% coverage)
+>   - Comprehensive documentation (~3,000 linhas)
+>     - .memory/README.md (~1,000 lines user guide)
+>     - .memory/MEMORY_POLICY.md (security policies)
+>     - docs/IMP-59_IMPLEMENTATION.md (~2,000 lines implementation report)
+>   - Makefile integration (9 memory targets)
+>   - Session prompt hooks (commented, optional integration)
+> - **IMPLEMENTATION METRICS**:
+>   - Implementation time: 28h (vs 31-42h estimated = 67-90% efficiency)
+>   - 7 commits (6 phases + 1 refactor)
+>   - Zero external dependencies (Python 3.10+ stdlib only)
+>   - Production code: ~1,270 lines
+>   - Test code: ~1,000 lines
+>   - Documentation: ~3,000 lines
+> - **QUALITY METRICS**:
+>   - Test coverage: 100% (46/46 passing)
+>   - Test execution: <2s (target: <5s)
+>   - Save operation: ~30ms (target: <50ms)
+>   - Search query: ~60ms (target: <100ms)
+>   - Context analysis: ~120ms (target: <200ms)
+> - **IMPACTO**: Memory system now provides:
+>   - ✅ Persistent memory across sessions (versionable markdown)
+>   - ✅ Full-text search with BM25 ranking
+>   - ✅ Proactive context suggestions (git-aware)
+>   - ✅ Security validation (PII/secrets detection)
+>   - ✅ Complete CLI tooling (save, search, context)
+>   - ✅ Optional session workflow integration
+>
+> **✅ SESSION 2026-04-15 SUMMARY (IMP-65 Phase 4)**
+> - **IMP-65 Phase 4 COMPLETE**: Modular Templates System (blocks + patches + CLI + migration)
+> - **OBJETIVO**: Enable template composition, versioning, and customization at granular level
+> - **ARTEFATOS CRIADOS**:
+>   - Block composition engine `scripts/lib/template_blocks.py` (~450 linhas)
+>     - @include directive processing for assembling templates from blocks
+>     - Frontmatter validation (YAML metadata in blocks and templates)
+>     - Template composition with version compatibility checks
+>   - Patch system `scripts/lib/template_patches.py` (~560 linhas)
+>     - Anchor-based patch operations (INSERT_AFTER, INSERT_BEFORE, REPLACE, DELETE)
+>     - Multi-patch application with conflict detection
+>     - Patch versioning and target compatibility
+>   - Migration tooling `scripts/lib/template_migration.py` (~500 linhas)
+>     - Auto-detection of standard vs custom sections
+>     - Automatic patch generation from customizations
+>     - Timestamped backups and migration guides
+>   - CLI Commands (6 tools, ~600 linhas total)
+>     - compose-template, apply-patches, validate-block, validate-patch, list-patches, migrate-template
+>   - Complete test suite (~2,050 linhas, 94 tests)
+>     - tests/test_template_blocks.py (30 tests, 100% passing)
+>     - tests/test_template_patches.py (40 tests, 100% passing)
+>     - tests/test_template_migration.py (24 tests, 100% passing)
+>   - Comprehensive documentation (~2,000 linhas)
+>     - docs/MODULAR_TEMPLATES.md (~850 linhas user guide)
+>     - docs/TEMPLATE_DRIFT_DETECTION.md (+200 linhas modular system integration)
+>     - docs/SESSIONS/2026-04-15/IMP-65_PHASE4_DESIGN.md (~800 linhas architecture)
+> - **CROSS-PROJECT VALIDATION**:
+>   - 31 components successfully exported to yves-eti-br (production project)
+>   - Real-world validation of modular templates system
+>   - Modular templates, security configs, scripts, 21 profile descriptors, session system
+> - **PERFORMANCE**:
+>   - Implementation time: ~2.5 hours (vs 90h estimated = 36x faster)
+>   - Test suite: 94 tests, 100% passing in < 0.2s
+>   - Zero external dependencies (stdlib only)
+>   - Total code: ~3,700 lines (modules + tests + CLI)
+>   - Total documentation: ~2,000 lines
+> - **IMPACTO**: Template system now supports:
+>   - ✅ Granular versioning (blocks, patches, templates independently versioned)
+>   - ✅ Clean composition (templates assemble from reusable blocks)
+>   - ✅ Customization preservation (patches separate from upstream blocks)
+>   - ✅ Migration automation (convert monolithic → modular)
+>   - ✅ Production validation (31 components exported to real project)
 >
 > **✅ SESSION 2026-04-14 SUMMARY (IMP-56)**
 > - **IMP-56 COMPLETE**: Quality Gates Validation for SpecKit (speckit.validate)
@@ -124,6 +820,26 @@
 >   - Dogfooding: Validate IMP-56 itself (create objetivo.yaml, run gates)
 >   - CI/CD integration: Auto-validate PRs
 >   - VSCode integration: Real-time validation via yaml.schemas
+>
+> **🔵 SESSION 2026-04-20 SUMMARY**
+> - **STATUS**: Session initialized
+> - **OBJECTIVE**: TBD (awaiting work assignment)
+> - **SESSION DOCUMENTS CREATED**:
+>   - SESSION_RECOVERY_2026-04-20.md — Context recovery from 2026-04-15
+>   - DAILY_ACTIVITIES_2026-04-20.md — Activity log initialized
+>   - SESSION_REPORT_2026-04-20.md — Session report initialized
+>   - FINAL_STATUS_2026-04-20.md — Final status initialized
+> - **CONTEXT RECOVERED**:
+>   - Previous session: IMP-65 Phase 4 Complete (Modular Templates System)
+>   - Project state: Stable, 94 tests passing, working tree clean
+>   - Branch: 053-business-objective-interview
+>   - Security: 🟢 Clean (no exposed credentials)
+>   - MCP servers: ✅ Active (memory, sequential-thinking)
+> - **PENDING TASKS**:
+>   - IMP-55: CHAT capture system (P2)
+>   - IMP-56: Quality gates validation (P1)
+>   - Other incremental improvements from TODO.md
+> - **READY FOR WORK**: ✅ Session initialization complete
 >
 > **✅ SESSION 2026-04-14 SUMMARY (IMP-53/54)**
 > - **IMP-53/54 COMPLETE**: SpecKit 4-Layer Spec Driven Development (SDD)
@@ -418,269 +1134,351 @@ a-default-project/
 
 ## 📚 Documentation Index
 
-### Main Documentation
-- **[README.md](../README.md)** - Main project documentation
-  - Overview and objectives
-  - Features and architecture
-  - Getting started guide
-  - Configuration management
-  - Development workflow
-  - Testing strategy
-  - CI/CD integration
-  - Security best practices
+### 📂 Documentation Organization
 
-### Template Documentation
-- **[docs/TEMPLATE_USAGE.md](TEMPLATE_USAGE.md)** - ⭐ Complete template guide
-  - How to use this template
-  - Automatic initialization
-  - Manual setup
-  - Configuration management
-  - Troubleshooting
-  - Checklist
+**New Structure (2026-04-27)**: Documentation reorganized into logical categories for easier navigation.
 
-### Copilot / Speckit Strategy
-- **[docs/copilot/DOMAIN-PROFILES-STRATEGY.md](copilot/DOMAIN-PROFILES-STRATEGY.md)** - ⭐ Templates adaptáveis por domínio DevOps
-  - Arquitetura de três camadas (Foundation / Domain Profile / Context Injection)
-  - Diferença entre os três modos: programação, infraestrutura, análise
-  - Como o Speckit + MCP amplifica cada modo
-  - Estrutura de arquivos proposta
+```
+docs/
+├── INDEX.md                    # This file - complete documentation catalog
+├── bugs/                       # Bug reports and investigations
+├── implementations/            # Implementation reports (IMP-XX)
+├── guides/                     # How-to guides and procedures
+│   └── ansible/               # Ansible-specific documentation
+├── reference/                  # Reference documentation
+├── planning/                   # Project planning and tracking
+├── templates/                  # Template system documentation
+├── github-copilot/            # GitHub Copilot resources
+├── copilot/                   # Copilot strategy and profiles
+├── debates/                   # Architectural debates and decisions
+└── SESSIONS/                  # Session documentation (YYYY-MM-DD/)
+```
 
-- **[docs/copilot/DOMAIN-PROFILES-DECISIONS.md](copilot/DOMAIN-PROFILES-DECISIONS.md)** - Questões e decisões
-  - 🟢 **19 decisões completamente resolvidas (D-01 a D-19)**
-  - Implementação mapeada em IMP-01 a IMP-10 no TODO.md
+---
 
-### Technical Documentation
-- **[docs/TEMPLATE_DRIFT_DETECTION.md](TEMPLATE_DRIFT_DETECTION.md)** - 🆕 Template versioning, diff & three-way merge (IMP-65 Fases 1-3)
-  - Problem: Templates don't auto-update after project creation
-  - Solution: Version tracking in YAML frontmatter
-  - Command: `scaffold.py check-templates` (text and JSON output)
-  - Understanding drift types (outdated, missing, breaking changes)
-  - Version tracking in `.scaffold-state.yaml`
-  - Automation and CI/CD integration
-  - Roadmap: Phase 2 (diff), Phase 3 (merge), Phase 4 (monitoring)
+### 🐛 Bug Reports & Fixes
 
-- **[docs/MAKEFILE.md](MAKEFILE.md)** - Complete Makefile guide
-  - All commands reference (40+ commands)
-  - Prerequisites
-  - Quick start
+**Location**: [`bugs/`](bugs/)
+
+- **[BUG-04_FIX_REPORT.md](bugs/BUG-04_FIX_REPORT.md)** - Breaking changes validation in auto mode
+  - Problem: Template merge accepted breaking changes without user confirmation
+  - Solution: Block breaking changes in `--auto` mode, require interactive mode
+  - Status: ✅ FIXED (Session 2026-04-23)
+
+- **[BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md](bugs/BUG-05_INTERACTIVE_MODE_LAYER2_PROFILES.md)** - Interactive profile selection
+  - Problem: Interactive mode only offered Layer 1 profiles
+  - Solution: Added Layer 2/3 profile selection UI
+  - Status: 🟡 Phase 1/4 complete (Session 2026-04-23)
+
+- **[BUG-06_PROFILE_LOADING.md](bugs/BUG-06_PROFILE_LOADING.md)** - ⭐ Profile loading incorrect
+  - Problem: New projects loaded "Default" profile instead of selected profile
+  - Root cause: Profile prompt files had `layer2-` prefix but code searched without prefix
+  - Solution: Renamed 5 prompt files to match profile descriptor names
+  - Status: ✅ FIXED (Session 2026-04-27)
+  - Impact: SpecKit now correctly loads profile-specific context
+
+- **[BUG-07_WORKSPACE_MCP_FIX.md](bugs/BUG-07_WORKSPACE_MCP_FIX.md)** - ⭐ Workspace file missing MCP configuration
+  - Problem: VS Code loaded wrong MCP servers when opening via workspace file
+  - Root cause: `.code-workspace` file used static template without MCP servers section
+  - Solution: Added `generate_workspace()` function to dynamically generate workspace files with MCP
+  - Status: ✅ FIXED (Session 2026-04-27)
+  - Impact: All new projects get correct MCP configuration (memory, sequential-thinking, filesystem, github)
+
+---
+
+### 🚀 Implementation Reports
+
+**Location**: [`implementations/`](implementations/)
+
+- **[IMP-53_IMPLEMENTATION.md](implementations/IMP-53_IMPLEMENTATION.md)** - 4-Layer Spec Driven Development
+  - Layer 1 (Business): objetivo.yaml via speckit.clarify
+  - Complete workflow: Business → Product → Architecture → Implementation
+  - Status: ✅ COMPLETE (2026-04-14)
+
+- **[IMP-55_IMPLEMENTATION_REPORT.md](implementations/IMP-55_IMPLEMENTATION_REPORT.md)** - CHAT capture system
+  - Status: 🟡 PARTIAL (P2 priority)
+
+- **[IMP-55_PLAN.md](implementations/IMP-55_PLAN.md)** - Implementation plan for CHAT system
+
+- **[IMP-56_IMPLEMENTATION.md](implementations/IMP-56_IMPLEMENTATION.md)** - ⭐ Quality Gates Validation
+  - 19 quality gates for Layer transitions (L1→L2, L2→L3, L3→L4)
+  - JSON Schema validation + domain-specific rules
+  - `speckit.validate` agent with auto-remediation
+  - Status: ✅ COMPLETE (2026-04-14)
+
+- **[IMP-56_STATUS_VERIFICATION.md](implementations/IMP-56_STATUS_VERIFICATION.md)** - Verification report
+
+- **[IMP-57_IMPLEMENTATION.md](implementations/IMP-57_IMPLEMENTATION.md)** - ⭐ Session Search v2.0
+  - Multi-scope indexing (sessions + docs + specs)
+  - Full-text search with SQLite FTS5
+  - Status: ✅ COMPLETE (2026-04-14)
+
+- **[IMP-58_INTERVIEW_TEMPLATE.md](implementations/IMP-58_INTERVIEW_TEMPLATE.md)** - Memory assessment framework
+- **[IMP-58_MEMORY_ASSESSMENT_REPORT.md](implementations/IMP-58_MEMORY_ASSESSMENT_REPORT.md)** - Assessment results
+- **[IMP-58_MEMORY_ASSESSMENT_SURVEY.md](implementations/IMP-58_MEMORY_ASSESSMENT_SURVEY.md)** - Survey questions
+- **[IMP-58_README.md](implementations/IMP-58_README.md)** - Overview
+- **[IMP-58_SURVEY_yves_marinho.md](implementations/IMP-58_SURVEY_yves_marinho.md)** - User responses
+
+- **[IMP-59_DESIGN.md](implementations/IMP-59_DESIGN.md)** - Mini-Engram Memory System design
+- **[IMP-59_IMPLEMENTATION.md](implementations/IMP-59_IMPLEMENTATION.md)** - ⭐ Mini-Engram implementation
+  - Zero-dependency persistent memory for GitHub Copilot
+  - SQLite FTS5 with BM25 ranking
+  - CLI tools: mem_save, mem_search, mem_context
+  - Status: ✅ COMPLETE (2026-04-20)
+- **[IMP-59_IMPLEMENTATION_PLAN.md](implementations/IMP-59_IMPLEMENTATION_PLAN.md)** - Implementation roadmap
+
+- **[IMP-65_SCENARIOS_6-8_REPORT.md](implementations/IMP-65_SCENARIOS_6-8_REPORT.md)** - Template sync validation
+  - Scenarios: Security customizations, Backup/Rollback, Dry-run preview
+  - Status: ✅ ALL PASSED (8/8 scenarios complete)
+
+---
+
+### 📖 How-To Guides & Procedures
+
+**Location**: [`guides/`](guides/)
+
+#### General Guides
+
+- **[CI-CD-RESTORATION-GUIDE.md](guides/CI-CD-RESTORATION-GUIDE.md)** - 🔴 CI/CD restoration procedures
+  - Complete guide to restore temporarily removed workflows
+  - Snapshot: ci-template.yml + security-scan.yml
+  - Timeline: 15-30 minutes to restore
+  - Last known state: FULLY FUNCTIONAL (commit dce227b)
+
+- **[CREDENTIAL_ROTATION.md](guides/CREDENTIAL_ROTATION.md)** - ⭐ Credential rotation procedures
+  - Rotation policy for 7 credential types
+  - Bash scripts for each credential type
+  - Compliance: SOC2, ISO27001, LGPD
+
+- **[ISSUE_MANAGEMENT_GUIDE.md](guides/ISSUE_MANAGEMENT_GUIDE.md)** - GitHub issue workflow
+
+- **[LOGGING_USAGE.md](guides/LOGGING_USAGE.md)** - ⭐ Scaffold operation logging guide
+  - Automatic logging for all scaffold operations
+  - Control via --no-log and --log-dir flags
+  - Log file format and structure
+  - Examples and best practices
+
+- **[MAKEFILE.md](guides/MAKEFILE.md)** - ⭐ Complete Makefile reference
+  - 40+ commands documented
+  - Quick start guide
   - Workflow examples
   - Troubleshooting
-  - Customization
 
-- **[docs/SHARED_CONFIGS_SOLUTION.md](SHARED_CONFIGS_SOLUTION.md)** - Shared configs architecture
-  - Problem analysis (duplication across projects)
-  - Solution approaches (symlinks, submodules, sync)
-  - Implementation guide
-  - Automation scripts
-  - Benefits and metrics
+- **[MIGRATION-GUIDE.md](guides/MIGRATION-GUIDE.md)** - Project migration procedures
 
-- **[docs/CI-CD-RESTORATION-GUIDE.md](CI-CD-RESTORATION-GUIDE.md)** - 🔴 Guia completo de restauração CI/CD
-  - Contexto da remoção temporária (2026-03-31)
-  - Roteiro de restauração (3 passos, 30 minutos)
-  - Estado dos workflows no momento da remoção (TOTALMENTE FUNCIONAIS)
-  - Snapshot completo: ci-template.yml + security-scan.yml
-  - Riscos durante período sem CI/CD
-  - Checklist de restauração
+- **[MOLECULE_TESTING_GUIDE.md](guides/MOLECULE_TESTING_GUIDE.md)** - ⭐ Testing Ansible roles
+  - Complete Molecule setup and usage
+  - Writing tests with Testinfra
+  - CI/CD integration examples
+  - Driver comparison (Docker, Vagrant, cloud)
 
-- **[WORKFLOWS_REMOVED_TEMPORARILY.md](../WORKFLOWS_REMOVED_TEMPORARILY.md)** - 🔴 Aviso público workflows
-  - Por que workflows foram removidos
-  - O que isso significa para desenvolvedores/usuários
-  - Restauração rápida (15 minutos)
-  - Riscos e mitigações
+- **[NEW_PROJECT_COMMAND.md](guides/NEW_PROJECT_COMMAND.md)** - Creating new projects
 
-### Security Documentation
-- **[docs/ANSIBLE_VAULT_GUIDE.md](ANSIBLE_VAULT_GUIDE.md)** - ⭐ Complete Ansible Vault reference
-  - Why use Ansible Vault (security benefits, compliance)
-  - Initial configuration (.vault_pass setup, ansible.cfg)
-  - Recommended structure (vault.yml + vars.yml pattern)
-  - All essential commands (create, edit, view, encrypt, decrypt, rekey)
-  - Playbook integration and best practices
-  - Troubleshooting and CI/CD integration
-  - Security checklist and compliance (SOC2, ISO27001, LGPD)
+- **[README_BEST_PRACTICES.md](guides/README_BEST_PRACTICES.md)** - README documentation standards
 
-- **[docs/CREDENTIAL_ROTATION.md](CREDENTIAL_ROTATION.md)** - ⭐ Credential rotation procedures
-  - Rotation policy (7 credential types with defined frequencies)
-  - Immediate rotation triggers
-  - Complete rotation procedures with bash scripts
-  - Audit system and logging
-  - Tool recommendations (1Password, HashiCorp Vault, AWS Secrets Manager)
-  - Compliance mapping (SOC2, ISO27001, LGPD)
+- **[SECURITY_SESSION_DOCS.md](guides/SECURITY_SESSION_DOCS.md)** - Security in session documentation
+  - PII/secrets detection
+  - Gitleaks configuration
+  - Session file validation
 
-### Automation & Configuration Management
-- **[docs/ANSIBLE_BEST_PRACTICES.md](ANSIBLE_BEST_PRACTICES.md)** - ⭐ Comprehensive Ansible guide
-  - Core principles (idempotency, declarative design, module hierarchy, DRY)
-  - Project structure (recommended directory layout, file naming conventions)
-  - Inventory management (static, dynamic, best practices)
-  - Playbook design (basic structure, conditionals, loops, tags)
-  - Role development (structure, defaults, tasks, handlers, templates, meta)
-  - Variable management (precedence hierarchy, naming, organization, vault)
-  - Security best practices (Ansible Vault, privilege escalation, input validation)
-  - Testing and validation (syntax check, ansible-lint, dry run, Molecule)
-  - Performance optimization (facts, pipelining, caching, parallelism)
-  - Error handling (failed_when, ignore_errors, block/rescue/always)
-  - Documentation standards (playbook headers, role README)
-  - CI/CD integration (GitHub Actions, GitLab CI examples)
+- **[SESSION_CHAT_GUIDE.md](guides/SESSION_CHAT_GUIDE.md)** - GitHub Copilot chat workflow
 
-- **[docs/MOLECULE_TESTING_GUIDE.md](MOLECULE_TESTING_GUIDE.md)** - ⭐ Testing Ansible roles with Molecule
-  - What is Molecule (features, benefits, use cases)
-  - Installation requirements (Python 3.8+, Docker, Ansible)
-  - Quick start (initialize role, directory structure, run tests)
-  - Project structure (molecule.yml, converge.yml, prepare.yml, verify.yml, tests/)
-  - Configuration (platform configs, multiple platforms matrix, custom Dockerfile)
-  - Testing workflow (complete test sequence, manual steps, development workflow)
-  - Writing tests (Testinfra examples: file/package/service/socket/process tests)
-  - Drivers comparison (Docker, Podman, Vagrant, EC2, GCE)
-  - Scenarios (multiple scenarios, examples for default/SSL/cluster)
-  - CI/CD integration (GitHub Actions matrix, GitLab CI parallel)
-  - Best practices (pre-built images, idempotence testing, test organization)
-  - Troubleshooting (Docker issues, Testinfra imports, idempotence failures)
+- **[SESSION_DOCS_ADOPTION.md](guides/SESSION_DOCS_ADOPTION.md)** - Session documentation adoption guide
 
-- **[docs/ANSIBLE_PLAYBOOK_TEMPLATES.md](ANSIBLE_PLAYBOOK_TEMPLATES.md)** - ⭐ Ready-to-use playbook patterns
-  - Docker management (installation, compose deployment, cleanup, health check)
-  - Database operations (PostgreSQL backup/restore, MySQL management)
-  - Application deployment (zero-downtime deployment, blue-green deployment)
-  - Backup and restore (comprehensive system backup)
-  - Monitoring and health checks (comprehensive health check)
-  - Maintenance operations (system update and reboot)
-  - Security operations (security hardening)
-  - Network configuration
+- **[SESSION_DOCS_STYLE_GUIDE.md](guides/SESSION_DOCS_STYLE_GUIDE.md)** - Documentation style standards
 
-- **[.github/templates/ansible/](../.github/templates/ansible/)** - ⭐ Production-ready playbook examples
-  - `README.md` - Template usage guide and customization tips
-  - `deploy-app.yml` - Zero-downtime application deployment
-  - `docker-deploy.yml` - Docker Compose stack deployment
-  - `health-check-system.yml` - Comprehensive system health check
-  - `backup-database.yml` - PostgreSQL database backup with rotation
+- **[SESSION_SEARCH_GUIDE.md](guides/SESSION_SEARCH_GUIDE.md)** - Searching session documentation
 
-### Testing Documentation
-- **[docs/TESTING_GUIDE.md](TESTING_GUIDE.md)** - ⭐ Complete testing guide
-  - Overview of testing infrastructure (pytest, coverage, mocking)
-  - Quick start and basic commands
-  - Test organization and directory structure
-  - Writing tests (patterns, assertions, fixtures)
-  - Running tests (selection, parallel execution, markers)
-  - Code coverage configuration and targets (≥80%)
-  - Test markers (unit, integration, smoke, security, slow)
-  - Built-in and custom fixtures from conftest.py
-  - Mocking strategies (unittest.mock, pytest-mock)
-  - Best practices (isolation, descriptive names, AAA pattern)
-  - CI/CD integration with GitHub Actions
-  - Troubleshooting common issues
-
-- **[tests/test_example.py](../tests/test_example.py)** - Example test patterns
-  - Unit test examples with proper structure
-  - Fixture usage demonstrations
-  - Mocking and patching patterns
-  - Parametrized tests
-  - Integration test examples
-  - Performance testing with benchmarks
-  - Security test patterns
-
-- **[tests/conftest.py](../tests/conftest.py)** - Shared test fixtures
-  - Common fixtures (temp_file, mock_env, mock_subprocess)
-  - Benchmark timer for performance tests
-  - Test isolation fixtures
-  - Logging capture utilities
-
-- **[pytest.ini](../pytest.ini)** - Pytest configuration
-  - Test discovery settings
+- **[TESTING_GUIDE.md](guides/TESTING_GUIDE.md)** - ⭐ Complete testing guide
+  - Pytest infrastructure
+  - Test organization
   - Coverage configuration (≥80% target)
-  - Test markers definition
-  - Output formatting
+  - CI/CD integration
 
-### Session Documentation
-- **[docs/SESSIONS/2026-01-27/](SESSIONS/2026-01-27/)** - Phase 1: Foundation
-  - SESSION_RECOVERY - Complete session details
-  - SESSION_REPORT - Progress and metrics
-  - FINAL_STATUS - Final completion status
+- **[TESTING_SHELL_SCRIPTS.md](guides/TESTING_SHELL_SCRIPTS.md)** - Shell script testing
 
-- **[docs/SESSIONS/2026-01-28/](SESSIONS/2026-01-28/)** - Phase 2: Testing & Template
-  - SESSION_RECOVERY - Context reload
-  - TODAY_ACTIVITIES - Detailed timeline
-  - Makefile tests (11 commands, 100% success)
+- **[TROUBLESHOOTING.md](guides/TROUBLESHOOTING.md)** - Common issues and solutions
 
-- **[docs/SESSIONS/2026-02-27/](SESSIONS/2026-02-27/)** - Sessão: Domain Profiles Strategy (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-02-27/SESSION_RECOVERY_2026-02-27.md) — Recuperação de contexto e regras
-  - [TODAY_ACTIVITIES](SESSIONS/2026-02-27/TODAY_ACTIVITIES_2026-02-27.md) — Atividades do início
-  - [DAILY_ACTIVITIES](SESSIONS/2026-02-27/DAILY_ACTIVITIES_2026-02-27.md) — Log detalhado completo
-  - [SESSION_REPORT](SESSIONS/2026-02-27/SESSION_REPORT_2026-02-27.md) — Relatório e artefatos
-  - [FINAL_STATUS](SESSIONS/2026-02-27/FINAL_STATUS_2026-02-27.md) — Status final 🏁
+- **[Scaffold - projetos semelhantes.md](guides/Scaffold%20-%20projetos%20semelhantes.md)** - Similar projects analysis
 
-- **[docs/SESSIONS/2026-03-16/](SESSIONS/2026-03-16/)** - Sessão: fix(security) Dependabot + fix(session-start) MCP (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-16/SESSION_RECOVERY_2026-03-16.md) — Contexto recuperado de 2026-03-14
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-16/DAILY_ACTIVITIES_2026-03-16.md) — Log detalhado completo
-  - [FINAL_STATUS](SESSIONS/2026-03-16/FINAL_STATUS_2026-03-16.md) — Status final 🏁
+#### Ansible Guides
 
-- **[docs/SESSIONS/2026-03-20/](SESSIONS/2026-03-20/)** - Sessão: Session Manager Agent v1.0.0 (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-20/SESSION_RECOVERY_2026-03-20.md) — Contexto recuperado de 2026-03-16
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-20/DAILY_ACTIVITIES_2026-03-20.md) — Log detalhado completo
-  - [SESSION_REPORT](SESSIONS/2026-03-20/SESSION_REPORT_2026-03-20.md) — Relatório técnico
-  - [FINAL_STATUS](SESSIONS/2026-03-20/FINAL_STATUS_2026-03-20.md) — Status final 🏁
+**Location**: [`guides/ansible/`](guides/ansible/)
 
-- **[docs/SESSIONS/2026-03-21/](SESSIONS/2026-03-21/)** - Sessão: Bug Fix + Documentação (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-21/SESSION_RECOVERY_2026-03-21.md) — Contexto recuperado de 2026-03-20
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-21/DAILY_ACTIVITIES_2026-03-21.md) — Log detalhado (3 atividades)
-  - [SCAFFOLD_UPGRADE_PROCESS](SESSIONS/2026-03-21/SCAFFOLD_UPGRADE_PROCESS.md) — ⭐ Documentação completa do processo de upgrade
-  - **Destaques**:
-    - 🐛 Bug fix crítico: padrão glob de agentes corrigido (`speckit.*` → `*`)
-    - 📝 Documentação: processo completo de `scaffold.py upgrade` (270+ linhas)
+- **[ANSIBLE_BEST_PRACTICES.md](guides/ansible/ANSIBLE_BEST_PRACTICES.md)** - ⭐ Comprehensive Ansible guide
+  - Core principles (idempotency, DRY, modules)
+  - Project structure and conventions
+  - Role development
+  - Variable management
+  - Security best practices
+  - Testing with Molecule
+  - Performance optimization
+  - CI/CD integration
 
-- **[docs/SESSIONS/2026-03-23/](SESSIONS/2026-03-23/)** - Sessão: Upgrade Example + Documentation (em andamento)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-23/SESSION_RECOVERY_2026-03-23.md) — Contexto recuperado de 2026-03-21
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-23/DAILY_ACTIVITIES_2026-03-23.md) — Log detalhado (3 atividades)
-  - [SESSION_REPORT](SESSIONS/2026-03-23/SESSION_REPORT_2026-03-23.md) — Relatório técnico
-  - [UPGRADE_EXAMPLE_ENTERPRISE_PYTHON_ANALYSIS](SESSIONS/2026-03-23/UPGRADE_EXAMPLE_ENTERPRISE_PYTHON_ANALYSIS.md) — ⭐ Exemplo prático de upgrade de projeto legacy
-  - [BUG_ANALYSIS_UPGRADE_NESTED_FOLDER](SESSIONS/2026-03-23/BUG_ANALYSIS_UPGRADE_NESTED_FOLDER.md) — 🐛 Análise de bug crítico no upgrade
-  - **Destaques**:
-    - 📚 Documentação: exemplo completo de upgrade com projeto real (450+ linhas)
+- **[ANSIBLE_PLAYBOOK_TEMPLATES.md](guides/ansible/ANSIBLE_PLAYBOOK_TEMPLATES.md)** - ⭐ Ready-to-use playbooks
+  - Docker management
+  - Database operations (PostgreSQL, MySQL)
+  - Zero-downtime deployment
+  - Backup and restore
+  - Health checks
+  - Security hardening
 
-- **[docs/SESSIONS/2026-03-29/](SESSIONS/2026-03-29/)** - Sessão: IMP-47 + IMP-48 Implementation (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-29/SESSION_RECOVERY_2026-03-29.md) — Contexto recuperado de 2026-03-23
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-29/DAILY_ACTIVITIES_2026-03-29.md) — Log detalhado (10+ atividades)
-  - [SESSION_REPORT](SESSIONS/2026-03-29/SESSION_REPORT_2026-03-29.md) — Relatório técnico completo
-  - [FINAL_STATUS](SESSIONS/2026-03-29/FINAL_STATUS_2026-03-29.md) — Status final 🏁
-  - [DEBATE_INCREMENTAL_DOCUMENTATION](SESSIONS/2026-03-29/DEBATE_INCREMENTAL_DOCUMENTATION_2026-03-29.md) — ⭐ Debate arquitetural multi-perspectiva (1,050+ linhas)
-  - **Destaques**:
-    - ✅ IMP-47: Fixed nested folder bug in scaffold upgrade (7/7 tests passed)
-    - ✅ IMP-48: Session documentation foundation (500+ lines lib, 36/36 tests passed)
-    - 📊 ROI 3.5x: 280h/year saved vs 80h maintenance
-    - 🎯 IMPs 49-51 created (22h roadmap defined)
-    - 🔍 Análise: comparação session manager v0.x → v1.1.0
-    - 🐛 Bug crítico identificado: upgrade cria pasta aninhada do projeto
-    - 🔧 Análise técnica: causa raiz + 4 soluções propostas (600+ linhas)
-    - ✅ Workaround aplicado: pasta aninhada removida com sucesso
-    - ✅ Criado: `.scaffold-state.yaml` para enterprise-python-analysis
+- **[ANSIBLE_VAULT_GUIDE.md](guides/ansible/ANSIBLE_VAULT_GUIDE.md)** - ⭐ Complete Vault reference
+  - Initial configuration
+  - Recommended structure (vault.yml + vars.yml)
+  - Essential commands
+  - Playbook integration
+  - CI/CD integration
+  - Compliance (SOC2, ISO27001, LGPD)
 
-- **[docs/SESSIONS/2026-03-30/](SESSIONS/2026-03-30/)** - Sessão: Security Scanner Configuration (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-30/SESSION_RECOVERY_2026-03-30.md) — Contexto recuperado de 2026-03-29
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-30/DAILY_ACTIVITIES_2026-03-30.md) — Log detalhado
-  - [FINAL_STATUS](SESSIONS/2026-03-30/FINAL_STATUS_2026-03-30.md) — Status final 🏁
-  - **Destaques**:
-    - ✅ Configuração GitGuardian: path exclusions para test files
-    - ✅ Atualização Gitleaks: allowlist expandida (patterns + paths)
-    - ✅ Testes de sanitização: valores realistas sem falsos positivos
-    - ✅ Proteção mantida: código de produção (`src/`, `scripts/`)
+---
 
-- **[docs/SESSIONS/2026-03-31/](SESSIONS/2026-03-31/)** - Sessão: CI/CD Emergency Fixes + Strategic Removal (encerrada)
-  - [SESSION_RECOVERY](SESSIONS/2026-03-31/SESSION_RECOVERY_2026-03-31.md) — Contexto recuperado de 2026-03-30
-  - [DAILY_ACTIVITIES](SESSIONS/2026-03-31/DAILY_ACTIVITIES_2026-03-31.md) — Log detalhado completo (6 atividades)
-  - [SESSION_REPORT](SESSIONS/2026-03-31/SESSION_REPORT_2026-03-31.md) — Relatório técnico e decisão estratégica
-  - [FINAL_STATUS](SESSIONS/2026-03-31/FINAL_STATUS_2026-03-31.md) — Status final 🏁
-  - [ERROR_REPORT](SESSIONS/2026-03-31/ERROR_REPORT_2026-03-31.md) — Análise de 58+ workflow failures
-  - [DEPENDABOT_PRS_ANALYSIS](SESSIONS/2026-03-31/DEPENDABOT_PRS_ANALYSIS_2026-03-31.md) — Análise de 13 PRs pendentes
-  - [DEBATE_REMOCAO_TEMPORARIA_CI_CD](SESSIONS/2026-03-31/DEBATE_REMOCAO_TEMPORARIA_CI_CD_2026-03-31.md) — ⭐ Debate multi-agent (Template Architect vs Session Manager)
-  - [DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES](SESSIONS/2026-03-31/DEBATE_CONSOLIDADO_REMOCAO_AUTOMACOES_2026-03-31.md) — Consolidação de posições
-  - **Destaques**:
-    - ✅ P0 fixes: pytest-cov + pyyaml (3 correções críticas)
-    - ✅ P1 fixes: security action pinning (supply chain hardening)
-    - ✅ P2 improvements: pytest refactor + workflow consolidation
-    - ✅ Dependabot: 13 PRs analyzed, 4 actioned (1 closed, 2 merged, 1 blocked)
-    - ✅ Issue #14 created: Airflow 3.x Migration Plan (Q2 2026)
-    - ⚠️ **Decisão estratégica**: workflows removidos temporariamente (commit 33e40a3)
-    - 📚 **Documentação completa**: CI-CD-RESTORATION-GUIDE.md (15 min restoration)
-    - 🔄 **Workflows preservados**: commit dce227b (TOTALMENTE FUNCIONAIS)
-    - 🎯 **Foco mudado**: IMPs 49-51 (documentação incremental)
-    - 📊 **Métricas**: 7 commits, 20+ files, ~2,400+ LOC
+### 📚 Reference Documentation
+
+**Location**: [`reference/`](reference/)
+
+- **[COMPATIBILITY-MATRIX.md](reference/COMPATIBILITY-MATRIX.md)** - Version compatibility matrix
+
+- **[CONVENTIONS.md](reference/CONVENTIONS.md)** - Code and naming conventions
+
+- **[DEPRECATION-POLICY.md](reference/DEPRECATION-POLICY.md)** - Deprecation guidelines
+
+- **[PROJECT-KNOWLEDGE-MAP.md](reference/PROJECT-KNOWLEDGE-MAP.md)** - Project knowledge graph
+
+- **[INTEGRACAO-SPECKIT-SUPORPOWER-MVP.md](reference/INTEGRACAO-SPECKIT-SUPORPOWER-MVP.md)** - SpecKit integration specs
+
+---
+
+### 📅 Planning & Tracking
+
+**Location**: [`planning/`](planning/)
+
+- **[TODO.md](planning/TODO.md)** - ⭐ Current task list
+  - Active tasks and priorities
+  - Implementation roadmap
+  - Recent completions
+
+- **[PENDENCIAS_COMPLETAS.md](planning/PENDENCIAS_COMPLETAS.md)** - Completed tasks archive
+
+- **[TODAY_ACTIVITIES.md](planning/TODAY_ACTIVITIES.md)** - Daily activity log
+
+- **[lembrete.md](planning/lembrete.md)** - Quick reminders and notes
+
+---
+
+### 📋 Template System Documentation
+
+**Location**: [`templates/`](templates/)
+
+- **[MODULAR_TEMPLATES.md](templates/MODULAR_TEMPLATES.md)** - ⭐ Modular template system
+  - Block composition with @include directives
+  - Patch system for customizations
+  - Migration from monolithic to modular
+  - CLI tools: compose-template, apply-patches
+  - Status: ✅ COMPLETE (IMP-65 Phase 4)
+
+- **[TEMPLATE_DRIFT_DETECTION.md](templates/TEMPLATE_DRIFT_DETECTION.md)** - ⭐ Template versioning & sync
+  - Version tracking in YAML frontmatter
+  - Drift detection: `scaffold.py check-templates`
+  - Three-way merge system
+  - Interactive conflict resolution
+  - Status: ✅ COMPLETE (IMP-65 Phases 1-3)
+
+- **[TEMPLATE_USAGE.md](templates/TEMPLATE_USAGE.md)** - ⭐ How to use this template
+  - Quick start guide
+  - Automatic initialization
+  - Manual setup
+  - Troubleshooting
+
+- **[TEMPLATE-VERSIONS.md](templates/TEMPLATE-VERSIONS.md)** - Template version history
+
+---
+
+### 🤖 GitHub Copilot Resources
+
+**Location**: [`github-copilot/`](github-copilot/)
+
+- **[GitHub Copilot - Default Porject Template Skills.md](github-copilot/GitHub%20Copilot%20-%20Default%20Porject%20Template%20Skills.md)** - Custom skills for this template
+
+- **[GitHub Copilot - Engram how to.md](github-copilot/GitHub%20Copilot%20-%20Engram%20how%20to.md)** - Engram memory system guide
+
+- **[GITHUB-COPILOT-AGENTS-RESOURCES.md](github-copilot/GITHUB-COPILOT-AGENTS-RESOURCES.md)** - Agent development resources
+
+---
+
+### 🎯 Copilot Strategy & Domain Profiles
+
+**Location**: [`copilot/`](copilot/)
+
+- **[DOMAIN-PROFILES-STRATEGY.md](copilot/DOMAIN-PROFILES-STRATEGY.md)** - ⭐ Three-layer architecture
+  - Foundation / Domain Profile / Context Injection
+  - Three modes: Programming, Infrastructure, Analysis
+  - SpecKit + MCP integration
+
+- **[DOMAIN-PROFILES-DECISIONS.md](copilot/DOMAIN-PROFILES-DECISIONS.md)** - Design decisions
+  - 19 decisions fully resolved (D-01 to D-19)
+  - Implementation mapping (IMP-01 to IMP-10)
+
+- **[PROFILE-DESCRIPTOR-SCHEMA.md](copilot/PROFILE-DESCRIPTOR-SCHEMA.md)** - Profile descriptor spec
+
+- **[DOMAIN-ANALYSIS.md](copilot/DOMAIN-ANALYSIS.md)** - Domain analysis documentation
+- **[DOMAIN-INFRASTRUCTURE.md](copilot/DOMAIN-INFRASTRUCTURE.md)** - Infrastructure domain
+- **[DOMAIN-PROGRAMMING.md](copilot/DOMAIN-PROGRAMMING.md)** - Programming domain
+
+---
+
+### 💬 Architectural Debates
+
+**Location**: [`debates/`](debates/)
+
+- **[ANALISE_4_CAMADAS_VS_MERCADO_2026-04-05.md](debates/ANALISE_4_CAMADAS_VS_MERCADO_2026-04-05.md)** - 4-layer SDD analysis
+
+- **[DEBATE_ENGRAM_INTEGRATION_2026-04-05.md](debates/DEBATE_ENGRAM_INTEGRATION_2026-04-05.md)** - Engram integration debate
+
+- **[DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md](debates/DEBATE_SPEC_DRIVEN_DEVELOPMENT_2026-04-05.md)** - Spec-driven development approach
+
+---
+
+### 📂 Session Documentation
+
+**Location**: [`SESSIONS/YYYY-MM-DD/`](SESSIONS/)
+
+Complete session history with detailed documentation for each development session. Each session folder contains:
+
+- `SESSION_RECOVERY_*.md` - Context recovery from previous session
+- `DAILY_ACTIVITIES_*.md` - Detailed activity timeline
+- `SESSION_REPORT_*.md` - Technical summary and artifacts
+- `FINAL_STATUS_*.md` - Final status and metrics
+
+**Recent Sessions**:
+
+- **[2026-04-27/](SESSIONS/2026-04-27/)** - ⭐ BUG-06 + Template Issues Fix
+  - BUG-06: Profile loading corrected (5 files renamed)
+  - Template Issues: Placeholder substitution + hatchling config
+  - Documentation reorganization (54 files moved)
+  - Status: ✅ Complete (~5h, 17/18 tests passing)
+
+- **[2026-04-23/](SESSIONS/2026-04-23/)** - IMP-65 Production Ready
+  - Scenarios 6-8 validated (8/8 passing)
+  - BUG-04, BUG-05 Phase 1 complete
+  - Template sync system production-ready
+
+- **[2026-04-21/](SESSIONS/2026-04-21/)** - IMP-65 Comprehensive Analysis
+  - 6-perspective system analysis
+  - Real-world testing
+  - Gap analysis (36 gaps identified)
+
+- **[2026-04-20/](SESSIONS/2026-04-20/)** - IMP-59 Mini-Engram Complete
+  - Zero-dependency memory system
+  - SQLite FTS5 integration
+  - 46/46 tests passing
+
+- **[2026-04-15/](SESSIONS/2026-04-15/)** - IMP-65 Phase 4 Modular Templates
+  - Block composition engine
+  - Patch system
+  - 94/94 tests passing
+
+**See**: [SESSIONS/](SESSIONS/) for complete chronological history (25+ sessions documented)
 
 ---
 

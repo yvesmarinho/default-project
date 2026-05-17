@@ -77,6 +77,93 @@ python scripts/scaffold.py new --ci --name my-api --domain programming --languag
 
 ---
 
+## 🧙 Objetivo.yaml v2.0 — Human-Readable Project Definition
+
+Define your project goals and scope in a **human-readable format** using the new `objetivo.yaml` v2.0 specification.
+
+### What is objetivo.yaml v2.0?
+
+A **Markdown Híbrido** format (YAML frontmatter + numbered emoji sections) that combines:
+- ✅ Machine-readable metadata (project name, type, domain, language)
+- ✅ Human-readable descriptions (what, why, scope)
+- ✅ Progressive disclosure (P0 required → P1 recommended → P2 optional)
+
+### Quick Example
+
+```yaml
+---
+version: "2.0"
+project:
+  name: "user-auth-api"
+  title: "User Authentication API"
+  type: "backend-api"
+  domain: "programming"
+  language: "python"
+---
+
+## 1️⃣ O que este projeto faz?
+
+RESTful API for user authentication with JWT tokens and OAuth2 integration.
+
+## 2️⃣ Qual problema resolve?
+
+Current basic auth is insecure, 20% of accounts compromised monthly.
+
+## 3️⃣ Escopo do Projeto
+
+### ✅ Incluído
+- JWT authentication (P0)
+- OAuth2 Google/GitHub (P1)
+- 2FA via SMS (P2)
+
+### ❌ Excluído
+- Social login (Facebook, Twitter)
+- Biometric authentication
+```
+
+### Create objetivo.yaml with Interactive Wizard
+
+```bash
+# Interactive wizard (5-10 min)
+scaffold.py objetivo-init
+
+# Non-interactive (CI/CD)
+scaffold.py objetivo-init --from-file answers.json
+
+# Just copy template
+scaffold.py objetivo-init --template-only
+```
+
+### Validate and Generate Technical Spec
+
+```bash
+# Validate objetivo.yaml
+scaffold.py objetivo-validate
+
+# Generate technical YAML spec
+scaffold.py objetivo-generate
+# Output: objetivo-spec.yaml (profiles, features, personas auto-detected)
+
+# Use spec to create project
+scaffold.py new --config objetivo-spec.yaml
+```
+
+### Migrate from v1.0 to v2.0
+
+```bash
+# Migrate old formato (pure YAML) → new format (Markdown Híbrido)
+scaffold.py objetivo-migrate --file objetivo.yaml
+
+# Preview before overwrite
+scaffold.py objetivo-migrate --file objetivo.yaml --no-auto
+```
+
+📖 **Complete guide**: [docs/guides/OBJETIVO_WIZARD_GUIDE.md](docs/guides/OBJETIVO_WIZARD_GUIDE.md)
+📋 **Specification**: [specs/066-objetivo-yaml-v2/spec.md](specs/066-objetivo-yaml-v2/spec.md)
+🔀 **v1.0 vs v2.0 comparison**: [docs/debates/COMPARACAO-OBJETIVO-V1-V2.md](docs/debates/COMPARACAO-OBJETIVO-V1-V2.md)
+
+---
+
 ## ✨ Features
 
 ### 🏗️ Architecture & Design Patterns
@@ -832,6 +919,34 @@ npm run test:coverage
 - [API Documentation](docs/api/README.md)
 - [Development Guide](docs/guides/development.md)
 - [Deployment Guide](docs/guides/deployment.md)
+- [JSON Merge Strategy](docs/guides/json-merge-strategy.md) - Estratégia universal de merge JSON
+- [JSON Merge Examples](docs/guides/json-merge-examples.md) - Exemplos práticos por tipo de arquivo
+
+### Git & GitHub Workflows
+
+**✨ NOVO**: Templates de GitHub (P1 + P2) são copiados automaticamente ao criar novo projeto via scaffold!
+
+- [GitHub Best Practices](docs/guides/GitHub_Melhores_praticas_de_atualizacao_repositprios.md) - Documento base de boas práticas
+- [Branch Protection Setup](docs/guides/BRANCH_PROTECTION_SETUP.md) - Guia de configuração de proteção de branches
+- [GitHub Best Practices Integration](docs/guides/GITHUB_BEST_PRACTICES_INTEGRATION.md) - Como as práticas foram integradas no template
+
+**Templates P1** (copiados automaticamente):
+- [CONTRIBUTING.md](.github/templates/common/CONTRIBUTING.md) - Guia de contribuição
+- [PULL_REQUEST_TEMPLATE.md](.github/templates/common/PULL_REQUEST_TEMPLATE.md) - Template de PR
+- [CODEOWNERS](.github/templates/common/CODEOWNERS) - Definição de responsáveis
+
+**Templates P2** (copiados automaticamente):
+- Issue Templates: [bug_report](.github/templates/common/ISSUE_TEMPLATE/bug_report.yml), [feature_request](.github/templates/common/ISSUE_TEMPLATE/feature_request.yml), [documentation](.github/templates/common/ISSUE_TEMPLATE/documentation.yml), [question](.github/templates/common/ISSUE_TEMPLATE/question.yml)
+- [GitHub Actions Workflow](.github/templates/common/workflows/git-validation.yml) - Validação automática de branches/commits/PRs
+- [Pre-commit Hook](scripts/git-hooks/commit-msg) - Validação local de commits
+- [Branch Protection Script](scripts/setup-branch-protection.py) - Automação via GitHub API
+- [Badges Guide](.github/templates/common/BADGES.md) - Guia completo de badges
+
+**Implementação**:
+- `scripts/lib/project.py`: Função `copy_github_templates()` (P1 + P2 integrados)
+- Processamento automático de variáveis `{{ project_name }}`, `{{ current_date }}`, `{{ github_repo }}`
+- Template README atualizado com badges de conformidade
+- Permissões executáveis aplicadas automaticamente (git hooks, scripts)
 
 ### Tools & Extensions
 
@@ -840,6 +955,8 @@ npm run test:coverage
 - **ESLint/Pylint**: Code linting
 - **Husky**: Git hooks for pre-commit checks
 - **Commitlint**: Commit message validation
+- **git_validators**: Validação automática de branches e commits (Python)
+- **setup-branch-protection.py**: Automação de proteção de branches via API
 
 ## 📅 Version History
 
@@ -857,7 +974,7 @@ npm run test:coverage
 - ✅ `scripts/scaffold.py` especificado (SPEC, USER-STORIES, DEBATE)
 
 ### v1.1.0 (2026-02-27)
-- ✅ MCP configurado (`memory` + `sequential-thinking`)
+- ✅ MCP configurado (`memory`, `sequential-thinking`, `filesystem`, `github`)
 - ✅ Arquitetura Domain Profiles definida (estratégia 3 camadas, 19 decisões D-01–D-19)
 - ✅ `docs/copilot/` — Strategy + Decisions documentados
 - ✅ `scripts/manage.py` adicionado (TUI Python inicial)

@@ -55,6 +55,36 @@ test:
 ## test-cov: Alias for test (with coverage)
 test-cov: test
 
+## test-p2: Run GitHub Best Practices P2 tests only
+test-p2:
+	@echo "$(BLUE)🧪 Running GitHub Best Practices P2 tests...$(NC)"
+	@./tests/run_p2_tests.sh
+
+## test-p2-cov: Run P2 tests with coverage
+test-p2-cov:
+	@echo "$(BLUE)🧪 Running GitHub Best Practices P2 tests with coverage...$(NC)"
+	@./tests/run_p2_tests.sh --coverage
+
+## test-all: Run complete test suite with all bells and whistles
+test-all:
+	@echo "$(BLUE)🧪 Running complete test suite...$(NC)"
+	@./tests/run_all_tests.sh --coverage --verbose
+
+## test-smoke: Run smoke tests only (quick validation)
+test-smoke:
+	@echo "$(BLUE)💨 Running smoke tests...$(NC)"
+	@pytest tests/ -m smoke -q
+
+## test-git: Run Git validators tests only
+test-git:
+	@echo "$(BLUE)🔍 Running Git validators tests...$(NC)"
+	@pytest tests/test_git_validators.py -v
+
+## test-watch: Run tests in watch mode (failed first)
+test-watch:
+	@echo "$(BLUE)👀 Running tests in watch mode...$(NC)"
+	@pytest tests/ --ff -v
+
 ## lint: Run code linting
 lint:
 	@echo "$(BLUE)🔍 Running code linting...$(NC)"
@@ -98,6 +128,12 @@ lint-json:
 
 ## lint-config: Run all configuration validation checks
 lint-config: lint-yaml lint-json
+
+## validate-templates: Validate .specify/templates/ (IMP-65-LITE)
+validate-templates:
+	@echo "$(BLUE)🔍 Validating templates in .specify/templates/...$(NC)"
+	@python scripts/validate-templates.py
+	@echo "$(GREEN)✅ Templates validated$(NC)"
 	@echo "$(GREEN)✅ All configuration files validated$(NC)"
 
 ## structure: Create complete directory structure
@@ -689,6 +725,29 @@ session-index-stats:
 	@echo "$(BLUE)📊 Session Index Statistics$(NC)"
 	@python scripts/session-index.py --stats
 
+## chat-capture: Capture latest Copilot conversation to CHAT-*.md
+chat-capture:
+	@echo "$(BLUE)💬 Capturing latest conversation...$(NC)"
+	@python scripts/session-chat.py capture --latest
+	@echo "$(GREEN)✅ Chat captured$(NC)"
+
+## chat-list: List all captured CHAT-*.md files
+chat-list:
+	@echo "$(BLUE)📋 Captured Conversations$(NC)"
+	@python scripts/session-chat.py list
+
+## chat-search: Search in captured conversations (use QUERY="text")
+chat-search:
+	@if [ -z "$(QUERY)" ]; then \
+		echo "$(RED)✗ Error: QUERY parameter is required$(NC)"; \
+		echo "$(YELLOW)Usage: make chat-search QUERY=\"your search text\"$(NC)"; \
+		echo "$(YELLOW)Examples:$(NC)"; \
+		echo "  make chat-search QUERY=\"IMP-55\""; \
+		echo "  make chat-search QUERY=\"debugging\""; \
+		exit 1; \
+	fi
+	@python scripts/session-chat.py search "$(QUERY)"
+
 ## clean: Remove generated files and directories
 clean:
 	@echo "$(BLUE)🧹 Cleaning project...$(NC)"
@@ -714,6 +773,83 @@ status:
 	@echo ""
 	@echo "$(YELLOW)Configuration Files:$(NC)"
 	@ls -1 | grep -E '(package.json|requirements.txt|Makefile|README.md|Dockerfile|docker-compose.yml)' || echo "  No config files found"
+
+##
+## ═══════════════════════════════════════════════════════════════════════
+## MEMORY SYSTEM (IMP-59)
+## ═══════════════════════════════════════════════════════════════════════
+##
+
+## memory-save: Save a new memory interactively
+memory-save:
+	@echo "$(BLUE)💾 Saving new memory...$(NC)"
+	@python scripts/mem_save.py
+
+## memory-search: Search memories (usage: make memory-search QUERY="database")
+memory-search:
+	@if [ -z "$(QUERY)" ]; then \
+		echo "$(YELLOW)Usage: make memory-search QUERY=\"your search terms\"$(NC)"; \
+		echo "Example: make memory-search QUERY=\"database migration\""; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)🔍 Searching memories: $(QUERY)$(NC)"
+	@python scripts/mem_search.py --query "$(QUERY)"
+
+## memory-context: Get context suggestions based on current work
+memory-context:
+	@echo "$(BLUE)💡 Analyzing current context...$(NC)"
+	@python scripts/mem_context.py --auto
+
+## memory-context-task: Get context for specific task (usage: make memory-context-task TASK=IMP-60)
+memory-context-task:
+	@if [ -z "$(TASK)" ]; then \
+		echo "$(YELLOW)Usage: make memory-context-task TASK=IMP-XX$(NC)"; \
+		echo "Example: make memory-context-task TASK=IMP-60"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)💡 Getting context for task: $(TASK)$(NC)"
+	@python scripts/mem_context.py --task "$(TASK)"
+
+## memory-rebuild: Rebuild memory index from markdown files
+memory-rebuild:
+	@echo "$(BLUE)🔄 Rebuilding memory index...$(NC)"
+	@python scripts/mem_rebuild.py
+	@echo "$(GREEN)✅ Memory index rebuilt$(NC)"
+
+## memory-test: Run memory system tests
+memory-test:
+	@echo "$(BLUE)🧪 Running memory system tests...$(NC)"
+	@pytest tests/test_memory*.py -v --tb=short
+	@echo "$(GREEN)✅ Memory tests completed$(NC)"
+
+## memory-test-quick: Run memory tests without verbose output
+memory-test-quick:
+	@pytest tests/test_memory*.py -q
+
+## memory-health: Check memory system health
+memory-health:
+	@echo "$(BLUE)🏥 Checking memory system health...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Directory structure:$(NC)"
+	@if [ -d .memory/memories/project ]; then echo "  ✅ .memory/memories/project/"; else echo "  ❌ .memory/memories/project/ missing"; fi
+	@if [ -d .memory/memories/team ]; then echo "  ✅ .memory/memories/team/"; else echo "  ❌ .memory/memories/team/ missing"; fi
+	@if [ -d .memory/memories/sessions ]; then echo "  ✅ .memory/memories/sessions/"; else echo "  ❌ .memory/memories/sessions/ missing"; fi
+	@if [ -d .memory/index ]; then echo "  ✅ .memory/index/"; else echo "  ❌ .memory/index/ missing"; fi
+	@echo ""
+	@echo "$(YELLOW)Index status:$(NC)"
+	@if [ -f .memory/index/memory.db ]; then \
+		echo "  ✅ .memory/index/memory.db exists"; \
+		python -c "import sqlite3; conn = sqlite3.connect('.memory/index/memory.db'); print('  ✅ Database is valid'); conn.close()" 2>/dev/null || echo "  ❌ Database is corrupted (run: make memory-rebuild)"; \
+	else \
+		echo "  ❌ .memory/index/memory.db missing (run: make memory-rebuild)"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)Memory count:$(NC)"
+	@if [ -f .memory/index/memory.db ]; then \
+		python -c "import sqlite3; conn = sqlite3.connect('.memory/index/memory.db'); cursor = conn.execute('SELECT COUNT(*) FROM memories'); print(f'  📊 Total memories: {cursor.fetchone()[0]}'); conn.close()" 2>/dev/null || echo "  ⚠ Could not query database"; \
+	fi
+	@echo ""
+	@echo "$(GREEN)✅ Health check completed$(NC)"
 
 ##
 ## ═══════════════════════════════════════════════════════════════════════

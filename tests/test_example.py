@@ -125,7 +125,7 @@ class TestMockingExamples:
 
     def test_patch_module_function(self):
         """Patching a module-level function."""
-        with patch('builtins.open', Mock()) as mock_open:
+        with patch('builtins.open', MagicMock()) as mock_open:
             mock_open.return_value.__enter__.return_value.read.return_value = "mocked"
             # Code that uses open() would get mocked data
             mock_open.assert_not_called()  # Not called yet in this test

@@ -428,7 +428,7 @@ class ReadmeMerger:
 # Registry global de mergers (ordem importa: mais específico primeiro)
 _MERGERS: List[FileMerger] = [
     WorkspaceMerger(),      # Sprint W21: BUG-16 (.code-workspace merge)
-    JSONMerger(),           # Sprint W21: BUG-16 (JSON files merge)
+    JSONMerger(),           # v2.0: User-wins universal para TODOS os JSONs (fix duplicação)
     CopilotAgentMerger(),   # Sprint 1: P0 CRITICAL (32 agents)
     CopilotPromptMerger(),  # Sprint 2: P0 HIGH (26 prompts)
     CopilotRulesMerger(),   # Sprint 2: P0 HIGH (2 rules files)

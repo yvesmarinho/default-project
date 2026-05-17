@@ -1,0 +1,199 @@
+---
+# objetivo.yaml — Business Objective & Product Context
+# Template Version: 1.0.0
+# Feature: IMP-53 Business Objective Interview System
+# Created: 2026-04-14
+#
+# Purpose: Capture business context for the Business Objective Interview System
+#          itself (meta-documentation using IMP-53 to document IMP-53)
+---
+
+feature:
+  id: "IMP-53"
+  name: "Business Objective Interview System"
+  branch: "053-business-objective-interview"
+  created: "2026-04-14"
+
+negocio:
+  problema:
+    descricao: |
+      Equipes de desenvolvimento pulam a fase de discovery de negócio e começam
+      direto com especificações técnicas, resultando em retrabalho quando
+      requisitos mudam ou quando a solução não atende necessidades reais dos
+      stakeholders.
+
+      Estimamos que 30-40% do tempo de desenvolvimento é desperdiçado refinando
+      specs mal fundamentadas porque o "WHY" (objetivo de negócio) não foi
+      claramente estabelecido antes do "HOW" (implementação técnica).
+
+    impacto_atual: |
+      Sem um processo estruturado de captura de objetivos de negócio:
+
+      - 30-40% do tempo de desenvolvimento é desperdiçado em retrabalho
+      - Specs técnicas são escritas sem fundamento business claro
+      - Requisitos mudam frequentemente (>30% de change rate)
+      - Soluções implementadas não resolvem problema real dos stakeholders
+      - Falta de alinhamento entre Product Owners e Development Teams
+      - Agents (como GitHub Copilot) geram specs genéricas sem contexto business
+      - Decisões de arquitetura são tomadas sem entender trade-offs de negócio
+
+    stakeholders:
+      - "Product Owners (responsáveis por capturar requisitos de negócio)"
+      - "Tech Leads (precisam entender WHY antes de projetar HOW)"
+      - "GitHub Copilot Agents (precisam de contexto business para gerar specs de qualidade)"
+      - "Development Teams (implementam features sem entender valor de negócio)"
+      - "Business Stakeholders (não veem suas necessidades refletidas nas specs)"
+
+  valor:
+    objetivos_estrategicos:
+      - "Reduzir retrabalho de especificação em 40% (de 30-40% para <20%)"
+      - "Aumentar alinhamento stakeholder-dev em 80% (satisfação >85%)"
+      - "Melhorar qualidade das specs técnicas com fundamentação business clara"
+      - "Estabelecer Layer 1 (Business) como base obrigatória do SpecKit workflow"
+      - "Capturar decisões de negócio ANTES de decisões técnicas (evitar over-engineering)"
+
+    metricas_sucesso:
+      - metric: "Taxa de mudança de requisitos (change rate)"
+        target: "<20% (vs >30% atual)"
+
+      - metric: "Tempo gasto em refinamento de specs"
+        target: "Redução de 40% (de 8h para 4.8h em média por feature)"
+
+      - metric: "Satisfação de stakeholders com specs"
+        target: ">85% (survey após spec.md aprovado)"
+
+      - metric: "Taxa de adoção do objetivo.yaml"
+        target: "100% das features Layer 2+ (obrigatório via quality gates)"
+
+      - metric: "Tempo para completar entrevista"
+        target: "<30 minutos (10 perguntas estruturadas)"
+
+  contexto:
+    restricoes_negocio:
+      - "Deve ser agnóstico de linguagem/stack (suporta qualquer tipo de projeto)"
+      - "Deve integrar perfeitamente com SpecKit existente (Layers 2-4)"
+      - "Workflow não pode ser invasivo (máximo 30min de entrevista)"
+      - "Deve funcionar tanto em modo interativo (speckit.clarify) quanto manual (edição YAML)"
+      - "Schema YAML deve ser validável (yamllint + JSON Schema)"
+
+    premissas:
+      - "Usuários respondem entrevista honestamente e com dados reais de negócio"
+      - "objetivo.yaml é sempre criado/atualizado ANTES de spec.md (Layer 1 → Layer 2)"
+      - "Product Owners têm conhecimento do problema de negócio e stakeholders"
+      - "Agent speckit.clarify está disponível para modo interativo"
+      - "Quality gates do speckit.validate validam objetivo.yaml antes de spec.md"
+
+    bounded_contexts:
+      - context: "Business Discovery"
+        entities: ["Problema", "Stakeholders", "Impacto", "Restrições"]
+
+      - context: "Requirements Elicitation"
+        entities: ["Objetivos Estratégicos", "Métricas de Sucesso", "Personas", "Jornadas"]
+
+      - context: "Stakeholder Alignment"
+        entities: ["Decisões Iniciais", "Perguntas Abertas", "Premissas", "Trade-offs"]
+
+produto:
+  visao_alto_nivel: |
+    Sistema de entrevista estruturada que captura objetivos de negócio (problema,
+    valor, stakeholders, métricas, riscos, alternativas) via 8 categorias de
+    perguntas, gerando objetivo.yaml válido conforme schema. Este arquivo alimenta
+    Layer 2 (spec.md) do SpecKit workflow, garantindo que especificações técnicas
+    tenham fundamento business claro.
+
+  personas:
+    - name: "Product Owner"
+      needs: "Capturar requisitos de negócio de forma estruturada e completa"
+      pain_points: "Specs técnicas começam sem fundamento, stakeholders reclamam que necessidades não foram capturadas, falta visibilidade de trade-offs de negócio"
+
+    - name: "Tech Lead"
+      needs: "Entender o WHY (objetivo de negócio) antes de projetar o HOW (arquitetura técnica)"
+      pain_points: "Implementa features complexas que não agregam valor, decisões de arquitetura sem entender trade-offs de negócio, retrabalho quando requisitos mudam"
+
+    - name: "GitHub Copilot Agent (speckit.specify)"
+      needs: "Contexto business rico para gerar spec.md de qualidade (não genérica)"
+      pain_points: "Specs genéricas sem contexto, não sabe priorizar requisitos, não entende restrições de negócio, sugestões técnicas desalinhadas com valor"
+
+    - name: "Developer"
+      needs: "Entender valor de negócio da feature para implementar com propósito"
+      pain_points: "Implementa código sem entender WHY, priorização técnica desalinhada com valor de negócio, falta motivação (não vê impacto)"
+
+  jornadas_criticas:
+    - journey: "Criar objetivo.yaml via entrevista interativa (speckit.clarify Mode 1)"
+      priority: "P1"
+      value: "Product Owner responde 10 perguntas estruturadas em <30min, objetivo.yaml é gerado automaticamente com schema válido, pronto para Layer 2"
+
+    - journey: "Validar objetivo.yaml contra schema (speckit.validate --layer business)"
+      priority: "P1"
+      value: "Quality gates garantem que todos placeholders foram substituídos, métricas foram definidas, personas identificadas, antes de avançar para spec.md"
+
+    - journey: "Identificar perguntas abertas e re-entrevistar stakeholders"
+      priority: "P2"
+      value: "speckit.clarify identifica gaps no objetivo.yaml (perguntas_abertas), gera questionário customizado, atualiza objetivo.yaml após respostas"
+
+    - journey: "Editar objetivo.yaml manualmente (skip entrevista interativa)"
+      priority: "P2"
+      value: "Tech Leads avançados podem pular speckit.clarify e editar objetivo.yaml direto, validação garante conformidade com schema"
+
+    - journey: "Integrar objetivo.yaml com constitution.md (speckit.constitution)"
+      priority: "P2"
+      value: "Agent speckit.constitution analisa objetivo.yaml e atualiza constitution.md com princípios derivados (bounded_contexts, trade-offs, decisões)"
+
+decisoes_iniciais:
+  - id: "D-01"
+    question: "Formato do arquivo: YAML vs JSON vs Markdown?"
+    decision: "YAML com schema JSON Schema para validação. Rationale: YAML é human-readable, suporta comentários inline, fácil de editar manualmente, e pode ser validado via yamllint + JSON Schema."
+
+  - id: "D-02"
+    question: "Modo de captura: Entrevista interativa (agent) vs Manual (edição)?"
+    decision: "Ambos! Mode 1 (speckit.clarify) para entrevista interativa (UX ideal), mas permitir edição manual do YAML para users avançados. Quality gates garantem conformidade."
+
+  - id: "D-03"
+    question: "Integração com SpecKit: Layer separado ou extensão de spec.md?"
+    decision: "Layer 1 separado (objetivo.yaml). Rationale: Separação de concerns (business vs product vs tech), permite validação independente, spec.md pode referenciar objetivo.yaml."
+
+  - id: "D-04"
+    question: "Número de perguntas: 5 (mínimo) vs 10 (completo) vs 20 (exaustivo)?"
+    decision: "8-10 perguntas estruturadas (objetivo: <30min entrevista). Rationale: Balance entre completude e pragmatismo. 8 categorias essenciais (problema, impacto, stakeholders, valor, métricas, contexto, produto, decisões)."
+
+  - id: "D-05"
+    question: "Validação: Manual (agent review) vs Automática (schema + linters)?"
+    decision: "Híbrida: Validação automática (schema YAML + quality gates) + validação semântica opcional (agent review). Automática garante conformidade, semântica garante qualidade."
+
+perguntas_abertas:
+  - question: "Como lidar com múltiplos stakeholders com interesses conflitantes? Capturar todos ou priorizar?"
+    impact: "Alto - afeta completude do objetivo.yaml e pode gerar specs ambíguas"
+
+  - question: "Suporte a templates customizados de objetivo.yaml por domínio (programming, infrastructure, analysis)?"
+    impact: "Médio - melhoraria UX para domínios específicos, mas aumenta complexidade de manutenção"
+
+  - question: "Como garantir que objetivo.yaml é atualizado quando requisitos mudam? Versionamento? Change tracking?"
+    impact: "Alto - sem sincronização, objetivo.yaml fica desatualizado e perde valor"
+
+  - question: "Integração com ferramentas externas (Jira, Linear, Notion) para importar objectives/epics?"
+    impact: "Médio - reduziria duplicação de entrada de dados, mas adiciona dependências externas"
+
+metadata:
+  owner: "yves_marinho"
+  tech_lead: "template-architect agent"
+  team: "SpecKit Core Team"
+  tags:
+    - "speckit"
+    - "layer-1-business"
+    - "objective-interview"
+    - "requirements-elicitation"
+    - "discovery"
+    - "workflow"
+
+  template_version: "1.0.0"
+  last_updated: "2026-04-14"
+
+# Quality Gates (para validação com speckit.validate --layer business):
+# ✅ Todos placeholders [BRACKET] substituídos
+# ✅ Pelo menos 1 métrica de sucesso definida
+# ✅ Pelo menos 1 persona identificada
+# ✅ Visão de alto nível clara (<= 3 frases)
+# ✅ Jornadas críticas priorizadas (P1, P2, P3)
+# ✅ Bounded contexts identificados (se aplicável ao domínio)
+# ✅ Decisões iniciais documentadas com rationale
+# ✅ Perguntas abertas identificadas (ou lista vazia se todas resolvidas)

@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw data tables loaded by the EL pipeline."
+    schema: raw
+    tables:
+      - name: orders
+        description: "Raw orders from the transactional database."
+        columns:
+          - name: id
+            description: "Primary key."
+            data_tests:
+              - unique
+              - not_null
+          - name: status
+            description: "Order status."
+            data_tests:
+              - not_null
+              - accepted_values:
+                  values: ["pending", "processing", "completed", "cancelled"]
+
+models:
+  - name: stg_example
+    description: "Staging layer for orders — renamed columns, no soft-deleted records."
+    columns:
+      - name: order_id
+        description: "Surrogate primary key."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: user_id
+        description: "Foreign key to users."
+        data_tests:
+          - not_null
+
+      - name: status
+        description: "Order status."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ["pending", "processing", "completed", "cancelled"]
+
+      - name: amount
+        description: "Order total in cents."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: ordered_at
+        description: "Timestamp when the order was created."
+        data_tests:
+          - not_null

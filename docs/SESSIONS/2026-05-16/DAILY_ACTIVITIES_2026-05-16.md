@@ -267,5 +267,128 @@ ls -la docs/SESSIONS/2026-{04-15,05-14,05-15}/
 
 ---
 
+## ✅ [RECOVERY-PM] — Restauração para Estado 060-mini-engram-python (16:16-16:23)
+
+**16:20 — ✅ COMPLETO**
+
+**Objetivo**: Restaurar workspace para estado exato da branch 060-mini-engram-python
+
+**Contexto**: Usuário solicitou recuperação completa para estado anterior ao merge problemático. Pastas em `retore/` contém snapshots de 3 branches (017, 053, 060).
+
+**Passos executados**:
+1. Análise comparativa entre workspace atual e 060 (Python script)
+   - Identificados: 2 itens para adicionar, 1 para remover, 32 para atualizar
+   - Criado manifesto JSON com operações
+2. Execução da recuperação via Python (shutil)
+   - Fase 1: Removido `README-KHL.md` (não existe em 060)
+   - Fase 2: Adicionados `template-bases/` e `default-project-structure.txt`
+   - Fase 3: Atualizados 32 itens (todos arquivos/pastas de 060)
+   - Fase 4: Tratamento especial `docs/` (preservar sessão 2026-05-16)
+3. Validação da estrutura final
+   - 34 itens matching com 060
+   - 0 itens faltando
+   - Todos itens críticos presentes (template-bases, .specify, .github, scripts, docs)
+   - Sessão de hoje preservada (4 arquivos)
+
+**Resultado**: ✅ Validação 100% aprovada — estrutura idêntica a 060-mini-engram-python
+
+**Decisões técnicas**:
+- Preservados: `.git` (histórico), `.secrets` (credenciais), `.venv` (ambiente Python), `retore/` (fonte), `docs/SESSIONS/2026-05-16/` (sessão atual)
+- Método: Python stdlib (shutil + pathlib) seguindo regra P0 (.copilot-rules.md)
+- Backup em `tmp/session-2026-05-16-backup/` durante operação
+
+**Arquivos modificados/criados**:
+- Adicionados: `template-bases/` (dir), `default-project-structure.txt`
+- Removidos: `README-KHL.md`
+- Atualizados: 32 arquivos/pastas de 060
+- Preservados: 8 itens críticos + sessão atual
+- Criados: `tmp/recovery-manifest.json`, `tmp/session-2026-05-16-backup/`
+
+**Commits**: Nenhum (operação local, workspace recovery)
+
+**Status**: ✅ Completo
+
+**Métricas**:
+- Tempo de execução: 7 minutos (análise + execução + validação)
+- Erros: 0
+- Itens processados: 35 (2 add + 1 remove + 32 update)
+
+---
+
+## ⚠️ [RECOVERY-PM-CORRECTION] — Análise Profunda Revelou Snapshot Errado (16:30-17:05)
+
+**17:00 — ✅ COMPLETO**
+
+**Objetivo**: Descoberta crítica - recuperação de 060 estava INCOMPLETA. Snapshot 017 é o mais recente.
+
+**Contexto**: Teste de `scaffold upgrade --log-dir` falhou com erro "unrecognized arguments". Investigação revelou que 060 NÃO tinha funcionalidade de logging implementada.
+
+**Descoberta crítica**:
+- **NOMES ENGANAM**: 017 é branch, não ordem cronológica
+- **DATAS REAIS**: 053 (abr 15) → 060 (mai 14) → **017 (mai 15)** ← MAIS RECENTE
+- **017 tem TUDO**: --log-dir, --no-log, docs/bugs/ (14 itens), docs/guides/ (28 itens vs 26 em 060)
+
+**Análise item por item (3 snapshots)**:
+
+| Recurso | 053 | 060 | 017 |
+|---------|-----|-----|-----|
+| scaffold.py linhas | 507 | 609 | **621** ✅ |
+| --log-dir | ❌ | ❌ | **✅** |
+| --no-log | ❌ | ❌ | **✅** |
+| template-bases/ | ❌ | ✅ | ✅ |
+| docs/bugs/ | ❌ | 14 itens | **14 itens** |
+| docs/guides/ | ❌ | 26 itens | **28 itens** ✅ |
+| ui.py linhas | ? | 738 | **904** ✅ |
+| **Score** | 0/3 | 3/3 | **3/3** ✅ |
+
+**Passos executados**:
+1. Teste funcional de scaffold.py revelou erro --log-dir não reconhecido
+2. grep em retore/**/scaffold.py encontrou --log-dir APENAS em 017
+3. Análise comparativa profunda dos 3 snapshots (053, 060, 017)
+4. Criação de manifesto v2 baseado em 017
+5. Atualização de 34 itens de 017 (0 add, 0 remove, 34 update)
+6. Validação de checksums SHA256 (5 arquivos críticos 100% idênticos)
+7. Validação funcional (--log-dir, --no-log, save_operation_log)
+
+**Resultado**: ✅ Workspace agora está 100% sincronizado com 017 (snapshot REAL mais recente)
+
+**Decisões técnicas**:
+- Manter docs/SESSIONS/2026-05-16/ preservada (4 arquivos)
+- Atualizar TODO workspace de 060 → 017 (exceto .git, .secrets, .venv, retore)
+- Validação via checksums SHA256 para garantir integridade bit-a-bit
+
+**Arquivos críticos validados (SHA256 match)**:
+- ✅ scripts/scaffold.py (621 linhas, 100% idêntico)
+- ✅ scripts/lib/ui.py (904 linhas, 100% idêntico)
+- ✅ .copilot-rules.md (100% idêntico)
+- ✅ pyproject.toml (100% idêntico)
+- ✅ Makefile (100% idêntico)
+
+**Features confirmadas**:
+- ✅ --log-dir presente em scaffold.py --help
+- ✅ --no-log presente em scaffold.py --help
+- ✅ save_operation_log definida em ui.py (linha 718)
+- ✅ print_final_summary chama save_operation_log (linha 892)
+
+**Commits**:
+- Branch: `061-recovery-017-correction`
+- Hash: `37678c2`
+- Push: ✅ origin/061-recovery-017-correction
+
+**Status**: ✅ Completo + Versionado
+
+**Métricas**:
+- Tempo total: 35 minutos (análise profunda + recuperação v2 + validação)
+- Itens atualizados: 34
+- Erros: 0
+- Checksums validados: 5/5 match
+- Features validadas: 3/3 OK
+
+**Lição aprendida**: NUNCA assumir ordem cronológica por número de branch. SEMPRE verificar datas de modificação e git log.
+
+---
+
 **Criado**: 2026-05-16 12:30
+**Atualizado**: 2026-05-16 16:23 (Recovery PM)
+**Atualizado**: 2026-05-16 17:05 (Recovery PM Correction v2)
 **Autor**: GitHub Copilot
