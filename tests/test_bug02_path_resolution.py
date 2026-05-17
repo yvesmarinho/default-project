@@ -152,12 +152,13 @@ class TestBug02PathResolution:
             "test-project",       # name
             "Test Project",       # title
             "Test description",   # description
-            "programming",        # domain
-            "python",            # language
+            "1",                  # domain (1=programming)
+            "1",                  # language (1=python)
             "",                  # github_repo
             str(tmp_path / "shared"),  # shared_dir
             str(target_rel),     # target_dir
             "1",                 # extra_profiles mode
+            "1",                 # layer2 profile (skip)
         ]
 
         original_cwd = Path.cwd()

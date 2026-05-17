@@ -139,14 +139,14 @@ START_TIME=$(date +%s)
 if eval "$PYTEST_CMD"; then
     END_TIME=$(date +%s)
     DURATION=$((END_TIME - START_TIME))
-    
+
     echo ""
     echo -e "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${GREEN}║                    ✅ ALL TESTS PASSED                         ║${NC}"
     echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "${CYAN}⏱️  Duration: ${DURATION}s${NC}"
-    
+
     if [ "$COVERAGE" = true ]; then
         echo ""
         echo -e "${BLUE}📊 Coverage Reports:${NC}"
@@ -157,12 +157,12 @@ if eval "$PYTEST_CMD"; then
         echo "  python -m http.server 8000 --directory htmlcov"
         echo "  Acesse: http://localhost:8000"
     fi
-    
+
     exit 0
 else
     END_TIME=$(date +%s)
     DURATION=$((END_TIME - START_TIME))
-    
+
     echo ""
     echo -e "${RED}╔════════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${RED}║                    ❌ TESTS FAILED                             ║${NC}"

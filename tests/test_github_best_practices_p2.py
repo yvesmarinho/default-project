@@ -316,7 +316,7 @@ def test_copy_github_templates_copies_all_p1_files(make_project_config) -> None:
     """copy_github_templates() copia todos arquivos P1."""
     cfg = make_project_config("programming", "python")
     results = project.copy_github_templates(cfg)
-    
+
     # Verificar P1 files
     assert (cfg.target_dir / "CONTRIBUTING.md").exists(), "CONTRIBUTING.md não copiado"
     assert (cfg.target_dir / ".github" / "PULL_REQUEST_TEMPLATE.md").exists(), (
@@ -332,7 +332,7 @@ def test_copy_github_templates_copies_all_p2_files(make_project_config) -> None:
     """copy_github_templates() copia todos arquivos P2."""
     cfg = make_project_config("programming", "python")
     results = project.copy_github_templates(cfg)
-    
+
     # Verificar P2 issue templates
     issue_dir = cfg.target_dir / ".github" / "ISSUE_TEMPLATE"
     assert (issue_dir / "bug_report.yml").exists(), "bug_report.yml não copiado"
@@ -340,22 +340,22 @@ def test_copy_github_templates_copies_all_p2_files(make_project_config) -> None:
     assert (issue_dir / "documentation.yml").exists(), "documentation.yml não copiado"
     assert (issue_dir / "question.yml").exists(), "question.yml não copiado"
     assert (issue_dir / "config.yml").exists(), "config.yml não copiado"
-    
+
     # Verificar workflow
     assert (cfg.target_dir / ".github" / "workflows" / "git-validation.yml").exists(), (
         "git-validation.yml não copiado"
     )
-    
+
     # Verificar git hook
     assert (cfg.target_dir / "scripts" / "git-hooks" / "commit-msg").exists(), (
         "commit-msg não copiado"
     )
-    
+
     # Verificar script
     assert (cfg.target_dir / "scripts" / "setup-branch-protection.py").exists(), (
         "setup-branch-protection.py não copiado"
     )
-    
+
     # Verificar badge guide
     assert (cfg.target_dir / ".github" / "BADGES.md").exists(), "BADGES.md não copiado"
 
@@ -364,7 +364,7 @@ def test_copy_github_templates_substitutes_variables(make_project_config) -> Non
     """copy_github_templates() substitui variáveis template."""
     cfg = make_project_config("programming", "python", project_name="my-test-project")
     results = project.copy_github_templates(cfg)
-    
+
     # Verificar substituição em CONTRIBUTING.md
     contributing = cfg.target_dir / "CONTRIBUTING.md"
     content = contributing.read_text(encoding="utf-8")
@@ -380,13 +380,13 @@ def test_copy_github_templates_applies_executable_permissions(make_project_confi
     """copy_github_templates() aplica permissões executáveis."""
     cfg = make_project_config("programming", "python")
     results = project.copy_github_templates(cfg)
-    
+
     # Verificar hook executável
     hook = cfg.target_dir / "scripts" / "git-hooks" / "commit-msg"
     mode = hook.stat().st_mode
     is_executable = bool(mode & stat.S_IXUSR)
     assert is_executable, "commit-msg deve ser executável após cópia"
-    
+
     # Verificar script executável
     script = cfg.target_dir / "scripts" / "setup-branch-protection.py"
     mode = script.stat().st_mode
@@ -398,7 +398,7 @@ def test_copy_github_templates_creates_13_files(make_project_config) -> None:
     """copy_github_templates() cria exatamente 13 arquivos (4 P1 + 9 P2)."""
     cfg = make_project_config("programming", "python")
     results = project.copy_github_templates(cfg)
-    
+
     # Contar resultados
     created_count = sum(1 for r in results if r.status == "created")
     assert created_count == 13, (
@@ -412,14 +412,14 @@ def test_copy_github_templates_substitutes_github_owner(make_project_config) -> 
     cfg = make_project_config("programming", "python")
     cfg.github_repo = "testowner/testrepo"
     results = project.copy_github_templates(cfg)
-    
+
     # Verificar substituição em BADGES.md se tiver variável
     badges_template = _TEMPLATES_DIR / "BADGES.md"
     badges_template_content = badges_template.read_text(encoding="utf-8")
-    
+
     badges = cfg.target_dir / ".github" / "BADGES.md"
     content = badges.read_text(encoding="utf-8")
-    
+
     # Verificar se o template tem variáveis e se foram substituídas
     if "{{ github_owner }}" in badges_template_content:
         assert "testowner" in content, (
@@ -481,7 +481,7 @@ def test_readme_template_has_badges() -> None:
     """Template README (_README_MD) contém badges de conformidade."""
     # Ler o template diretamente do project.py
     from lib.project import _README_MD
-    
+
     assert "Conventional Commits" in _README_MD, (
         "README template deve conter badge de Conventional Commits"
     )

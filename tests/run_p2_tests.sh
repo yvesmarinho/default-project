@@ -79,12 +79,12 @@ if eval "$PYTEST_CMD"; then
     echo -e "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${GREEN}║                    ✅ ALL TESTS PASSED                         ║${NC}"
     echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
-    
+
     if [ "$COVERAGE" = true ]; then
         echo ""
         echo -e "${BLUE}📊 Coverage report: htmlcov/index.html${NC}"
     fi
-    
+
     exit 0
 else
     echo ""

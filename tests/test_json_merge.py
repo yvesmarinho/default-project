@@ -36,25 +36,26 @@ class TestDeepMergeJSON:
         assert result == {"a": {"b": 1, "c": 3, "d": 4}}
 
     def test_merge_lists_union(self):
-        """Teste: Merge de listas (união com possíveis duplicatas)."""
+        """Teste: Merge de listas com estratégia user-wins v2.0 (overlay substitui base)."""
         base = {"list": [1, 2]}
         overlay = {"list": [2, 3]}
 
         result = deep_merge_json(base, overlay)
 
-        # deepmerge faz concatenação de listas (pode ter duplicatas)
-        assert result == {"list": [1, 2, 2, 3]} or result == {"list": [1, 2, 3]}
+        # v2.0: user-wins sem union - overlay substitui base completamente
+        assert result == {"list": [2, 3]}
 
     def test_user_wins_strategy(self):
-        """Teste: Valores do overlay sobrescrevem base (user-wins)."""
+        """Teste: Valores do overlay sobrescrevem base (user-wins v2.0)."""
         base = {"python.analysis.extraPaths": ["./src"]}
         overlay = {"python.analysis.extraPaths": ["./custom/lib"]}
 
         result = deep_merge_json(base, overlay)
 
-        # Listas são unidas, não substituídas
+        # v2.0: user-wins sem union - overlay substitui base completamente
+        assert result["python.analysis.extraPaths"] == ["./custom/lib"]
         assert "./custom/lib" in result["python.analysis.extraPaths"]
-        assert "./src" in result["python.analysis.extraPaths"]
+        assert "./src" not in result["python.analysis.extraPaths"]
 
 
 class TestJSONMerger:
