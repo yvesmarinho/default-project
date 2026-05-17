@@ -1,9 +1,9 @@
 # Debate Técnico: Bug de Duplicação no Sistema de Merge JSON
 
-**Data**: 17 de maio de 2026  
-**Projeto**: a-default-project (Enterprise Default Project Template)  
-**Branch**: 061-recovery-017-correction  
-**Bug ID**: Duplicação de arrays em `.vscode/extensions.json`  
+**Data**: 17 de maio de 2026
+**Projeto**: a-default-project (Enterprise Default Project Template)
+**Branch**: 061-recovery-017-correction
+**Bug ID**: Duplicação de arrays em `.vscode/extensions.json`
 **Participantes**: Software Engineer Agent, Principal Software Engineer, DevOps Expert, Python MCP Server Expert
 
 ---
@@ -14,13 +14,15 @@
 Sistema de merge JSON está duplicando arrays em `.vscode/extensions.json`, causando taxa de duplicação de 100% (20/20 extensões duplicadas).
 
 ### Root Cause
-Arquivo `extensions.json` está usando `JSONMerger` genérico (que faz union de arrays via `deepmerge.always_merger.merge()`) ao invés de `VSCodeJSONMerger` (user-wins sem union).
+**Problema Arquitetural**: `JSONMerger` genérico usa `deepmerge.always_merger.merge()` que faz **union de arrays** por padrão. Isso causa duplicação em QUALQUER arquivo JSON do projeto, não apenas VSCode.
+
+**Contexto do Usuário**: JSON é o padrão para arquivos de configuração no projeto. A estratégia user-wins sem union deve ser universal para todos os JSONs.
 
 ### Impacto nos Arquivos
-- ✅ `mcp.json`: OK (corrigido em commit `9595ac9`)
-- ✅ `settings.json`: OK (usa `VSCodeJSONMerger`)
-- ❌ `extensions.json`: **FALHA** (usando `JSONMerger` errado)
-- ❓ Outros arquivos `.vscode/*.json`: Status desconhecido (launch.json, tasks.json)
+- ❌ **TODOS os arquivos JSON**: Potencialmente afetados pelo union de arrays
+- ✅ `mcp.json`, `settings.json`: Protegidos por `VSCodeJSONMerger` (solução paliativa)
+- ❌ `extensions.json`: **CONFIRMADO** - duplicação (não estava na whitelist)
+- ❓ `package.json`, `tsconfig.json`, outros JSONs do projeto: Status desconhecido
 
 ### Evidências
 - **Log de duplicação**: `tmp/evidencia/json_diif_20260517_1116.log`
@@ -48,11 +50,12 @@ class VSCodeJSONMerger:
         )
 ```
 
-#### Por que `extensions.json` Não Foi Incluído?
+#### Por que o Problema Afeta Todos os JSONs?
 
-1. **Lista whitelist incompleta**: Apenas 2 de 3+ arquivos VSCode na lista
-2. **Sem documentação**: Não há guia sobre quais arquivos requerem qual merger
-3. **Falta de testes**: Nenhum teste validando cobertura de arquivos `.vscode/`
+1. **Estratégia errada no merger base**: `JSONMerger` usa `deep_merge_json()` com union de arrays
+2. **Solução paliativa inadequada**: `VSCodeJSONMerger` criado apenas para VSCode, mas problema é sistêmico
+3. **JSON é padrão do projeto**: Usado em configs gerais (package.json, tsconfig.json, etc.), não só VSCode
+4. **Falta de documentação**: Não há guia sobre a estratégia de merge universal esperada
 
 #### Fluxo de Execução que Causa o Bug
 
@@ -87,35 +90,51 @@ always_merger faz UNION de arrays
 
 #### Proposta de Correção
 
-**P0 — Solução Mínima (Deploy Imediato)**:
+**P0 — Solução Arquitetural (Deploy Imediato)**:
 ```python
-class VSCodeJSONMerger:
-    def can_merge(self, file_path: Path) -> bool:
-        """Verifica se é arquivo .json em .vscode/ que requer user-wins."""
-        return (
-            file_path.name in ["mcp.json", "settings.json", "extensions.json"] and  # ✅ FIX
-            ".vscode" in file_path.parts
-        )
+# scripts/lib/json_merge.py
+
+def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Deep merge com estratégia user-wins SEM union de arrays.
+    
+    Mudança arquitetural: JSON é padrão de configuração no projeto.
+    Todos os JSONs devem usar user-wins sem duplicação de arrays.
+    
+    Estratégia:
+    - Overlay (usuário) sobrescreve base (template)
+    - Arrays substituídos completamente (NÃO faz union)
+    - Objetos aninhados mergeados recursivamente
+    - Chaves novas do template são adicionadas
+    """
+    return _merge_user_wins_recursive(base, overlay)
+
+def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
+    """Implementação do merge user-wins (movida de VSCodeJSONMerger)."""
+    merged = {}
+    
+    # User wins: copiar tudo do overlay primeiro
+    for key, overlay_value in overlay.items():
+        base_value = base.get(key)
+        if isinstance(overlay_value, dict) and isinstance(base_value, dict):
+            merged[key] = _merge_user_wins_recursive(base_value, overlay_value)
+        else:
+            # Arrays e primitivos: overlay wins completamente
+            merged[key] = overlay_value
+    
+    # Adicionar chaves novas do template
+    for key, base_value in base.items():
+        if key not in merged:
+            merged[key] = base_value
+    
+    return merged
 ```
 
-**P1 — Solução Robusta (Próxima Semana)**:
+**Remover VSCodeJSONMerger**:
 ```python
-# scripts/lib/constants.py (NOVO)
-VSCODE_USER_WINS_FILES = {
-    "mcp.json",           # MCP server configs
-    "settings.json",      # Workspace settings
-    "extensions.json",    # Extension recommendations
-    "launch.json",        # Debug configurations
-    "tasks.json",         # Task definitions
-}
-
-class VSCodeJSONMerger:
-    def can_merge(self, file_path: Path) -> bool:
-        """Verifica se arquivo VSCode requer user-wins sem array union."""
-        return (
-            file_path.name in VSCODE_USER_WINS_FILES and
-            ".vscode" in file_path.parts
-        )
+# scripts/lib/file_merge.py
+# ANTES: _MERGERS = [..., VSCodeJSONMerger(), JSONMerger(), ...]
+# DEPOIS: _MERGERS = [..., JSONMerger(), ...]  # VSCodeJSONMerger removido (redundante)
 ```
 
 ---
@@ -175,19 +194,25 @@ Request → Handler1.can_merge() → Handler2.can_merge() → Handler3.can_merge
 **Arquivos potencialmente afetados**:
 
 ```bash
-.vscode/
-├── extensions.json     ❌ CONFIRMADO: 20 extensões duplicadas
-├── mcp.json            ✅ OK (usa VSCodeJSONMerger)
-├── settings.json       ✅ OK (usa VSCodeJSONMerger)
-├── launch.json         ❓ DESCONHECIDO (pode estar afetado)
-├── tasks.json          ❓ DESCONHECIDO (pode estar afetado)
-└── *.json              ❓ Outros arquivos VSCode
+PROJETO INTEIRO (todos os JSONs):
+├── .vscode/
+│   ├── extensions.json     ❌ CONFIRMADO: 20 extensões duplicadas
+│   ├── mcp.json            ✅ OK (protegido por VSCodeJSONMerger)
+│   ├── settings.json       ✅ OK (protegido por VSCodeJSONMerger)
+│   ├── launch.json         ❓ RISCO (usa JSONMerger genérico)
+│   └── tasks.json          ❓ RISCO (usa JSONMerger genérico)
+├── package.json            ❓ RISCO (configs npm, scripts, dependencies)
+├── tsconfig.json           ❓ RISCO (compiler options, paths)
+├── .eslintrc.json          ❓ RISCO (rules, extends)
+├── jest.config.json        ❓ RISCO (test configs)
+└── **/*.json               ❓ RISCO (qualquer JSON de configuração)
 ```
 
 **Estimativa de impacto**:
-- ✅ Arquivos protegidos: 2 (mcp.json, settings.json)
+- ✅ Arquivos protegidos: 2 (mcp.json, settings.json) - solução paliativa
 - ❌ Arquivos afetados: 1 confirmado (extensions.json)
-- ❓ Arquivos em risco: 2-5 (launch.json, tasks.json, outros)
+- ❓ Arquivos em risco: **TODOS OS DEMAIS JSONs do projeto**
+- 🎯 **Problema sistêmico**: Requer mudança arquitetural, não whitelist
 
 #### Estratégia de Remediação em 3 Fases
 
@@ -310,14 +335,14 @@ class TestExtensionsJsonMerge:
         """VSCodeJSONMerger reconhece extensions.json."""
         merger = VSCodeJSONMerger()
         assert merger.can_merge(Path(".vscode/extensions.json")) is True
-    
+
     def test_no_array_union_in_recommendations(self, tmp_path):
         """Merge NÃO faz union de arrays."""
         # Template: ["ext1", "ext2"]
         # User: ["ext2", "ext3"]
         # Expected: ["ext2", "ext3"] (user wins, no union)
         ...
-    
+
     def test_current_extensions_json_is_clean(self):
         """Arquivo atual não tem duplicações."""
         data = json.loads(Path(".vscode/extensions.json").read_text())
@@ -347,14 +372,15 @@ def test_all_vscode_files_have_tests(self):
 | Ausência de documentação sobre strategies | Documentation | **MEDIUM** | 3/4 ✅ |
 | Pattern Chain of Responsibility frágil | Architecture | **MEDIUM** | 2/4 ⚠️ |
 
-### Consenso: Solução Mínima P0
+### Consenso: Solução Arquitetural P0
 
-**Todos os 4 agentes concordam** com correção imediata:
+**Todos os 4 agentes concordam** com mudança arquitetural:
 
-1. ✅ Adicionar `extensions.json` à whitelist de `VSCodeJSONMerger`
-2. ✅ Criar script de detecção de duplicações
-3. ✅ Adicionar 3 testes unitários mínimos
-4. ✅ Limpar duplicações existentes em extensions.json
+1. ✅ Modificar `deep_merge_json()` para user-wins sem union (afeta TODOS os JSONs)
+2. ✅ Remover `VSCodeJSONMerger` (redundante após mudança)
+3. ✅ Criar script de detecção de duplicações em TODOS os JSONs do projeto
+4. ✅ Limpar duplicações existentes em todos os JSONs afetados
+5. ✅ Adicionar testes para comportamento universal do JSONMerger
 
 ### Divergências (Pontos de Debate)
 
@@ -370,22 +396,29 @@ def test_all_vscode_files_have_tests(self):
 
 ### Conclusão Principal
 
-O bug é resultado de **lista incompleta** em VSCodeJSONMerger combinado com **falta de testes** e **documentação insuficiente** sobre o sistema de merge. O fix mínimo é simples (adicionar uma string), mas a arquitetura precisa de hardening para prevenir regressões.
+**Problema arquitetural identificado**: A solução inicial (`VSCodeJSONMerger`) foi uma **solução paliativa** para um problema sistêmico. JSON é o **padrão de configuração** do projeto, não apenas arquivos VSCode.
+
+**Decisão arquitetural**: Modificar `JSONMerger` genérico para usar estratégia user-wins sem union como padrão para **TODOS os arquivos JSON**. Isso elimina:
+- Necessidade de whitelists por arquivo
+- `VSCodeJSONMerger` (redundante)
+- Risco de novos JSONs caírem no merger errado
+- Duplicações em package.json, tsconfig.json, etc.
 
 ### Recomendações Priorizadas
 
-#### P0 — Crítico (Deploy Hoje — 30min)
-1. ✅ Adicionar `"extensions.json"` na lista de `VSCodeJSONMerger.can_merge()`
-2. ✅ Limpar duplicações existentes em `.vscode/extensions.json`
-3. ✅ Criar 3 testes unitários mínimos
-4. ✅ Commit com evidências e testes
+#### P0 — Crítico (Deploy Hoje — 45min)
+1. ✅ Modificar `deep_merge_json()` para usar user-wins sem union (afeta TODOS os JSONs)
+2. ✅ Remover `VSCodeJSONMerger` e import em `file_merge.py` (redundante)
+3. ✅ Scan e limpeza de duplicações em TODOS os JSONs do projeto
+4. ✅ Criar testes para `JSONMerger` genérico (user-wins behavior)
+5. ✅ Commit com mudança arquitetural completa
 
 #### P1 — Importante (Esta Semana — 2-3h)
-1. 📋 Centralizar configuração em `scripts/lib/constants.py`
-2. 📋 Script `detect-json-duplications.py`
-3. 📋 Script `fix-json-duplications.py`
-4. 📋 Validação pós-merge em `save_json_formatted()`
-5. 📋 Documentação em `docs/guides/json-merge-system.md`
+1. 📋 Script `detect-json-duplications.py` (scan recursivo no projeto)
+2. 📋 Script `fix-json-duplications.py` (correção automática)
+3. 📋 Validação pós-merge em `save_json_formatted()` (detecta duplicações)
+4. 📋 Documentação em `docs/guides/json-merge-strategy.md` (estratégia universal)
+5. 📋 Exemplos de merge para diferentes tipos de JSON (package.json, tsconfig, etc.)
 
 #### P2 — Desejável (Próximo Sprint — 3-4h)
 1. 🔮 Pre-commit hook para validação
