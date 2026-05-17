@@ -18,7 +18,7 @@ from lib.json_merge import VSCodeJSONMerger
 
 def test_mcp_merge():
     """Testa merge sem duplicação de arrays."""
-    
+
     # Template (base)
     template = {
         "servers": {
@@ -34,7 +34,7 @@ def test_mcp_merge():
             }
         }
     }
-    
+
     # Arquivo existente (overlay/usuário) - mesmos valores
     overlay = {
         "servers": {
@@ -50,33 +50,33 @@ def test_mcp_merge():
             }
         }
     }
-    
+
     # Executar merge
     merger = VSCodeJSONMerger()
     result = merger._merge_user_wins(template, overlay)
-    
+
     # Verificar resultados
     print("=" * 70)
     print("TESTE: Merge de mcp.json (correção de duplicação)")
     print("=" * 70)
     print()
-    
+
     print("Template (base):")
     print(json.dumps(template, indent=2))
     print()
-    
+
     print("Overlay (usuário):")
     print(json.dumps(overlay, indent=2))
     print()
-    
+
     print("Resultado do merge:")
     print(json.dumps(result, indent=2))
     print()
-    
+
     # Validar que não houve duplicação
     memory_args = result["servers"]["memory"]["args"]
     expected_args = ["-y", "@modelcontextprotocol/server-memory"]
-    
+
     if memory_args == expected_args:
         print("✅ SUCESSO: Args não duplicados!")
         print(f"   Esperado: {expected_args}")

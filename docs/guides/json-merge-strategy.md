@@ -1,9 +1,9 @@
 # Estrat\u00e9gia Universal de Merge para Arquivos JSON
 
-**Data**: 17 de maio de 2026  
-**Projeto**: a-default-project (Enterprise Default Project Template)  
-**Status**: Implementado  
-**Vers\u00e3o**: 2.0 (Arquitetural)  
+**Data**: 17 de maio de 2026
+**Projeto**: a-default-project (Enterprise Default Project Template)
+**Status**: Implementado
+**Vers\u00e3o**: 2.0 (Arquitetural)
 
 ---
 
@@ -13,7 +13,7 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 
 ### Princ\u00edpio Fundamental
 
-> **User Wins, No Array Union**  
+> **User Wins, No Array Union**
 > Ao fazer merge de um template JSON com arquivo existente do usu\u00e1rio, as customiza\u00e7\u00f5es do usu\u00e1rio sempre prevalecem. Arrays s\u00e3o substitu\u00eddos completamente, nunca concatenados.
 
 ---
@@ -50,8 +50,8 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 }
 ```
 
-\u2705 Valores do usu\u00e1rio sobrescrevem template  
-\u2705 Chaves novas do template s\u00e3o adicionadas  
+\u2705 Valores do usu\u00e1rio sobrescrevem template
+\u2705 Chaves novas do template s\u00e3o adicionadas
 
 ---
 
@@ -73,8 +73,8 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 }
 ```
 
-\u274c **N\u00c3O faz union**: `["build", "test", "lint", "dev"]` (\u274c ERRADO)  
-\u2705 **User wins**: `["dev", "build"]` (\u2705 CORRETO)  
+\u274c **N\u00c3O faz union**: `["build", "test", "lint", "dev"]` (\u274c ERRADO)
+\u2705 **User wins**: `["dev", "build"]` (\u2705 CORRETO)
 
 **Raz\u00e3o**: Arrays em configs representam listas customizadas pelo usu\u00e1rio. Union causaria duplica\u00e7\u00e3o e confus\u00e3o.
 
@@ -110,8 +110,8 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 }
 ```
 
-\u2705 Merge recursivo: valores do usu\u00e1rio + chaves novas do template  
-\u2705 Arrays dentro de objetos: seguem regra #2 (user wins)  
+\u2705 Merge recursivo: valores do usu\u00e1rio + chaves novas do template
+\u2705 Arrays dentro de objetos: seguem regra #2 (user wins)
 
 ---
 
@@ -148,8 +148,8 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 }
 ```
 
-\u2705 Lista do usu\u00e1rio \u00e9 preservada  
-\u274c Template **N\u00c3O** adiciona `dbaeumer.vscode-eslint`  
+\u2705 Lista do usu\u00e1rio \u00e9 preservada
+\u274c Template **N\u00c3O** adiciona `dbaeumer.vscode-eslint`
 
 ---
 
@@ -201,8 +201,8 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 }
 ```
 
-\u2705 Args do usu\u00e1rio preservados (sem duplica\u00e7\u00e3o)  
-\u2705 Custom env e servers do usu\u00e1rio preservados  
+\u2705 Args do usu\u00e1rio preservados (sem duplica\u00e7\u00e3o)
+\u2705 Custom env e servers do usu\u00e1rio preservados
 
 ---
 
@@ -250,9 +250,9 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 }
 ```
 
-\u2705 Scripts customizados do usu\u00e1rio preservados  
-\u2705 Vers\u00f5es de depend\u00eancias do usu\u00e1rio preservadas  
-\u2705 Novos scripts/deps do template adicionados  
+\u2705 Scripts customizados do usu\u00e1rio preservados
+\u2705 Vers\u00f5es de depend\u00eancias do usu\u00e1rio preservadas
+\u2705 Novos scripts/deps do template adicionados
 
 ---
 
@@ -297,9 +297,9 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 }
 ```
 
-\u2705 Compiler options do usu\u00e1rio preservadas  
-\u2705 Novas op\u00e7\u00f5es do template adicionadas  
-\u274c Array `include` **N\u00c3O** concatena com template  
+\u2705 Compiler options do usu\u00e1rio preservadas
+\u2705 Novas op\u00e7\u00f5es do template adicionadas
+\u274c Array `include` **N\u00c3O** concatena com template
 
 ---
 
@@ -339,16 +339,16 @@ JSON \u00e9 o **padr\u00e3o de configura\u00e7\u00e3o** do projeto. Todos os arq
 def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
     """
     Deep merge com estrat\u00e9gia user-wins SEM union de arrays.
-    
+
     JSON \u00e9 padr\u00e3o de configura\u00e7\u00e3o no projeto. Esta fun\u00e7\u00e3o implementa
     merge universal para TODOS os arquivos JSON.
-    
+
     Estrat\u00e9gia:
     - Overlay (usu\u00e1rio) sobrescreve base (template)
     - Arrays substitu\u00eddos completamente (N\u00c3O faz union)
     - Objetos aninhados mergeados recursivamente
     - Chaves novas do template s\u00e3o adicionadas
-    
+
     Hist\u00f3rico:
     - v1.0: Usava always_merger.merge() (union de arrays) \u274c BUG
     - v2.0: Implementa user-wins sem union \u2705 FIX ARQUITETURAL
@@ -359,30 +359,30 @@ def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, 
 def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
     """
     Implementa\u00e7\u00e3o do merge user-wins recursivo.
-    
+
     Algoritmo:
     1. Copiar todos valores do overlay (user wins)
     2. Para objetos aninhados: merge recursivo
     3. Adicionar chaves novas do base que n\u00e3o existem no overlay
     """
     merged = {}
-    
+
     # Passo 1: User wins - copiar tudo do overlay
     for key, overlay_value in overlay.items():
         base_value = base.get(key)
-        
+
         # Se ambos s\u00e3o dicts: merge recursivo
         if isinstance(overlay_value, dict) and isinstance(base_value, dict):
             merged[key] = _merge_user_wins_recursive(base_value, overlay_value)
         else:
             # Primitivos e arrays: user wins completamente
             merged[key] = overlay_value
-    
+
     # Passo 2: Adicionar chaves novas do template
     for key, base_value in base.items():
         if key not in merged:
             merged[key] = base_value
-    
+
     return merged
 ```
 
@@ -392,27 +392,27 @@ def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
 class JSONMerger:
     """
     Merger universal para TODOS os arquivos JSON.
-    
+
     Aplica-se a:
     - .vscode/*.json (extensions, settings, mcp, launch, tasks)
     - package.json, tsconfig.json, jsconfig.json
     - .eslintrc.json, .prettierrc.json
     - jest.config.json, vite.config.json
     - Qualquer outro arquivo .json do projeto
-    
+
     Estrat\u00e9gia:
     - User-wins sem union de arrays (via deep_merge_json)
     - Backup autom\u00e1tico antes de merge
     - Valida\u00e7\u00e3o de sintaxe JSON
     """
-    
+
     def can_merge(self, file_path: Path) -> bool:
         """Aceita TODOS os arquivos .json (exceto .code-workspace)."""
         return (
             file_path.suffix == ".json" and
             not file_path.name.endswith(".code-workspace")
         )
-    
+
     def merge(self, existing_path: Path, template_content: str, interactive: bool = True) -> CreatedItem:
         """Faz merge usando deep_merge_json (user-wins universal)."""
         # Implementa\u00e7\u00e3o usa deep_merge_json()
@@ -432,9 +432,9 @@ def test_arrays_are_replaced_not_merged():
     """Arrays do usu\u00e1rio substituem template completamente."""
     base = {"items": [1, 2, 3]}
     overlay = {"items": [4, 5]}
-    
+
     result = deep_merge_json(base, overlay)
-    
+
     assert result["items"] == [4, 5], \
         "Array deve ser substitu\u00eddo, N\u00c3O concatenado"
     assert result["items"] != [1, 2, 3, 4, 5], \
@@ -445,9 +445,9 @@ def test_nested_objects_are_merged():
     """Objetos aninhados fazem merge recursivo."""
     base = {"config": {"a": 1, "b": 2}}
     overlay = {"config": {"b": 3, "c": 4}}
-    
+
     result = deep_merge_json(base, overlay)
-    
+
     assert result == {"config": {"a": 1, "b": 3, "c": 4}}
 
 
@@ -455,9 +455,9 @@ def test_new_template_keys_are_added():
     """Chaves novas do template s\u00e3o adicionadas."""
     base = {"new_key": "new_value"}
     overlay = {"existing": "value"}
-    
+
     result = deep_merge_json(base, overlay)
-    
+
     assert "new_key" in result
     assert "existing" in result
 ```
@@ -542,5 +542,5 @@ mv .vscode/extensions.json.backup .vscode/extensions.json
 
 ---
 
-**\u00daltima atualiza\u00e7\u00e3o**: 17 de maio de 2026  
+**\u00daltima atualiza\u00e7\u00e3o**: 17 de maio de 2026
 **Vers\u00e3o**: 2.0 (Arquitetural - User-wins universal)

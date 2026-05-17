@@ -97,10 +97,10 @@ always_merger faz UNION de arrays
 def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
     """
     Deep merge com estratégia user-wins SEM union de arrays.
-    
+
     Mudança arquitetural: JSON é padrão de configuração no projeto.
     Todos os JSONs devem usar user-wins sem duplicação de arrays.
-    
+
     Estratégia:
     - Overlay (usuário) sobrescreve base (template)
     - Arrays substituídos completamente (NÃO faz union)
@@ -112,7 +112,7 @@ def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, 
 def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
     """Implementação do merge user-wins (movida de VSCodeJSONMerger)."""
     merged = {}
-    
+
     # User wins: copiar tudo do overlay primeiro
     for key, overlay_value in overlay.items():
         base_value = base.get(key)
@@ -121,12 +121,12 @@ def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
         else:
             # Arrays e primitivos: overlay wins completamente
             merged[key] = overlay_value
-    
+
     # Adicionar chaves novas do template
     for key, base_value in base.items():
         if key not in merged:
             merged[key] = base_value
-    
+
     return merged
 ```
 

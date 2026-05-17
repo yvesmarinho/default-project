@@ -30,7 +30,7 @@ def show_usage():
 def analyze_duplicates_in_file(file_path: Path, data: dict) -> dict:
     """
     Analisa duplicações em arrays do arquivo JSON.
-    
+
     Returns:
         Dict com estatísticas de duplicação
     """
@@ -39,12 +39,12 @@ def analyze_duplicates_in_file(file_path: Path, data: dict) -> dict:
         "arrays_with_duplicates": 0,
         "duplicates": []
     }
-    
+
     def analyze_value(value, path=""):
         """Analisa recursivamente valores buscando arrays."""
         if isinstance(value, list):
             stats["total_arrays"] += 1
-            
+
             # Detectar duplicados
             duplicates = {}
             for item in value:
@@ -52,7 +52,7 @@ def analyze_duplicates_in_file(file_path: Path, data: dict) -> dict:
                     count = value.count(item)
                     if count > 1:
                         duplicates[str(item)] = count
-            
+
             if duplicates:
                 stats["arrays_with_duplicates"] += 1
                 stats["duplicates"].append({
@@ -61,12 +61,12 @@ def analyze_duplicates_in_file(file_path: Path, data: dict) -> dict:
                     "unique_items": len(set(str(x) for x in value if isinstance(x, (str, int, float, bool)))),
                     "duplicates": duplicates
                 })
-        
+
         elif isinstance(value, dict):
             for key, val in value.items():
                 new_path = f"{path}.{key}" if path else key
                 analyze_value(val, new_path)
-    
+
     analyze_value(data)
     return stats
 
@@ -78,41 +78,41 @@ def print_duplicate_analysis(file_path: Path, stats: dict):
     print(f"   Arquivo: {file_path}")
     print("=" * 80)
     print()
-    
+
     print(f"📊 Estatísticas Gerais:")
     print(f"   Total de arrays: {stats['total_arrays']}")
     print(f"   Arrays com duplicações: {stats['arrays_with_duplicates']}")
-    
+
     if stats['arrays_with_duplicates'] > 0:
         print(f"   Taxa de duplicação: {stats['arrays_with_duplicates'] / stats['total_arrays'] * 100:.1f}%")
-    
+
     print()
-    
+
     if stats['duplicates']:
         print("🔴 Duplicações Encontradas:")
         print()
-        
+
         for idx, dup_info in enumerate(stats['duplicates'], 1):
             print(f"   [{idx}] Path: {dup_info['path']}")
             print(f"       Tamanho do array: {dup_info['array_size']}")
             print(f"       Itens únicos: {dup_info['unique_items']}")
             print(f"       Elementos duplicados:")
-            
+
             for item, count in dup_info['duplicates'].items():
                 print(f"         • '{item}': {count} ocorrências (duplicado {count - 1}x)")
-            
+
             print()
     else:
         print("✅ Nenhuma duplicação encontrada!")
         print()
-    
+
     print("=" * 80)
     print()
 
 
 def compare_json_arrays(file1: Path, file2: Path):
     """Compara arrays em dois arquivos JSON e mostra diferenças."""
-    
+
     try:
         data1 = json.loads(file1.read_text())
         data2 = json.loads(file2.read_text())
@@ -149,7 +149,7 @@ def compare_mcp_servers(data1: dict, data2: dict):
             print(f"   ⚠️  Ausente no arquivo 2")
             print()
             continue
-        
+
         args1 = data1["servers"][server_name].get("args", [])
         args2 = data2["servers"][server_name].get("args", [])
 
@@ -182,19 +182,19 @@ def compare_generic_json(data1: dict, data2: dict):
     print("Arquivo 2:")
     print(json.dumps(data2, indent=2))
     print()
-    
+
     if data1 == data2:
         print("✅ Arquivos são IDÊNTICOS")
     else:
         print("⚠️  Arquivos são DIFERENTES")
-        
+
         # Mostrar chaves diferentes
         keys1 = set(data1.keys())
         keys2 = set(data2.keys())
-        
+
         only_in_1 = keys1 - keys2
         only_in_2 = keys2 - keys1
-        
+
         if only_in_1:
             print(f"   Chaves apenas no arquivo 1: {only_in_1}")
         if only_in_2:
@@ -204,14 +204,14 @@ def compare_generic_json(data1: dict, data2: dict):
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         show_usage()
-    
+
     file1 = Path(sys.argv[1])
     file2 = Path(sys.argv[2])
-    
+
     if not file1.exists():
         print(f"❌ Arquivo não existe: {file1}", file=sys.stderr)
         sys.exit(2)
-    
+
     if not file2.exists():
         print(f"❌ Arquivo não existe: {file2}", file=sys.stderr)
         sys.exit(2)

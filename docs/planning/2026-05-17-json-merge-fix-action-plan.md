@@ -1,9 +1,9 @@
 # Plano de Ação: Correção de Bug de Duplicação em JSON Merge
 
-**Data de Criação**: 17 de maio de 2026  
-**Projeto**: a-default-project  
-**Branch**: 061-recovery-017-correction (NÃO criar nova branch)  
-**Bug**: Duplicação de arrays em `.vscode/extensions.json`  
+**Data de Criação**: 17 de maio de 2026
+**Projeto**: a-default-project
+**Branch**: 061-recovery-017-correction (NÃO criar nova branch)
+**Bug**: Duplicação de arrays em `.vscode/extensions.json`
 **Debate Técnico**: [docs/debates/2026-05-17-json-merge-duplication-bug.md](../debates/2026-05-17-json-merge-duplication-bug.md)
 
 ---
@@ -29,16 +29,16 @@ Sistema de merge JSON duplicando arrays em `.vscode/extensions.json` (100% de ta
 
 ## 🚀 Phase 1: Hotfix Imediato (P0)
 
-**Prioridade**: CRÍTICA  
-**Duração estimada**: 30 minutos  
-**Deploy**: Hoje (2026-05-17)  
-**Bloqueador**: Não  
+**Prioridade**: CRÍTICA
+**Duração estimada**: 30 minutos
+**Deploy**: Hoje (2026-05-17)
+**Bloqueador**: Não
 
 ### Task 1.1: Corrigir VSCodeJSONMerger
 
-**Arquivo**: `scripts/lib/json_merge.py`  
-**Linhas**: 376-382  
-**Mudança**: Adicionar `"extensions.json"` na whitelist  
+**Arquivo**: `scripts/lib/json_merge.py`
+**Linhas**: 376-382
+**Mudança**: Adicionar `"extensions.json"` na whitelist
 
 #### Implementação
 
@@ -46,13 +46,13 @@ Sistema de merge JSON duplicando arrays em `.vscode/extensions.json` (100% de ta
 class VSCodeJSONMerger:
     """
     Merger específico para .vscode/ files com estratégia user-wins.
-    
+
     Arquivos suportados:
     - mcp.json: Server configs (evita duplicação de args)
     - settings.json: Workspace settings (user preferences)
     - extensions.json: Extension recommendations (evita duplicar IDs)  # ✅ NOVO!
     """
-    
+
     def can_merge(self, file_path: Path) -> bool:
         """Verifica se é arquivo .vscode/ que requer user-wins sem array union."""
         return (
@@ -84,9 +84,9 @@ print('✅ can_merge() funcionando')
 
 ### Task 1.2: Limpar Duplicações Existentes
 
-**Arquivo**: `.vscode/extensions.json`  
-**Estado atual**: 41 itens (21 únicos = 20 duplicados)  
-**Estado esperado**: 37 itens únicos  
+**Arquivo**: `.vscode/extensions.json`
+**Estado atual**: 41 itens (21 únicos = 20 duplicados)
+**Estado esperado**: 37 itens únicos
 
 #### Implementação
 
@@ -170,8 +170,8 @@ print('✅ Validado: 0 duplicações')
 
 ### Task 1.3: Adicionar Testes Unitários
 
-**Arquivo**: `tests/test_json_merge_extensions.py` (NOVO)  
-**Cobertura**: VSCodeJSONMerger.can_merge() + merge() para extensions.json  
+**Arquivo**: `tests/test_json_merge_extensions.py` (NOVO)
+**Cobertura**: VSCodeJSONMerger.can_merge() + merge() para extensions.json
 
 #### Implementação
 
@@ -194,21 +194,21 @@ from scripts.lib.json_merge import VSCodeJSONMerger, CreatedItem
 
 class TestExtensionsJsonMerge:
     """Testes para extensions.json merger."""
-    
+
     @pytest.fixture
     def merger(self):
         """Fixture: instância de VSCodeJSONMerger."""
         return VSCodeJSONMerger()
-    
+
     def test_can_merge_extensions_json(self, merger):
         """VSCodeJSONMerger reconhece extensions.json."""
         path = Path(".vscode/extensions.json")
-        
+
         result = merger.can_merge(path)
-        
+
         assert result is True, \
             "extensions.json DEVE ser reconhecido por VSCodeJSONMerger"
-    
+
     def test_cannot_merge_other_json(self, merger):
         """VSCodeJSONMerger NÃO reconhece outros JSON."""
         test_cases = [
@@ -216,15 +216,15 @@ class TestExtensionsJsonMerge:
             Path("tsconfig.json"),
             Path("src/config.json"),
         ]
-        
+
         for path in test_cases:
             result = merger.can_merge(path)
             assert result is False, \
                 f"{path} NÃO deve ser reconhecido por VSCodeJSONMerger"
-    
+
     def test_no_array_union_in_recommendations(self, merger, tmp_path):
         """Merge de extensions.json NÃO faz union de arrays."""
-        
+
         # Template (base) com 2 extensões
         template_data = {
             "recommendations": [
@@ -232,7 +232,7 @@ class TestExtensionsJsonMerge:
                 "github.copilot"
             ]
         }
-        
+
         # Existente (overlay/usuário) com 2 extensões (1 sobreposta)
         existing_data = {
             "recommendations": [
@@ -240,61 +240,61 @@ class TestExtensionsJsonMerge:
                 "dbaeumer.vscode-eslint"  # nova do usuário
             ]
         }
-        
+
         # Setup: criar arquivo existente
         existing_path = tmp_path / ".vscode" / "extensions.json"
         existing_path.parent.mkdir(parents=True, exist_ok=True)
         existing_path.write_text(json.dumps(existing_data, indent=2))
-        
+
         # Executar merge
         result = merger.merge(
             existing_path,
             json.dumps(template_data),
             interactive=False
         )
-        
+
         # Verificar resultado
         assert isinstance(result, CreatedItem)
-        
+
         merged_data = json.loads(existing_path.read_text())
         recommendations = merged_data["recommendations"]
-        
+
         # User wins: deve manter apenas lista do usuário
         assert "dbaeumer.vscode-eslint" in recommendations, \
             "Extensão do usuário deve estar presente"
-        
+
         assert "github.copilot" in recommendations, \
             "Extensão sobreposta deve estar presente (do usuário)"
-        
+
         # NÃO deve fazer union (template items não devem ser adicionados)
         assert "ms-python.python" not in recommendations, \
             "Template items NÃO devem ser adicionados em user-wins merge"
-        
+
         # Sem duplicações
         counts = Counter(recommendations)
         duplicates = [ext for ext, count in counts.items() if count > 1]
-        
+
         assert len(duplicates) == 0, \
             f"Merge NÃO deve criar duplicações. Encontradas: {duplicates}"
-    
+
     def test_current_extensions_json_is_clean(self):
         """Valida que arquivo atual do projeto não tem duplicações."""
         file = Path(".vscode/extensions.json")
-        
+
         if not file.exists():
             pytest.skip("extensions.json não existe no projeto")
-        
+
         # Carregar arquivo
         data = json.loads(file.read_text())
         recommendations = data.get("recommendations", [])
-        
+
         # Verificar duplicações
         counts = Counter(recommendations)
         duplicates = [ext for ext, count in counts.items() if count > 1]
-        
+
         assert len(duplicates) == 0, \
             f"❌ Arquivo atual tem {len(duplicates)} duplicações: {duplicates}"
-        
+
         # Validação adicional: todas extensões são strings
         for ext in recommendations:
             assert isinstance(ext, str), \
@@ -305,19 +305,19 @@ class TestExtensionsJsonMerge:
 
 class TestVSCodeJSONMergerRegression:
     """Testes de regressão para garantir que fix não quebrou outros arquivos."""
-    
+
     @pytest.fixture
     def merger(self):
         return VSCodeJSONMerger()
-    
+
     def test_mcp_json_still_works(self, merger):
         """mcp.json ainda é reconhecido após fix."""
         assert merger.can_merge(Path(".vscode/mcp.json")) is True
-    
+
     def test_settings_json_still_works(self, merger):
         """settings.json ainda é reconhecido após fix."""
         assert merger.can_merge(Path(".vscode/settings.json")) is True
-    
+
     @pytest.mark.parametrize("filename", [
         "mcp.json",
         "settings.json",
@@ -353,8 +353,8 @@ pytest tests/test_json_merge_extensions.py --cov=scripts.lib.json_merge \
 
 ### Task 1.4: Commit com Evidências
 
-**Branch**: 061-recovery-017-correction (atual, não criar nova)  
-**Mensagem**: Multi-linha via arquivo `/tmp/commit-msg.txt`  
+**Branch**: 061-recovery-017-correction (atual, não criar nova)
+**Mensagem**: Multi-linha via arquivo `/tmp/commit-msg.txt`
 
 #### Mensagem de Commit
 
@@ -483,15 +483,15 @@ git add docs/planning/2026-05-17-json-merge-fix-action-plan.md
 
 ## 🔧 Phase 2: Architecture Hardening (P1)
 
-**Prioridade**: ALTA  
-**Duração estimada**: 2-3 horas  
-**Deploy**: Esta semana (2026-05-18 a 2026-05-24)  
-**Bloqueador**: Não (P0 resolve problema imediato)  
+**Prioridade**: ALTA
+**Duração estimada**: 2-3 horas
+**Deploy**: Esta semana (2026-05-18 a 2026-05-24)
+**Bloqueador**: Não (P0 resolve problema imediato)
 
 ### Task 2.1: Centralizar Configuração
 
-**Arquivo**: `scripts/lib/constants.py` (NOVO)  
-**Objetivo**: Evitar listas hardcoded em múltiplos lugares  
+**Arquivo**: `scripts/lib/constants.py` (NOVO)
+**Objetivo**: Evitar listas hardcoded em múltiplos lugares
 
 #### Implementação
 
@@ -570,8 +570,8 @@ VSCODE_FILE_DOCS: dict[str, VSCodeFileDoc] = {
 
 ### Task 2.2: Atualizar VSCodeJSONMerger
 
-**Arquivo**: `scripts/lib/json_merge.py`  
-**Mudança**: Importar e usar constantes  
+**Arquivo**: `scripts/lib/json_merge.py`
+**Mudança**: Importar e usar constantes
 
 #### Implementação
 
@@ -583,30 +583,30 @@ from .constants import VSCODE_USER_WINS_FILES, VSCODE_FILE_DOCS
 class VSCodeJSONMerger:
     """
     Merger específico para arquivos .vscode/ com estratégia user-wins.
-    
+
     Arquivos suportados definidos em: scripts.lib.constants.VSCODE_USER_WINS_FILES
-    
+
     Consulte VSCODE_FILE_DOCS para documentação completa de cada arquivo.
     """
-    
+
     def can_merge(self, file_path: Path) -> bool:
         """
         Verifica se é arquivo .vscode/ que requer user-wins sem array union.
-        
+
         Consulta VSCODE_USER_WINS_FILES para lista completa de arquivos suportados.
         """
         return (
             file_path.name in VSCODE_USER_WINS_FILES and
             ".vscode" in file_path.parts
         )
-    
+
     def get_file_doc(self, filename: str) -> dict:
         """
         Retorna documentação do arquivo (para debugging/logging).
-        
+
         Args:
             filename: Nome do arquivo (ex: "mcp.json")
-        
+
         Returns:
             Dict com description, arrays, merge_strategy, reason
         """
@@ -624,8 +624,8 @@ class VSCodeJSONMerger:
 
 ### Task 2.3: Script de Detecção de Duplicações
 
-**Arquivo**: `scripts/detect-json-duplications.py` (NOVO)  
-**Objetivo**: Detectar duplicações em qualquer arquivo JSON  
+**Arquivo**: `scripts/detect-json-duplications.py` (NOVO)
+**Objetivo**: Detectar duplicações em qualquer arquivo JSON
 
 Ver implementação completa no debate técnico (muito grande para reproduzir aqui).
 
@@ -641,8 +641,8 @@ Ver implementação completa no debate técnico (muito grande para reproduzir aq
 
 ### Task 2.4: Script de Correção de Duplicações
 
-**Arquivo**: `scripts/fix-json-duplications.py` (NOVO)  
-**Objetivo**: Corrigir duplicações automaticamente  
+**Arquivo**: `scripts/fix-json-duplications.py` (NOVO)
+**Objetivo**: Corrigir duplicações automaticamente
 
 #### Funcionalidades
 - Remove duplicações preservando ordem
@@ -662,15 +662,15 @@ Ver implementação completa no debate técnico (muito grande para reproduzir aq
 
 ## 🤖 Phase 3: CI/CD & Automation (P2)
 
-**Prioridade**: MÉDIA  
-**Duração estimada**: 3-4 horas  
-**Deploy**: Próximo sprint (após P1)  
-**Bloqueador**: Não  
+**Prioridade**: MÉDIA
+**Duração estimada**: 3-4 horas
+**Deploy**: Próximo sprint (após P1)
+**Bloqueador**: Não
 
 ### Task 3.1: Pre-commit Hook
 
-**Arquivo**: `.git/hooks/pre-commit`  
-**Objetivo**: Bloquear commits com duplicações  
+**Arquivo**: `.git/hooks/pre-commit`
+**Objetivo**: Bloquear commits com duplicações
 
 #### Implementação
 
@@ -693,7 +693,7 @@ has_duplications=0
 for file in $staged_json; do
     if [ -f "$file" ]; then
         echo "   Verificando: $file"
-        
+
         if ! python scripts/detect-json-duplications.py "$file" > /dev/null 2>&1; then
             echo "   ❌ Duplicações detectadas em $file"
             has_duplications=1
@@ -730,8 +730,8 @@ exit 0
 
 ### Task 3.2: GitHub Actions Workflow
 
-**Arquivo**: `.github/workflows/validate-json.yml` (NOVO)  
-**Objetivo**: Validar PRs antes de merge  
+**Arquivo**: `.github/workflows/validate-json.yml` (NOVO)
+**Objetivo**: Validar PRs antes de merge
 
 Ver implementação completa no debate técnico.
 
@@ -746,8 +746,8 @@ Ver implementação completa no debate técnico.
 
 ### Task 3.3: Documentação do Sistema
 
-**Arquivo**: `docs/guides/json-merge-system.md` (NOVO)  
-**Objetivo**: Documentar sistema completo de merge  
+**Arquivo**: `docs/guides/json-merge-system.md` (NOVO)
+**Objetivo**: Documentar sistema completo de merge
 
 #### Conteúdo
 - Visão geral do sistema
@@ -801,19 +801,19 @@ Ver implementação completa no debate técnico.
 ## 🚨 Riscos e Mitigações
 
 ### Risco 1: Testes falhando após correção
-**Probabilidade**: Baixa  
-**Impacto**: Médio  
-**Mitigação**: Executar testes antes de commit, validar cobertura  
+**Probabilidade**: Baixa
+**Impacto**: Médio
+**Mitigação**: Executar testes antes de commit, validar cobertura
 
 ### Risco 2: Regressão em mcp.json ou settings.json
-**Probabilidade**: Muito baixa  
-**Impacto**: Alto  
-**Mitigação**: Testes de regressão incluídos na Task 1.3  
+**Probabilidade**: Muito baixa
+**Impacto**: Alto
+**Mitigação**: Testes de regressão incluídos na Task 1.3
 
 ### Risco 3: P1/P2 atrasarem e duplicações retornarem
-**Probabilidade**: Média  
-**Impacto**: Baixo (P0 já resolveu)  
-**Mitigação**: P0 independente, P1/P2 são melhorias incrementais  
+**Probabilidade**: Média
+**Impacto**: Baixo (P0 já resolveu)
+**Mitigação**: P0 independente, P1/P2 são melhorias incrementais
 
 ---
 

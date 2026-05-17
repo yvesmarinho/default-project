@@ -42,15 +42,15 @@ def fix_json_file(file_path: Path) -> bool:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        
+
         # Backup
         backup = file_path.with_suffix(file_path.suffix + ".backup")
         with open(backup, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        
+
         # Fix
         fixed = remove_duplicates_from_arrays(data)
-        
+
         # Salvar se mudou
         if json.dumps(fixed, sort_keys=True) != json.dumps(data, sort_keys=True):
             with open(file_path, "w", encoding="utf-8") as f:
@@ -62,7 +62,7 @@ def fix_json_file(file_path: Path) -> bool:
             backup.unlink()  # Sem mudanças, remover backup
             log.info(f"✨ OK: {file_path} (sem duplicações)")
             return False
-    
+
     except Exception as e:
         log.error(f"❌ Error in {file_path}: {e}")
         return False
@@ -71,19 +71,19 @@ def fix_json_file(file_path: Path) -> bool:
 if __name__ == "__main__":
     # Aceitar arquivo ou diretório
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
-    
+
     if target.is_file():
         files = [target]
     else:
         files = list(target.rglob("*.json"))
         # Filtrar arquivos ignorados
         files = [f for f in files if ".git" not in f.parts and "node_modules" not in f.parts]
-    
+
     log.info(f"🔍 Scanning {len(files)} JSON files...")
-    
+
     fixed_count = 0
     for file in sorted(files):
         if fix_json_file(file):
             fixed_count += 1
-    
+
     log.info(f"✅ Completed: {fixed_count} files fixed, {len(files)-fixed_count} already clean")

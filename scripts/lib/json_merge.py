@@ -25,27 +25,27 @@ log = logging.getLogger(__name__)
 def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
     """
     Deep merge com estratégia user-wins SEM union de arrays.
-    
+
     Mudança arquitetural (v2.0): JSON é padrão de configuração no projeto.
     Todos os JSONs devem usar user-wins sem duplicação de arrays.
-    
+
     Estratégia:
     - Overlay (usuário) sobrescreve base (template)
     - Arrays substituídos completamente (NÃO faz union)
     - Objetos aninhados mergeados recursivamente
     - Chaves novas do template são adicionadas
-    
+
     Histórico:
     - v1.0: Usava always_merger.merge() (union de arrays) ❌ BUG
     - v2.0: Implementa user-wins sem union ✅ FIX ARQUITETURAL
-    
+
     Args:
         base: Template (upstream)
         overlay: Usuário (customizações)
-    
+
     Returns:
         Dicionário mergeado com estratégia user-wins
-    
+
     Exemplos:
         >>> base = {"a": 1, "b": {"c": 2}}
         >>> overlay = {"b": {"d": 3}, "e": 4}
@@ -63,42 +63,42 @@ def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, 
 def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
     """
     Implementação do merge user-wins recursivo.
-    
+
     Algoritmo:
     1. Copiar todos valores do overlay (user wins)
     2. Para objetos aninhados: merge recursivo
     3. Adicionar chaves novas do base que não existem no overlay
-    
+
     Comportamento por tipo:
     - Primitivos: overlay wins
     - Arrays: overlay wins (NÃO faz union)
     - Objects: merge recursivo
-    
+
     Args:
         base: Template
         overlay: Usuário
-    
+
     Returns:
         Dicionário mergeado
     """
     merged = {}
-    
+
     # Passo 1: User wins - copiar tudo do overlay
     for key, overlay_value in overlay.items():
         base_value = base.get(key)
-        
+
         # Se ambos são dicts, merge recursivo
         if isinstance(overlay_value, dict) and isinstance(base_value, dict):
             merged[key] = _merge_user_wins_recursive(base_value, overlay_value)
         else:
             # Primitivos e arrays: user wins completamente
             merged[key] = overlay_value
-    
+
     # Passo 2: Adicionar chaves novas do template
     for key, base_value in base.items():
         if key not in merged:
             merged[key] = base_value
-    
+
     return merged
 
 

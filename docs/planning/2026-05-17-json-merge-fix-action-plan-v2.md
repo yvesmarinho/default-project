@@ -70,24 +70,24 @@ Arrays em configs são customizações do usuário, não listas a serem concaten
 def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
     """
     Deep merge com estratégia user-wins SEM union de arrays.
-    
+
     Mudança arquitetural (v2.0): JSON é padrão de configuração no projeto.
     Todos os JSONs devem usar user-wins sem duplicação de arrays.
-    
+
     Estratégia:
     - Overlay (usuário) sobrescreve base (template)
     - Arrays substituídos completamente (NÃO faz union)
     - Objetos aninhados mergeados recursivamente
     - Chaves novas do template são adicionadas
-    
+
     Histórico:
     - v1.0: Usava always_merger.merge() (union de arrays) ❌ BUG
     - v2.0: Implementa user-wins sem union ✅ FIX ARQUITETURAL
-    
+
     Args:
         base: Template (upstream)
         overlay: Usuário (customizações)
-    
+
     Returns:
         Dicionário mergeado com estratégia user-wins
     """
@@ -97,42 +97,42 @@ def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, 
 def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
     """
     Implementação do merge user-wins recursivo.
-    
+
     Algoritmo:
     1. Copiar todos valores do overlay (user wins)
     2. Para objetos aninhados: merge recursivo
     3. Adicionar chaves novas do base que não existem no overlay
-    
+
     Comportamento por tipo:
     - Primitivos: overlay wins
     - Arrays: overlay wins (NÃO faz union)
     - Objects: merge recursivo
-    
+
     Args:
         base: Template
         overlay: Usuário
-    
+
     Returns:
         Dicionário mergeado
     """
     merged = {}
-    
+
     # Passo 1: User wins - copiar tudo do overlay
     for key, overlay_value in overlay.items():
         base_value = base.get(key)
-        
+
         # Se ambos são dicts, merge recursivo
         if isinstance(overlay_value, dict) and isinstance(base_value, dict):
             merged[key] = _merge_user_wins_recursive(base_value, overlay_value)
         else:
             # Primitivos e arrays: user wins completamente
             merged[key] = overlay_value
-    
+
     # Passo 2: Adicionar chaves novas do template
     for key, base_value in base.items():
         if key not in merged:
             merged[key] = base_value
-    
+
     return merged
 ```
 
@@ -298,15 +298,15 @@ def fix_json_file(file_path: Path) -> bool:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        
+
         # Backup
         backup = file_path.with_suffix(file_path.suffix + ".backup")
         with open(backup, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        
+
         # Fix
         fixed = remove_duplicates_from_arrays(data)
-        
+
         # Salvar se mudou
         if json.dumps(fixed, sort_keys=True) != json.dumps(data, sort_keys=True):
             with open(file_path, "w", encoding="utf-8") as f:
@@ -318,7 +318,7 @@ def fix_json_file(file_path: Path) -> bool:
             backup.unlink()  # Sem mudanças, remover backup
             log.info(f"✨ OK: {file_path} (sem duplicações)")
             return False
-    
+
     except Exception as e:
         log.error(f"❌ Error in {file_path}: {e}")
         return False
@@ -326,23 +326,23 @@ def fix_json_file(file_path: Path) -> bool:
 
 if __name__ == "__main__":
     import sys
-    
+
     # Aceitar arquivo ou diretório
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
-    
+
     if target.is_file():
         files = [target]
     else:
         files = list(target.rglob("*.json"))
         files = [f for f in files if ".git" not in f.parts and "node_modules" not in f.parts]
-    
+
     log.info(f"🔍 Scanning {len(files)} JSON files...")
-    
+
     fixed_count = 0
     for file in files:
         if fix_json_file(file):
             fixed_count += 1
-    
+
     log.info(f"✅ Completed: {fixed_count} files fixed, {len(files)-fixed_count} already clean")
 ```
 
@@ -388,92 +388,92 @@ from pathlib import Path
 
 class TestDeepMergeJsonUserWins:
     """Testa estratégia user-wins universal para merge JSON."""
-    
+
     def test_arrays_are_replaced_not_merged(self):
         """Arrays do usuário substituem template completamente."""
         base = {"items": [1, 2, 3]}
         overlay = {"items": [4, 5]}
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         assert result["items"] == [4, 5], \
             "Array deve ser substituído, NÃO concatenado"
         assert result["items"] != [1, 2, 3, 4, 5], \
             "NÃO deve fazer union de arrays"
-    
+
     def test_nested_objects_are_merged(self):
         """Objetos aninhados fazem merge recursivo."""
         base = {"config": {"a": 1, "b": 2}}
         overlay = {"config": {"b": 3, "c": 4}}
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         assert result == {"config": {"a": 1, "b": 3, "c": 4}}
-    
+
     def test_new_template_keys_are_added(self):
         """Chaves novas do template são adicionadas."""
         base = {"new_key": "new_value", "nested": {"new": "data"}}
         overlay = {"existing": "value"}
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         assert "new_key" in result
         assert "existing" in result
         assert result["nested"] == {"new": "data"}
-    
+
     def test_user_values_override_template(self):
         """Valores primitivos do usuário sobrescrevem template."""
         base = {"version": "1.0.0", "enabled": True}
         overlay = {"version": "2.0.0"}
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         assert result["version"] == "2.0.0"
         assert result["enabled"] is True
 
 
 class TestJSONMergerUniversal:
     """Testa JSONMerger aplicando user-wins para TODOS os JSONs."""
-    
+
     def test_accepts_vscode_extensions_json(self):
         """JSONMerger aceita extensions.json."""
         merger = JSONMerger()
         path = Path(".vscode/extensions.json")
-        
+
         assert merger.can_merge(path) is True
-    
+
     def test_accepts_vscode_mcp_json(self):
         """JSONMerger aceita mcp.json."""
         merger = JSONMerger()
         path = Path(".vscode/mcp.json")
-        
+
         assert merger.can_merge(path) is True
-    
+
     def test_accepts_package_json(self):
         """JSONMerger aceita package.json."""
         merger = JSONMerger()
         path = Path("package.json")
-        
+
         assert merger.can_merge(path) is True
-    
+
     def test_accepts_tsconfig_json(self):
         """JSONMerger aceita tsconfig.json."""
         merger = JSONMerger()
         path = Path("tsconfig.json")
-        
+
         assert merger.can_merge(path) is True
-    
+
     def test_rejects_code_workspace(self):
         """JSONMerger rejeita .code-workspace (tem merger específico)."""
         merger = JSONMerger()
         path = Path("project.code-workspace")
-        
+
         assert merger.can_merge(path) is False
 
 
 class TestRealWorldScenarios:
     """Testa cenários reais de merge."""
-    
+
     def test_extensions_json_merge(self):
         """Simula merge de extensions.json sem duplicação."""
         base = {
@@ -489,9 +489,9 @@ class TestRealWorldScenarios:
                 "astral-sh.uv"
             ]
         }
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         # User list wins completamente
         assert result["recommendations"] == [
             "github.copilot",
@@ -500,7 +500,7 @@ class TestRealWorldScenarios:
         ]
         # NÃO deve ter duplicações ou concatenação
         assert len(result["recommendations"]) == 3
-    
+
     def test_mcp_json_merge_args_not_duplicated(self):
         """Simula merge de mcp.json sem duplicar args."""
         base = {
@@ -524,9 +524,9 @@ class TestRealWorldScenarios:
                 }
             }
         }
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         # Args do usuário não duplicam
         assert result["mcpServers"]["memory"]["args"] == [
             "-y", "@modelcontextprotocol/server-memory"
@@ -535,7 +535,7 @@ class TestRealWorldScenarios:
         assert result["mcpServers"]["memory"]["env"] == {"CUSTOM": "value"}
         # Custom server preservado
         assert "filesystem" in result["mcpServers"]
-    
+
     def test_package_json_scripts_merge(self):
         """Simula merge de package.json scripts."""
         base = {
@@ -550,16 +550,16 @@ class TestRealWorldScenarios:
                 "build": "vite build"
             }
         }
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         # User script sobrescreve template
         assert result["scripts"]["build"] == "vite build"
         # Template script adicionado
         assert result["scripts"]["test"] == "jest"
         # User script preservado
         assert result["scripts"]["dev"] == "tsx watch src/index.ts"
-    
+
     def test_tsconfig_paths_merge(self):
         """Simula merge de tsconfig.json."""
         base = {
@@ -576,9 +576,9 @@ class TestRealWorldScenarios:
             },
             "include": ["src/**/*", "types/**/*"]
         }
-        
+
         result = deep_merge_json(base, overlay)
-        
+
         # User target wins
         assert result["compilerOptions"]["target"] == "ES2022"
         # Template module adicionado
@@ -785,16 +785,16 @@ def analyze_array_duplicates(arr, path="root"):
     """Analisa duplicações em um array."""
     if not isinstance(arr, list):
         return None
-    
+
     # Contar itens
     items = []
     for item in arr:
         key = json.dumps(item, sort_keys=True) if isinstance(item, (dict, list)) else item
         items.append(key)
-    
+
     counts = Counter(items)
     duplicates = {k: v for k, v in counts.items() if v > 1}
-    
+
     if duplicates:
         return {
             "path": path,
@@ -803,14 +803,14 @@ def analyze_array_duplicates(arr, path="root"):
             "duplicates": duplicates,
             "duplication_rate": (len(arr) - len(counts)) / len(arr) * 100
         }
-    
+
     return None
 
 
 def scan_json_structure(data, path="root"):
     """Scan recursivo de duplicações em estrutura JSON."""
     issues = []
-    
+
     if isinstance(data, dict):
         for key, value in data.items():
             new_path = f"{path}.{key}"
@@ -822,7 +822,7 @@ def scan_json_structure(data, path="root"):
         # Scan recursivo em itens
         for i, item in enumerate(data):
             issues.extend(scan_json_structure(item, f"{path}[{i}]"))
-    
+
     return issues
 
 
@@ -831,9 +831,9 @@ def scan_file(file_path: Path):
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        
+
         issues = scan_json_structure(data, file_path.name)
-        
+
         if issues:
             log.warning(f"⚠️  {file_path}")
             for issue in issues:
@@ -847,7 +847,7 @@ def scan_file(file_path: Path):
         else:
             log.info(f"✅ {file_path}")
             return False
-    
+
     except Exception as e:
         log.error(f"❌ {file_path}: {e}")
         return False
@@ -855,18 +855,18 @@ def scan_file(file_path: Path):
 
 if __name__ == "__main__":
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
-    
+
     # Listar JSONs
     files = list(root.rglob("*.json"))
     files = [f for f in files if ".git" not in f.parts and "node_modules" not in f.parts]
-    
+
     log.info(f"🔍 Scanning {len(files)} JSON files...\n")
-    
+
     issues_count = 0
     for file in sorted(files):
         if scan_file(file):
             issues_count += 1
-    
+
     log.info(f"\n{'='*60}")
     if issues_count > 0:
         log.warning(f"⚠️  {issues_count} files com duplicações")
@@ -908,7 +908,7 @@ python scripts/detect-json-duplications.py .vscode/
 def save_json_formatted(path: Path, data: Dict[str, Any]) -> None:
     """
     Salva JSON formatado com validação anti-duplicação.
-    
+
     Validações:
     - Sintaxe JSON válida
     - Detecção de arrays duplicados (warning)
@@ -920,7 +920,7 @@ def save_json_formatted(path: Path, data: Dict[str, Any]) -> None:
         for issue in issues:
             log.warning(f"   {issue['path']}: {issue['duplication_rate']:.1f}% duplicado")
         log.warning("   Execute: python scripts/fix-json-duplications.py")
-    
+
     # Salvar
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -930,7 +930,7 @@ def save_json_formatted(path: Path, data: Dict[str, Any]) -> None:
 def _detect_duplications(data, path="root"):
     """Detecta duplicações em estrutura JSON (versão simplificada)."""
     issues = []
-    
+
     if isinstance(data, dict):
         for key, value in data.items():
             issues.extend(_detect_duplications(value, f"{path}.{key}"))
@@ -939,13 +939,13 @@ def _detect_duplications(data, path="root"):
         items = [json.dumps(i, sort_keys=True) if isinstance(i, (dict, list)) else i for i in data]
         counts = Counter(items)
         duplicates = {k: v for k, v in counts.items() if v > 1}
-        
+
         if duplicates:
             issues.append({
                 "path": path,
                 "duplication_rate": (len(data) - len(counts)) / len(data) * 100
             })
-    
+
     return issues
 ```
 
@@ -1071,19 +1071,19 @@ on:
 jobs:
   check-duplications:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
+
       - name: Scan for JSON duplications
         run: |
           python scripts/detect-json-duplications.py .
-      
+
       - name: Report results
         if: failure()
         run: |
