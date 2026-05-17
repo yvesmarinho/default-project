@@ -132,14 +132,14 @@ def build_protection_payload(config: BranchProtectionConfig) -> dict[str, Any]:
         "lock_branch": config.lock_branch,
         "allow_fork_syncing": config.allow_fork_syncing,
     }
-    
+
     # Status checks
     if config.required_status_checks:
         payload["required_status_checks"] = {
             "strict": config.strict_status_checks,
             "checks": [{"context": check} for check in config.required_status_checks],
         }
-    
+
     # Pull request reviews
     if config.require_pull_request:
         payload["required_pull_request_reviews"] = {
@@ -149,11 +149,11 @@ def build_protection_payload(config: BranchProtectionConfig) -> dict[str, Any]:
             "required_approving_review_count": config.required_approving_review_count,
             "require_last_push_approval": config.require_last_push_approval,
         }
-    
+
     # Configurações adicionais (não via branch protection, mas via separate API)
     # required_signatures - via /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
     # required_linear_history - via branch settings
-    
+
     return payload
 
 
@@ -167,7 +167,7 @@ def setup_branch_protection(
 ) -> bool:
     """
     Configura proteção de branch via GitHub API.
-    
+
     Returns:
         True se sucesso, False caso contrário
     """
@@ -177,27 +177,27 @@ def setup_branch_protection(
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
     }
-    
+
     payload = build_protection_payload(config)
-    
+
     if dry_run:
         console.print(f"\n[yellow]🔍 DRY RUN - Configuração que seria aplicada:[/yellow]")
         console.print(payload)
         return True
-    
+
     # Aplicar proteção
     response = requests.put(url, headers=headers, json=payload)
-    
+
     if response.status_code in (200, 201):
         console.print(f"[green]✅ Proteção aplicada em {branch}[/green]")
-        
+
         # Aplicar required_signatures se necessário
         if config.required_signatures:
             sig_url = f"{url}/required_signatures"
             sig_response = requests.post(sig_url, headers=headers)
             if sig_response.status_code in (200, 201):
                 console.print(f"[green]✅ Commits assinados habilitados[/green]")
-        
+
         return True
     else:
         console.print(f"[red]❌ Erro ao aplicar proteção:[/red]")
@@ -211,7 +211,7 @@ def show_protection_summary(config: BranchProtectionConfig):
     table = Table(title=f"Configuração de Proteção - Nível: {config.level.upper()}")
     table.add_column("Configuração", style="cyan")
     table.add_column("Valor", style="green")
-    
+
     table.add_row("Requer Pull Request", "✅" if config.require_pull_request else "❌")
     table.add_row("Aprovações necessárias", str(config.required_approving_review_count))
     table.add_row("Invalidar aprovações antigas", "✅" if config.dismiss_stale_reviews else "❌")
@@ -223,11 +223,11 @@ def show_protection_summary(config: BranchProtectionConfig):
     table.add_row("Requer resolução de conversas", "✅" if config.required_conversation_resolution else "❌")
     table.add_row("Commits assinados", "✅" if config.required_signatures else "❌")
     table.add_row("Histórico linear", "✅" if config.required_linear_history else "❌")
-    
+
     if config.required_status_checks:
         checks = ", ".join(config.required_status_checks)
         table.add_row("Status checks", checks)
-    
+
     console.print(table)
 
 
@@ -261,35 +261,35 @@ def main():
         action="store_true",
         help="Apenas mostrar configuração sem aplicar",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Validar formato do repo
     if "/" not in args.repo:
         console.print("[red]❌ Formato inválido. Use: owner/repo[/red]")
         return 1
-    
+
     owner, repo = args.repo.split("/", 1)
-    
+
     # Obter token
     token = args.token or os.getenv("GITHUB_TOKEN")
     if not token and not args.dry_run:
         console.print("[red]❌ GitHub token não fornecido[/red]")
         console.print("   Use --token ou defina GITHUB_TOKEN")
         return 1
-    
+
     # Obter configuração
     config = PROTECTION_LEVELS[args.level]
-    
+
     # Mostrar resumo
     console.print(f"\n[bold]Configurando proteção para:[/bold]")
     console.print(f"  Repository: {owner}/{repo}")
     console.print(f"  Branch: {args.branch}")
     console.print(f"  Nível: {args.level}")
     console.print()
-    
+
     show_protection_summary(config)
-    
+
     if not args.dry_run:
         console.print("\n[yellow]⚠️  Aplicando configuração...[/yellow]")
         success = setup_branch_protection(owner, repo, args.branch, config, token, args.dry_run)

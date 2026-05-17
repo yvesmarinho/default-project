@@ -55,6 +55,36 @@ test:
 ## test-cov: Alias for test (with coverage)
 test-cov: test
 
+## test-p2: Run GitHub Best Practices P2 tests only
+test-p2:
+	@echo "$(BLUE)🧪 Running GitHub Best Practices P2 tests...$(NC)"
+	@./tests/run_p2_tests.sh
+
+## test-p2-cov: Run P2 tests with coverage
+test-p2-cov:
+	@echo "$(BLUE)🧪 Running GitHub Best Practices P2 tests with coverage...$(NC)"
+	@./tests/run_p2_tests.sh --coverage
+
+## test-all: Run complete test suite with all bells and whistles
+test-all:
+	@echo "$(BLUE)🧪 Running complete test suite...$(NC)"
+	@./tests/run_all_tests.sh --coverage --verbose
+
+## test-smoke: Run smoke tests only (quick validation)
+test-smoke:
+	@echo "$(BLUE)💨 Running smoke tests...$(NC)"
+	@pytest tests/ -m smoke -q
+
+## test-git: Run Git validators tests only
+test-git:
+	@echo "$(BLUE)🔍 Running Git validators tests...$(NC)"
+	@pytest tests/test_git_validators.py -v
+
+## test-watch: Run tests in watch mode (failed first)
+test-watch:
+	@echo "$(BLUE)👀 Running tests in watch mode...$(NC)"
+	@pytest tests/ --ff -v
+
 ## lint: Run code linting
 lint:
 	@echo "$(BLUE)🔍 Running code linting...$(NC)"

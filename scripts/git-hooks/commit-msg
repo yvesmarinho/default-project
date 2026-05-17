@@ -42,20 +42,20 @@ COMMIT_TYPES = {
 def validate_commit_message(message: str) -> tuple[bool, list[str]]:
     """
     Valida mensagem de commit segundo Conventional Commits.
-    
+
     Returns:
         (is_valid, errors): Tupla com status e lista de erros
     """
     errors = []
-    
+
     # Permitir mensagens de merge/revert
     if message.startswith(('Merge', 'Revert', 'Initial commit')):
         return True, []
-    
+
     # Validar linha do subject
     lines = message.strip().split('\n')
     subject = lines[0]
-    
+
     # Validar padrão
     match = COMMIT_PATTERN.match(subject)
     if not match:
@@ -73,34 +73,34 @@ def validate_commit_message(message: str) -> tuple[bool, list[str]]:
         errors.append("  • docs(readme): update installation instructions")
         errors.append("  • refactor(core)!: breaking change in config format")
         return False, errors
-    
+
     # Avisos (não bloqueantes)
     warnings = []
-    
+
     # Subject muito longo
     if len(subject) > 72:
         warnings.append(f"⚠️  Subject muito longo ({len(subject)} chars, recomendado ≤72)")
-    
+
     # Subject termina com ponto
     if subject.endswith('.'):
         warnings.append("⚠️  Subject não deve terminar com ponto")
-    
+
     # Subject começa com maiúscula (exceto tipo/escopo)
     desc = match.group('subject')
     if desc and desc[0].isupper():
         warnings.append("⚠️  Descrição não deve começar com maiúscula")
-    
+
     # Descrição muito curta
     if len(desc) < 10:
         warnings.append(f"⚠️  Descrição muito curta ({len(desc)} chars, recomendado ≥10)")
-    
+
     # Mostrar warnings se houver
     if warnings:
         print("✅ Commit válido, mas com avisos:", file=sys.stderr)
         for w in warnings:
             print(f"   {w}", file=sys.stderr)
         print("", file=sys.stderr)
-    
+
     return True, []
 
 
@@ -109,23 +109,23 @@ def main():
     if len(sys.argv) < 2:
         print("Erro: arquivo de mensagem não fornecido", file=sys.stderr)
         return 1
-    
+
     commit_msg_file = Path(sys.argv[1])
-    
+
     if not commit_msg_file.exists():
         print(f"Erro: arquivo não encontrado: {commit_msg_file}", file=sys.stderr)
         return 1
-    
+
     # Ler mensagem
     message = commit_msg_file.read_text(encoding='utf-8').strip()
-    
+
     # Ignorar mensagens vazias ou de comentário
     if not message or message.startswith('#'):
         return 0
-    
+
     # Validar
     is_valid, errors = validate_commit_message(message)
-    
+
     if not is_valid:
         print("", file=sys.stderr)
         print("❌ COMMIT REJEITADO", file=sys.stderr)
@@ -139,7 +139,7 @@ def main():
         print("💡 Dica: Edite a mensagem do commit e tente novamente.", file=sys.stderr)
         print("", file=sys.stderr)
         return 1
-    
+
     print(f"✅ Commit message válido", file=sys.stderr)
     return 0
 

@@ -9,7 +9,7 @@ body:
     attributes:
       value: |
         Tem uma pergunta? Estamos aqui para ajudar!
-        
+
         **Nota**: Para questões técnicas complexas, considere usar as [Discussions](../../discussions) ao invés de issues.
 
   - type: textarea
