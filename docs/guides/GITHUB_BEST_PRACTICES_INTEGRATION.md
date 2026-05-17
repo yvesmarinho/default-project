@@ -289,29 +289,190 @@ Conforme `docs/guides/BRANCH_PROTECTION_SETUP.md`:
 - ✅ Integração no flow_new_project
 - ✅ Testado e validado (projeto de teste criado com sucesso)
 
-### P2 - Desejável (futuro)
-- [ ] Issue templates (bug, feature, etc.)
-- [ ] GitHub Actions workflow para validar branches
-- [ ] Pre-commit hook para validar commits
-- [ ] Script de setup automático de branch protection
-- [ ] Badge de conformidade
+### P2 - Desejável (✅ COMPLETO)
+- ✅ Issue templates (bug_report, feature_request, documentation, question, config)
+- ✅ GitHub Actions workflow para validar branches/commits/PRs (git-validation.yml)
+- ✅ Pre-commit hook para validar commits (commit-msg)
+- ✅ Script de setup automático de branch protection (setup-branch-protection.py)
+- ✅ Badge de conformidade (BADGES.md com guia completo)
+- ✅ Integração no scaffold (copy_github_templates atualizado)
+
+#### Issue Templates Criados
+
+Localizados em `.github/templates/common/ISSUE_TEMPLATE/`:
+
+**bug_report.yml**
+- Formulário estruturado para reportar bugs
+- Campos: descrição, passos, comportamento esperado/atual
+- Dropdown de severidade (crítica → baixa)
+- Informações de versão e ambiente
+- Checklist de verificação
+
+**feature_request.yml**
+- Formulário para requisitar funcionalidades
+- Campos: problema/necessidade, solução proposta, alternativas
+- Dropdown de prioridade e impacto
+- Campo para mockups/exemplos
+- Checklist de validação
+
+**documentation.yml**
+- Template para melhorias de documentação
+- Dropdown de tipo (erro, melhoria, novo conteúdo)
+- Localização e problema atual
+- Sugestão de melhoria
+- Exemplos e checklist
+
+**question.yml**
+- Template para questões/dúvidas
+- Campo de pergunta e contexto
+- O que já foi tentado
+- Informações de ambiente
+- Checklist de pesquisa prévia
+
+**config.yml**
+- Configuração de issue templates
+- Desabilita issues em branco
+- Links para Discussions, Docs, Security
+
+#### GitHub Actions Workflow
+
+**git-validation.yml** (`.github/templates/common/workflows/`)
+
+Jobs implementados:
+1. **validate-branch**: Valida nome da branch contra padrão
+2. **validate-commits**: Valida todas mensagens de commit (Conventional Commits)
+3. **validate-pr-title**: Valida título do PR
+4. **pr-size-check**: Avisa sobre PRs grandes (>1000 linhas ou >20 arquivos)
+5. **summary**: Job final com resultado geral
+
+Features:
+- Triggers: pull_request (opened, synchronize, reopened)
+- Python 3.12 + checkout@v4 + setup-python@v5
+- Validação de branches protegidas (main, develop, staging, production)
+- Warnings não-bloqueantes para estilo
+- Badge status no README
+
+#### Pre-commit Hook
+
+**commit-msg** (`scripts/git-hooks/`)
+
+Features:
+- Validação local de commits antes do push
+- Mesmo padrão do workflow (Conventional Commits)
+- Permite mensagens de merge/revert
+- Warnings para estilo (não bloqueiam commit)
+- Feedback descritivo de erros
+- Permissões executáveis (chmod 755)
+
+Instalação automática pelo scaffold:
+```bash
+# Hook é copiado para projeto_path/scripts/git-hooks/
+# Para ativar no repositório:
+cd projeto
+ln -s ../../scripts/git-hooks/commit-msg .git/hooks/commit-msg
+```
+
+#### Script de Branch Protection
+
+**setup-branch-protection.py** (`scripts/`)
+
+Features:
+- Configura proteção via GitHub API
+- 3 níveis pré-configurados (minimum, recommended, maximum)
+- Suporte a variáveis de ambiente (GITHUB_TOKEN)
+- Dry-run mode para visualizar configuração
+- Validação de status checks
+- Configuração de required signatures
+- Interface CLI com rich tables
+
+Uso:
+```bash
+# Dry run
+python scripts/setup-branch-protection.py owner/repo --dry-run
+
+# Aplicar nível recomendado
+export GITHUB_TOKEN=ghp_xxxxx
+python scripts/setup-branch-protection.py owner/repo --level recommended
+
+# Branch específica
+python scripts/setup-branch-protection.py owner/repo --branch develop --level maximum
+```
+
+Configurações por nível:
+
+**Minimum**:
+- 1 aprovação
+- Status checks: build, test
+- Sem force push/delete
+
+**Recommended**:
+- 1 aprovação
+- Dismiss stale reviews
+- Code owner reviews
+- Status checks: build, test, lint, validate-git
+- Require conversation resolution
+- Enforce admins
+
+**Maximum**:
+- 2 aprovações
+- Tudo do recommended
+- Require last push approval
+- Signed commits
+- Linear history
+- Status checks: build, test, lint, validate-git, security-scan
+
+#### Badges de Conformidade
+
+**BADGES.md** (`.github/templates/common/`)
+
+Guia completo de badges para README, incluindo:
+- Git Validation workflow status
+- Conventional Commits badge
+- GitHub Flow badge
+- Branch Protection level
+- Code Owners badge
+- Signed Commits badge
+- PR Size guidelines
+- Required Approvals
+- Pre-commit hooks
+
+Exemplo de uso no README:
+```markdown
+[![Git Validation](https://github.com/owner/repo/workflows/Git%20Validation/badge.svg)](https://github.com/owner/repo/actions)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![GitHub Flow](https://img.shields.io/badge/Workflow-GitHub%20Flow-blue.svg)](https://docs.github.com/en/get-started/quickstart/github-flow)
+![Branch Protection](https://img.shields.io/badge/Branch%20Protection-Recommended-green)
+```
+
+Template README atualizado automaticamente com badges no topo.
 
 ---
 
 ## ✅ Uso Automático pelo Scaffold
 
-O scaffold agora copia automaticamente todos os templates ao criar um novo projeto:
+O scaffold agora copia automaticamente todos os templates (P1 + P2) ao criar um novo projeto:
 
 ```bash
 # Criar novo projeto (templates são copiados automaticamente)
 uv run scripts/scaffold.py new --name my-project --domain programming --language python
 
-# Arquivos criados automaticamente:
+# Arquivos criados automaticamente (P1):
 # ✅ CONTRIBUTING.md (raiz)
 # ✅ .github/PULL_REQUEST_TEMPLATE.md
 # ✅ .github/CODEOWNERS
 # ✅ docs/BRANCH_PROTECTION_SETUP.md
-# ✅ README.md com seção "Contribuindo"
+# ✅ README.md com badges e seção "Contribuindo"
+
+# Arquivos criados automaticamente (P2):
+# ✅ .github/ISSUE_TEMPLATE/bug_report.yml
+# ✅ .github/ISSUE_TEMPLATE/feature_request.yml
+# ✅ .github/ISSUE_TEMPLATE/documentation.yml
+# ✅ .github/ISSUE_TEMPLATE/question.yml
+# ✅ .github/ISSUE_TEMPLATE/config.yml
+# ✅ .github/workflows/git-validation.yml
+# ✅ scripts/git-hooks/commit-msg (chmod 755)
+# ✅ .github/BADGES.md
+# ✅ scripts/setup-branch-protection.py (chmod 755)
 ```
 
 ### O Que É Processado Automaticamente
@@ -319,15 +480,42 @@ uv run scripts/scaffold.py new --name my-project --domain programming --language
 1. **Variáveis substituídas**:
    - `{{ project_name }}` → nome do projeto
    - `{{ current_date }}` → data de criação (YYYY-MM-DD)
+   - `{{ github_repo }}` → nome do repositório
+   - `{{ github_owner }}` → owner do repositório
 
-2. **README.md gerado** com seção completa:
-   - Links para CONTRIBUTING.md
-   - Links para BRANCH_PROTECTION_SETUP.md
-   - Convenções de branches e commits
+2. **README.md gerado** com:
+   - Badges de conformidade (Conventional Commits, GitHub Flow, Branch Protection)
+   - Seção completa de contribuição
+   - Links para CONTRIBUTING.md e BRANCH_PROTECTION_SETUP.md
 
 3. **CODEOWNERS** com placeholders para customização:
    - `@tech-lead`, `@backend-team`, `@frontend-team`, etc.
    - Ajustar conforme estrutura da equipe
+
+4. **Permissões executáveis** aplicadas automaticamente:
+   - `scripts/git-hooks/commit-msg` → chmod 755
+   - `scripts/setup-branch-protection.py` → chmod 755
+
+### Próximos Passos Após Criar Projeto
+
+1. **Ativar git hook**:
+   ```bash
+   cd projeto
+   ln -s ../../scripts/git-hooks/commit-msg .git/hooks/commit-msg
+   ```
+
+2. **Customizar CODEOWNERS**:
+   - Editar `.github/CODEOWNERS`
+   - Substituir placeholders por times/usuários reais
+
+3. **Configurar branch protection no GitHub**:
+   ```bash
+   export GITHUB_TOKEN=ghp_xxxxx
+   python scripts/setup-branch-protection.py owner/repo --level recommended
+   ```
+
+4. **Ajustar issue templates** (opcional):
+   - Editar `.github/ISSUE_TEMPLATE/*.yml` conforme necessidade do projeto
 
 ---
 

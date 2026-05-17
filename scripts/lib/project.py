@@ -68,6 +68,10 @@ def _apply_placeholders(text: str, config: ProjectConfig) -> str:
 _README_MD = """\
 # {{PROJECT_TITLE}}
 
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![GitHub Flow](https://img.shields.io/badge/Workflow-GitHub%20Flow-blue.svg)](https://docs.github.com/en/get-started/quickstart/github-flow)
+![Branch Protection](https://img.shields.io/badge/Branch%20Protection-Recommended-green)
+
 > {{PROJECT_DESCRIPTION}}
 
 **Domínio**: {{DOMAIN}} | **Linguagem**: {{LANGUAGE}}
@@ -2389,38 +2393,47 @@ def copy_github_templates(config: ProjectConfig, force: bool = False) -> list[Cr
     """
     Copia templates de GitHub Best Practices para o novo projeto.
 
-    Templates copiados:
+    Templates copiados (P1):
       1. CONTRIBUTING.md → raiz do projeto (com substituição de variáveis)
       2. PULL_REQUEST_TEMPLATE.md → .github/
       3. CODEOWNERS → .github/
       4. BRANCH_PROTECTION_SETUP.md → docs/
 
+    Templates adicionais (P2):
+      5. Issue templates → .github/ISSUE_TEMPLATE/ (bug, feature, docs, question)
+      6. GitHub Actions workflows → .github/workflows/
+      7. Git hooks → scripts/git-hooks/
+      8. Badge guide → .github/BADGES.md
+      9. Branch protection script → scripts/
+
     Variáveis substituídas:
       - {{ project_name }} → config.project_name
       - {{ current_date }} → config.created_at
-
-    Esses templates fornecem:
-      - Guia de contribuição com GitHub Flow e Conventional Commits
-      - Template de PR com checklist completo
-      - Definição de code owners por área
-      - Guia de configuração de branch protection
+      - {{ github_repo }} → config.github_repo (se configurado)
 
     Args:
         config: Configuração do projeto
         force: Se True, sobrescreve arquivos existentes após backup
 
-    Ref: P1 - GitHub Best Practices Integration
+    Ref: P1/P2 - GitHub Best Practices Integration
     """
     results: list[CreatedItem] = []
     base = config.project_path
     src_root = _TEMPLATE_ROOT / ".github" / "templates" / "common"
 
     # Mapeamento de variáveis customizadas para templates GitHub
+    github_owner_repo = config.github_repo if config.github_repo else "owner/repo"
+    github_parts = github_owner_repo.split("/") if "/" in github_owner_repo else ["owner", "repo"]
+    
     template_vars = {
         "{{ project_name }}": config.project_name,
         "{{ current_date }}": config.created_at.split("T")[0],  # YYYY-MM-DD apenas
+        "{{ github_repo }}": github_parts[1] if len(github_parts) > 1 else "repo",
+        "{{ github_owner }}": github_parts[0] if len(github_parts) > 0 else "owner",
     }
 
+    # === P1 Templates ===
+    
     # 1. CONTRIBUTING.md → raiz (com substituição de variáveis)
     src_contributing = src_root / "CONTRIBUTING.md"
     dst_contributing = base / "CONTRIBUTING.md"
@@ -2443,6 +2456,54 @@ def copy_github_templates(config: ProjectConfig, force: bool = False) -> list[Cr
     src_guide = _TEMPLATE_ROOT / "docs" / "guides" / "BRANCH_PROTECTION_SETUP.md"
     dst_guide = base / "docs" / "BRANCH_PROTECTION_SETUP.md"
     result = _copy_file_with_vars(src_guide, dst_guide, template_vars, force=force)
+    results.append(result)
+
+    # === P2 Templates ===
+    
+    # 5. Issue templates → .github/ISSUE_TEMPLATE/
+    issue_templates = ["bug_report.yml", "feature_request.yml", "documentation.yml", "question.yml", "config.yml"]
+    for template_name in issue_templates:
+        src_issue = src_root / "ISSUE_TEMPLATE" / template_name
+        dst_issue = base / ".github" / "ISSUE_TEMPLATE" / template_name
+        result = _copy_file_with_vars(src_issue, dst_issue, template_vars, force=force)
+        results.append(result)
+    
+    # 6. GitHub Actions workflows → .github/workflows/
+    src_workflow = src_root / "workflows" / "git-validation.yml"
+    dst_workflow = base / ".github" / "workflows" / "git-validation.yml"
+    result = _copy_file_with_vars(src_workflow, dst_workflow, template_vars, force=force)
+    results.append(result)
+    
+    # 7. Git hooks → scripts/git-hooks/
+    src_hook = _TEMPLATE_ROOT / "scripts" / "git-hooks" / "commit-msg"
+    dst_hook = base / "scripts" / "git-hooks" / "commit-msg"
+    result = _copy_file(src_hook, dst_hook, force=force)
+    # Garantir permissões executáveis
+    if result.status in ("created", "updated") and dst_hook.exists():
+        try:
+            dst_hook.chmod(0o755)
+            log.debug("✅ Permissões executáveis aplicadas: %s", dst_hook.name)
+        except OSError as exc:
+            log.warning("⚠️  Não foi possível aplicar chmod 755 em %s: %s", dst_hook, exc)
+    results.append(result)
+    
+    # 8. Badge guide → .github/BADGES.md
+    src_badges = src_root / "BADGES.md"
+    dst_badges = base / ".github" / "BADGES.md"
+    result = _copy_file_with_vars(src_badges, dst_badges, template_vars, force=force)
+    results.append(result)
+    
+    # 9. Branch protection script → scripts/
+    src_script = _TEMPLATE_ROOT / "scripts" / "setup-branch-protection.py"
+    dst_script = base / "scripts" / "setup-branch-protection.py"
+    result = _copy_file(src_script, dst_script, force=force)
+    # Garantir permissões executáveis
+    if result.status in ("created", "updated") and dst_script.exists():
+        try:
+            dst_script.chmod(0o755)
+            log.debug("✅ Permissões executáveis aplicadas: %s", dst_script.name)
+        except OSError as exc:
+            log.warning("⚠️  Não foi possível aplicar chmod 755 em %s: %s", dst_script, exc)
     results.append(result)
 
     return results
