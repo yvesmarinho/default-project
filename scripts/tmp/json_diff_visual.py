@@ -27,6 +27,89 @@ def show_usage():
     sys.exit(1)
 
 
+def analyze_duplicates_in_file(file_path: Path, data: dict) -> dict:
+    """
+    Analisa duplicações em arrays do arquivo JSON.
+    
+    Returns:
+        Dict com estatísticas de duplicação
+    """
+    stats = {
+        "total_arrays": 0,
+        "arrays_with_duplicates": 0,
+        "duplicates": []
+    }
+    
+    def analyze_value(value, path=""):
+        """Analisa recursivamente valores buscando arrays."""
+        if isinstance(value, list):
+            stats["total_arrays"] += 1
+            
+            # Detectar duplicados
+            duplicates = {}
+            for item in value:
+                if isinstance(item, (str, int, float, bool)):
+                    count = value.count(item)
+                    if count > 1:
+                        duplicates[str(item)] = count
+            
+            if duplicates:
+                stats["arrays_with_duplicates"] += 1
+                stats["duplicates"].append({
+                    "path": path,
+                    "array_size": len(value),
+                    "unique_items": len(set(str(x) for x in value if isinstance(x, (str, int, float, bool)))),
+                    "duplicates": duplicates
+                })
+        
+        elif isinstance(value, dict):
+            for key, val in value.items():
+                new_path = f"{path}.{key}" if path else key
+                analyze_value(val, new_path)
+    
+    analyze_value(data)
+    return stats
+
+
+def print_duplicate_analysis(file_path: Path, stats: dict):
+    """Imprime relatório de análise de duplicações."""
+    print("=" * 80)
+    print(f"🔍 ANÁLISE DE DUPLICAÇÕES - Arquivo de Origem")
+    print(f"   Arquivo: {file_path}")
+    print("=" * 80)
+    print()
+    
+    print(f"📊 Estatísticas Gerais:")
+    print(f"   Total de arrays: {stats['total_arrays']}")
+    print(f"   Arrays com duplicações: {stats['arrays_with_duplicates']}")
+    
+    if stats['arrays_with_duplicates'] > 0:
+        print(f"   Taxa de duplicação: {stats['arrays_with_duplicates'] / stats['total_arrays'] * 100:.1f}%")
+    
+    print()
+    
+    if stats['duplicates']:
+        print("🔴 Duplicações Encontradas:")
+        print()
+        
+        for idx, dup_info in enumerate(stats['duplicates'], 1):
+            print(f"   [{idx}] Path: {dup_info['path']}")
+            print(f"       Tamanho do array: {dup_info['array_size']}")
+            print(f"       Itens únicos: {dup_info['unique_items']}")
+            print(f"       Elementos duplicados:")
+            
+            for item, count in dup_info['duplicates'].items():
+                print(f"         • '{item}': {count} ocorrências (duplicado {count - 1}x)")
+            
+            print()
+    else:
+        print("✅ Nenhuma duplicação encontrada!")
+        print()
+    
+    print("=" * 80)
+    print()
+
+
 def compare_json_arrays(file1: Path, file2: Path):
     """Compara arrays em dois arquivos JSON e mostra diferenças."""
     
@@ -39,6 +122,10 @@ def compare_json_arrays(file1: Path, file2: Path):
     except FileNotFoundError as e:
         print(f"❌ Arquivo não encontrado: {e}", file=sys.stderr)
         sys.exit(2)
+
+    # Análise de duplicações no arquivo de origem
+    stats = analyze_duplicates_in_file(file1, data1)
+    print_duplicate_analysis(file1, stats)
 
     print("=" * 80)
     print(f"📊 DIFF VISUAL - Comparação de Arrays JSON")
