@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-17 — GitHub Best Practices PR #21 + Security Audit ✅
+**Last Updated**: 2026-05-18 — Limpeza de PRs + BUG-17/BUG-18 documentados
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
@@ -8,18 +8,26 @@
 
 ## 🎯 Próxima Sessão (2026-05-18+)
 
-- [ ] **PR #21 Review & Merge**: Aguardar aprovação e merge
-  - **Objetivo**: Finalizar merge do PR #21 após atualização do GitGuardian
-  - **Prioridade**: P0 CRITICAL
-  - **Estimativa**: 10 min
-  - **URL**: https://github.com/yvesmarinho/default-project/pull/21
-  - **Status GitGuardian**: FAILURE (falsos positivos) - aguardando cache update
-  - **Tarefas**:
-    1. Verificar se GitGuardian atualizou status
-    2. Se necessário, fazer re-scan manual no dashboard
-    3. Aprovar e fazer merge do PR
-    4. Deletar branch 061-recovery-017-correction após merge
-  - **Expected Outcome**: PR #21 merged, branch limpa, GitGuardian ✅ PASSED
+- [x] ~~**PR #21 Review & Merge**~~: ✅ MERGED (2026-05-17)
+  - ✅ PR merged com sucesso
+  - ✅ Branch 061-recovery-017-correction deletada
+  - ✅ GitGuardian FAILURE são falsos positivos (confirmado)
+
+- [x] ~~**Limpeza de PRs e Branches**~~: ✅ CONCLUÍDO (2026-05-18)
+  - ✅ 9 PRs fechados (8 Dependabot + 1 duplicado)
+  - ✅ 6 branches deletadas (4 locais + 2 remotas)
+  - ✅ Apenas master permanece
+  - ✅ Backups preservados em retore/ (4 ZIPs)
+
+- [x] ~~**BUG-17 Time-tracker Deployment**~~: ✅ RESOLVIDO (2026-05-18)
+  - ✅ session-start.prompt.md atualizado com Passo 6.5
+  - ✅ Deploy completo no test-workspace-fix
+  - ✅ Documentação criada: BUG-17-time-tracker-missing-deployment.md
+
+- [x] ~~**BUG-18 objetivo-init.yaml Deployment**~~: ✅ RESOLVIDO (2026-05-18)
+  - ✅ objetivo-init.yaml e objetivo-init-minimal.yaml deployados
+  - ✅ Documentação criada: BUG-18-objetivo-init-missing-deployment.md
+  - ✅ Test-workspace-fix agora com arquivos de exemplo
 
 - [ ] **BUG-16 Teste Manual**: Validar upgrade com projeto real customizado
   - **Objetivo**: Executar teste end-to-end de integração BUG-16

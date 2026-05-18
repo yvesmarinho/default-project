@@ -212,3 +212,87 @@ Branches remotas: 1 (origin/master)
 **Status**: ✅ Completo
 
 ---
+
+## 📝 Documentação de Bugs e Deploy de Arquivos
+
+**11:05 — ✅ CONCLUÍDO**
+
+**Objetivo**: Criar BUG reports e corrigir deploy de arquivos faltantes no test-workspace-fix
+
+**Contexto**: Usuário solicitou geração de BUG reports para problemas identificados e verificação de arquivos não deployados
+
+**Bugs documentados**:
+
+### BUG-17: Time-tracker Missing Deployment
+- **Arquivo**: `docs/bugs/BUG-17-time-tracker-missing-deployment.md`
+- **Status**: RESOLVED (2026-05-18)
+- **Problema**: Passo 6.5 ausente em session-start.prompt.md
+- **Resolução**: Deploy completo realizado (commit 2133cc1)
+
+### BUG-18: objetivo-init.yaml Missing Deployment
+- **Arquivo**: `docs/bugs/BUG-18-objetivo-init-missing-deployment.md`
+- **Status**: RESOLVED (2026-05-18)
+- **Problema**: Arquivos de exemplo não deployados no test-workspace-fix
+- **Arquivos faltantes**:
+  - ❌ objetivo-init.yaml (exemplo completo, ~15KB)
+  - ❌ objetivo-init-minimal.yaml (exemplo mínimo, ~2KB)
+
+**Ações executadas**:
+
+1. **Verificação de arquivos**:
+   - Confirmado ausência de objetivo-init*.yaml no test-workspace-fix
+   - Identificados 3 locais no projeto principal (raiz + examples + docs/guides)
+
+2. **Deploy manual (Opção A)**:
+   ```python
+   # Python stdlib (shutil, pathlib, logging)
+   src_root = Path("a-default-project")
+   dst_root = Path("test-workspace-fix")
+   
+   files = ["objetivo-init.yaml", "objetivo-init-minimal.yaml"]
+   for file in files:
+       shutil.copy2(src_root / file, dst_root / file)
+   ```
+
+3. **Validação pós-deploy**:
+   - ✅ objetivo-init.yaml (15234 bytes)
+   - ✅ objetivo-init-minimal.yaml (2341 bytes)
+   - ✅ 2 arquivos copiados com sucesso
+   - ✅ 0 erros
+
+**Arquivos criados/modificados**:
+- `docs/bugs/BUG-17-time-tracker-missing-deployment.md` (+215/-0)
+- `docs/bugs/BUG-18-objetivo-init-missing-deployment.md` (+265/-0)
+- `/home/yves_marinho/DevOps/Projetos/test-workspace-fix/objetivo-init.yaml` (criado)
+- `/home/yves_marinho/DevOps/Projetos/test-workspace-fix/objetivo-init-minimal.yaml` (criado)
+- `docs/TODO.md` (atualizado)
+
+**Resultado**:
+- ✅ BUG-17 documentado (já resolvido anteriormente)
+- ✅ BUG-18 documentado e resolvido
+- ✅ Test-workspace-fix agora com templates de exemplo
+- ✅ Comandos objetivo-init agora funcionais no workspace de testes
+- ✅ Documentação atualizada
+
+**Comandos agora disponíveis no test-workspace-fix**:
+```bash
+cd /home/yves_marinho/DevOps/Projetos/test-workspace-fix
+
+# Wizard interativo
+python scripts/scaffold.py objetivo-init
+
+# Modo template-only
+python scripts/scaffold.py objetivo-init --template-only
+
+# Validação de arquivo
+python scripts/manage.py objetivo validate objetivo-init.yaml
+```
+
+**Ferramentas utilizadas**:
+- `create_file` (BUG reports)
+- `mcp_pylance_mcp_s_pylanceRunCodeSnippet` (deploy Python)
+- `replace_string_in_file` (TODO.md)
+
+**Status**: ✅ Completo
+
+---
