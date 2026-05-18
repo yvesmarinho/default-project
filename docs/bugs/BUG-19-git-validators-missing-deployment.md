@@ -1,10 +1,10 @@
 # BUG-19: git_validators.py Missing Deployment
 
-**Data**: 2026-05-18  
-**Status**: ✅ RESOLVED  
-**Severidade**: P0 CRÍTICO  
-**Projeto**: test-workspace-fix  
-**Relatado por**: Yves Marinho  
+**Data**: 2026-05-18
+**Status**: ✅ RESOLVED
+**Severidade**: P0 CRÍTICO
+**Projeto**: test-workspace-fix
+**Relatado por**: Yves Marinho
 
 ---
 
@@ -342,6 +342,6 @@ DeprecationWarning: datetime.datetime.utcnow() is deprecated
 
 ---
 
-**Resolução**: ✅ COMPLETO  
-**Commit**: Pendente (incluir no próximo commit de correções)  
+**Resolução**: ✅ COMPLETO
+**Commit**: Pendente (incluir no próximo commit de correções)
 **Próximo passo**: Implementar Opção A (merge strategy) no scaffold

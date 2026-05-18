@@ -200,12 +200,8 @@ _ALL_MCP_SERVERS: dict[str, dict] = {
         "type": "stdio",
     },
     "github": {
-        "command": "npx",
-        "args": ["-y", "@modelcontextprotocol/server-github"],
-        "type": "stdio",
-        "env": {
-            "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}",
-        },
+        "type": "http",
+        "url": "https://api.githubcopilot.com/mcp/",
     },
     "sqlite": {
         "command": "npx",

@@ -67,9 +67,9 @@ grep -n "Passo 6.5" test-workspace-fix/.github/prompts/session-start.prompt.md
 
 ## 🎯 Impacto
 
-**Severidade**: Média  
-**Frequência**: A cada sessão de teste  
-**Usuários afetados**: Desenvolvedores usando test-workspace-fix  
+**Severidade**: Média
+**Frequência**: A cada sessão de teste
+**Usuários afetados**: Desenvolvedores usando test-workspace-fix
 **Área afetada**: Rastreamento de tempo, documentação de sessão
 
 **Impacto operacional**:
@@ -91,10 +91,10 @@ grep -n "Passo 6.5" test-workspace-fix/.github/prompts/session-start.prompt.md
    ```python
    import shutil
    from pathlib import Path
-   
+
    src = Path("a-default-project/.github/prompts/session-start.prompt.md")
    dst = Path("test-workspace-fix/.github/prompts/session-start.prompt.md")
-   
+
    shutil.copy2(src, dst)
    ```
 

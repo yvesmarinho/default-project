@@ -11,9 +11,10 @@
 
 # Alterações necessárias presente
 
-- time-tracker integrado ao prompt do session.manager, não foi deployado no projeto test-workspace-fix
-- objetivo-init.yaml não foi deployado
+- atualizar mcp.json seervidor github
 - é possivel integrar a atualizações do spec-kit no projeto comando "specify init --here --force --integration copilot"?
+- implementar processo de atualização segurnaça de pacotes do projeto no session.start
+- analisar os dados em "./memories" para validar se as informações estão corretas ou incompletas.
 
 ---
 

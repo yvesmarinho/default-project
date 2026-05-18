@@ -76,9 +76,9 @@ ls -l /home/yves_marinho/Documentos/DevOps/Vya-Jobs/a-default-project/objetivo-i
 
 ## 🎯 Impacto
 
-**Severidade**: Média  
-**Frequência**: A cada teste de inicialização de projeto  
-**Usuários afetados**: Desenvolvedores testando scaffold objetivo-init  
+**Severidade**: Média
+**Frequência**: A cada teste de inicialização de projeto
+**Usuários afetados**: Desenvolvedores testando scaffold objetivo-init
 **Área afetada**: Validação de templates, testes E2E, documentação por exemplos
 
 **Impacto operacional**:
@@ -104,7 +104,7 @@ ls -l /home/yves_marinho/Documentos/DevOps/Vya-Jobs/a-default-project/objetivo-i
 # --objetivo-init: initialize objetivo.yaml via wizard or template
 if args.objetivo_init:
     from scripts.lib.flows.objetivo_init import run_objetivo_init
-    
+
     # Procura por objetivo-init.yaml na raiz
     template_path = project_root / "objetivo-init.yaml"
     if not template_path.exists():
@@ -165,11 +165,11 @@ def _copy_example_files(template_root: Path, project_root: Path):
         "objetivo-init.yaml",
         "objetivo-init-minimal.yaml"
     ]
-    
+
     for example in examples:
         src = template_root / example
         dst = project_root / example
-        
+
         if not dst.exists() and src.exists():
             shutil.copy2(src, dst)
             log.info(f"✅ Example copied: {example}")
