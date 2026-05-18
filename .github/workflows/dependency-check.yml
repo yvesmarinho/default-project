@@ -47,8 +47,9 @@ jobs:
           # Salvar JSON para artifact
           pip list --outdated --format=json > outdated.json
           
-          # Contar pacotes desatualizados
-          OUTDATED_COUNT=$(python -c "import json; data = json.load(open('outdated.json')); print(len(data))")
+          # Processar usando script Python
+          chmod +x .github/scripts/process_outdated.py
+          OUTDATED_COUNT=$(python .github/scripts/process_outdated.py | head -1)
           echo "count=$OUTDATED_COUNT" >> $GITHUB_OUTPUT
           
           # Mostrar tabela no summary
@@ -57,12 +58,7 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Pacote | Versão Atual | Versão Mais Recente |" >> $GITHUB_STEP_SUMMARY
             echo "|--------|--------------|---------------------|" >> $GITHUB_STEP_SUMMARY
-            python -c "
-import json
-data = json.load(open('outdated.json'))
-for pkg in data:
-    print(f\"| {pkg['name']} | {pkg['version']} | {pkg['latest_version']} |\")
-" >> $GITHUB_STEP_SUMMARY
+            python .github/scripts/process_outdated.py | tail -n +2 >> $GITHUB_STEP_SUMMARY
           else
             echo "✅ Todas as dependências estão atualizadas!" >> $GITHUB_STEP_SUMMARY
           fi
@@ -77,42 +73,9 @@ for pkg in data:
           # Executar audit e salvar resultados
           pip-audit --format=json > audit.json || true
           
-          # Processar resultados
-          python -c "
-import json
-import sys
-
-try:
-    data = json.load(open('audit.json'))
-    vulns = data.get('vulnerabilities', [])
-    
-    if vulns:
-        print(f'**⚠️ Encontradas {len(vulns)} vulnerabilidade(s):**', file=sys.stderr)
-        
-        # Agrupar por severidade
-        critical = [v for v in vulns if v.get('fix_versions')]
-        
-        if critical:
-            print('\n### Vulnerabilidades Críticas\n', file=sys.stderr)
-            for v in critical[:5]:  # Mostrar até 5
-                pkg = v.get('name', 'unknown')
-                vuln_id = v.get('id', 'N/A')
-                print(f'- **{pkg}**: {vuln_id}', file=sys.stderr)
-        
-        # Salvar contagem para próximo step
-        with open('vuln_count.txt', 'w') as f:
-            f.write(str(len(vulns)))
-        
-        sys.exit(1)  # Falhar o step se vulnerabilidades encontradas
-    else:
-        print('✅ Nenhuma vulnerabilidade conhecida encontrada!')
-        with open('vuln_count.txt', 'w') as f:
-            f.write('0')
-except Exception as e:
-    print(f'Erro ao processar audit.json: {e}', file=sys.stderr)
-    with open('vuln_count.txt', 'w') as f:
-        f.write('0')
-" >> $GITHUB_STEP_SUMMARY 2>&1 || echo "has_vulns=true" >> $GITHUB_OUTPUT
+          # Processar usando script Python
+          chmod +x .github/scripts/process_audit.py
+          python .github/scripts/process_audit.py >> $GITHUB_STEP_SUMMARY 2>&1 || echo "has_vulns=true" >> $GITHUB_OUTPUT
         continue-on-error: true
       
       - name: Upload artifacts
