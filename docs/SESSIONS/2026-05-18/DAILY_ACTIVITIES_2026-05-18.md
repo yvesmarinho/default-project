@@ -445,10 +445,14 @@ python scripts/manage.py objetivo validate objetivo-init.yaml
 - ✅ Projetos novos receberão configuração HTTP automaticamente
 - ✅ Projetos existentes podem fazer upgrade via `scaffold.py upgrade --force`
 - ✅ Merge inteligente preserva customizações
+- ✅ Commit: `39ac165` (2082 arquivos alterados, 512 inserções, 600038 deleções)
+- ✅ Push para origin/master bem-sucedido
 
 **Arquivos**:
 - Atualizado: `scripts/lib/vscode.py` (linha 203-206)
 - Criado: `docs/guides/MCP-GITHUB-HTTP-UPDATE.md`
+- Atualizado: `docs/SESSIONS/2026-05-18/DAILY_ACTIVITIES_2026-05-18.md`
+- Limpeza: Removidos backups obsoletos de `retore/` (2076 arquivos)
 
 **Ferramentas utilizadas**:
 - `read_file` (análise de configurações)
