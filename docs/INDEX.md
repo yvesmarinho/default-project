@@ -1160,6 +1160,14 @@ docs/
 
 **Location**: [`bugs/`](bugs/)
 
+- **[BUG-001-scaffold-objetivo-init-issues.md](bugs/BUG-001-scaffold-objetivo-init-issues.md)** - Scaffold objetivo-init 3 behavior issues
+  - Problem 1: Missing default value for `docstyle` field
+  - Problem 2: Empty `out-scope` field included when not provided
+  - Problem 3: No execution logs generated
+  - Solution: Add DEFAULT_DOCSTYLE constant, conditional YAML output, integrate scaffold_logger
+  - Status: 🟡 OPEN (Reported 2026-05-18)
+  - Priority: P1 (Low/Medium impact)
+
 - **[BUG-04_FIX_REPORT.md](bugs/BUG-04_FIX_REPORT.md)** - Breaking changes validation in auto mode
   - Problem: Template merge accepted breaking changes without user confirmation
   - Solution: Block breaking changes in `--auto` mode, require interactive mode
