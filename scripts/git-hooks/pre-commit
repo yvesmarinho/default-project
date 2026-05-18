@@ -1,0 +1,233 @@
+#!/usr/bin/env python3
+"""
+Pre-commit hook para validar sistema de memória.
+
+IMP-65 P1: Bloquear commits de arquivos inválidos em .memory/
+
+Instala automaticamente via scaffold ou manualmente:
+  cp scripts/git-hooks/pre-commit .git/hooks/pre-commit
+  chmod +x .git/hooks/pre-commit
+  # Ou use: make git-hooks-install
+
+Este hook valida:
+- Bloqueia commits de test-*.md em .memory/
+- Valida YAML frontmatter em arquivos .memory/*.md
+- Exit code 1 se violações detectadas
+"""
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+# Project root (assume .git/hooks/ or scripts/git-hooks/)
+if Path('.git').exists():
+    PROJECT_ROOT = Path.cwd()
+else:
+    # Called from scripts/git-hooks/ for testing
+    PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+MEMORY_DIR = PROJECT_ROOT / ".memory" / "memories"
+
+
+def get_staged_files() -> list[Path]:
+    """
+    Get list of staged files from git.
+
+    Returns:
+        List of Path objects for staged files
+    """
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        files = result.stdout.strip().split('\n')
+        return [Path(f) for f in files if f]
+    except subprocess.CalledProcessError:
+        return []
+
+
+def check_test_files(staged_files: list[Path]) -> list[str]:
+    """
+    Check for test files in .memory/ directory.
+
+    Test files are identified by patterns:
+    - *__test-*.md
+    - *__auto-generated-title.md
+    - *__search-test-*.md
+
+    Returns:
+        List of error messages (empty if no violations)
+    """
+    errors = []
+    test_patterns = [
+        r'__test-.*\.md$',
+        r'__auto-generated-title\.md$',
+        r'__search-test-.*\.md$',
+    ]
+
+    for file in staged_files:
+        # Check if file is in .memory/
+        if not str(file).startswith('.memory/'):
+            continue
+
+        # Check against test patterns
+        for pattern in test_patterns:
+            if re.search(pattern, str(file)):
+                errors.append(
+                    f"  ❌ {file}\n"
+                    f"     Test files should not be committed to .memory/\n"
+                    f"     Use isolated test fixtures instead (see tests/conftest.py)"
+                )
+                break
+
+    return errors
+
+
+def validate_yaml_frontmatter(file_path: Path) -> tuple[bool, str]:
+    """
+    Validate YAML frontmatter in memory file.
+
+    Valid frontmatter format:
+    ---
+    category: project|team|sessions
+    tags: [tag1, tag2]
+    ---
+
+    Returns:
+        (is_valid, error_message): Tuple with validation status and error
+    """
+    if not file_path.exists():
+        return True, ""  # File deleted, skip validation
+
+    try:
+        content = file_path.read_text()
+    except Exception as e:
+        return False, f"Failed to read file: {e}"
+
+    # Check if file has frontmatter
+    if not content.startswith('---'):
+        # Frontmatter is optional for memory files
+        return True, ""
+
+    # Extract frontmatter
+    parts = content.split('---', 2)
+    if len(parts) < 3:
+        return False, "Invalid YAML frontmatter: missing closing '---'"
+
+    frontmatter = parts[1].strip()
+
+    # Basic validation - check for required fields if frontmatter exists
+    if frontmatter:
+        # Check for valid category (optional but if present must be valid)
+        if 'category:' in frontmatter:
+            category_match = re.search(r'category:\s*(\S+)', frontmatter)
+            if category_match:
+                category = category_match.group(1)
+                valid_categories = ['project', 'team', 'sessions', 'user']
+                if category not in valid_categories:
+                    return False, f"Invalid category '{category}'. Valid: {', '.join(valid_categories)}"
+
+    return True, ""
+
+
+def check_memory_frontmatter(staged_files: list[Path]) -> list[str]:
+    """
+    Check YAML frontmatter in staged .memory/*.md files.
+
+    Returns:
+        List of error messages (empty if no violations)
+    """
+    errors = []
+
+    for file in staged_files:
+        # Only check .memory/ markdown files
+        if not (str(file).startswith('.memory/') and str(file).endswith('.md')):
+            continue
+
+        file_path = PROJECT_ROOT / file
+        is_valid, error_msg = validate_yaml_frontmatter(file_path)
+
+        if not is_valid:
+            errors.append(
+                f"  ❌ {file}\n"
+                f"     {error_msg}"
+            )
+
+    return errors
+
+
+def main():
+    """Run all pre-commit validations."""
+    print("=" * 70)
+    print("Pre-commit Validation: Memory System (IMP-65 P1)")
+    print("=" * 70)
+    print()
+
+    # Get staged files
+    staged_files = get_staged_files()
+
+    if not staged_files:
+        print("✅ No files staged for commit")
+        return 0
+
+    # Check for memory files
+    memory_files = [f for f in staged_files if str(f).startswith('.memory/')]
+
+    if not memory_files:
+        print("✅ No memory files in this commit (skipping validation)")
+        return 0
+
+    print(f"Checking {len(memory_files)} memory file(s)...")
+    print()
+
+    all_errors = []
+
+    # Validation 1: Check for test files
+    print("1. Checking for test files...")
+    test_errors = check_test_files(staged_files)
+    if test_errors:
+        all_errors.extend(test_errors)
+        print(f"   ❌ Found {len(test_errors)} test file(s)")
+    else:
+        print("   ✅ No test files")
+    print()
+
+    # Validation 2: Check YAML frontmatter
+    print("2. Validating YAML frontmatter...")
+    frontmatter_errors = check_memory_frontmatter(staged_files)
+    if frontmatter_errors:
+        all_errors.extend(frontmatter_errors)
+        print(f"   ❌ Found {len(frontmatter_errors)} invalid frontmatter(s)")
+    else:
+        print("   ✅ All frontmatter valid")
+    print()
+
+    # Report results
+    print("=" * 70)
+    if all_errors:
+        print("❌ PRE-COMMIT VALIDATION FAILED")
+        print("=" * 70)
+        print()
+        print("Errors found:")
+        for error in all_errors:
+            print(error)
+        print()
+        print("Fix the errors above and try again.")
+        print()
+        print("Useful commands:")
+        print("  make memory-cleanup       # Dry-run cleanup")
+        print("  make memory-cleanup-force # Execute cleanup with backup")
+        print("=" * 70)
+        return 1
+    else:
+        print("✅ ALL VALIDATIONS PASSED")
+        print("=" * 70)
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

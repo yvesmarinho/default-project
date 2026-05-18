@@ -714,3 +714,116 @@ Correção: Implementar deep merge recursivo em file_merge.py
 **Status**: ✅ Completo — Debate concluído, plano aprovado, pronto para execução
 
 ---
+
+## ⚡ Implementação IMP-65 P0 — Tasks 1-8
+
+**18:30 — ✅ CONCLUÍDO**
+
+**Objetivo**: Executar todas as 8 tasks P0 do IMP-65 (limpeza de memórias + deps check)
+
+**Contexto**: Execução sistemática das tasks aprovadas no debate multi-agente
+
+**Tasks executadas**:
+
+**Task 1: Limpeza de memórias contaminadas**
+- ✅ /memories/enterprise-ansible.md deletado (~800 tokens ruído)
+- ✅ /memories/repo/test-workspace*.md deletados (~320 tokens obsoleto)
+- ✅ 37 arquivos test-*.md removidos de .memory/project/ (~2.300 tokens)
+- **IMPACTO**: -3.420 tokens de ruído eliminados
+
+**Task 2: Criar /memories/a-default-project.md**
+- ✅ User memory criado com dados corretos do projeto
+- ✅ Estrutura, comandos, regras P0, status
+- **IMPACTO**: +600 tokens de contexto correto
+
+**Task 3: Test fixtures isolados**
+- ✅ Fixtures `temp_memory_dir` e `isolated_memory` adicionados
+- ✅ Arquivo: tests/conftest.py
+- **IMPACTO**: Zero poluição futura de .memory/ por testes
+
+**Task 4: Passo 4.5 session-start**
+- ✅ Verificação acionável de dependências críticas
+- ✅ Arquivo: .github/prompts/session-start.prompt.md
+- ✅ Bloqueia sessão se bandit/safety/pytest desatualizados (exit 1)
+- **IMPACTO**: Detecção proativa de vulnerabilidades (~3-5s)
+
+**Task 5: Makefile targets**
+- ✅ `update-deps-safe`: Atualizar bandit/safety + smoke tests
+- ✅ `update-deps`: Atualizar todos (com confirmação interativa)
+- ✅ `deps-check`: Verificar outdated (usado no Passo 4.5)
+- ✅ `memory-cleanup`: Dry-run de limpeza
+- ✅ `memory-cleanup-force`: Executar com backup
+- ✅ `config-validate`: Validar configs críticos
+
+**Task 6: Script memory-cleanup.py**
+- ✅ Automação defensiva de limpeza
+- ✅ Dry-run por padrão, backup automático com timestamp
+- ✅ Detecção de duplicados por SHA256
+- ✅ Patterns configuráveis, logs em logs/memory-cleanup.log
+
+**Task 7: Script validate-configs.py**
+- ✅ Detecta MCP GitHub CLI obsoleto (vs HTTP)
+- ✅ Detecta dependências sem pinning
+- ✅ Valida .copilot-rules.md existe e não está vazio
+- ✅ Exit code 1 se problemas encontrados
+
+**Task 8: Atualizar docs/TODO.md**
+- ✅ Marcadas 4 tasks P0 como concluídas
+- ✅ Adicionadas 7 tasks P1 (pre-commit, CI/CD, docs)
+- ✅ Adicionadas 2 tasks P2 (quick mode, dashboard)
+
+**Commit**: `bff780b` — feat(memory,deps,tests): Implementar IMP-65 P0
+
+**Arquivos modificados**: 50 (37 deletados, 5 novos criados, 8 atualizados)
+
+**Resultados**:
+- ✅ 3.420 tokens de ruído eliminados
+- ✅ 600 tokens de contexto correto criados
+- ✅ Automação defensiva completa (scripts + Makefile)
+- ✅ Session-start com deps check proativo
+- ✅ Test fixtures previnem poluição futura
+- ✅ Documentação completa (DEBATE-001, ACTION_PLAN, EXECUTIVE_SUMMARY)
+
+**Status**: ✅ Completo — 8/8 P0 tasks concluídas, pronto para P1
+
+---
+
+## 🪝 Implementação IMP-65 P1-1 — Pre-Commit Hook
+
+**19:15 — ✅ EM ANDAMENTO**
+
+**Objetivo**: Implementar pre-commit hook para validar sistema de memória
+
+**Contexto**: Task P1-1 do IMP-65, prevenção de poluição futura
+
+**Ações executadas**:
+
+**1. Criar script validate-memory**
+- ✅ Arquivo: scripts/git-hooks/pre-commit
+- ✅ Linguagem: Python (consistente com commit-msg hook)
+- ✅ Validações implementadas:
+  - Bloqueia commits de test-*.md em .memory/
+  - Valida YAML frontmatter (categorias válidas)
+  - Exit code 1 se violações detectadas
+- ✅ Relatórios detalhados de erros
+
+**2. Adicionar Makefile target**
+- ✅ Target: `git-hooks-install`
+- ✅ Funcionalidade:
+  - Copia hooks de scripts/git-hooks/ para .git/hooks/
+  - Torna hooks executáveis (chmod +x)
+  - Instala: pre-commit + commit-msg
+- ✅ Localização: Makefile (após config-validate, antes de clean)
+
+**3. Tornar script executável**
+- ✅ Permissões: 0o755 (usando Python stdlib, não chmod terminal)
+- ✅ Ferramenta: mcp_pylance_mcp_s_pylanceRunCodeSnippet
+
+**Próximos passos**:
+- [ ] Testar hook com commit simulado
+- [ ] Documentar no DAILY_ACTIVITIES
+- [ ] Commit da implementação P1-1
+
+**Status**: 🔄 Em andamento — Script criado, pronto para testes
+
+---

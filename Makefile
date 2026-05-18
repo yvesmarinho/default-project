@@ -790,6 +790,18 @@ memory-cleanup-force:
 config-validate:
 	@python scripts/validate-configs.py
 
+## git-hooks-install: Instalar Git hooks (pre-commit, commit-msg)
+git-hooks-install:
+	@echo "$(BLUE)🪝 Instalando Git hooks...$(NC)"
+	@mkdir -p .git/hooks
+	@cp scripts/git-hooks/pre-commit .git/hooks/pre-commit
+	@cp scripts/git-hooks/commit-msg .git/hooks/commit-msg
+	@chmod +x .git/hooks/pre-commit
+	@chmod +x .git/hooks/commit-msg
+	@echo "$(GREEN)✅ Git hooks instalados:$(NC)"
+	@echo "  - pre-commit (memory validation)"
+	@echo "  - commit-msg (conventional commits)"
+
 ## clean: Remove generated files and directories
 clean:
 	@echo "$(BLUE)🧹 Cleaning project...$(NC)"
