@@ -1,14 +1,14 @@
 # BUG-20: MCP GitHub Server HTTP Update Não Aplicado no Scaffold Upgrade
 
-**ID**: BUG-20  
-**Título**: MCP GitHub Server HTTP Update não aplicado durante scaffold upgrade --force  
-**Severidade**: 🔴 **P0 CRÍTICA**  
-**Categoria**: Merge Strategy Failure  
-**Status**: 🔴 **ABERTO**  
-**Descoberto em**: 2026-05-18 15:45 BRT  
-**Projeto afetado**: test-workspace-fix  
-**Versão do scaffold**: 1.0.0  
-**Commit da feature**: `39ac165` (feat: Atualizar MCP GitHub server para HTTP API v2.0)  
+**ID**: BUG-20
+**Título**: MCP GitHub Server HTTP Update não aplicado durante scaffold upgrade --force
+**Severidade**: 🔴 **P0 CRÍTICA**
+**Categoria**: Merge Strategy Failure
+**Status**: 🔴 **ABERTO**
+**Descoberto em**: 2026-05-18 15:45 BRT
+**Projeto afetado**: test-workspace-fix
+**Versão do scaffold**: 1.0.0
+**Commit da feature**: `39ac165` (feat: Atualizar MCP GitHub server para HTTP API v2.0)
 
 ---
 
@@ -140,26 +140,26 @@ def merge_or_skip(dest: Path, template_content: str, interactive: bool = False) 
     """
     if not dest.exists():
         return _write_file(dest, template_content)
-    
+
     # Arquivo existe → tentar merge
     existing_content = dest.read_text()
-    
+
     # Se conteúdos idênticos → skip
     if existing_content.strip() == template_content.strip():
         return CreatedItem.skip(dest, "identical content")
-    
+
     # PROBLEMA PROVÁVEL: Lógica de merge JSON
     # Pode estar preservando chaves existentes sem sobrescrever
     merged = _merge_json(existing_content, template_content)
-    
+
     # Se merge falhou → retorna original sem modificar
     if merged is None:
         return CreatedItem.skip(dest, "merge failed, preserved existing")
-    
+
     # Criar backup (MAS POR QUE NÃO FOI CRIADO?)
     backup = dest.with_suffix(dest.suffix + ".backup")
     shutil.copy2(dest, backup)
-    
+
     # Escrever merged
     dest.write_text(merged)
     return CreatedItem.created(dest, "merged")
@@ -240,16 +240,16 @@ except Exception as e:
 ```python
 def generate_mcp(config: ProjectConfig) -> CreatedItem:
     dest = config.project_path / ".vscode" / "mcp.json"
-    
+
     server_names = _MCP_BY_DOMAIN.get(
         config.domain, ["memory", "sequential-thinking", "filesystem", "github"])
     servers = {name: _ALL_MCP_SERVERS[name]
                for name in server_names if name in _ALL_MCP_SERVERS}
-    
+
     if dest.exists():
         template_content = json.dumps({"servers": servers}, indent=2, ensure_ascii=False) + "\n"
         return file_merge.merge_or_skip(dest, template_content, interactive=False)
-    
+
     return _write_json(dest, {"servers": servers})
 ```
 
@@ -320,7 +320,7 @@ merged["servers"]["github"] = template["servers"]["github"]  # ✅
 def _merge_json(existing: str, template: str) -> str:
     existing_data = json.loads(existing)
     template_data = json.loads(template)
-    
+
     # PROBLEMA: Merge superficial
     for key in template_data:
         if key not in existing_data:
@@ -328,7 +328,7 @@ def _merge_json(existing: str, template: str) -> str:
         # FALTA: Recursão para mesclar sub-estruturas
         # elif isinstance(template_data[key], dict):
         #     existing_data[key] = _deep_merge(existing_data[key], template_data[key])
-    
+
     return json.dumps(existing_data, indent=2)
 ```
 
@@ -434,7 +434,7 @@ Command Palette → "MCP: Show Servers"
    ```bash
    # No projeto a-default-project
    code scripts/lib/file_merge.py
-   
+
    # Procurar função _merge_json ou similar
    # Verificar se faz deep merge ou shallow merge
    ```
@@ -445,13 +445,13 @@ Command Palette → "MCP: Show Servers"
        logger.debug(f"Merging {dest}...")
        logger.debug(f"Template:\n{template_content}")
        logger.debug(f"Existing:\n{dest.read_text()}")
-       
+
        merged = _merge_json(existing, template)
        logger.debug(f"Merged result:\n{merged}")
-       
+
        if merged == existing:
            logger.warning(f"Merge resulted in no changes for {dest}")
-       
+
        # ...
    ```
 
@@ -468,7 +468,7 @@ Command Palette → "MCP: Show Servers"
                }
            }
        }
-       
+
        template = {
            "servers": {
                "github": {
@@ -477,9 +477,9 @@ Command Palette → "MCP: Show Servers"
                }
            }
        }
-       
+
        result = merge_json(existing, template)
-       
+
        # MUST sobrescrever github server, não preservar
        assert result["servers"]["github"]["type"] == "http"
        assert "command" not in result["servers"]["github"]
@@ -496,12 +496,12 @@ Command Palette → "MCP: Show Servers"
 def _deep_merge_json(existing: dict, template: dict, preserve_user_keys: bool = False) -> dict:
     """
     Merge recursivo de dicionários JSON.
-    
+
     Regra: Template sempre prevalece para estruturas conhecidas.
     Se preserve_user_keys=True, mantém chaves extras do usuário.
     """
     result = existing.copy() if preserve_user_keys else {}
-    
+
     for key, template_value in template.items():
         if key not in existing:
             # Chave nova no template → adicionar
@@ -512,15 +512,15 @@ def _deep_merge_json(existing: dict, template: dict, preserve_user_keys: bool = 
         else:
             # Tipos diferentes ou valores simples → template prevalece
             result[key] = template_value
-    
+
     return result
 
 def _merge_json(existing_str: str, template_str: str) -> str:
     existing = json.loads(existing_str)
     template = json.loads(template_str)
-    
+
     merged = _deep_merge_json(existing, template, preserve_user_keys=True)
-    
+
     return json.dumps(merged, indent=2, ensure_ascii=False) + "\n"
 ```
 
@@ -543,14 +543,14 @@ _ALL_MCP_SERVERS: dict[str, dict] = {
 def _merge_mcp_servers(existing: dict, template: dict) -> dict:
     """Merge especial para servidores MCP com schema versioning."""
     result = existing.copy()
-    
+
     for server_name, template_config in template.get("servers", {}).items():
         existing_config = existing.get("servers", {}).get(server_name, {})
-        
+
         # Comparar versões
         template_version = template_config.get("_schema_version", "1.0")
         existing_version = existing_config.get("_schema_version", "1.0")
-        
+
         if template_version > existing_version:
             # Breaking change → sobrescrever completamente
             logger.info(f"Updating {server_name} from v{existing_version} to v{template_version}")
@@ -558,7 +558,7 @@ def _merge_mcp_servers(existing: dict, template: dict) -> dict:
         else:
             # Mesma versão → preservar customizações
             result["servers"][server_name] = existing_config
-    
+
     return result
 ```
 
@@ -574,12 +574,12 @@ def generate_mcp(config: ProjectConfig) -> CreatedItem:
     if dest.exists():
         # Verificar se algum servidor requer force update
         force_update = any(name in _MCP_FORCE_UPDATE for name in server_names)
-        
+
         if force_update:
             # Criar backup
             backup = dest.with_suffix(dest.suffix + ".backup")
             shutil.copy2(dest, backup)
-            
+
             # Sobrescrever completamente
             return _write_json(dest, {"servers": servers})
         else:
@@ -603,14 +603,14 @@ A correção será considerada bem-sucedida quando:
    mkdir test-mcp-upgrade
    cd test-mcp-upgrade
    # ... (setup com mcp.json CLI)
-   
+
    # Executar upgrade
    python /path/to/scaffold.py upgrade --force
-   
+
    # Validar resultado
    cat .vscode/mcp.json | jq '.servers.github.type'
    # → "http" ✅
-   
+
    # Validar backup
    ls .vscode/mcp.json.backup
    # → arquivo existe ✅
@@ -620,14 +620,14 @@ A correção será considerada bem-sucedida quando:
    ```bash
    # Adicionar servidor custom
    echo '{"servers": {"custom": {...}}}' > .vscode/mcp.json
-   
+
    # Executar upgrade
    python scaffold.py upgrade --force
-   
+
    # Validar que custom foi preservado
    cat .vscode/mcp.json | jq '.servers.custom'
    # → configuração custom mantida ✅
-   
+
    # Validar que github foi atualizado
    cat .vscode/mcp.json | jq '.servers.github.type'
    # → "http" ✅
@@ -637,11 +637,11 @@ A correção será considerada bem-sucedida quando:
    ```bash
    # Executar upgrade
    python scaffold.py upgrade --force
-   
+
    # Verificar que backup existe
    ls -la .vscode/*.backup
    # → mcp.json.backup existe ✅
-   
+
    # Verificar conteúdo do backup
    diff .vscode/mcp.json.backup <(cat .vscode/mcp.json | jq '.servers.github.type = "stdio"')
    # → backup contém configuração antiga ✅
@@ -759,7 +759,7 @@ A correção será considerada bem-sucedida quando:
 
 ---
 
-**Última atualização**: 2026-05-18 15:45 BRT  
-**Responsável**: GitHub Copilot (Claude Sonnet 4.5)  
-**Projeto**: a-default-project v1.6.0  
+**Última atualização**: 2026-05-18 15:45 BRT
+**Responsável**: GitHub Copilot (Claude Sonnet 4.5)
+**Projeto**: a-default-project v1.6.0
 **Prioridade**: 🔴 P0 CRÍTICA — Resolver em < 48h

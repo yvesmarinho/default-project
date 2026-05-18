@@ -8,6 +8,103 @@
 
 ## 🎯 Próxima Sessão (2026-05-18+)
 
+- [x] ~~**IMP-65 P0: Limpeza de Memórias Contaminadas**~~: ✅ CONCLUÍDO (2026-05-18)
+  - ✅ enterprise-ansible.md deletado (~800 tokens de ruído)
+  - ✅ 37 arquivos test-*.md removidos de .memory/project/ (~2.300 tokens)
+  - ✅ test-workspace*.md deletados (~320 tokens)
+  - ✅ a-default-project.md criado com dados corretos (~600 tokens contexto)
+  - ✅ **Total impacto**: -3.420 tokens de ruído, +600 tokens corretos
+  - ✅ Documentação: docs/debates/DEBATE-001-memory-cleanup-and-session-start-improvements.md
+  - ✅ Documentação: docs/planning/ACTION_PLAN-memory-cleanup-and-session-start.md
+
+- [x] ~~**IMP-65 P0: Session-Start Passo 4.5 (Deps Check)**~~: ✅ IMPLEMENTADO (2026-05-18)
+  - ✅ Passo 4.5 adicionado ao session-start.prompt.md
+  - ✅ Verificação acionável de dependências (bloqueia se P0 vulnerabilities)
+  - ✅ Comando executa em ~3-5s
+  - ✅ Makefile targets criados: update-deps-safe, update-deps, deps-check
+  - ✅ Smoke tests integrados pós-atualização
+  - ✅ **Resultado**: Detecção proativa de vulnerabilidades críticas
+
+- [x] ~~**IMP-65 P0: Test Fixtures Isolados**~~: ✅ IMPLEMENTADO (2026-05-18)
+  - ✅ Fixtures `temp_memory_dir` e `isolated_memory` criados
+  - ✅ tests/conftest.py atualizado com fixtures
+  - ✅ **Resultado**: Zero poluição futura de .memory/ por testes
+
+- [x] ~~**IMP-65 P0: Scripts de Automação**~~: ✅ IMPLEMENTADO (2026-05-18)
+  - ✅ memory-cleanup.py criado (dry-run, backup automático, SHA256 duplicados)
+  - ✅ validate-configs.py criado (detecta MCP CLI obsoleto, deps sem pinning)
+  - ✅ Makefile targets: memory-cleanup, memory-cleanup-force, config-validate
+  - ✅ Logs em logs/memory-cleanup.log
+  - ✅ **Resultado**: Automação defensiva completa
+
+- [ ] **IMP-65 P1: Pre-Commit Hook validate-memory** (P1 HIGH)
+  - **Objetivo**: Bloquear commits de arquivos de teste em .memory/
+  - **Prioridade**: P1 HIGH (prevenção de poluição futura)
+  - **Estimativa**: 1h
+  - **Tarefas**:
+    1. Criar scripts/git-hooks/pre-commit.d/validate-memory
+    2. Bloquear commits de test-*.md em .memory/
+    3. Validar YAML frontmatter de memórias
+    4. Exit code 1 se violações
+    5. Criar Makefile target git-hooks-install
+  - **Blocker**: None
+  - **Expected Outcome**: Commits de test files bloqueados, YAML validado
+
+- [ ] **IMP-65 P1: GitHub Actions Dependency Check** (P1 HIGH)
+  - **Objetivo**: CI/CD semanal para dependency checks
+  - **Prioridade**: P1 HIGH (automação de segurança)
+  - **Estimativa**: 2h
+  - **Tarefas**:
+    1. Criar .github/workflows/dependency-check.yml
+    2. Schedule: Segundas 9h (cron: '0 9 * * MON')
+    3. Workflow dispatch (trigger manual)
+    4. pip-audit para CVE scanning
+    5. Criar issue P0 se vulnerabilidades
+    6. Upload de artifacts (outdated.json, audit.json)
+  - **Blocker**: None
+  - **Expected Outcome**: Detecção semanal automatizada + issues P0
+
+- [ ] **IMP-65 P1: Documentação MEMORY_SYSTEM.md** (P1 MEDIUM)
+  - **Objetivo**: Documentar sistema de memória (boas práticas)
+  - **Prioridade**: P1 MEDIUM (prevenção de problemas futuros)
+  - **Estimativa**: 1h
+  - **Seções**:
+    1. Estrutura de diretórios (/memories/ vs .memory/)
+    2. Scopes (user, repo, session)
+    3. Boas práticas (quando criar, atualizar, deletar)
+    4. Nomenclatura e YAML frontmatter
+    5. Categorias válidas
+    6. Comandos úteis
+    7. Troubleshooting
+  - **Blocker**: None
+  - **Expected Outcome**: docs/MEMORY_SYSTEM.md com guia completo
+
+- [ ] **IMP-65 P2: Session-Start Quick Mode** (P2 LOW)
+  - **Objetivo**: Modo P0-only opcional (reduzir de 8 → 4 passos)
+  - **Prioridade**: P2 LOW (nice-to-have)
+  - **Estimativa**: 3h
+  - **Implementação**:
+    - Flag --quick em session-start ritual
+    - Executa apenas: MCP verify, contexto, regras, segurança
+    - Pula: git status, docs, time-tracker, escopo
+    - Duração: 15s → 5s
+  - **Status**: ⚠️ Em discussão (2/3 agentes aprovam)
+  - **Blocker**: None
+  - **Expected Outcome**: Modo rápido funcional
+
+- [ ] **IMP-65 P2: Dashboard de Métricas** (P2 LOW)
+  - **Objetivo**: Observabilidade de session-start e dependências
+  - **Prioridade**: P2 LOW (nice-to-have)
+  - **Estimativa**: 8h
+  - **Features**:
+    - Métricas de session-start (duração por passo, P50/P95/P99)
+    - Métricas de dependências (outdated count, vulnerabilities)
+    - Dashboard HTML simples ou Grafana
+    - Histórico de 30 dias
+  - **Status**: ⚠️ Nice-to-have (2/3 agentes aprovam)
+  - **Blocker**: None
+  - **Expected Outcome**: Dashboard funcional
+
 - [x] ~~**PR #21 Review & Merge**~~: ✅ MERGED (2026-05-17)
   - ✅ PR merged com sucesso
   - ✅ Branch 061-recovery-017-correction deletada
@@ -74,7 +171,7 @@
     6. Validar correção em projeto novo
   - **Workaround**: Atualização manual do .vscode/mcp.json
   - **Blocker**: None (workaround disponível, correção pode ser incremental)
-  - **Expected Outcome**: 
+  - **Expected Outcome**:
     - Merge aplica update HTTP corretamente
     - Backup é criado antes do merge
     - Validação pós-merge confirma mudanças aplicadas

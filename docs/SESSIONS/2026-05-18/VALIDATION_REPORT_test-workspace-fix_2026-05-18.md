@@ -1,9 +1,9 @@
 # Relatório de Validação — test-workspace-fix
 
-**Data**: 2026-05-18  
-**Projeto**: test-workspace-fix  
-**Localização**: `/home/yves_marinho/DevOps/Projetos/test-workspace-fix`  
-**Operação**: `scaffold upgrade --force --log-dir $(pwd)/logs`  
+**Data**: 2026-05-18
+**Projeto**: test-workspace-fix
+**Localização**: `/home/yves_marinho/DevOps/Projetos/test-workspace-fix`
+**Operação**: `scaffold upgrade --force --log-dir $(pwd)/logs`
 **Status Geral**: ⚠️ **PARCIALMENTE BEM-SUCEDIDO** (1 falha crítica detectada)
 
 ---
@@ -445,7 +445,7 @@ cat logs/scaffold_2026-05-18_15-29-15.log | grep -E "(MERGED|CREATED.*mcp.json)"
 
 ---
 
-**Relatório gerado em**: 2026-05-18 15:45 BRT  
-**Validador**: GitHub Copilot (Claude Sonnet 4.5)  
-**Projeto**: a-default-project (Enterprise Default Project Template)  
+**Relatório gerado em**: 2026-05-18 15:45 BRT
+**Validador**: GitHub Copilot (Claude Sonnet 4.5)
+**Projeto**: a-default-project (Enterprise Default Project Template)
 **Versão do scaffold**: 1.0.0

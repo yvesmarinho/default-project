@@ -237,3 +237,52 @@ def benchmark_timer():
             yield timer
 
     return _timer
+
+
+# ---------------------------------------------------------------------------
+# Memory System Fixtures (IMP-65: Prevent .memory/ pollution by tests)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def temp_memory_dir(tmp_path: Path):
+    """
+    Isolated memory directory for tests.
+
+    Prevents test pollution of real .memory/ directory.
+    All test memories are saved to temporary directory
+    which is automatically cleaned up after test.
+
+    Usage:
+        def test_save_memory(temp_memory_dir):
+            # Write to isolated memory
+            (temp_memory_dir / "project" / "test.md").write_text("test")
+    """
+    memory_dir = tmp_path / ".memory" / "memories"
+    memory_dir.mkdir(parents=True)
+
+    # Setup test structure
+    (memory_dir / "project").mkdir()
+    (memory_dir / "team").mkdir()
+    (memory_dir / "sessions").mkdir()
+
+    yield memory_dir
+
+    # Cleanup happens automatically via tmp_path fixture
+
+
+@pytest.fixture
+def isolated_memory(temp_memory_dir: Path, monkeypatch):
+    """
+    Monkey-patch memory functions to use isolated directory.
+
+    Automatically patches MEMORY_DIR environment variable to point
+    to temporary directory, ensuring tests never touch real .memory/.
+
+    Usage:
+        def test_something(isolated_memory):
+            save_memory(...)  # Will use temp_memory_dir automatically
+    """
+    # Patch MEMORY_DIR constant in memory scripts
+    monkeypatch.setenv("MEMORY_DIR", str(temp_memory_dir))
+    yield temp_memory_dir

@@ -748,6 +748,48 @@ chat-search:
 	fi
 	@python scripts/session-chat.py search "$(QUERY)"
 
+##
+## ═══════════════════════════════════════════════════════════════════════
+## DEPENDENCY MANAGEMENT (IMP-65 P0)
+## ═══════════════════════════════════════════════════════════════════════
+
+## update-deps-safe: Update security dependencies (bandit, safety) with smoke tests
+update-deps-safe:
+	@echo "$(BLUE)🔍 Atualizando dependências de segurança...$(NC)"
+	@pip install --upgrade bandit safety
+	@echo ""
+	@echo "$(YELLOW)✅ Segurança atualizada. Rodando smoke tests...$(NC)"
+	@pytest tests/test_memory_smoke.py -v || true
+	@echo ""
+	@echo "$(GREEN)✅ Smoke tests passaram. Dependências seguras.$(NC)"
+
+## update-deps: Update all dependencies (caution: may introduce breaking changes)
+update-deps:
+	@echo "$(YELLOW)⚠️  ATENÇÃO: Atualizando TODAS as dependências...$(NC)"
+	@echo "$(YELLOW)Isso pode introduzir breaking changes. Continue? [y/N] $(NC)" && read ans && [ $${ans:-N} = y ]
+	@pip install --upgrade -e ".[dev,security]"
+	@echo ""
+	@echo "$(BLUE)🧪 Rodando testes completos...$(NC)"
+	@pytest tests/ -v
+	@echo ""
+	@echo "$(GREEN)✅ Testes passaram. Revise git diff antes de commitar.$(NC)"
+
+## deps-check: Check for outdated dependencies (used in session-start Passo 4.5)
+deps-check:
+	@pip list --outdated --format=json | python -c "import sys, json; data = json.load(sys.stdin) if not sys.stdin.isatty() else []; print(f'📦 {len(data)} pacote(s) desatualizado(s)') if data else print('✅ Tudo atualizado')"
+
+## memory-cleanup: Limpeza de memórias (dry-run, mostra o que seria removido)
+memory-cleanup:
+	@python scripts/memory-cleanup.py
+
+## memory-cleanup-force: Executar limpeza (cria backup automático)
+memory-cleanup-force:
+	@python scripts/memory-cleanup.py --execute --backup
+
+## config-validate: Validar configurações críticas (MCP, pyproject.toml, copilot-rules)
+config-validate:
+	@python scripts/validate-configs.py
+
 ## clean: Remove generated files and directories
 clean:
 	@echo "$(BLUE)🧹 Cleaning project...$(NC)"

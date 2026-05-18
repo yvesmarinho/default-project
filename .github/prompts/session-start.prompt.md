@@ -109,6 +109,64 @@ Verificar também:
 
 ---
 
+### Passo 4.5 — Verificação de Dependências
+
+**Ação do agente**: Verificar pacotes desatualizados e vulnerabilidades de segurança.
+
+**Comando**:
+```bash
+pip list --outdated --format=json | python -c "
+import sys, json
+data = json.load(sys.stdin) if sys.stdin.isatty() == False else []
+
+# Pacotes críticos de segurança
+critical_packages = ['bandit', 'safety', 'pytest']
+critical = [p for p in data if p['name'] in critical_packages]
+
+# Pacotes desatualizados gerais
+if critical:
+    print('🚨 PACOTES CRÍTICOS DESATUALIZADOS!')
+    for p in critical:
+        print(f\"  - {p['name']}: {p['version']} → {p['latest_version']}\")
+    print('\n⚠️  Execute: make update-deps-safe')
+    sys.exit(1)  # Bloqueia sessão (força atualização)
+
+elif len(data) > 0:
+    print(f'⚠️  {len(data)} pacote(s) desatualizado(s) (não-críticos)')
+    print('💡 Sugestão: Execute \"make update-deps\" quando tiver tempo')
+else:
+    print('✅ Todas dependências atualizadas')
+"
+```
+
+**Resultado esperado**:
+
+**Cenário 1 — Tudo atualizado** (mais comum):
+```
+✅ Todas dependências atualizadas
+```
+
+**Cenário 2 — Deps não-críticos desatualizados**:
+```
+⚠️  5 pacote(s) desatualizado(s) (não-críticos)
+💡 Sugestão: Execute "make update-deps" quando tiver tempo
+```
+
+**Cenário 3 — Deps críticos desatualizados** (bloqueia sessão):
+```
+🚨 PACOTES CRÍTICOS DESATUALIZADOS!
+  - bandit: 1.7.5 → 1.7.8
+  - safety: 3.0.0 → 3.1.0
+
+⚠️  Execute: make update-deps-safe
+
+❌ SESSÃO BLOQUEADA — Corrija vulnerabilidades antes de continuar
+```
+
+**Duração esperada**: 3-5 segundos
+
+---
+
 ### Passo 5 — Verificar Estado do Projeto
 
 ```bash

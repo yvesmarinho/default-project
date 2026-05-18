@@ -488,16 +488,16 @@ python scripts/manage.py objetivo validate objetivo-init.yaml
    - Conclusão: **Merge não aplicou atualização HTTP**
 
 3. **Validação dos BUG Fixes Anteriores (✅ TODOS OK)**:
-   
+
    **BUG-17 (Time-tracker)**:
    - ✅ `.github/prompts/session-start.prompt.md` tem Passo 6.5
    - ✅ `scripts/session-time-tracker.py` existe
    - ✅ `.session-time/` criado
-   
+
    **BUG-18 (objetivo-init.yaml)**:
    - ✅ `objetivo.yaml` existe na raiz (15234 bytes)
    - ✅ Schema válido (version 1.0)
-   
+
    **BUG-19 (git_validators.py)**:
    - ✅ `scripts/lib/git_validators.py` existe (16443 bytes)
    - ✅ Módulo importável
@@ -515,14 +515,14 @@ python scripts/manage.py objetivo validate objetivo-init.yaml
    - Hipótese principal: Merge strategy faz shallow merge, preservou estrutura antiga do `github` server
 
 6. **Criação dos Documentos**:
-   
+
    **Relatório de Validação** (3500+ linhas):
    - Sumário executivo com tabela de status
    - Validação detalhada de cada componente
    - Análise de BUG fixes anteriores
    - Checklist completo
    - Comandos de reprodução
-   
+
    **BUG-20 Report** (950+ linhas):
    - Descrição detalhada do problema
    - Evidências (logs, configs, ausência de backup)
@@ -553,7 +553,7 @@ python scripts/manage.py objetivo validate objetivo-init.yaml
 BUG-20: MCP GitHub Server HTTP Update Não Aplicado no Scaffold Upgrade
 Severidade: 🔴 P0 CRÍTICA
 Causa provável: Merge strategy faz shallow merge, preserva chaves existentes
-Impacto: 
+Impacto:
   - Performance: 88% mais lento (2.5s vs 0.3s startup)
   - Memória: 95% maior (45MB vs 2MB)
   - Segurança: PAT manual vs OAuth automático
@@ -570,5 +570,147 @@ Correção: Implementar deep merge recursivo em file_merge.py
 - `create_file` (relatórios de validação e BUG)
 
 **Status**: ✅ Completo
+
+---
+
+## 17:00 — Debate Multi-Agente: Melhorias Sistema de Memórias e Session-Start
+
+**Objetivo**: Executar análise completa das memórias, gerar debate entre agentes, criar plano de ação
+
+**Contexto**:
+- Usuário solicitou:
+  1. Análise de `/memories/` e `.memory/` para validar dados
+  2. Implementar processo de atualização segura de pacotes no session-start
+  3. Debate entre agentes baseado nas análises
+  4. Plano de ação e tasks list consolidado
+  5. Report completo do debate
+
+**Passos**:
+
+1. **Análise de Memórias (Principal Software Engineer)**:
+   - Leitura de `/memories/enterprise-ansible.md` → ❌ **Outro projeto** (Ansible, não a-default-project)
+   - Listagem de `.memory/memories/project/` → ❌ **37 arquivos de teste duplicados**
+   - Verificação de `/memories/repo/test-workspace*.md` → ❌ **Dados obsoletos**
+   - **Total de ruído**: ~3.420 tokens de contexto incorreto
+   - **Descoberta crítica**: Memória enterprise-ansible carregada em TODAS as sessões (poluição cross-workspace)
+
+2. **Análise de Atualização de Pacotes (SE: Architect)**:
+   - Leitura de `pyproject.toml` → 1 dep principal, 7 dev, 2 security
+   - Análise do ritual session-start atual → 7 passos, ~15s
+   - **Prós e contras** de adicionar update no session-start
+   - **Alternativas avaliadas**: Pre-commit hook, CI/CD, manual, check informativo
+   - **Decisão**: ADR-001 — Verificação híbrida (Passo 4.5 ACIONÁVEL + CI/CD semanal)
+   - **Cenário catastrófico identificado**: Breaking change durante sessão (pytest 8→9)
+
+3. **Análise DevOps (DevOps Expert)**:
+   - Concordância com problemas identificados
+   - **❌ DISCORDÂNCIA** respeitosa: Passo 4.5 deve ser ACIONÁVEL (não apenas informativo)
+   - Proposta de **exit 1** se vulnerabilidades P0 (força ação)
+   - **Automação defensiva**: Scripts com dry-run, backup automático, rollback rápido
+   - **Pre-commit hooks**: Bloquear commits de arquivos de teste
+   - **CI/CD semanal**: GitHub Actions para dependency checks
+   - **Observabilidade**: Métricas de session-start, deps desatualizados, vulnerabilidades
+
+4. **Debate Consolidado (3 Agentes)**:
+   - **Consenso alcançado**: 13/14 decisões aprovadas (93%)
+   - **Decisões principais**:
+     - ✅ Limpar memórias contaminadas (P0)
+     - ✅ Criar memória a-default-project.md (P0)
+     - ✅ Passo 4.5 acionável (bloqueia sessão se P0) (P0)
+     - ✅ Test fixtures isolados (P0)
+     - ✅ Scripts automation (cleanup, validate) (P0)
+     - ✅ Pre-commit hooks (P1)
+     - ✅ CI/CD dependency check (P1)
+     - ⚠️ Session-start quick mode (P2, em discussão)
+
+5. **Documentação Criada**:
+
+   **DEBATE-001** (27.000+ palavras):
+   - Análise detalhada de 3 perspectivas
+   - Tabela consolidada de decisões
+   - Código completo de soluções
+   - Métricas de sucesso
+
+   **ACTION_PLAN** (17 tasks, 20h estimativa):
+   - 8 tasks P0 (executar < 24h) → ~7h
+   - 7 tasks P1 (próxima sprint) → ~8-10h
+   - 2 tasks P2 (backlog) → ~11h
+   - Critérios de aceitação detalhados
+   - Commits esperados prontos
+
+   **EXECUTIVE_SUMMARY** (resumo executivo):
+   - Sumário das descobertas
+   - Decisões aprovadas
+   - Métricas antes/depois
+   - Próximos passos
+
+   **lembrete.md** (atualizado):
+   - Resumo das decisões
+   - Tasks P0 com estimativas
+   - Problemas e soluções
+
+**Resultado**:
+- ✅ **Análise completa de memórias**: 3 problemas críticos identificados
+- ✅ **Debate multi-agente**: Consenso 3/3 em 13/14 decisões
+- ✅ **Plano de ação**: 17 tasks priorizadas (P0/P1/P2)
+- ✅ **Documentação**: 4 arquivos criados (~75KB total)
+- ✅ **Pronto para execução**: Tasks P0 aprovadas
+
+**Descobertas Críticas**:
+
+| Problema | Severidade | Impacto |
+|----------|-----------|---------|
+| **Memórias contaminadas** | 🔴 P0 | ~3.420 tokens de ruído |
+| **Ausência de deps check** | 🔴 P0 | CVEs não detectados |
+| **Testes poluem .memory/** | 🟠 P1 | 37 arquivos duplicados |
+| **Configs obsoletas** | 🟠 P1 | Risco BUG-20 recorrente |
+
+**Soluções Aprovadas**:
+
+**P0 (Executar < 24h)**:
+1. Deletar enterprise-ansible.md + 37 test-*.md + test-workspace*.md
+2. Criar /memories/a-default-project.md (dados corretos)
+3. Test fixtures isolados (tests/conftest.py)
+4. Passo 4.5 session-start (deps check acionável, exit 1 se P0)
+5. Makefile target update-deps-safe
+6. Script memory-cleanup.py (dry-run, backup automático)
+7. Script validate-configs.py (detecta MCP CLI obsoleto)
+8. Atualizar docs/TODO.md
+
+**P1 (Próxima sprint)**:
+- Pre-commit hook validate-memory
+- GitHub Actions dependency-check.yml
+- Documentar docs/MEMORY_SYSTEM.md
+
+**Arquivos**:
+- Criado: `docs/debates/DEBATE-001-memory-cleanup-and-session-start-improvements.md`
+- Criado: `docs/planning/ACTION_PLAN-memory-cleanup-and-session-start.md`
+- Criado: `docs/planning/EXECUTIVE_SUMMARY-debate-and-action-plan.md`
+- Atualizado: `docs/planning/lembrete.md`
+
+**Métricas de Impacto Esperado**:
+
+| Métrica | Antes | Depois P0 |
+|---------|-------|-----------|
+| Tokens de ruído | ~3.420 | 0 |
+| Arquivos de teste | 37 | 0 |
+| Memórias incorretas | 3 | 0 |
+| Vulnerabilidades detectadas | 0% | 100% (P0) |
+| Configs obsoletas detectadas | 0% | 100% |
+
+**Consenso Final**:
+- ✅ Principal Software Engineer
+- ✅ SE: Architect
+- ✅ DevOps Expert
+
+**Ferramentas utilizadas**:
+- `runSubagent` (3 agentes: Principal SE, SE: Architect, DevOps Expert)
+- `read_file` (análise de memórias, configs, session-start)
+- `list_dir` (estrutura .memory/)
+- `memory` (view de /memories/)
+- `create_file` (4 documentos técnicos)
+- `replace_string_in_file` (atualizar lembrete.md)
+
+**Status**: ✅ Completo — Debate concluído, plano aprovado, pronto para execução
 
 ---
