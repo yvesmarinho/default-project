@@ -1,9 +1,9 @@
 # MCP GitHub Server — Atualização para HTTP API
 
-**Data**: 2026-05-18  
-**Versão**: 2.0 (HTTP API)  
-**Status**: ✅ TESTADO E FUNCIONANDO  
-**Impacto**: Simplificação de configuração + Autenticação automática  
+**Data**: 2026-05-18
+**Versão**: 2.0 (HTTP API)
+**Status**: ✅ TESTADO E FUNCIONANDO
+**Impacto**: Simplificação de configuração + Autenticação automática
 
 ---
 
@@ -372,7 +372,7 @@ cp .vscode/mcp.json.backup .vscode/mcp.json
 
 **Breaking Changes**:
 - ⚠️ Campo `command` removido
-- ⚠️ Campo `args` removido  
+- ⚠️ Campo `args` removido
 - ⚠️ Campo `env.GITHUB_PERSONAL_ACCESS_TOKEN` removido
 - ⚠️ Campo `type` mudou de `stdio` para `http`
 - ⚠️ Novo campo `url` obrigatório
@@ -389,6 +389,6 @@ cp .vscode/mcp.json.backup .vscode/mcp.json
 
 ---
 
-**Última atualização**: 2026-05-18  
-**Autor**: Enterprise Default Project Template Team  
+**Última atualização**: 2026-05-18
+**Autor**: Enterprise Default Project Template Team
 **Status**: ✅ PRODUCTION READY

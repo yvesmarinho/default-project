@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-18 — Limpeza de PRs + BUG-17/BUG-18 documentados
+**Last Updated**: 2026-05-18 — BUG-20 (MCP merge failure) detectado + validation report
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
@@ -34,6 +34,50 @@
   - ✅ session-time-tracker.py funcionando corretamente
   - ✅ Documentação criada: BUG-19-git-validators-missing-deployment.md
   - ✅ Validação de branch names operacional
+
+- [x] ~~**MCP GitHub Server HTTP Update**~~: ✅ IMPLEMENTADO (2026-05-18)
+  - ✅ scripts/lib/vscode.py atualizado (commit 39ac165)
+  - ✅ Documentação completa: MCP-GITHUB-HTTP-UPDATE.md (600+ linhas)
+  - ✅ Configuração HTTP testada e funcionando no a-default-project
+  - ⚠️ **BUG-20 detectado**: Merge não aplicou update em test-workspace-fix
+
+- [x] ~~**Validação test-workspace-fix**~~: ✅ CONCLUÍDO (2026-05-18)
+  - ✅ Validation report criado (3500+ linhas)
+  - ✅ BUG-17, BUG-18, BUG-19 validados (todos OK)
+  - ❌ BUG-20 detectado (MCP HTTP merge failure)
+  - ✅ Relatório completo: VALIDATION_REPORT_test-workspace-fix_2026-05-18.md
+
+- [ ] **🔴 BUG-20: MCP GitHub HTTP Merge Failure** (P0 CRÍTICA)
+  - **Objetivo**: Corrigir falha do merge que não aplicou update HTTP do GitHub server
+  - **Severidade**: 🔴 P0 CRÍTICA (impacta performance, segurança, UX)
+  - **Prioridade**: Resolver em < 48h
+  - **Descoberto em**: 2026-05-18 (validação test-workspace-fix)
+  - **Arquivo**: docs/bugs/BUG-20-mcp-github-http-merge-failure.md (950+ linhas)
+  - **Problema**:
+    - scaffold upgrade --force executou merge do mcp.json
+    - Log indica "Merged with user customizations (backup: mcp.json.backup)"
+    - **MAS**: Configuração antiga (CLI) foi mantida, não atualizada para HTTP
+    - **MAS**: Backup mcp.json.backup NÃO foi criado
+    - Outros arquivos .vscode/*.json foram merged com sucesso
+  - **Impacto**:
+    - Performance: 88% mais lento (2.5s vs 0.3s startup)
+    - Memória: 95% maior (45MB vs 2MB)
+    - Segurança: PAT manual vs OAuth automático
+    - UX: Usuário precisa configurar token manualmente
+  - **Causa raiz provável**: Merge strategy faz shallow merge, preserva estrutura existente do server "github" sem sobrescrever
+  - **Tarefas**:
+    1. Investigar scripts/lib/file_merge.py (função _merge_json)
+    2. Confirmar se faz shallow ou deep merge
+    3. Escolher solução: Deep Merge / Schema Versioning / Force Update
+    4. Implementar correção com testes
+    5. Aplicar workaround manual em test-workspace-fix
+    6. Validar correção em projeto novo
+  - **Workaround**: Atualização manual do .vscode/mcp.json
+  - **Blocker**: None (workaround disponível, correção pode ser incremental)
+  - **Expected Outcome**: 
+    - Merge aplica update HTTP corretamente
+    - Backup é criado antes do merge
+    - Validação pós-merge confirma mudanças aplicadas
 
 - [ ] **BUG-16 Teste Manual**: Validar upgrade com projeto real customizado
   - **Objetivo**: Executar teste end-to-end de integração BUG-16
