@@ -248,7 +248,7 @@ Branches remotas: 1 (origin/master)
    # Python stdlib (shutil, pathlib, logging)
    src_root = Path("a-default-project")
    dst_root = Path("test-workspace-fix")
-   
+
    files = ["objetivo-init.yaml", "objetivo-init-minimal.yaml"]
    for file in files:
        shutil.copy2(src_root / file, dst_root / file)
@@ -292,6 +292,82 @@ python scripts/manage.py objetivo validate objetivo-init.yaml
 - `create_file` (BUG reports)
 - `mcp_pylance_mcp_s_pylanceRunCodeSnippet` (deploy Python)
 - `replace_string_in_file` (TODO.md)
+
+**Status**: ✅ Completo
+
+---
+
+## 15:10 — BUG-19: git_validators.py Missing Deployment
+
+**Objetivo**: Corrigir erro ModuleNotFoundError ao executar session-time-tracker.py
+
+**Contexto**:
+- Usuário reportou erro: `ModuleNotFoundError: No module named 'lib.git_validators'`
+- Log do scaffold mostrou `[SKIPPED] dir | scripts/lib`
+- Arquivo git_validators.py existe no projeto principal mas não foi deployado
+
+**Passos**:
+
+1. **Análise do Erro**:
+   ```bash
+   # Erro reportado
+   $ uv run scripts/session-time-tracker.py start
+   Traceback (most recent call last):
+     File ".../session-time-tracker.py", line 41, in <module>
+       from lib.git_validators import validate_branch_name, format_validation_errors
+   ModuleNotFoundError: No module named 'lib.git_validators'
+   ```
+
+2. **Verificação de Estado**:
+   - Arquivo existe: `a-default-project/scripts/lib/git_validators.py` (16443 bytes)
+   - Test-workspace-fix/scripts/lib/ tinha apenas 4 arquivos
+   - Scaffold pulou pasta existente → arquivos novos não copiados
+
+3. **Deploy via Python stdlib**:
+   ```python
+   import shutil
+   from pathlib import Path
+   
+   src = Path(".../a-default-project/scripts/lib/git_validators.py")
+   dst = Path(".../test-workspace-fix/scripts/lib/git_validators.py")
+   shutil.copy2(src, dst)
+   # ✅ 16443 bytes copiados
+   # ✅ Verificação: tamanhos idênticos
+   ```
+
+4. **Teste de Validação**:
+   ```bash
+   $ cd /home/yves_marinho/DevOps/Projetos/test-workspace-fix
+   $ uv run scripts/session-time-tracker.py start
+   ✅ Sessão iniciada: 2026-05-18T15:10:16Z
+   📅 Data: 2026-05-18
+   ```
+
+5. **Documentação Completa**:
+   - Criado BUG-19-git-validators-missing-deployment.md (350+ linhas)
+   - Análise de causa root: scaffold upgrade skip em pastas existentes
+   - Proposta de correção definitiva: merge strategy para Python packages
+   - TODO.md atualizado
+
+**Resultado**:
+- ✅ Módulo git_validators.py (16443 bytes) deployado
+- ✅ session-time-tracker.py funcionando sem erros
+- ✅ Validação de branch names operacional
+- ✅ Documentação completa do bug e correção
+
+**Arquivos**:
+- Criado: `docs/bugs/BUG-19-git-validators-missing-deployment.md`
+- Copiado: `test-workspace-fix/scripts/lib/git_validators.py`
+- Atualizado: `docs/TODO.md`
+
+**Ferramentas utilizadas**:
+- `read_file` (análise de logs e código)
+- `file_search` (localizar git_validators.py)
+- `list_dir` (verificar conteúdo de scripts/lib)
+- `mcp_pylance_mcp_s_pylanceRunCodeSnippet` (deploy via Python stdlib)
+- `run_in_terminal` (teste de validação)
+- `create_file` (BUG-19 documentation)
+- `multi_replace_string_in_file` (TODO.md update)
 
 **Status**: ✅ Completo
 
