@@ -9,6 +9,22 @@
 
 ---
 
+# Alterações necessárias presente
+
+- é possivel integrar a atualizações do spec-kit no projeto comando "specify init --here --force --integration copilot"?
+- `scafold objetivo-init`caso o campo "docstyle" não seja informado utilizar o padrão
+  ```"Google Style Docstrings com type hints completos, Sphinx para geração de docs, ADRs para decisões arquiteturais, OpenAPI/Swagger para documentação de API"```
+- `scafold objetivo-init`caso o campo "out-scope" não for informado, não incluir no arquivo.
+---
+
+## Correção - IMPORTANTE - BUG
+
+---
+
+## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
+
+---
+
 # ✅ Alterações APROVADAS — 2026-05-18
 
 ## 🎭 Debate de Arquitetura Concluído
@@ -196,19 +212,6 @@ def temp_memory_dir(tmp_path):
 **Aprovação**: ✅ 3/3 agentes
 **Bloqueios**: Nenhum
 
----
-
-# Alterações necessárias presente
-
-- é possivel integrar a atualizações do spec-kit no projeto comando "specify init --here --force --integration copilot"?
-
----
-
-## Correção - IMPORTANTE - BUG
-
----
-
-## Lembrete das tarefas da sessão (NÃO NECESSITA DE INTERAÇÃO, USO PESSOAL)
 
 ---
 ## 📅 Ações Completas — 2026-05-13
