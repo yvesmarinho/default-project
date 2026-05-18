@@ -146,7 +146,7 @@ Branches locais: 1 (master)
 Branches remotas: 1 (origin/master)
 ```
 
-**Resultado**: 
+**Resultado**:
 - ✅ Repositório com **apenas master** como branch ativa
 - ✅ Todos os backups preservados em `retore/`
 - ✅ Histórico de commits preservado nos backups
@@ -156,6 +156,58 @@ Branches remotas: 1 (origin/master)
 - `git branch -D` (deletar branches locais)
 - `git push origin --delete` (deletar branches remotas)
 - `git fetch --prune` (limpar referências remotas obsoletas)
+
+**Status**: ✅ Completo
+
+---
+
+## 🔧 Deploy Time-Tracker para test-workspace-fix
+
+**10:47 — ✅ CONCLUÍDO**
+
+**Objetivo**: Corrigir deploy do time-tracker integrado ao session.manager no test-workspace-fix
+
+**Contexto**: Usuário reportou que time-tracker integrado ao prompt do session.manager não foi deployado no projeto de testes
+
+**Verificação inicial**:
+- ✅ `scripts/session-time-tracker.py` já existia no test-workspace-fix
+- ❌ `.github/prompts/session-start.prompt.md` desatualizado (sem Passo 6.5)
+- ✅ Pasta `.session-time/` já configurada
+
+**Ações executadas**:
+
+1. **Análise de diferenças**:
+   - Comparado `session-start.prompt.md` do projeto principal vs test-workspace-fix
+   - Identificado falta do Passo 6.5 (Inicializar Rastreamento de Sessão)
+
+2. **Deploy da correção**:
+   - Criado backup: `session-start.prompt.md.backup`
+   - Copiado versão atualizada do projeto principal
+   - Integração completa do time-tracker no ritual de início
+
+3. **Atualização de memória**:
+   - Memorizada pasta de testes: `/home/yves_marinho/DevOps/Projetos/test-workspace-fix`
+   - Registrado estado dos backups em `retore/` (apenas ZIPs)
+   - Carregadas regras completas de `.copilot-rules.md`
+
+**Arquivos modificados**:
+- `/home/yves_marinho/DevOps/Projetos/test-workspace-fix/.github/prompts/session-start.prompt.md` (atualizado)
+- `/home/yves_marinho/DevOps/Projetos/test-workspace-fix/.github/prompts/session-start.prompt.md.backup` (criado)
+- `/memories/repo/test-workspace-path.md` (atualizado)
+
+**Resultado**:
+- ✅ Time-tracker totalmente integrado no test-workspace-fix
+- ✅ Passo 6.5 agora executa:
+  - Verificação de `.session-index/index.db`
+  - Inicialização via `python scripts/session-time-tracker.py start`
+  - Verificação de status da sessão ativa
+- ✅ Memória do repositório atualizada
+- ✅ Regras `.copilot-rules.md` carregadas (8 seções, P0+P1)
+
+**Ferramentas utilizadas**:
+- Python stdlib (`shutil`, `pathlib`, `logging`)
+- Memory tool (repository memory)
+- `read_file` (verificação de arquivos)
 
 **Status**: ✅ Completo
 
