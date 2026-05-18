@@ -7,12 +7,12 @@ def main():
     try:
         with open('outdated.json', 'r') as f:
             data = json.load(f)
-        
+
         count = len(data)
-        
+
         # Primeira linha: contagem
         print(count)
-        
+
         # Linhas seguintes: tabela markdown
         if count > 0:
             for pkg in data:

@@ -1192,7 +1192,7 @@ sessions_dir.mkdir(parents=True, exist_ok=True)
 ```bash
 gh run list --limit 100 --json conclusion,databaseId | \
   jq -r '.[] | select(.conclusion == "failure") | .databaseId' | \
-  while read run_id; do 
+  while read run_id; do
     gh run delete $run_id
   done
 ```

@@ -1,9 +1,9 @@
 # BUG-001: scaffold objetivo-init — 3 Issues de Comportamento
 
-**Data**: 2026-05-18  
-**Prioridade**: 🟡 P1 (Funcionalidade com workarounds)  
-**Tipo**: Bug Report  
-**Componente**: `scripts/scaffold.py` — comando `objetivo-init`  
+**Data**: 2026-05-18
+**Prioridade**: 🟡 P1 (Funcionalidade com workarounds)
+**Tipo**: Bug Report
+**Componente**: `scripts/scaffold.py` — comando `objetivo-init`
 **Impacto**: Baixo/Médio (não bloqueia uso, mas gera inconsistências)
 
 ---
@@ -261,8 +261,8 @@ grep "objetivo-test.yaml" logs/scaffolds.yaml
 
 ## 👤 Reporter
 
-**Usuário**: yves_marinho  
-**Sessão**: 2026-05-18  
+**Usuário**: yves_marinho
+**Sessão**: 2026-05-18
 **Origem**: Seleção manual em `docs/planning/lembrete.md`
 
 ---
@@ -300,6 +300,6 @@ grep "objetivo-test.yaml" logs/scaffolds.yaml
 
 ---
 
-**Status**: 🟡 Aberto  
-**Assignee**: (a definir)  
+**Status**: 🟡 Aberto
+**Assignee**: (a definir)
 **Milestone**: v1.7.0 ou próximo patch release
