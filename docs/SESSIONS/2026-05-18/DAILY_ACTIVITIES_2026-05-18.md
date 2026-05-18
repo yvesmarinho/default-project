@@ -896,9 +896,103 @@ Correção: Implementar deep merge recursivo em file_merge.py
 - ✅ Validação em PRs (previne introdução de vulns)
 
 **Próximos passos**:
-- [ ] Commit da implementação P1-2
-- [ ] Prosseguir para P1-3 (Documentação MEMORY_SYSTEM.md)
+- [x] Commit da implementação P1-2
+- [x] Prosseguir para P1-3 (Documentação MEMORY_SYSTEM.md)
 
-**Status**: ✅ Completo — Workflow implementado, aguardando commit
+**Commit**: `beb36ec` — feat(ci): Implementar IMP-65 P1-2
+
+**Status**: ✅ Completo — CI/CD configurado, pronto para P1-3
+
+---
+
+## 📚 Implementação IMP-65 P1-3 — Documentação MEMORY_SYSTEM.md
+
+**20:30 — ✅ CONCLUÍDO**
+
+**Objetivo**: Documentar sistema de memória com boas práticas e troubleshooting
+
+**Contexto**: Task P1-3 do IMP-65, prevenção de problemas futuros
+
+**Implementação**:
+
+**Arquivo**: docs/MEMORY_SYSTEM.md (~800 linhas, 12.000 palavras)
+
+**Seções implementadas (8/8)**:
+
+1. **Visão Geral**
+   - ✅ Propósito do sistema de memória
+   - ✅ Quando usar vs quando NÃO usar
+   - ✅ Características principais
+
+2. **Estrutura de Diretórios**
+   - ✅ `/memories/` — Copilot Memory Tool (MCP)
+   - ✅ `.memory/` — Mini-Engram Local
+   - ✅ Diagramas de estrutura
+   - ✅ Diferenças entre os dois sistemas
+
+3. **Scopes de Memória**
+   - ✅ User Scope: Cross-workspace, preferências pessoais
+   - ✅ Repository Scope: Workspace-specific, decisões do projeto
+   - ✅ Session Scope: Conversação atual, notas temporárias
+   - ✅ Local Scope: Versionado no Git, knowledge base compartilhado
+   - ✅ Quando usar cada scope (com exemplos)
+
+4. **Boas Práticas**
+   - ✅ DO: 6 práticas recomendadas
+   - ✅ DON'T: 5 práticas a evitar
+   - ✅ Exemplos concretos de cada prática
+
+5. **Nomenclatura de Arquivos**
+   - ✅ User/Session: Formato livre
+   - ✅ Local: YYYY-MM-DD__<titulo-descritivo>.md (obrigatório)
+   - ✅ Padrões bloqueados (test-*.md, auto-generated-title.md)
+   - ✅ Exemplos de nomenclatura correta e incorreta
+
+6. **YAML Frontmatter**
+   - ✅ Quando obrigatório vs opcional
+   - ✅ Formato completo com campos
+   - ✅ 6 categorias válidas (project, team, decision, pattern, incident, user)
+   - ✅ Exemplos de cada categoria
+   - ✅ Validação via pre-commit hook
+
+7. **Comandos Úteis**
+   - ✅ MCP Memory Tool commands
+   - ✅ Scripts locais (mem_save.py, mem_search.py)
+   - ✅ Makefile targets (memory-cleanup, config-validate)
+   - ✅ Git hooks (instalação e uso)
+
+8. **Troubleshooting**
+   - ✅ 6 problemas comuns com soluções:
+     - Arquivos de teste em .memory/
+     - YAML frontmatter inválido
+     - Memórias duplicadas
+     - User memory muito grande
+     - Configs obsoletos não detectados
+     - Dependências desatualizadas
+   - ✅ Comandos de diagnóstico e correção
+   - ✅ Exemplos de saída esperada
+
+**Recursos adicionais**:
+
+- ✅ Tabelas comparativas de scopes
+- ✅ Tabelas de categorias válidas
+- ✅ Exemplos de YAML frontmatter
+- ✅ Troubleshooting com sintomas → causas → soluções
+- ✅ 15+ referências para docs relacionados
+- ✅ Histórico de mudanças (v1.0.0)
+
+**Integração com IMP-65**:
+
+- Referencia Tasks P0 (memory-cleanup.py, validate-configs.py, pre-commit hook)
+- Referencia Tasks P1 (GitHub Actions, session-start Passo 4.5)
+- Links para DEBATE-001, ACTION_PLAN, EXECUTIVE_SUMMARY
+- Comandos make integrados
+
+**Próximos passos**:
+- [ ] Atualizar docs/INDEX.md (link para MEMORY_SYSTEM.md)
+- [ ] Commit da implementação P1-3
+- [ ] ✅ Todas as 3 tasks P1 HIGH concluídas!
+
+**Status**: ✅ Completo — Documentação abrangente criada
 
 ---

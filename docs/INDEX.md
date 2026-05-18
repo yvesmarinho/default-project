@@ -1343,6 +1343,14 @@ docs/
 
 - **[DEPRECATION-POLICY.md](reference/DEPRECATION-POLICY.md)** - Deprecation guidelines
 
+- **[MEMORY_SYSTEM.md](MEMORY_SYSTEM.md)** - ⭐ Sistema de memória completo (IMP-65 P1-3)
+  - Estrutura de diretórios (/memories/ vs .memory/)
+  - Scopes (user, repo, session, local)
+  - Boas práticas e antipadrões
+  - Nomenclatura e YAML frontmatter
+  - Comandos úteis e troubleshooting
+  - Status: ✅ COMPLETE (2026-05-18, v1.0.0)
+
 - **[PROJECT-KNOWLEDGE-MAP.md](reference/PROJECT-KNOWLEDGE-MAP.md)** - Project knowledge graph
 
 - **[INTEGRACAO-SPECKIT-SUPORPOWER-MVP.md](reference/INTEGRACAO-SPECKIT-SUPORPOWER-MVP.md)** - SpecKit integration specs
