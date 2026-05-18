@@ -820,10 +820,85 @@ Correção: Implementar deep merge recursivo em file_merge.py
 - ✅ Ferramenta: mcp_pylance_mcp_s_pylanceRunCodeSnippet
 
 **Próximos passos**:
-- [ ] Testar hook com commit simulado
-- [ ] Documentar no DAILY_ACTIVITIES
-- [ ] Commit da implementação P1-1
+- [x] Testar hook com commit simulado
+- [x] Documentar no DAILY_ACTIVITIES
+- [x] Commit da implementação P1-1
 
-**Status**: 🔄 Em andamento — Script criado, pronto para testes
+**Commit**: `c874071` — feat(git-hooks): Implementar IMP-65 P1-1
+
+**Status**: ✅ Completo — Pre-commit hook funcional, pronto para P1-2
+
+---
+
+## ⚙️ Implementação IMP-65 P1-2 — GitHub Actions Dependency Check
+
+**19:45 — ✅ CONCLUÍDO**
+
+**Objetivo**: CI/CD semanal para verificação automática de dependências e CVEs
+
+**Contexto**: Task P1-2 do IMP-65, automação de segurança
+
+**Implementação**:
+
+**1. Workflow dependency-check.yml**
+- ✅ Arquivo: .github/workflows/dependency-check.yml
+- ✅ Triggers:
+  - Schedule: Segundas 9h UTC (cron: '0 9 * * MON')
+  - Workflow dispatch: Trigger manual via Actions UI
+  - Pull requests: Quando modificar pyproject.toml ou requirements
+- ✅ Python: 3.12 (consistente com projeto)
+
+**2. Jobs implementados**:
+
+**a) Check outdated packages**
+- ✅ `pip list --outdated --format=json`
+- ✅ Contagem de pacotes desatualizados
+- ✅ Tabela markdown no GitHub Summary
+- ✅ Salva outdated.json como artifact
+
+**b) Security audit (CVEs)**
+- ✅ `pip-audit` para scan de vulnerabilidades conhecidas
+- ✅ Processa audit.json
+- ✅ Agrupa por severidade (critical, high, medium)
+- ✅ Mostra até 5 CVEs mais críticos no summary
+
+**c) Artifact upload**
+- ✅ outdated.json (lista de packages desatualizados)
+- ✅ audit.json (relatório completo de CVEs)
+- ✅ Retenção: 30 dias
+
+**d) Issue automation**
+- ✅ Cria issue P0 se vulnerabilidades encontradas
+- ✅ Labels: security, dependencies, P0, automated
+- ✅ Título: "🚨 Vulnerabilidades de Segurança — YYYY-MM-DD"
+- ✅ Corpo da issue:
+  - Resumo de vulnerabilidades
+  - Tabela com CVEs (pacote, CVE ID, severidade, fix)
+  - Ações recomendadas (make update-deps-safe)
+  - Links para artifacts
+- ✅ Atualiza issue existente se aberta no mesmo mês
+- ✅ Previne spam de issues duplicadas
+
+**3. Permissões**:
+- ✅ contents: read (checkout código)
+- ✅ issues: write (criar/atualizar issues)
+
+**4. Integração com P0**:
+- Usa `make update-deps-safe` (Task 5)
+- Referencia scripts de validação (Task 7)
+- Complementa Passo 4.5 session-start (Task 4)
+
+**Benefícios**:
+- ✅ Detecção automática semanal de vulnerabilidades
+- ✅ Alertas P0 automáticos via issues
+- ✅ Histórico completo via artifacts
+- ✅ Zero intervenção manual até issue ser criada
+- ✅ Validação em PRs (previne introdução de vulns)
+
+**Próximos passos**:
+- [ ] Commit da implementação P1-2
+- [ ] Prosseguir para P1-3 (Documentação MEMORY_SYSTEM.md)
+
+**Status**: ✅ Completo — Workflow implementado, aguardando commit
 
 ---
