@@ -31,6 +31,18 @@ except ImportError:
     console = None  # type: ignore
 
 
+# =============================================================================
+# Constants (BUG-001 Fix #1: Default docstyle)
+# =============================================================================
+
+DEFAULT_DOCSTYLE = (
+    "Google Style Docstrings com type hints completos, "
+    "Sphinx para geração de docs, "
+    "ADRs para decisões arquiteturais, "
+    "OpenAPI/Swagger para documentação de API"
+)
+
+
 @dataclass
 class WizardQuestion:
     """Represents a single question in the wizard.
@@ -384,20 +396,28 @@ class ObjetivoWizard:
             template = template.replace(f'"{placeholder}"', f'"{value}"')
             template = template.replace(placeholder, value)
 
-        # 4. Add default values for placeholders without questions
+        # 4. Add default values for placeholders without questions (BUG-001 Fix)
         defaults = {
             '{{WORKFLOW_OBJETIVO}}': 'Workflow baseado em objetivo.yaml v2.0 com SpecKit',
-            '{{WORKFLOW_SPECIFY}}': 'Gera\u00e7\u00e3o autom\u00e1tica de spec.md, plan.md e tasks.md',
-            '{{OUT_SCOPE}}': 'Itens fora do escopo ser\u00e3o documentados separadamente',
+            '{{WORKFLOW_SPECIFY}}': 'Geração automática de spec.md, plan.md e tasks.md',
+            # BUG-001 Fix #2: NÃO incluir default para OUT_SCOPE (será removido se vazio)
             '{{FOLDER_STRUCTURE_CUSTOM}}': '',  # Empty for default structure
+            '{{DOCSTYLE}}': DEFAULT_DOCSTYLE,  # BUG-001 Fix #1: Default quando não fornecido
         }
 
         for placeholder, default_value in defaults.items():
-            template = template.replace(f'"{placeholder}"', f'"{default_value}"')
-            template = template.replace(placeholder, default_value)
+            # Só aplicar default se placeholder ainda existe (não foi substituído por resposta)
+            if placeholder in template:
+                template = template.replace(f'"{placeholder}"', f'"{default_value}"')
+                template = template.replace(placeholder, default_value)
 
         # 5. Clean up remaining empty placeholders (remove or set to empty string)
         import re
+
+        # BUG-001 Fix #2: Remover linhas com out-scope vazio
+        # Detecta: "      - out-scope: """" ou "      - out-scope: "{{OUT_SCOPE}}""
+        template = re.sub(r'^\s*-?\s*out-scope:\s*("{{OUT_SCOPE}}"|"")?\s*$', '', template, flags=re.MULTILINE)
+
         # Remove lines with unreplaced placeholders that look like "{{PLACEHOLDER_N}}"
         template = re.sub(r'^\s*-?\s*"?\{\{[A-Z_0-9]+\}\}"?\s*$', '', template, flags=re.MULTILINE)
 
