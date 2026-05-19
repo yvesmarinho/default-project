@@ -187,17 +187,14 @@ _ALL_MCP_SERVERS: dict[str, dict] = {
     "memory": {
         "command": "npx",
         "args": ["-y", "@modelcontextprotocol/server-memory"],
-        "type": "stdio",
     },
     "sequential-thinking": {
         "command": "npx",
         "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-        "type": "stdio",
     },
     "filesystem": {
         "command": "npx",
         "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
-        "type": "stdio",
     },
     "github": {
         "type": "http",
@@ -206,12 +203,10 @@ _ALL_MCP_SERVERS: dict[str, dict] = {
     "sqlite": {
         "command": "npx",
         "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", ".data/db.sqlite"],
-        "type": "stdio",
     },
     "brave-search": {
         "command": "npx",
         "args": ["-y", "@modelcontextprotocol/server-brave-search"],
-        "type": "stdio",
         "env": {
             "BRAVE_API_KEY": "${env:BRAVE_API_KEY}",
         },

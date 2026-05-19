@@ -18,6 +18,17 @@ from .config import CreatedItem
 
 log = logging.getLogger(__name__)
 
+# DEBUG: Ativar logs de debug para troubleshooting BUG-20
+import os
+if os.environ.get("DEBUG_MCP_MERGE"):
+    log.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
+    log.debug("🐛 DEBUG mode enabled for MCP merge troubleshooting")
+
 
 # =============================================================================
 # JSON Deep Merge Utilities
@@ -106,10 +117,20 @@ def _is_mcp_schema_change(base: Dict, overlay: Dict, path: List[str]) -> bool:
         >>> _is_mcp_schema_change(base, overlay, ["servers", "github"])
         False
     """
+    # DEBUG: Log entrada da função
+    log.debug(f"🔍 [DEBUG] _is_mcp_schema_change called:")
+    log.debug(f"  path: {path}")
+    log.debug(f"  len(path): {len(path)}")
+    log.debug(f"  path[0] if len>=1: {path[0] if len(path) >= 1 else 'N/A'}")
+
     # Verificar se estamos em path servers.<server_name>
     if len(path) >= 2 and path[0] == "servers":
         base_type = base.get("type")
         overlay_type = overlay.get("type")
+
+        log.debug(f"  ✓ In servers path!")
+        log.debug(f"  base_type: {base_type}")
+        log.debug(f"  overlay_type: {overlay_type}")
 
         # Caso 1: Ambos têm type mas são diferentes
         if base_type and overlay_type and base_type != overlay_type:
@@ -135,7 +156,10 @@ def _is_mcp_schema_change(base: Dict, overlay: Dict, path: List[str]) -> bool:
                 f"no type → {base_type} (using template)"
             )
             return True
+    else:
+        log.debug(f"  ✗ Not in servers path (path={path})")
 
+    log.debug(f"  → No schema change detected")
     return False
 
 
@@ -164,6 +188,15 @@ def _merge_user_wins_recursive(base: Dict, overlay: Dict, path: List[str] = None
     """
     if path is None:
         path = []
+
+    # DEBUG: Log entrada da função
+    if len(path) >= 2 and path[0] == "servers":
+        log.debug(f"🔍 [DEBUG] _merge_user_wins_recursive called:")
+        log.debug(f"  path: {path}")
+        log.debug(f"  base keys: {list(base.keys())}")
+        log.debug(f"  overlay keys: {list(overlay.keys())}")
+        log.debug(f"  base.get('type'): {base.get('type')}")
+        log.debug(f"  overlay.get('type'): {overlay.get('type')}")
 
     # BUG-20 FIX: Detectar mudança de schema em servidor MCP
     if _is_mcp_schema_change(base, overlay, path):
