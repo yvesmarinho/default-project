@@ -225,3 +225,105 @@ class TestSolutionApproach:
         - Requer mudança no template
         """
         pytest.skip("Solução C - a ser implementada")
+
+    def test_schema_change_removal_of_obsolete_type_field(self):
+        """
+        BUG-20 EXTENDED: Detectar remoção de campo 'type' obsoleto.
+
+        Caso real encontrado no test-workspace-fix:
+        - Template (base): npx sem campo 'type' (padrão moderno)
+        - User (overlay): type='stdio' com npx (padrão antigo)
+
+        Isso também é mudança de schema! Deve aplicar template-wins.
+        """
+        # Template moderno: npx SEM campo type
+        base = {
+            "servers": {
+                "memory": {
+                    "command": "npx",
+                    "args": ["-y", "@modelcontextprotocol/server-memory"]
+                },
+                "sequential-thinking": {
+                    "command": "npx",
+                    "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+                },
+                "filesystem": {
+                    "command": "npx",
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+                }
+            }
+        }
+
+        # Usuário: config antiga com type='stdio' (OBSOLETO)
+        overlay = {
+            "servers": {
+                "memory": {
+                    "command": "npx",
+                    "args": ["-y", "@modelcontextprotocol/server-memory"],
+                    "type": "stdio"  # ❌ OBSOLETO - deve ser removido
+                },
+                "sequential-thinking": {
+                    "command": "npx",
+                    "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+                    "type": "stdio"  # ❌ OBSOLETO
+                },
+                "filesystem": {
+                    "command": "npx",
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+                    "type": "stdio"  # ❌ OBSOLETO
+                }
+            }
+        }
+
+        # Merge com detecção de schema change
+        merged = deep_merge_json(base, overlay)
+
+        # EXPECTATIVA: Template-wins porque overlay tem type="stdio" obsoleto
+        for server_name in ["memory", "sequential-thinking", "filesystem"]:
+            server_config = merged["servers"][server_name]
+
+            # ✅ Deve usar config do template (sem type)
+            assert "type" not in server_config, \
+                f"{server_name}: Campo 'type' obsoleto deveria ser removido"
+
+            # ✅ Deve manter command e args do template
+            assert server_config["command"] == "npx"
+            assert "-y" in server_config["args"]
+
+    def test_schema_change_addition_of_type_field(self):
+        """
+        BUG-20 EXTENDED: Detectar adição de campo 'type' no template.
+
+        Caso hipotético: template adiciona type='http' onde antes não tinha.
+        """
+        # Template: adiciona type='http'
+        base = {
+            "servers": {
+                "github": {
+                    "type": "http",
+                    "url": "https://api.githubcopilot.com/mcp/"
+                }
+            }
+        }
+
+        # Usuário: config antiga sem type
+        overlay = {
+            "servers": {
+                "github": {
+                    "command": "npx",
+                    "args": ["-y", "@modelcontextprotocol/server-github"]
+                }
+            }
+        }
+
+        # Merge com detecção de schema change
+        merged = deep_merge_json(base, overlay)
+
+        # EXPECTATIVA: Template-wins porque type foi adicionado
+        github_config = merged["servers"]["github"]
+
+        # ✅ Deve usar config do template (com type)
+        assert github_config["type"] == "http"
+        assert github_config["url"] == "https://api.githubcopilot.com/mcp/"
+        assert "command" not in github_config
+        assert "args" not in github_config

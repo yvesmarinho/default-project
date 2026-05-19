@@ -76,7 +76,8 @@ def _is_mcp_schema_change(base: Dict, overlay: Dict, path: List[str]) -> bool:
 
     Mudança de schema ocorre quando:
     1. Estamos em path servers.<server_name>
-    2. Campo 'type' mudou entre base e overlay
+    2. Campo 'type' mudou entre base e overlay (incluindo adição/remoção)
+    3. Caso especial: overlay tem type="stdio" e base não tem type (remoção de campo obsoleto)
 
     Args:
         base: Config do template
@@ -87,11 +88,19 @@ def _is_mcp_schema_change(base: Dict, overlay: Dict, path: List[str]) -> bool:
         True se há mudança de schema que requer template-wins
 
     Exemplos:
+        >>> # Caso 1: Mudança stdio → http
         >>> base = {"type": "http", "url": "..."}
         >>> overlay = {"type": "stdio", "command": "npx"}
         >>> _is_mcp_schema_change(base, overlay, ["servers", "github"])
         True
 
+        >>> # Caso 2: Remoção de type obsoleto (npx moderno)
+        >>> base = {"command": "npx", "args": [...]}  # sem type
+        >>> overlay = {"type": "stdio", "command": "npx"}
+        >>> _is_mcp_schema_change(base, overlay, ["servers", "memory"])
+        True
+
+        >>> # Caso 3: Mesmo type, só customizações
         >>> base = {"type": "stdio", "command": "npx"}
         >>> overlay = {"type": "stdio", "command": "npx", "timeout": 1000}
         >>> _is_mcp_schema_change(base, overlay, ["servers", "github"])
@@ -99,14 +108,31 @@ def _is_mcp_schema_change(base: Dict, overlay: Dict, path: List[str]) -> bool:
     """
     # Verificar se estamos em path servers.<server_name>
     if len(path) >= 2 and path[0] == "servers":
-        # Verificar se 'type' mudou
         base_type = base.get("type")
         overlay_type = overlay.get("type")
 
+        # Caso 1: Ambos têm type mas são diferentes
         if base_type and overlay_type and base_type != overlay_type:
             log.warning(
                 f"🔄 Schema change detected in {'.'.join(path)}: "
                 f"{overlay_type} → {base_type} (using template)"
+            )
+            return True
+
+        # Caso 2: overlay tem type="stdio" (obsoleto) mas base não tem type (npx moderno)
+        # Isso indica remoção de campo obsoleto = schema change
+        if overlay_type == "stdio" and not base_type:
+            log.warning(
+                f"🔄 Schema change detected in {'.'.join(path)}: "
+                f"stdio (obsolete) → npx wrapper (using template)"
+            )
+            return True
+
+        # Caso 3: base tem type mas overlay não (adição de type no template)
+        if base_type and not overlay_type:
+            log.warning(
+                f"🔄 Schema change detected in {'.'.join(path)}: "
+                f"no type → {base_type} (using template)"
             )
             return True
 
