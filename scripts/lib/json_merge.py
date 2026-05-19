@@ -35,10 +35,12 @@ def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, 
     - Arrays substituídos completamente (NÃO faz union)
     - Objetos aninhados mergeados recursivamente
     - Chaves novas do template são adicionadas
+    - EXCEÇÃO: Mudanças de schema (type em MCP servers) usam template-wins
 
     Histórico:
     - v1.0: Usava always_merger.merge() (union de arrays) ❌ BUG
     - v2.0: Implementa user-wins sem union ✅ FIX ARQUITETURAL
+    - v2.1: Template-wins para mudanças de schema MCP ✅ FIX BUG-20
 
     Args:
         base: Template (upstream)
@@ -57,31 +59,92 @@ def deep_merge_json(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, 
         >>> overlay = {"list": [3, 4]}
         >>> deep_merge_json(base, overlay)
         {'list': [3, 4]}  # User array wins, NÃO faz union
+
+        >>> # BUG-20 fix: Schema change em MCP server
+        >>> base = {"servers": {"github": {"type": "http", "url": "..."}}}
+        >>> overlay = {"servers": {"github": {"type": "stdio", "command": "npx"}}}
+        >>> result = deep_merge_json(base, overlay)
+        >>> result["servers"]["github"]
+        {'type': 'http', 'url': '...'}  # Template wins quando type muda
     """
-    return _merge_user_wins_recursive(base, overlay)
+    return _merge_user_wins_recursive(base, overlay, path=[])
 
 
-def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
+def _is_mcp_schema_change(base: Dict, overlay: Dict, path: List[str]) -> bool:
     """
-    Implementação do merge user-wins recursivo.
+    Detecta mudança de schema em servidor MCP.
+
+    Mudança de schema ocorre quando:
+    1. Estamos em path servers.<server_name>
+    2. Campo 'type' mudou entre base e overlay
+
+    Args:
+        base: Config do template
+        overlay: Config do usuário
+        path: Caminho atual (ex: ['servers', 'github'])
+
+    Returns:
+        True se há mudança de schema que requer template-wins
+
+    Exemplos:
+        >>> base = {"type": "http", "url": "..."}
+        >>> overlay = {"type": "stdio", "command": "npx"}
+        >>> _is_mcp_schema_change(base, overlay, ["servers", "github"])
+        True
+
+        >>> base = {"type": "stdio", "command": "npx"}
+        >>> overlay = {"type": "stdio", "command": "npx", "timeout": 1000}
+        >>> _is_mcp_schema_change(base, overlay, ["servers", "github"])
+        False
+    """
+    # Verificar se estamos em path servers.<server_name>
+    if len(path) >= 2 and path[0] == "servers":
+        # Verificar se 'type' mudou
+        base_type = base.get("type")
+        overlay_type = overlay.get("type")
+
+        if base_type and overlay_type and base_type != overlay_type:
+            log.warning(
+                f"🔄 Schema change detected in {'.'.join(path)}: "
+                f"{overlay_type} → {base_type} (using template)"
+            )
+            return True
+
+    return False
+
+
+def _merge_user_wins_recursive(base: Dict, overlay: Dict, path: List[str] = None) -> Dict:
+    """
+    Implementação do merge user-wins recursivo com detecção de schema change.
 
     Algoritmo:
-    1. Copiar todos valores do overlay (user wins)
-    2. Para objetos aninhados: merge recursivo
-    3. Adicionar chaves novas do base que não existem no overlay
+    1. Detectar mudança de schema MCP → usar template-wins
+    2. Copiar todos valores do overlay (user wins)
+    3. Para objetos aninhados: merge recursivo
+    4. Adicionar chaves novas do base que não existem no overlay
 
     Comportamento por tipo:
     - Primitivos: overlay wins
     - Arrays: overlay wins (NÃO faz union)
-    - Objects: merge recursivo
+    - Objects: merge recursivo (exceto schema change)
 
     Args:
         base: Template
         overlay: Usuário
+        path: Caminho atual para contexto (tracking de servers.*)
 
     Returns:
         Dicionário mergeado
     """
+    if path is None:
+        path = []
+
+    # BUG-20 FIX: Detectar mudança de schema em servidor MCP
+    if _is_mcp_schema_change(base, overlay, path):
+        # Template-wins: Usar configuração do template completamente
+        log.info(f"✅ Applied template config for {'.'.join(path)} (schema changed)")
+        return base.copy()
+
     merged = {}
 
     # Passo 1: User wins - copiar tudo do overlay
@@ -90,7 +153,7 @@ def _merge_user_wins_recursive(base: Dict, overlay: Dict) -> Dict:
 
         # Se ambos são dicts, merge recursivo
         if isinstance(overlay_value, dict) and isinstance(base_value, dict):
-            merged[key] = _merge_user_wins_recursive(base_value, overlay_value)
+            merged[key] = _merge_user_wins_recursive(base_value, overlay_value, path + [key])
         else:
             # Primitivos e arrays: user wins completamente
             merged[key] = overlay_value
