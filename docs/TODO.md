@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-18 — BUG-20 (MCP merge failure) detectado + validation report
+**Last Updated**: 2026-05-19 — BUG-20 e BUG-001 RESOLVED (commits ad7eaed, ec46cfe)
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
@@ -141,10 +141,10 @@
 - [x] ~~**Validação test-workspace-fix**~~: ✅ CONCLUÍDO (2026-05-18)
   - ✅ Validation report criado (3500+ linhas)
   - ✅ BUG-17, BUG-18, BUG-19 validados (todos OK)
-  - ❌ BUG-20 detectado (MCP HTTP merge failure)
+  - ❌ BUG-20 detectado (MCP HTTP merge failure) → ✅ RESOLVED (2026-05-19, commit ad7eaed)
   - ✅ Relatório completo: VALIDATION_REPORT_test-workspace-fix_2026-05-18.md
 
-- [ ] **🔴 BUG-20: MCP GitHub HTTP Merge Failure** (P0 CRÍTICA)
+- [x] ~~**🔴 BUG-20: MCP GitHub HTTP Merge Failure**~~ (P0 CRÍTICA) → ✅ RESOLVED (2026-05-19, commit `ad7eaed`)
   - **Objetivo**: Corrigir falha do merge que não aplicou update HTTP do GitHub server
   - **Severidade**: 🔴 P0 CRÍTICA (impacta performance, segurança, UX)
   - **Prioridade**: Resolver em < 48h
@@ -156,6 +156,11 @@
     - **MAS**: Configuração antiga (CLI) foi mantida, não atualizada para HTTP
     - **MAS**: Backup mcp.json.backup NÃO foi criado
     - Outros arquivos .vscode/*.json foram merged com sucesso
+  - **Solução Implementada** (2026-05-19):
+    - Adicionada detecção de schema changes em MCP servers (campo 'type')
+    - Modificado _merge_user_wins_recursive() para usar template-wins quando schema muda
+    - Testes: 7 passed (test_bug20_mcp_merge.py) + 12 passed (regression)
+    - Arquivos: scripts/lib/json_merge.py (versão 2.1)
   - **Impacto**:
     - Performance: 88% mais lento (2.5s vs 0.3s startup)
     - Memória: 95% maior (45MB vs 2MB)
@@ -173,6 +178,25 @@
   - **Blocker**: None (workaround disponível, correção pode ser incremental)
   - **Expected Outcome**:
     - Merge aplica update HTTP corretamente
+
+- [x] ~~**🟡 BUG-001: scaffold objetivo-init 3 Issues**~~ (P1) → ✅ RESOLVED (2026-05-19, commit `ec46cfe`)
+  - **Objetivo**: Corrigir 3 comportamentos incorretos do scaffold objetivo-init
+  - **Severidade**: 🟡 P1 (Funcionalidade com workarounds)
+  - **Prioridade**: Resolver em sprint atual
+  - **Descoberto em**: 2026-05-18
+  - **Arquivo**: docs/bugs/BUG-001-scaffold-objetivo-init-issues.md
+  - **Problemas**:
+    1. Campo `docstyle` não define valor padrão quando omitido
+    2. Campo `out-scope` incluído vazio (deveria ser omitido)
+    3. Nenhum log gerado em logs/scaffolds.yaml
+  - **Solução Implementada** (2026-05-19):
+    1. Adicionada constante DEFAULT_DOCSTYLE em objetivo_wizard.py
+    2. Regex para remover linha out-scope quando vazio
+    3. Função _log_objetivo_init() integrada em flows/objetivo_init.py
+    - Testes: 8 passed (test_bug001_objetivo_init.py)
+    - Arquivos: scripts/lib/objetivo_wizard.py, scripts/lib/flows/objetivo_init.py
+  - **Impacto**: Baixo/Médio (não bloqueia uso, mas gera inconsistências)
+  - **Blocker**: None (workarounds disponíveis)
     - Backup é criado antes do merge
     - Validação pós-merge confirma mudanças aplicadas
 

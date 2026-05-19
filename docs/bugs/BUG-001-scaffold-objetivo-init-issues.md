@@ -5,6 +5,26 @@
 **Tipo**: Bug Report
 **Componente**: `scripts/scaffold.py` — comando `objetivo-init`
 **Impacto**: Baixo/Médio (não bloqueia uso, mas gera inconsistências)
+**Status**: ✅ **RESOLVED** (2026-05-19, commit `ec46cfe`)
+
+---
+
+## 🎯 Resolução
+
+**Commit**: `ec46cfe` — `fix(scaffold): resolve BUG-001 objetivo-init 3 issues`
+**Data**: 2026-05-19
+**Testes**: 8 passed (tests/test_bug001_objetivo_init.py)
+
+### Correções Implementadas
+
+1. **Issue #1**: Adicionada constante `DEFAULT_DOCSTYLE` em `objetivo_wizard.py`
+2. **Issue #2**: Regex para remover linha `out-scope` quando vazio
+3. **Issue #3**: Função `_log_objetivo_init()` integrada em `flows/objetivo_init.py`
+
+**Arquivos modificados**:
+- `scripts/lib/objetivo_wizard.py` (+20 linhas)
+- `scripts/lib/flows/objetivo_init.py` (+54 linhas)
+- `tests/test_bug001_objetivo_init.py` (novo, 411 linhas)
 
 ---
 

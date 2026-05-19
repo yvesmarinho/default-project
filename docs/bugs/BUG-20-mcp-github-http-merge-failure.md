@@ -4,11 +4,33 @@
 **Título**: MCP GitHub Server HTTP Update não aplicado durante scaffold upgrade --force
 **Severidade**: 🔴 **P0 CRÍTICA**
 **Categoria**: Merge Strategy Failure
-**Status**: 🔴 **ABERTO**
+**Status**: ✅ **RESOLVED** (2026-05-19, commit `ad7eaed`)
 **Descoberto em**: 2026-05-18 15:45 BRT
 **Projeto afetado**: test-workspace-fix
 **Versão do scaffold**: 1.0.0
 **Commit da feature**: `39ac165` (feat: Atualizar MCP GitHub server para HTTP API v2.0)
+
+---
+
+## 🎯 Resolução
+
+**Commit**: `ad7eaed` — `fix(merge): detect MCP schema changes and apply template-wins (BUG-20)`
+**Data**: 2026-05-19
+**Testes**: 7 passed (tests/test_bug20_mcp_merge.py) + 12 passed (regression)
+
+### Correção Implementada
+
+**Root Cause**: `JSONMerger` usava user-wins recursivamente para todos os JSONs. Quando MCP server mudava schema (stdio → http), estrutura antiga era preservada (command, args, env) ao invés de aplicar nova estrutura (url).
+
+**Solução**:
+1. Adicionada função `_is_mcp_schema_change()` para detectar mudanças no campo `type` em `servers.<name>`
+2. Modificado `_merge_user_wins_recursive()` para aceitar tracking de path (List[str])
+3. Quando schema change detectado, usar template-wins (return base.copy()) + log warning
+4. Preserva user-wins para outros campos (customizações sem breaking change)
+
+**Arquivos modificados**:
+- `scripts/lib/json_merge.py` (+48 linhas, versão 2.1)
+- `tests/test_bug20_mcp_merge.py` (novo, 298 linhas)
 
 ---
 
