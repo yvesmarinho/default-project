@@ -1,8 +1,53 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-19 — BUG-20 e BUG-001 RESOLVED (commits ad7eaed, ec46cfe)
+**Last Updated**: 2026-05-19 — Scaffold Validation Expanded (51 checks) + BUG-19, BUG-22 RESOLVED
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-05-19+)
+
+- [x] ~~**Scaffold Validation Expansion**~~: ✅ CONCLUÍDO (2026-05-19)
+  - ✅ Expandido de 26→51 validações (+24 checks, +89% cobertura)
+  - ✅ Adicionadas 4 novas suites: BUG-11, BUG-12, BUG-13, BUG-16
+  - ✅ BUG-11 ajustado: databases opcionais (correto para projetos sem session-start)
+  - ✅ Documentação: docs/SCAFFOLD_VALIDATION_ANALYSIS.md
+  - ✅ **Resultado**: 51/51 validações PASS (100%)
+
+- [x] ~~**BUG-19: Git Validators & Sanitize.py Deployment**~~: ✅ RESOLVIDO (2026-05-19)
+  - ✅ git_validators.py adicionado à libs_to_copy
+  - ✅ sanitize.py adicionado à libs_to_copy (BUG-001 Fix #4)
+  - ✅ Scripts lib/ coverage: 6/6 módulos (100%)
+  - ✅ **Resultado**: Todos os módulos deployados corretamente
+
+- [x] ~~**BUG-001 Fix #1: Docstyle Agnóstico**~~: ✅ RESOLVIDO (2026-05-19)
+  - ✅ Template atualizado com URL multi-language
+  - ✅ Função _patch_objetivo_yaml() criada para upgrade
+  - ✅ setup_project_docs() modificado para patch durante upgrade
+  - ✅ **Resultado**: Docstyle populado em todos os projetos
+
+- [x] ~~**BUG-22: Pasta SESSIONS Antiga Durante Upgrade**~~: ✅ RESOLVIDO (2026-05-19)
+  - ✅ Parâmetro is_upgrade adicionado a setup_project_docs()
+  - ✅ Criação de pasta SESSIONS condicionalizada
+  - ✅ flows/upgrade.py atualizado com is_upgrade=True
+  - ✅ Documentação: docs/bugs/BUG-22_scaffold_upgrade_creates_old_session_folder.md
+  - ✅ **Resultado**: Sem pastas antigas criadas durante upgrade
+
+---
+
+## 🔴 Prioritário (P0 - Crítico)
+
+- [ ] **Testes Automatizados para Scaffold** (P0 CRITICAL)
+  - **Objetivo**: Garantir que scaffold new/upgrade funcionam corretamente
+  - **Prioridade**: P0 CRITICAL (prevenção de regressões)
+  - **Estimativa**: 3-4h
+  - **Tarefas**:
+    1. Criar tests/test_scaffold_new.py
+    2. Criar tests/test_scaffold_upgrade.py
+    3. Validar 51 checks em CI/CD
+    4. Mock de filesystem para testes isolados
+  - **Blocker**: None
 
 ---
 

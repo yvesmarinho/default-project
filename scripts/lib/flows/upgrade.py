@@ -294,7 +294,7 @@ def flow_upgrade(args: argparse.Namespace) -> int:
     if not use_json:
         console.print(
             "  [blue]📋 Verificando templates de documentação...[/blue]")
-    results.extend(project.setup_project_docs(cfg))
+    results.extend(project.setup_project_docs(cfg, is_upgrade=True))
 
     if not use_json:
         console.print("  [blue]📜 Verificando constitution.md...[/blue]")

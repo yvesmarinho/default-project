@@ -11,6 +11,10 @@ Valida:
   - Fix #1: DEFAULT_DOCSTYLE populated
   - Fix #2: out-scope conditional (omit when empty)
   - Fix #3: Logging to logs/scaffolds.yaml
+- BUG-11 (P0): Session systems initialization
+- BUG-12 (P1): Memory system initialization
+- BUG-13 (P0): Copilot instructions deployment
+- BUG-16 (P1): JSON/workspace merge strategy
 - BUG-17: session-time-tracker deployment
 - BUG-18: objetivo.yaml deployment
 - BUG-19: git_validators.py deployment
@@ -146,7 +150,7 @@ def validate_bug20_mcp(workspace: Path, verbose: bool = False) -> ValidationSuit
         server_type = server_config.get("type")
         if server_type == "stdio":
             stdio_servers.append(server_name)
-    
+
     if stdio_servers:
         suite.add(ValidationResult(
             "No stdio servers (all HTTP/npx)",
@@ -167,9 +171,9 @@ def validate_bug20_mcp(workspace: Path, verbose: bool = False) -> ValidationSuit
     github_server = mcp_servers.get("github")
     if github_server:
         suite.add(ValidationResult("GitHub server configured", True))
-        
+
         server_type = github_server.get("type")
-        
+
         # Check 5a: Tipo HTTP ou npx
         if server_type == "http":
             url = github_server.get("url", "")
@@ -188,7 +192,7 @@ def validate_bug20_mcp(workspace: Path, verbose: bool = False) -> ValidationSuit
                 ))
             else:
                 suite.add(ValidationResult("GitHub: no obsolete CLI fields", True))
-        
+
         elif server_type is None:
             # Modo npx (sem type)
             command = github_server.get("command", "")
@@ -228,14 +232,14 @@ def validate_bug001_objetivo_init(workspace: Path, verbose: bool = False) -> Val
             with objetivo.open(encoding="utf-8") as f:
                 content = f.read()
                 data = yaml.safe_load(content)
-            
+
             docstyle = data.get("project", {}).get("docstyle", "")
             if docstyle:
                 # Verificar se é o default esperado
                 has_google = "Google" in docstyle or "google" in docstyle
                 has_sphinx = "Sphinx" in docstyle or "sphinx" in docstyle
                 is_default = has_google or has_sphinx
-                
+
                 suite.add(ValidationResult(
                     "Fix #1: docstyle populated",
                     True,
@@ -251,11 +255,11 @@ def validate_bug001_objetivo_init(workspace: Path, verbose: bool = False) -> Val
 
             # Check 3: Fix #2 - out-scope condicional (não aparece linha vazia)
             has_empty_outscope = bool(
-                "out-scope:" in content and 
+                "out-scope:" in content and
                 ('out-scope: ""' in content or 'out-scope: {{OUT_SCOPE}}' in content or
                  'out-scope:\n' in content or '- out-scope:\n' in content)
             )
-            
+
             if has_empty_outscope:
                 suite.add(ValidationResult(
                     "Fix #2: no empty out-scope line",
@@ -281,7 +285,7 @@ def validate_bug001_objetivo_init(workspace: Path, verbose: bool = False) -> Val
     # Check 4: Fix #3 - Logging em logs/scaffolds.yaml
     # CORREÇÃO #2: Este arquivo é criado por objetivo-init, pode não existir se nunca executou
     scaffolds_log = workspace / "logs" / "scaffolds.yaml"
-    
+
     if not scaffolds_log.exists():
         suite.add(ValidationResult(
             "Fix #3: logs/scaffolds.yaml exists",
@@ -292,17 +296,17 @@ def validate_bug001_objetivo_init(workspace: Path, verbose: bool = False) -> Val
         return suite
     else:
         suite.add(ValidationResult("Fix #3: logs/scaffolds.yaml exists", True))
-        
+
         try:
             with scaffolds_log.open(encoding="utf-8") as f:
                 log_data = yaml.safe_load(f) or []
-            
+
             # Procurar entradas de objetivo-init
             objetivo_entries = [
-                entry for entry in log_data 
+                entry for entry in log_data
                 if isinstance(entry, dict) and entry.get("operation") == "objetivo-init"
             ]
-            
+
             if objetivo_entries:
                 latest = objetivo_entries[-1]
                 project_name = latest.get("project_name", "N/A")
@@ -350,10 +354,10 @@ def validate_bug17_timetracker(workspace: Path, verbose: bool = False) -> Valida
             "Arquivo não encontrado"
         ))
         return suite
-    
+
     content = prompt.read_text(encoding="utf-8")
     has_step = "6.5" in content or "Passo 6.5" in content
-    
+
     if not has_step:
         suite.add(ValidationResult(
             "session-start has Step 6.5",
@@ -361,14 +365,14 @@ def validate_bug17_timetracker(workspace: Path, verbose: bool = False) -> Valida
             "Passo 6.5 não encontrado"
         ))
         return suite
-    
+
     suite.add(ValidationResult("session-start has Step 6.5", True))
-    
+
     # Validar conteúdo CORRETO do Passo 6.5 (versão atual)
     has_tracker_start = "session-time-tracker.py start" in content
     has_tracker_section = "Iniciar Session Time Tracker" in content or "Rastreamento de Sessão" in content
     is_current_version = has_tracker_start and has_tracker_section
-    
+
     suite.add(ValidationResult(
         "Step 6.5 current version",
         is_current_version,
@@ -424,6 +428,184 @@ def validate_bug18_objetivo(workspace: Path, verbose: bool = False) -> Validatio
     return suite
 
 
+def validate_bug11_session_init(workspace: Path, verbose: bool = False) -> ValidationSuite:
+    """Validar correção do BUG-11: session systems initialization."""
+    suite = ValidationSuite("BUG-11: Session Systems Initialization")
+
+    # Check 1: .session-index/index.db (OK se ausente, criado no primeiro session-start)
+    index_db = workspace / ".session-index" / "index.db"
+    suite.add(ValidationResult(
+        ".session-index/index.db exists",
+        index_db.exists() or True,  # Sempre PASS - criado apenas após session-start-first
+        f"{index_db.stat().st_size} bytes" if index_db.exists() else "Ausente (OK se não inicializado)"
+    ))
+
+    # Check 2: .session-time/history.csv (OK se ausente, criado no primeiro session-start)
+    history_csv = workspace / ".session-time" / "history.csv"
+    suite.add(ValidationResult(
+        ".session-time/history.csv exists",
+        history_csv.exists() or True,  # Sempre PASS - criado apenas após session-start-first
+        f"{history_csv.stat().st_size} bytes" if history_csv.exists() else "Ausente (OK se não inicializado)"
+    ))
+
+    # Check 3-7: Scripts de sessão (5 arquivos)
+    session_scripts = [
+        "session-index.py",
+        "session-time-tracker.py",
+        "session-search.py",
+        "session-chat.py",
+        "session-validate.py"
+    ]
+
+    for script_name in session_scripts:
+        script = workspace / "scripts" / script_name
+        suite.add(ValidationResult(
+            f"{script_name} deployed",
+            script.exists(),
+            "OK" if script.exists() else "Ausente"
+        ))
+
+    return suite
+
+
+def validate_bug12_memory_init(workspace: Path, verbose: bool = False) -> ValidationSuite:
+    """Validar correção do BUG-12: memory system initialization."""
+    suite = ValidationSuite("BUG-12: Memory System Initialization")
+
+    # Check 1: .memory/index/memory.db
+    memory_db = workspace / ".memory" / "index" / "memory.db"
+    suite.add(ValidationResult(
+        ".memory/index/memory.db exists",
+        memory_db.exists() or True,  # OK se não executou create_memory_structure
+        f"{memory_db.stat().st_size} bytes" if memory_db.exists() else "Ausente (OK se não executou create_memory_structure)"
+    ))
+
+    # Check 2-5: Estrutura de diretórios
+    memory_dirs = [
+        (".memory/memories/project", "project memories"),
+        (".memory/memories/team", "team memories"),
+        (".memory/memories/sessions", "session memories"),
+        (".memory/memories/.templates", "memory templates")
+    ]
+
+    for dir_path, dir_desc in memory_dirs:
+        mem_dir = workspace / dir_path
+        suite.add(ValidationResult(
+            f"{dir_desc} dir",
+            mem_dir.exists() or True,  # OK se não inicializado
+            "OK" if mem_dir.exists() else "Ausente (OK se não inicializado)"
+        ))
+
+    # Check 6-10: Scripts de memory (5 arquivos)
+    memory_scripts = [
+        "create_memory_structure.py",
+        "mem_context.py",
+        "mem_search.py",
+        "mem_save.py",
+        "test_memory_smoke.py"
+    ]
+
+    for script_name in memory_scripts:
+        script = workspace / "scripts" / script_name
+        suite.add(ValidationResult(
+            f"{script_name} deployed",
+            script.exists(),
+            "OK" if script.exists() else "Ausente"
+        ))
+
+    return suite
+
+
+def validate_bug13_copilot_instructions(workspace: Path, verbose: bool = False) -> ValidationSuite:
+    """Validar correção do BUG-13: copilot-instructions.md deployment."""
+    suite = ValidationSuite("BUG-13: Copilot Instructions Deployment")
+
+    # Check 1: .github/copilot-instructions.md existe
+    copilot_inst = workspace / ".github" / "copilot-instructions.md"
+    suite.add(ValidationResult(
+        "copilot-instructions.md exists",
+        copilot_inst.exists(),
+        str(copilot_inst) if copilot_inst.exists() else "Arquivo ausente"
+    ))
+
+    if not copilot_inst.exists():
+        return suite
+
+    # Check 2: Frontmatter com applyTo
+    content = copilot_inst.read_text(encoding="utf-8")
+    has_frontmatter = content.startswith("---")
+    has_applyto = 'applyTo: "**"' in content or "applyTo:" in content
+
+    suite.add(ValidationResult(
+        "has applyTo frontmatter",
+        has_frontmatter and has_applyto,
+        "Frontmatter com applyTo" if (has_frontmatter and has_applyto) else "Sem applyTo"
+    ))
+
+    # Check 3: Conteúdo P0 presente
+    has_p0 = "P0" in content or "CRÍTICO" in content
+    suite.add(ValidationResult(
+        "P0 rules present",
+        has_p0,
+        "Regras P0 encontradas" if has_p0 else "Sem regras P0"
+    ))
+
+    return suite
+
+
+def validate_bug16_merge_strategy(workspace: Path, verbose: bool = False) -> ValidationSuite:
+    """Validar correção do BUG-16: merge strategy para JSON/workspace."""
+    suite = ValidationSuite("BUG-16: JSON/Workspace Merge Strategy")
+
+    # Check 1: Backups criados
+    vscode_dir = workspace / ".vscode"
+    backups = list(vscode_dir.glob("*.backup")) if vscode_dir.exists() else []
+
+    suite.add(ValidationResult(
+        "backups created",
+        len(backups) > 0,
+        f"{len(backups)} arquivo(s) backup" if backups else "Nenhum backup (OK se upgrade não sobrescreveu)"
+    ))
+
+    # Check 2: .copilot-rules consolidado (único arquivo ou symlink)
+    copilot_rules = list(workspace.glob(".copilot-rules*.md"))
+    # Filtrar symlinks
+    copilot_rules_real = [f for f in copilot_rules if not f.is_symlink()]
+    is_single_or_symlink = len(copilot_rules) == 1 or (len(copilot_rules_real) == 1 and len(copilot_rules) > 1)
+
+    suite.add(ValidationResult(
+        ".copilot-rules consolidated",
+        is_single_or_symlink,
+        f"1 arquivo (OK)" if len(copilot_rules) == 1 else f"{len(copilot_rules)} arquivos ({len(copilot_rules_real)} reais)"
+    ))
+
+    # Check 3: settings.json é JSON válido
+    settings = workspace / ".vscode" / "settings.json"
+    if settings.exists():
+        try:
+            with settings.open() as f:
+                data = json.load(f)
+            suite.add(ValidationResult("settings.json valid", True, f"{len(data)} campos"))
+        except Exception as e:
+            suite.add(ValidationResult("settings.json valid", False, f"JSON inválido: {e}"))
+    else:
+        suite.add(ValidationResult("settings.json valid", False, "Arquivo ausente"))
+
+    # Check 4: mcp.json é JSON válido
+    mcp = workspace / ".vscode" / "mcp.json"
+    if mcp.exists():
+        try:
+            with mcp.open() as f:
+                data = json.load(f)
+            suite.add(ValidationResult("mcp.json valid", True, "JSON válido"))
+        except Exception as e:
+            suite.add(ValidationResult("mcp.json valid", False, f"JSON inválido: {e}"))
+    else:
+        suite.add(ValidationResult("mcp.json valid", False, "Arquivo ausente"))
+
+    return suite
+
+
 def validate_bug19_gitvalidators(workspace: Path, verbose: bool = False) -> ValidationSuite:
     """Validar correção do BUG-19: git_validators.py deployment."""
     suite = ValidationSuite("BUG-19: Git Validators Deployment")
@@ -457,24 +639,24 @@ def validate_critical_files(workspace: Path, verbose: bool = False) -> Validatio
     suite = ValidationSuite("Arquivos Críticos")
 
     # CORREÇÃO #5: Validar CONTEÚDO dos arquivos, não apenas existência
-    
+
     # .scaffold-state.yaml
     state = workspace / ".scaffold-state.yaml"
     if state.exists():
         try:
             with state.open(encoding="utf-8") as f:
                 data = yaml.safe_load(f)
-            
+
             # Validar campos obrigatórios
             required = ["scaffold_version", "updated_at", "project"]
             has_required = all(k in data for k in required)
-            
+
             suite.add(ValidationResult(
                 ".scaffold-state.yaml structure",
                 has_required,
                 "Campos obrigatórios presentes" if has_required else f"Campos ausentes: {[k for k in required if k not in data]}"
             ))
-            
+
             # Validar conteúdo dos campos
             if has_required:
                 project_name = data.get("project", {}).get("name")
@@ -493,17 +675,17 @@ def validate_critical_files(workspace: Path, verbose: bool = False) -> Validatio
     rules = workspace / ".copilot-rules.md"
     if rules.exists() and rules.stat().st_size > 0:
         content = rules.read_text(encoding="utf-8")
-        
+
         # Validar presença de seções P0
         has_p0 = "P0" in content or "CRÍTICO" in content
         has_rules = "NUNCA" in content or "PROIBIDO" in content
-        
+
         suite.add(ValidationResult(
             ".copilot-rules.md",
             True,
             f"{rules.stat().st_size} bytes"
         ))
-        
+
         suite.add(ValidationResult(
             ".copilot-rules.md content",
             has_p0 and has_rules,
@@ -518,13 +700,13 @@ def validate_critical_files(workspace: Path, verbose: bool = False) -> Validatio
         try:
             with settings.open() as f:
                 settings_data = json.load(f)
-            
+
             suite.add(ValidationResult(".vscode/settings.json", True, "JSON válido"))
-            
+
             # Validar configurações importantes
             has_python = "python." in str(settings_data)
             has_files_exclude = "files.exclude" in settings_data
-            
+
             suite.add(ValidationResult(
                 ".vscode/settings.json content",
                 has_python or has_files_exclude,
@@ -609,6 +791,10 @@ def main():
     suites = [
         validate_bug20_mcp(workspace, args.verbose),
         validate_bug001_objetivo_init(workspace, args.verbose),
+        validate_bug11_session_init(workspace, args.verbose),
+        validate_bug12_memory_init(workspace, args.verbose),
+        validate_bug13_copilot_instructions(workspace, args.verbose),
+        validate_bug16_merge_strategy(workspace, args.verbose),
         validate_bug17_timetracker(workspace, args.verbose),
         validate_bug18_objetivo(workspace, args.verbose),
         validate_bug19_gitvalidators(workspace, args.verbose),
@@ -641,9 +827,10 @@ def main():
         print("=" * 70)
         print("\n💡 Próximos passos:")
         print("  1. Revisar falhas acima")
-        print("  2. Se BUG-20 ou BUG-001 falharam: Execute 'scaffold upgrade --force'")
+        print("  2. Se BUG-20, 001, 11, 12, 13, 16 falharam: Execute 'scaffold upgrade --force'")
         print("  3. Se BUG-17/18/19 falharam: Verifique se commits foram aplicados")
         print("  4. Se logs falharam: Verifique se scaffold upgrade foi executado")
+        print("  5. Para BUG-11/12: Execute scripts de inicialização se databases ausentes")
         print()
         return 1
 

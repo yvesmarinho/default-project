@@ -22,10 +22,11 @@ schema:
 project:
   name: "CHANGE_ME"
   codename: ""
-  domain: "agnostic"   # ex: software, infra, hardware, eletricidade, data, research
+  domain: "agnostic" # ex: software, infra, hardware, eletricidade, data, research
   summary: "CHANGE_ME (1-2 linhas)"
   problem_statement: "CHANGE_ME (qual dor real será resolvida?)"
   success_statement: "CHANGE_ME (como saberemos que deu certo?)"
+  docstyle: "Google Style Guide (https://google.github.io/styleguide/) - multi-language documentation standards"
 
 stakeholders:
   owner:
@@ -59,13 +60,13 @@ scope:
     budget:
       max_budget: "unknown"
       currency: "USD"
-    risk_tolerance: "medium"  # low|medium|high
+    risk_tolerance: "medium" # low|medium|high
     change_policy:
-      mode: "brownfield"      # greenfield|brownfield
+      mode: "brownfield" # greenfield|brownfield
       principles:
         - "minimize_disruption"
         - "backward_compatible_when_possible"
-      rebuild_allowed: "unknown"  # true|false|unknown
+      rebuild_allowed: "unknown" # true|false|unknown
 
 # -----------------------------------------------------------------------------
 # 3) Estado atual (brownfield context) e inventário de base existente
@@ -101,7 +102,7 @@ prerequisites:
     - id: "access_or_permissions"
       description: "Acessos/permissões necessários para começar."
       status: "unknown" # ready|blocked|unknown
-      evidence: ""      # link/commit/ticket
+      evidence: "" # link/commit/ticket
     - id: "tools_environment"
       description: "Ferramentas/ambiente mínimo (SO, compilador, runtime, etc.)."
       status: "unknown"
@@ -132,13 +133,13 @@ requirements:
     - "unknown"
   non_functional:
     security:
-      classification: "unknown"     # public|internal|confidential|restricted|unknown
+      classification: "unknown" # public|internal|confidential|restricted|unknown
       secrets_policy: "no_secrets_in_repo"
       threat_model_required: true
-      authn_authz: "unknown"        # none|basic|oauth|mtls|physical_access|unknown
+      authn_authz: "unknown" # none|basic|oauth|mtls|physical_access|unknown
       audit_logging_required: "unknown"
     reliability:
-      availability_target: "unknown"  # ex: 99.9%
+      availability_target: "unknown" # ex: 99.9%
       rpo: "unknown"
       rto: "unknown"
       backup_required: "unknown"
@@ -152,12 +153,12 @@ requirements:
       coding_standards: "unknown"
     compliance:
       regulations:
-        - "unknown"  # ex: LGPD, SOC2, ISO27001, IEC, ABNT, etc.
+        - "unknown" # ex: LGPD, SOC2, ISO27001, IEC, ABNT, etc.
     usability:
       accessibility: "unknown"
     portability:
       platforms:
-        - "unknown"  # linux, windows, embedded, mobile, etc.
+        - "unknown" # linux, windows, embedded, mobile, etc.
 
 # -----------------------------------------------------------------------------
 # 6) Interface e integrações (agnóstico: API, UI, CLI, hardware IO)
@@ -220,7 +221,7 @@ deliverables:
 # -----------------------------------------------------------------------------
 implementation_rules:
   error_handling_policy:
-    applies: "unknown"  # always|by_module|by_layer|unknown
+    applies: "unknown" # always|by_module|by_layer|unknown
     default_behavior: "unknown"
     notes: >
       Exemplo: "Em libs internas retornar False; em CLI usar exit codes;
@@ -314,4 +315,11 @@ gates:
       question: "Quais documentos/artefatos são obrigatórios no final (constitution/spec/plan/runbook)?"
       expected_answer_type: "list"
       required: true
-      current_answer: ["constitution", "specification", "plan", "risk_register", "readme_or_runbook"]
+      current_answer:
+        [
+          "constitution",
+          "specification",
+          "plan",
+          "risk_register",
+          "readme_or_runbook",
+        ]

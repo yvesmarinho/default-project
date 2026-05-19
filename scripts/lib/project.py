@@ -2080,10 +2080,124 @@ def copy_speckit(config: ProjectConfig, force: bool = False) -> list[CreatedItem
 
 
 # ---------------------------------------------------------------------------
+# Objetivo.yaml Patching — adicionar campos ausentes durante upgrade
+# ---------------------------------------------------------------------------
+
+def _patch_objetivo_yaml(dst_objetivo: Path, src_template: Path) -> CreatedItem:
+    """
+    Patch objetivo.yaml existente com campos ausentes do template.
+
+    Operação non-destructive:
+    - Lê objetivo.yaml existente
+    - Verifica se project.docstyle existe
+    - Se não existir, adiciona após project.success_statement
+    - Preserva formatação, comentários e todo conteúdo existente
+
+    Args:
+        dst_objetivo: Path para objetivo.yaml existente
+        src_template: Path para template com campos padrão
+
+    Returns:
+        CreatedItem com status "updated" se modificou, "skipped" se já tinha
+
+    Ref: BUG-001 Fix #1 — docstyle ausente em repositórios legados
+    """
+    try:
+        # Ler arquivo existente
+        existing_content = dst_objetivo.read_text(encoding="utf-8")
+
+        # Verificar se project.docstyle já existe
+        if "docstyle:" in existing_content:
+            log.info("⏭️  objetivo.yaml já tem docstyle")
+            return CreatedItem(
+                path=dst_objetivo,
+                kind="file",
+                status="skipped",
+                message="Campo docstyle já presente"
+            )
+
+        # Ler template para extrair valor default de docstyle
+        template_content = src_template.read_text(encoding="utf-8")
+
+        # Extrair linha do docstyle do template
+        docstyle_line = None
+        for line in template_content.split("\n"):
+            if "docstyle:" in line:
+                # Preservar indentação correta (2 espaços para campo project)
+                docstyle_line = line
+                break
+
+        if not docstyle_line:
+            log.warning("⚠️  Template não contém docstyle, pulando patch")
+            return CreatedItem(
+                path=dst_objetivo,
+                kind="file",
+                status="skipped",
+                message="Template sem docstyle"
+            )
+
+        # Encontrar onde inserir: após success_statement ou problema/statement
+        lines = existing_content.split("\n")
+        insert_index = -1
+
+        for i, line in enumerate(lines):
+            # Procurar success_statement (campo que vem antes de docstyle)
+            if "success_statement:" in line:
+                # Encontrar próxima linha não-vazia após success_statement
+                j = i + 1
+                while j < len(lines) and (not lines[j].strip() or lines[j].strip().startswith("#")):
+                    j += 1
+                # Se próxima linha é stakeholders:, inserir antes
+                if j < len(lines) and "stakeholders:" in lines[j]:
+                    insert_index = j
+                    break
+                # Caso contrário, inserir após success_statement
+                insert_index = i + 1
+                break
+
+        if insert_index == -1:
+            log.warning("⚠️  Não encontrei onde inserir docstyle, pulando patch")
+            return CreatedItem(
+                path=dst_objetivo,
+                kind="file",
+                status="skipped",
+                message="Ponto de inserção não encontrado"
+            )
+
+        # Inserir docstyle
+        lines.insert(insert_index, docstyle_line)
+        patched_content = "\n".join(lines)
+
+        # Criar backup antes de modificar
+        backup_path = dst_objetivo.with_suffix(".yaml.backup")
+        dst_objetivo.rename(backup_path)
+
+        # Escrever conteúdo modificado
+        dst_objetivo.write_text(patched_content, encoding="utf-8")
+
+        log.info("✅ objetivo.yaml: adicionado campo docstyle")
+        return CreatedItem(
+            path=dst_objetivo,
+            kind="file",
+            status="updated",
+            message=f"Campo docstyle adicionado (backup: {backup_path.name})"
+        )
+
+    except Exception as exc:
+        log.warning("⚠️  Erro ao fazer patch de objetivo.yaml: %s", exc)
+        return CreatedItem(
+            path=dst_objetivo,
+            kind="file",
+            status="error",
+            message=str(exc)
+        )
+
+
+# ---------------------------------------------------------------------------
 # Templates de documentação — setup inicial do projeto
 # ---------------------------------------------------------------------------
 
-def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
+def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[CreatedItem]:
     """
     Configura templates de documentação do projeto.
 
@@ -2091,6 +2205,7 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
       1. objetivo-manifest-template.yaml → objetivo.yaml (raiz, com placeholders)
       2. mcp-questions-template.yaml → mcp-questions.yaml (raiz)
       3. DAILY_ACTIVITIES.template.md → docs/SESSIONS/<data>/DAILY_ACTIVITIES_<data>.md
+         (APENAS em scaffold NEW - pulado durante upgrade)
 
     Substituições em objetivo.yaml:
       - CHANGE_ME (project.name) → config.project_name
@@ -2100,7 +2215,16 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
 
     Arquivos já existentes são saltados (idempotente).
 
+    UPGRADE: Se objetivo.yaml existe, verifica e adiciona campos ausentes (ex: docstyle).
+             Pasta de sessão NÃO é criada (evita criar SESSIONS/<created_at>/ vazia).
+
+    Args:
+        config: Configuração do projeto
+        is_upgrade: True se executando durante scaffold upgrade (pula criação de sessão)
+
     Ref: BUG-09 (corrigido) — documentado em docs/lembrete.md
+    Ref: BUG-001 Fix #1 — patch de docstyle durante upgrade
+    Ref: BUG-22 — evitar criação de pasta SESSIONS/<created_at>/ durante upgrade
     """
     results: list[CreatedItem] = []
     base = config.project_path
@@ -2117,9 +2241,9 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     dst_objetivo = base / "objetivo.yaml"
     try:
         if dst_objetivo.exists():
-            log.info("⏭️  já existe: objetivo.yaml")
-            results.append(CreatedItem(path=dst_objetivo,
-                           kind="file", status="skipped"))
+            # BUG-001 Fix #1: Patch campos ausentes durante upgrade
+            patch_result = _patch_objetivo_yaml(dst_objetivo, src_objetivo)
+            results.append(patch_result)
         else:
             content = src_objetivo.read_text(encoding="utf-8")
             # Substituir placeholders
@@ -2150,14 +2274,19 @@ def setup_project_docs(config: ProjectConfig) -> list[CreatedItem]:
     results.append(result)
 
     # 3. DAILY_ACTIVITIES_<data>.md em docs/SESSIONS/<data>/
-    session_date = config.created_at[:10]  # YYYY-MM-DD
-    session_dir = base / "docs" / "SESSIONS" / session_date
-    session_dir.mkdir(parents=True, exist_ok=True)
+    # APENAS durante scaffold NEW - pulado durante upgrade para evitar criar
+    # pasta SESSIONS/<created_at>/ vazia com data antiga
+    if not is_upgrade:
+        session_date = config.created_at[:10]  # YYYY-MM-DD
+        session_dir = base / "docs" / "SESSIONS" / session_date
+        session_dir.mkdir(parents=True, exist_ok=True)
 
-    src_daily = src_templates / "DAILY_ACTIVITIES.template.md"
-    dst_daily = session_dir / f"DAILY_ACTIVITIES_{session_date}.md"
-    result = _copy_file(src_daily, dst_daily)
-    results.append(result)
+        src_daily = src_templates / "DAILY_ACTIVITIES.template.md"
+        dst_daily = session_dir / f"DAILY_ACTIVITIES_{session_date}.md"
+        result = _copy_file(src_daily, dst_daily)
+        results.append(result)
+    else:
+        log.debug("⏭️  Pulando criação de pasta SESSIONS (upgrade mode)")
 
     return results
 
@@ -2175,6 +2304,8 @@ def copy_session_libs(config: ProjectConfig, force: bool = False) -> list[Create
       2. scripts/lib/search.py (usado por session-index, session-search, session-chat)
       3. scripts/lib/chat_capture.py (usado por session-chat)
       4. scripts/lib/memory.py (usado por memory scripts)
+      5. scripts/lib/git_validators.py (usado por session-time-tracker, pre-commit hooks)
+      6. scripts/lib/sanitize.py (usado por mem_save para detectar/sanitizar secrets)
 
     Esses módulos são dependências dos scripts de sessão e memory system.
     Sem eles, os scripts falham com ModuleNotFoundError.
@@ -2184,6 +2315,8 @@ def copy_session_libs(config: ProjectConfig, force: bool = False) -> list[Create
         force: Se True, sobrescreve arquivos existentes após backup
 
     Ref: BUG-14 — session scripts missing lib dependencies
+    Ref: BUG-19 — git_validators.py deployment
+    Ref: BUG-001 Fix #4 — sanitize.py missing for mem_save
     """
     results: list[CreatedItem] = []
     base = config.project_path
@@ -2198,6 +2331,8 @@ def copy_session_libs(config: ProjectConfig, force: bool = False) -> list[Create
         "search.py",
         "chat_capture.py",
         "memory.py",
+        "git_validators.py",
+        "sanitize.py",
     ]
 
     for lib_name in libs_to_copy:
