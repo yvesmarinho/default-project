@@ -142,7 +142,7 @@ class TestBug001ScaffoldLogging:
         template_dir = tmp_path / "template-bases"
         template_dir.mkdir(parents=True)
         template_file = template_dir / "objetivo-init-template.yaml"
-        
+
         # Template minimal
         template_file.write_text("""prompt:
   role: user

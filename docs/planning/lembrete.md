@@ -1,5 +1,7 @@
 # Alterações necessárias Futuras
 
+- é possivel integrar a atualizações do spec-kit no projeto comando "specify init --here --force --integration copilot"?
+
 - Analisar as informações dos sites abaixo para fazer as devidas atualizações.
   - [Github Copilot Instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
   - [Agent Skills in VS Vode](https://code.visualstudio.com/docs/copilot/customization/agent-skills) para melhorar a atuação dos agentes.
@@ -11,20 +13,12 @@
 
 # Alterações necessárias presente
 
-- é possivel integrar a atualizações do spec-kit no projeto comando "specify init --here --force --integration copilot"?
-
 
 ---
 
 ## Correção - IMPORTANTE - BUG
 
-**📋 BUG REPORT CRIADO**: [BUG-001-scaffold-objetivo-init-issues.md](../bugs/BUG-001-scaffold-objetivo-init-issues.md)
-
-- `scafold objetivo-init`caso o campo "docstyle" não seja informado utilizar o padrão
-  ```"Google Style Docstrings com type hints completos, Sphinx para geração de docs, ADRs para decisões arquiteturais, OpenAPI/Swagger para documentação de API"```
-- `scafold objetivo-init`caso o campo "out-scope" não for informado, não incluir no arquivo.
-- `scafold objetivo-init` não gera log
-
+- `.vscode/mcp.json` falta o servidor do Pylance e o Markitdown.
 
 ---
 
