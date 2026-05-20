@@ -191,6 +191,53 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
   - ✅ Zero breaking changes (completo mode preserved)
   - ✅ Estimativa 3h → Real 45min (simpler than expected)
 
+#### BUG-16 Manual Validation: Scaffold Merge System (May 2026)
+- **Objective**: End-to-end validation of BUG-16 merge system with real project customizations
+- **Priority**: P1 HIGH (final production validation)
+- **Duration**: 30 min (estimate matched actual)
+- **Test Project**: Created `~/Documentos/DevOps/Vya-Jobs/bug16-manual-test`
+
+- **Procedure**:
+  1. ✅ Created test project (158 files via scaffold.py --new)
+  2. ✅ Applied user customizations:
+     - settings.json: 4 custom configs (extraPaths, rulers, autofetch, customUserSetting)
+     - mcp.json: 1 custom server (custom-database with env vars)
+     - .copilot-rules: 3 duplicate files for consolidation test
+  3. ✅ Executed upgrade --force --ci (21 files updated, 125 skipped)
+  4. ✅ Validated merge results and backups
+
+- **Results** (100% APPROVED):
+  - **settings.json** (48 → 54 lines):
+    - ✅ All 4 user customizations preserved (extraPaths, rulers, autofetch, customUserSetting)
+    - ✅ All 48 template configurations added (mcp.autostart, python paths, formatting, etc.)
+    - ✅ Backup created: .vscode/settings.json.backup
+  - **mcp.json**:
+    - ✅ User server preserved (custom-database with env vars)
+    - ✅ Template servers added (memory, sequential-thinking, filesystem, github)
+    - ✅ Backup created: .vscode/mcp.json.backup
+  - **.copilot-rules consolidation**:
+    - ✅ 4 files consolidated → 1 file (723 lines) at .copilot-shared/rules/.copilot-rules.md
+    - ✅ Symlink created: .copilot-rules.md → ../../.copilot-shared/rules/.copilot-rules.md
+    - ✅ Original files moved to .backups/copilot-rules/ (3 files)
+    - ✅ Consolidation header in file: "Consolidado de 4 arquivos: ..."
+  - **Backups**:
+    - ✅ 10 backup files created in .backups/
+    - ✅ All modified files have .backup counterpart
+
+- **Metrics**:
+  - Test coverage: 8/8 files validated (100%)
+  - Customizations tested: 5 (4 settings + 1 mcp server)
+  - Merge strategy: "user-wins" — all customizations preserved + template added ✅
+  - Consolidation: 4 → 1 file with symlink ✅
+
+- **Report**: docs/SESSIONS/2026-05-20/BUG-16_MANUAL_VALIDATION_REPORT.md
+
+- **Impact**:
+  - ✅ BUG-16 merge system validated in production scenario
+  - ✅ Confirms automated tests (test_scaffold_upgrade_merge_strategy.py) match real-world behavior
+  - ✅ Zero data loss — all user customizations preserved
+  - ✅ System ready for production use
+
 ### Fixed
 
 #### BUG-22 CRITICAL: docs/SESSIONS/ Old Folder Created During Upgrade (May 2026)

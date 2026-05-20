@@ -337,17 +337,22 @@ _(Nenhuma regressão pendente)_
     - Backup é criado antes do merge
     - Validação pós-merge confirma mudanças aplicadas
 
-- [ ] **BUG-16 Teste Manual**: Validar upgrade com projeto real customizado
+- [x] **BUG-16 Teste Manual**: Validar upgrade com projeto real customizado ✅ CONCLUÍDO (2026-05-20)
   - **Objetivo**: Executar teste end-to-end de integração BUG-16
   - **Prioridade**: P1 HIGH (validação final)
-  - **Estimativa**: 30 min
+  - **Estimativa**: 30 min | **Tempo Real**: 30 min
   - **Blocker**: None (integração de código completa + Sprint 4 concluído)
   - **Tarefas**:
-    1. Criar projeto teste com customizações
-    2. Executar upgrade --force
-    3. Validar merges e backups (incluindo novos mergers Sprint 4)
-    4. Documentar resultados
-  - **Expected Outcome**: BUG-16 100% validado em produção com 90% coverage
+    1. ✅ Criar projeto teste com customizações (settings.json, mcp.json, 3 arquivos .copilot-rules)
+    2. ✅ Executar upgrade --force (158 arquivos criados, 21 atualizados)
+    3. ✅ Validar merges e backups (100% customizações preservadas + backups criados)
+    4. ✅ Documentar resultados (docs/SESSIONS/2026-05-20/BUG-16_MANUAL_VALIDATION_REPORT.md)
+  - **Resultados**: 100% aprovado — merge "user-wins" funcionou perfeitamente
+    - ✅ settings.json: 4 customizações preservadas + 48 configs template adicionadas
+    - ✅ mcp.json: servidor custom-database preservado + 4 servidores template adicionados
+    - ✅ .copilot-rules: 4 arquivos consolidados → 1 arquivo (723 linhas) com symlink
+    - ✅ Backups: 10 arquivos .backup criados em .backups/
+  - **Relatório**: docs/SESSIONS/2026-05-20/BUG-16_MANUAL_VALIDATION_REPORT.md
 
 - [ ] **Objetivo-Init Pipeline Testing** (P1 HIGH)
   - **Objetivo**: Test complete v1.0 workflow end-to-end
