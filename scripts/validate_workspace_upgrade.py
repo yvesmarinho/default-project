@@ -407,10 +407,12 @@ def validate_bug18_objetivo(workspace: Path, verbose: bool = False) -> Validatio
         # Check 3: Contém dados do projeto
         if "project" in data:
             project_name = data["project"].get("name", "")
+            # Verificar que nome foi preenchido (não está vazio nem é placeholder)
+            is_valid = bool(project_name) and project_name != "CHANGE_ME"
             suite.add(ValidationResult(
                 "project info present",
-                project_name == "test-workspace-fix",
-                f"Nome: {project_name}"
+                is_valid,
+                f"Nome: {project_name}" if is_valid else f"Nome inválido: '{project_name}'"
             ))
         else:
             suite.add(ValidationResult(
