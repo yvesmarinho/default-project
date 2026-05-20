@@ -151,6 +151,46 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
   - ✅ Developer onboarding resource (all memory patterns documented)
   - ✅ Troubleshooting guide (6 common scenarios)
 
+#### Session-Start Prompt: Quick Mode (IMP-65 P2, May 2026)
+- **Feature**: Added Quick Mode to session-start ritual for fast debugging sessions
+- **File Modified**: `.github/prompts/session-start.prompt.md` (v1.0 → v2.0)
+- **Changes**:
+  - New section "Modo de Execução" at top of document
+  - User prompt: "Modo de execução: [quick | completo]" before starting ritual
+  - Mode comparison table with 8 steps (quick vs completo)
+  - Marked steps 5-8 with ⏭️ emoji (skip in quick mode)
+  - Separated checklists: Quick (5 items) vs Completo (11 items)
+  - New section "Quando Usar Cada Modo" with guidelines (5 examples each)
+  - Updated anti-patterns with mode selection guidance
+  - Version updated to v2.0 | IMP-65 P2 | 2026-05-20
+
+- **Quick Mode Behavior** (~5s duration):
+  - ✅ Step 1: Verify MCP config (memory, sequential-thinking)
+  - ✅ Step 2: Recover context (TODO.md, INDEX.md, FINAL_STATUS)
+  - ✅ Step 3: Load Copilot rules (.copilot-rules.md enforcement)
+  - ✅ Step 4: Security scan (credentials check)
+  - ✅ Step 4.5: Dependencies check (vulnerabilities)
+  - ❌ Step 5: SKIP git status/log
+  - ❌ Step 6: SKIP session docs creation
+  - ❌ Step 6.5: SKIP time tracker
+  - ❌ Step 7: SKIP scope/domain profile
+  - ❌ Step 8: SKIP index/TODO update
+
+- **Completo Mode Behavior** (~15s duration):
+  - ✅ All 8 steps (same as before v2.0)
+  - Backward compatible (no breaking changes)
+
+- **Use Cases**:
+  - **Quick Mode**: Debugging (<30min), quick queries, hotfix, read-only sessions
+  - **Completo Mode**: Features (IMP-*), bugs (BUG-*), long sessions (>1h), documented work
+
+- **Impact**:
+  - ⚡ 67% time reduction for quick sessions (15s → 5s)
+  - 📖 Clear guidelines for mode selection
+  - 🎯 User flexibility (choose appropriate mode)
+  - ✅ Zero breaking changes (completo mode preserved)
+  - ✅ Estimativa 3h → Real 45min (simpler than expected)
+
 ### Fixed
 
 #### BUG-22 CRITICAL: docs/SESSIONS/ Old Folder Created During Upgrade (May 2026)

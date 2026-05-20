@@ -9,9 +9,46 @@ description: Ritual de início de sessão recorrente. Execute no começo de cada
 
 ---
 
+## 🎯 Modo de Execução
+
+Antes de iniciar, pergunte ao usuário:
+
+```
+Modo de execução: [quick | completo]
+```
+
+**Modo QUICK** (IMP-65 P2 — ~5s de duração):
+- ✅ Passos essenciais apenas (1, 2, 3, 4, 4.5)
+- ❌ Pula: git status, documentos de sessão, time-tracker, escopo
+- **Quando usar**: Sessões rápidas de debugging, consultas pontuais, verificações rápidas
+
+**Modo COMPLETO** (~15s de duração):
+- ✅ Todos os 8 passos (completo + robusto)
+- **Quando usar**: Sessões de desenvolvimento, implementações, sessões longas
+
+**Passos por modo**:
+
+| Passo | Quick | Completo | Descrição |
+|-------|-------|----------|-----------|
+| 1. Verificar MCP | ✅ | ✅ | Configuração MCP servers |
+| 2. Recuperar Contexto | ✅ | ✅ | TODO.md, INDEX.md, sessão anterior |
+| 3. Carregar Regras | ✅ | ✅ | .copilot-rules.md enforcement |
+| 4. Scan Segurança | ✅ | ✅ | Verificar credenciais expostas |
+| 4.5. Dependências | ✅ | ✅ | Verificar vulnerabilidades |
+| 5. Estado do Projeto | ❌ | ✅ | git status, log |
+| 6. Docs de Sessão | ❌ | ✅ | SESSION_RECOVERY, DAILY_ACTIVITIES |
+| 6.5. Time Tracker | ❌ | ✅ | session-time-tracker.py start |
+| 7. Escopo da Sessão | ❌ | ✅ | Domain profile, objetivo |
+| 8. Atualizar Índice | ❌ | ✅ | TODO.md, índice de sessão |
+
+---
+
 ## ▶️ Execução do Ritual
 
 Execute os passos abaixo em ordem. Confirme cada etapa antes de avançar.
+
+**Se modo QUICK**: Execute apenas passos 1-4.5 e pule para "Checklist Final".
+**Se modo COMPLETO**: Execute todos os passos 1-8.
 
 ---
 
@@ -169,6 +206,8 @@ else:
 
 ### Passo 5 — Verificar Estado do Projeto
 
+> **🚀 Modo QUICK**: ⏭️ **PULAR este passo** (ir para Passo 6 ou Checklist Final)
+
 ```bash
 git status          # arquivos modificados não commitados
 git log --oneline -5   # últimos 5 commits
@@ -224,6 +263,8 @@ Se não houver memórias relevantes (score < 40%): continuar normalmente.
 ---
 
 ### Passo 6 — Criar Documentos de Sessão e Carregar Protocolo
+
+> **🚀 Modo QUICK**: ⏭️ **PULAR este passo** (ir para Passo 7 ou Checklist Final)
 
 Criar os arquivos de sessão do dia (se ainda não existirem):
 
@@ -303,6 +344,8 @@ Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIE
 
 ### Passo 6.5 — Inicializar Rastreamento de Sessão
 
+> **🚀 Modo QUICK**: ⏭️ **PULAR este passo** (ir para Passo 7 ou Checklist Final)
+
 **Ação do agente**: Garantir que session-index e session-time estão operacionais.
 
 #### 6.5.1 — Verificar Session Index
@@ -349,6 +392,8 @@ python scripts/session-time-tracker.py status
 ---
 
 ### Passo 7 — Definir Escopo da Sessão
+
+> **🚀 Modo QUICK**: ⏭️ **PULAR este passo** (ir para Passo 8 ou Checklist Final)
 
 Pergunte ao usuário sobre o escopo desta sessão:
 
@@ -397,6 +442,8 @@ Com base na resposta, carregar o Domain Profile correspondente:
 
 ### Passo 8 — Atualizar Índice e TODO
 
+> **🚀 Modo QUICK**: ⏭️ **PULAR este passo** (ir para Checklist Final)
+
 Atualizar `docs/TODO.md`:
 - Verificar se há itens "in-progress" da sessão anterior sem conclusão registrada
 - Adicionar itens novos identificados durante a recuperação de contexto
@@ -405,17 +452,39 @@ Atualizar `docs/TODO.md`:
 
 ## ✅ Checklist Final de Início de Sessão
 
+### Modo QUICK
+
 Antes de começar o trabalho efetivo, confirmar:
 
 - [ ] MCP configurado em `.vscode/mcp.json` (memory ✅ + sequential-thinking ✅)
 - [ ] Contexto da sessão anterior recuperado e declarado
 - [ ] `.copilot-rules.md` lido e regras P0 ativas
 - [ ] Scan de segurança: 🟢 LIMPO
+- [ ] Dependências verificadas (sem vulnerabilidades críticas)
+
+**Duração esperada**: ~5s
+**Resultado**: `✅ Session started (QUICK mode) — ready to work`
+
+---
+
+### Modo COMPLETO
+
+Antes de começar o trabalho efetivo, confirmar:
+
+- [ ] MCP configurado em `.vscode/mcp.json` (memory ✅ + sequential-thinking ✅)
+- [ ] Contexto da sessão anterior recuperado e declarado
+- [ ] `.copilot-rules.md` lido e regras P0 ativas
+- [ ] Scan de segurança: 🟢 LIMPO
+- [ ] Dependências verificadas (sem vulnerabilidades críticas)
 - [ ] `git status` verificado — sem surpresas
 - [ ] `SESSION_RECOVERY_[data].md` criado
 - [ ] `DAILY_ACTIVITIES_[data].md` criado
+- [ ] Session time tracker iniciado
 - [ ] Domínio declarado + Domain Profile carregado
 - [ ] Objetivo da sessão declarado em 1 frase
+
+**Duração esperada**: ~15s
+**Resultado**: `✅ Session started (COMPLETO mode) — ready to work`
 
 ---
 
@@ -425,10 +494,30 @@ Antes de começar o trabalho efetivo, confirmar:
 |------------|-----------|
 | Começar a escrever código sem recuperar contexto | Sempre ler TODO.md primeiro |
 | Supor qual era o estado do projeto | Ler FINAL_STATUS da última sessão |
-| Pular o scan de segurança | Scan obrigatório a cada sessão |
-| Trabalhar sem declarar o domínio | Declarar modo antes do primeiro commit |
+| Pular o scan de segurança | Scan obrigatório a cada sessão (ambos modos) |
+| Trabalhar sem declarar o domínio (modo completo) | Declarar modo antes do primeiro commit |
 | Criar arquivos sem verificar se já existem | Checar com file_search antes de criar |
+| Usar modo QUICK para sessões longas de desenvolvimento | Usar modo COMPLETO para implementações |
+| Usar modo COMPLETO para consultas rápidas | Usar modo QUICK para debugging pontual |
 
 ---
 
-*Session Start Prompt v1.0 | IMP-02 | 2026-03-01*
+## 💡 Quando Usar Cada Modo
+
+### Use Modo QUICK quando:
+- ✅ Debugging pontual (< 30 minutos)
+- ✅ Consultas rápidas de código
+- ✅ Verificações de configuração
+- ✅ Sessões de leitura (sem commits)
+- ✅ Hotfix urgente (já sabe exatamente o que fazer)
+
+### Use Modo COMPLETO quando:
+- ✅ Implementações de features (IMP-*)
+- ✅ Correção de bugs documentados (BUG-*)
+- ✅ Sessões longas (> 1 hora)
+- ✅ Trabalho que requer documentação (DAILY_ACTIVITIES)
+- ✅ Trabalho colaborativo (precisa rastrear tempo/atividades)
+
+---
+
+*Session Start Prompt v2.0 | IMP-65 P2 | 2026-05-20*
