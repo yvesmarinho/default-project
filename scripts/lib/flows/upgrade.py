@@ -20,6 +20,7 @@ def _validate_and_fix_paths(
     state: dict,
     current_target: Path,
     use_json: bool,
+    ci_mode: bool = False,
 ) -> dict | None:
     """
     Valida se os paths no state divergem do local atual de execução.
@@ -32,6 +33,7 @@ def _validate_and_fix_paths(
         state: Estado lido de .scaffold-state.yaml
         current_target: Path onde upgrade está sendo executado
         use_json: Se True, não interage com usuário (assume paths atuais)
+        ci_mode: Se True, não interage com usuário (assume paths atuais)
 
     Returns:
         state atualizado ou None se usuário cancelar
@@ -66,10 +68,11 @@ def _validate_and_fix_paths(
     console.print("  Path onde upgrade está sendo executado:")
     console.print(f"    [dim]{current_parent_resolved}[/dim]\n")
 
-    if use_json:
-        # Modo JSON: assume usar path atual (não pode interagir)
+    if use_json or ci_mode:
+        # Modo JSON ou CI: assume usar path atual (não pode interagir)
+        mode_label = "Modo JSON" if use_json else "Modo CI"
         console.print(
-            "  [yellow]Modo JSON: atualizando automaticamente para path atual[/yellow]\n"
+            f"  [yellow]{mode_label}: atualizando automaticamente para path atual[/yellow]\n"
         )
         state["paths"]["target_dir"] = str(current_parent_resolved)
         # Escreve YAML diretamente (sem ProjectConfig)
@@ -129,6 +132,7 @@ def flow_upgrade(args: argparse.Namespace) -> int:
     """
     force: bool = getattr(args, "force", False)
     use_json: bool = getattr(args, "json_output", False)
+    ci_mode: bool = getattr(args, "ci", False)
 
     # Diretório alvo (default: cwd)
     target = Path(args.target_dir) if args.target_dir else Path.cwd()
@@ -147,7 +151,7 @@ def flow_upgrade(args: argparse.Namespace) -> int:
         return 1
 
     # Verificar divergência de paths
-    state = _validate_and_fix_paths(state, target, use_json)
+    state = _validate_and_fix_paths(state, target, use_json, ci_mode)
     if state is None:
         # Usuário cancelou ou erro fatal
         return 1

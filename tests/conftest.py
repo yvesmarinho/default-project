@@ -148,6 +148,37 @@ def mock_subprocess(monkeypatch):
         def test_foo(mock_subprocess):
             mock_subprocess(stdout="output", stderr="", returncode=0)
     """
+
+
+# ---------------------------------------------------------------------------
+# Git Configuration for Tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_git_for_tests():
+    """
+    Configure Git user globally for all tests.
+    
+    This ensures scaffold tests that create Git commits don't fail
+    due to missing user.email/user.name configuration.
+    
+    Runs once per test session automatically.
+    """
+    import subprocess
+    
+    # Configure Git user for tests
+    subprocess.run(
+        ["git", "config", "--global", "user.email", "test@example.com"],
+        check=False,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "config", "--global", "user.name", "Test User"],
+        check=False,
+        capture_output=True,
+    )
+
     from unittest.mock import Mock
     import subprocess
 

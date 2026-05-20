@@ -38,16 +38,53 @@
 
 ## 🔴 Prioritário (P0 - Crítico)
 
-- [ ] **Testes Automatizados para Scaffold** (P0 CRITICAL)
+- [x] ~~**Testes Automatizados para Scaffold**~~ (P0 CRITICAL) ✅ CONCLUÍDO (2026-05-20)
   - **Objetivo**: Garantir que scaffold new/upgrade funcionam corretamente
   - **Prioridade**: P0 CRITICAL (prevenção de regressões)
-  - **Estimativa**: 3-4h
-  - **Tarefas**:
-    1. Criar tests/test_scaffold_new.py
-    2. Criar tests/test_scaffold_upgrade.py
-    3. Validar 51 checks em CI/CD
-    4. Mock de filesystem para testes isolados
-  - **Blocker**: None
+  - **Estimativa**: 3-4h | **Real**: 4h
+  - **Resultados**:
+    - ✅ tests/test_scaffold_new.py criado: **10/10 testes (100%)**
+    - ✅ tests/test_scaffold_upgrade.py criado: **7/11 testes (63.6%)**
+    - ✅ .github/workflows/scaffold-tests.yml criado (4 jobs, matrix 3.10/3.11/3.12)
+    - ✅ Integração com validate_workspace_upgrade.py (51 validações)
+    - ✅ **BUG CRÍTICO CORRIGIDO**: upgrade.py não respeitava flag --ci (EOFError em testes)
+    - ⚠️ **3 REGRESSÕES DETECTADAS**:
+      - BUG-16 regression: `.copilot-rules` não consolida corretamente
+      - BUG-18 regression: `objetivo.yaml` project info vazio
+      - BUG-22 CRITICAL regression: `docs/SESSIONS/` antiga criada durante upgrade
+  - **Total**: ✅ **17/21 testes (81%)** — Infraestrutura completa e funcional
+  - **Documentação**: Testes criados, CI/CD configurado
+  - **Próximos passos**: Corrigir 3 regressões detectadas pelos testes
+
+---
+
+## 🟡 Regressões Detectadas (Novos Bugs)
+
+- [ ] **BUG-16 REGRESSION: .copilot-rules não consolida**
+  - **Detectado por**: test_scaffold_upgrade_merge_strategy, test_scaffold_upgrade_all_validations
+  - **Sintoma**: 2 arquivos `.copilot-rules*.md` criados em vez de 1 consolidado
+  - **Impacto**: Médio (funciona mas não segue padrão de consolidação)
+  - **Prioridade**: P1
+  - **Fix estimado**: 1-2h
+
+- [ ] **BUG-18 REGRESSION: objetivo.yaml project info vazio**
+  - **Detectado por**: test_scaffold_upgrade_all_validations
+  - **Sintoma**: Campo `project.name` não populado em objetivo.yaml
+  - **Impacto**: Baixo (campo opcional)
+  - **Prioridade**: P2
+  - **Fix estimado**: 30min
+
+- [ ] **BUG-22 CRITICAL REGRESSION: docs/SESSIONS/ antiga criada**
+  - **Detectado por**: test_scaffold_upgrade_no_old_sessions_folder
+  - **Sintoma**: `docs/SESSIONS/2026-05-20/DAILY_ACTIVITIES_2026-05-20.md` criado durante upgrade
+  - **Impacto**: ALTO (BUG-22 deveria estar resolvido!)
+  - **Prioridade**: P0 CRITICAL
+  - **Fix estimado**: 1h
+  - **Nota**: Código de fix BUG-22 não está funcionando durante upgrade
+
+---
+
+## 🎯 Próxima Sessão (2026-05-20+)
 
 ---
 
