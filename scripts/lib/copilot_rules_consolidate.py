@@ -170,6 +170,7 @@ def detect_copilot_rules_files(project_root: Path) -> List[Path]:
 
     Padrões detectados:
     - .copilot-rules.md
+    - .copilot-rules-*.md (específicos de projeto/domain/profile)
     - .copilot-strict-rules.md
     - .copilot-strict-enforcement.md
     - copilot-instructions.md
@@ -180,9 +181,12 @@ def detect_copilot_rules_files(project_root: Path) -> List[Path]:
 
     Returns:
         Lista de arquivos encontrados (sorted)
+        
+    Nota: Symlinks são ignorados para preservar configurações de shared files (BUG-16).
     """
     patterns = [
         ".copilot-rules.md",
+        ".copilot-rules-*.md",  # BUG-16: arquivos específicos de projeto
         ".copilot-strict-rules.md",
         ".copilot-strict-enforcement.md",
         "copilot-instructions.md",
@@ -194,6 +198,8 @@ def detect_copilot_rules_files(project_root: Path) -> List[Path]:
     for pattern in patterns:
         # Buscar apenas na raiz (não recursivo)
         matches = list(project_root.glob(pattern))
+        # BUG-16 fix: filtrar symlinks para preservar .copilot-shared
+        matches = [f for f in matches if not f.is_symlink()]
         found_files.extend(matches)
 
     # Remover duplicatas e ordenar
