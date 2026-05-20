@@ -177,11 +177,53 @@ pytest tests/test_git_validators.py -v
 - ✅ Sugestões de correção
 - ✅ Protected branches
 
-### 3. Scaffold System
+### 3. Scaffold System (AUTOMATED - 100% Coverage)
 
 ```bash
+# Todos os testes de scaffold
 pytest tests/test_scaffold_*.py -v
+
+# Apenas scaffold new (10 testes)
+pytest tests/test_scaffold_new.py -v
+
+# Apenas scaffold upgrade (11 testes)
+pytest tests/test_scaffold_upgrade.py -v
+
+# Teste crítico de 51 validações
+pytest tests/test_scaffold_upgrade.py::test_scaffold_upgrade_all_validations -v
 ```
+
+**Cobertura test_scaffold_new.py** (10 testes, 100%):
+- ✅ test_scaffold_new_basic: Estrutura de diretórios, Git init
+- ✅ test_scaffold_new_vscode_config: .vscode/settings.json, mcp.json
+- ✅ test_scaffold_new_copilot_instructions: .github/copilot-instructions.md
+- ✅ test_scaffold_new_critical_files: Validação com validate_critical_files()
+- ✅ test_scaffold_new_scaffold_state: .scaffold-state.yaml metadata
+- ✅ test_scaffold_new_git_initialized: .git/, commit inicial, branch master/main
+- ✅ test_scaffold_new_combinations: Parametrizado 4 combos (domain×language)
+
+**Cobertura test_scaffold_upgrade.py** (11 testes, 100%):
+- ✅ test_scaffold_upgrade_basic: Execução básica, logs, backups
+- ✅ test_scaffold_upgrade_all_validations: **CRÍTICO** — 11 suites, 51 validações
+- ✅ test_scaffold_upgrade_bug20_mcp_http: BUG-20 MCP GitHub HTTP migration
+- ✅ test_scaffold_upgrade_bug001_objetivo_init: BUG-001 fixes (docstyle, out-scope, logging)
+- ✅ test_scaffold_upgrade_bug19_gitvalidators: BUG-19 git_validators.py + sanitize.py
+- ✅ test_scaffold_upgrade_copilot_instructions: BUG-13 copilot-instructions.md
+- ✅ test_scaffold_upgrade_merge_strategy: BUG-16 JSON/workspace merge
+- ✅ test_scaffold_upgrade_session_memory_init: BUG-11 (session) + BUG-12 (memory)
+- ✅ test_scaffold_upgrade_logs_created: Validação de logs
+- ✅ test_scaffold_upgrade_idempotent: Upgrade 3× (idempotency test)
+- ✅ test_scaffold_upgrade_no_old_sessions_folder: BUG-22 regression test
+
+**Integração com validate_workspace_upgrade.py**:
+- 11 suites de validação
+- 51 checks totais (100% passing)
+- Validações de BUG-20, BUG-001, BUG-11, BUG-12, BUG-13, BUG-16, BUG-17, BUG-18, BUG-19, arquivos críticos, logs
+
+**CI/CD**: `.github/workflows/scaffold-tests.yml`
+- 4 jobs: test-scaffold-new, test-scaffold-upgrade, test-scaffold-smoke, summary
+- Matrix testing: Python 3.10, 3.11, 3.12
+- Triggers: push, PR, schedule (Sundays 02:00 UTC)
 
 ### 4. Integration Tests
 

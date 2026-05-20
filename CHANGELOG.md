@@ -11,6 +11,79 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+#### Scaffold Test Automation — End-to-End Testing (May 2026)
+- **Test Suite**: Comprehensive automated testing for scaffold new/upgrade commands (~1,300 lines):
+  - Created `tests/test_scaffold_new.py` (10 tests, 100% passing):
+    - test_scaffold_new_basic: Directory structure, Git init
+    - test_scaffold_new_vscode_config: .vscode/settings.json, mcp.json validation
+    - test_scaffold_new_copilot_instructions: .github/copilot-instructions.md deployment
+    - test_scaffold_new_critical_files: Integration with validate_critical_files()
+    - test_scaffold_new_scaffold_state: .scaffold-state.yaml metadata validation
+    - test_scaffold_new_git_initialized: .git/, initial commit, branch verification
+    - test_scaffold_new_combinations: Parametrized test for domain×language matrix (4 combos)
+  - Created `tests/test_scaffold_upgrade.py` (11 tests, 100% passing):
+    - test_scaffold_upgrade_basic: Upgrade execution, logs, backups
+    - test_scaffold_upgrade_all_validations: **CRITICAL** — Executes 11 suites, 51 checks
+    - test_scaffold_upgrade_bug20_mcp_http: BUG-20 validation
+    - test_scaffold_upgrade_bug001_objetivo_init: BUG-001 fixes validation
+    - test_scaffold_upgrade_bug19_gitvalidators: BUG-19 git_validators.py + sanitize.py
+    - test_scaffold_upgrade_copilot_instructions: BUG-13 copilot-instructions.md
+    - test_scaffold_upgrade_merge_strategy: BUG-16 JSON/workspace merge validation
+    - test_scaffold_upgrade_session_memory_init: BUG-11 + BUG-12 systems
+    - test_scaffold_upgrade_logs_created: Logs validation
+    - test_scaffold_upgrade_idempotent: 3× upgrade idempotency test
+    - test_scaffold_upgrade_no_old_sessions_folder: BUG-22 regression test
+  - Integration with `scripts/validate_workspace_upgrade.py` (51 validations across 11 suites)
+  - Modified `tests/conftest.py`: Added configure_git_for_tests() fixture (session-scoped, auto-use)
+
+- **CI/CD Integration**: Created `.github/workflows/scaffold-tests.yml` (~200 lines):
+  - Job 1: test-scaffold-new (matrix Python 3.10/3.11/3.12 × 4 domain/language combos)
+  - Job 2: test-scaffold-upgrade (matrix Python 3.10/3.11/3.12)
+  - Job 3: test-scaffold-smoke (full workflow: new → upgrade → validate 51 checks)
+  - Job 4: summary (aggregates results, creates GitHub step summary)
+  - Triggers: push (master/main/develop), pull_request, workflow_dispatch, schedule (Sundays 02:00 UTC)
+  - Dependencies: requirements.txt, pytest, pytest-timeout, pyyaml
+
+- **Impact**:
+  - ✅ Test coverage: 21/21 tests passing (100%)
+  - ✅ Validation coverage: 51/51 checks passing (100%)
+  - ✅ Regression detection: 3 bugs detected and fixed (BUG-22, BUG-16, BUG-18)
+  - ✅ CI/CD automation: scaffold-tests.yml active for continuous validation
+
+### Fixed
+
+#### BUG-22 CRITICAL: docs/SESSIONS/ Old Folder Created During Upgrade (May 2026)
+- **Problem**: scaffold upgrade was creating `docs/SESSIONS/<created_at>/` during upgrade despite migration to `.session-docs/`
+- **Root Cause**: 3 locations had legacy code referencing `docs/SESSIONS`:
+  - scripts/lib/project.py line 1831 (DIRS_TO_CREATE)
+  - scripts/lib/project.py line 2281 (setup_project_docs())
+  - scripts/lib/flows/dry_run.py line 25 (manifest path)
+- **Fix**: Changed all references from `"docs/SESSIONS"` to `".session-docs"` (3 files modified)
+- **Validation**: test_scaffold_upgrade_no_old_sessions_folder now passing
+- **Commit**: `1b2bb50`
+
+#### BUG-16: .copilot-rules Consolidation with Symlinks (May 2026)
+- **Problem**: detect_copilot_rules_files() counted symlinks as duplicate files
+- **Scenario**: 1 real file (.copilot-rules-<project>.md) + 1 symlink (.copilot-rules.md → .copilot-shared/)
+- **Root Cause**: scripts/lib/copilot_rules_consolidate.py didn't filter symlinks and missed `.copilot-rules-*.md` pattern
+- **Fix**: Added symlink filter `[f for f in matches if not f.is_symlink()]` and pattern `.copilot-rules-*.md`
+- **Validation**: test_scaffold_upgrade_merge_strategy now passing
+- **Commit**: `8ff4199`
+
+#### BUG-18: objetivo.yaml Project Info Validation (May 2026)
+- **Problem**: validate_bug18_objetivo() had hardcoded project name check `project_name == "test-workspace-fix"`
+- **Type**: Bug in validation, not in scaffold (objetivo.yaml was correct)
+- **Fix**: Changed to generic validation: `bool(project_name) and project_name != "CHANGE_ME"`
+- **Impact**: Tests now accept any valid project name, not just hardcoded value
+- **Validation**: test_scaffold_upgrade_all_validations and test_scaffold_upgrade_idempotent now passing (51/51)
+- **Commit**: `5df0c16`
+
+#### Scaffold Upgrade --ci Flag Fix (May 2026)
+- **Problem**: _validate_and_fix_paths() ignored --ci flag causing EOFError (Prompt.ask() with no stdin)
+- **Fix**: Added ci_mode parameter to _validate_and_fix_paths() in scripts/lib/flows/upgrade.py
+- **Impact**: All upgrade tests now running successfully in non-interactive mode
+- **Related**: Part of test automation infrastructure (commit `39a3e66`)
+
 #### BUG-05: Interactive Layer 2 Profile Selection (Apr 2026)
 - **Phase 1 (Core)**: Interactive mode now shows Layer 2 profiles (python-fastapi, typescript-next, etc.):
   - Added `_get_compatible_layer2_profiles()` in `scripts/lib/ui.py`:

@@ -11,6 +11,7 @@ A production-ready, scalable project template designed to accelerate development
 > **Status:** 🔴 Workflows desabilitados desde 2026-03-31
 > **Motivo:** Foco no desenvolvimento core (scaffold.py, MCP, documentação)
 > **Restauração:** Q2 2026 após conclusão do core
+> **Exceção:** ✅ `.github/workflows/scaffold-tests.yml` está **ativo** (testes automatizados do scaffold)
 > **Guia completo:** [WORKFLOWS_REMOVED_TEMPORARILY.md](WORKFLOWS_REMOVED_TEMPORARILY.md) | [CI-CD-RESTORATION-GUIDE.md](docs/CI-CD-RESTORATION-GUIDE.md)
 
 ---
