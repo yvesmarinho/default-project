@@ -1,8 +1,8 @@
 # Sistema de Memória — Guia Completo
 
-**Versão**: 1.0.0 (IMP-65 P1-3)
-**Última atualização**: 2026-05-18
-**Status**: ✅ Estável
+**Versão**: 1.1.0 (IMP-65 P1 Complete)
+**Última atualização**: 2026-05-20
+**Status**: ✅ Produção
 
 ---
 
@@ -368,12 +368,18 @@ status: resolved
 
 ### Validação
 
-O **pre-commit hook** valida automaticamente:
+O **pre-commit hook** (IMP-65 P1, implementado 2026-05-20) valida automaticamente:
 
 ✅ Frontmatter bem-formado (---...---)
 ✅ Categorias válidas (project|team|decision|pattern|incident|user)
+✅ Bloqueia test files (__test-*.md, __auto-generated-title.md, __search-test-*.md)
 ❌ Frontmatter malformado → commit bloqueado
 ❌ Categoria inválida → commit bloqueado
+❌ Test files em .memory/ → commit bloqueado
+
+**Implementação**: `scripts/git-hooks/pre-commit` (~240 linhas)
+**Testes**: `tests/test_precommit_validate_memory.py` (10 testes, 100%)
+**Instalação**: `make git-hooks-install`
 
 ---
 
@@ -572,6 +578,14 @@ make update-deps-safe
 make update-deps  # Confirmação interativa
 ```
 
+**Automação** (IMP-65 P1, implementado 2026-05-20):
+- Workflow `.github/workflows/dependency-check.yml` executa semanalmente (segundas 9h UTC)
+- `pip-audit` para CVE scanning automático
+- `pip list --outdated` para dependency freshness
+- Cria issues P0 automaticamente se vulnerabilidades detectadas
+- Artifacts: `outdated.json`, `audit.json` (retention 30 dias)
+- Testes: `tests/test_dependency_check_workflow.py` (17 testes, 100%)
+
 ---
 
 ## Referências
@@ -605,14 +619,21 @@ make update-deps  # Confirmação interativa
 
 ---
 
-**Versão**: 1.0.0
-**Última revisão**: 2026-05-18
-**Próxima revisão**: 2026-06-18
+**Versão**: 1.1.0
+**Última revisão**: 2026-05-20
+**Próxima revisão**: 2026-06-20
 **Maintainer**: Equipe de Plataforma
 
 ---
 
 ## Histórico de Mudanças
+
+### 2026-05-20 — v1.1.0 (IMP-65 P1 Complete)
+- ✅ Atualizado com implementações IMP-65 P1 completas
+- ✅ Seção "Validação" expandida (pre-commit hook details)
+- ✅ Troubleshooting "Dependências" expandido (dependency-check workflow)
+- ✅ Referências atualizadas (17 testes dependency-check, 10 testes pre-commit)
+- ✅ Status: ✅ Estável → ✅ Produção
 
 ### 2026-05-18 — v1.0.0 (IMP-65 P1-3)
 - ✅ Primeira versão completa da documentação

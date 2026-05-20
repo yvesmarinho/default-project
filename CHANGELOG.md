@@ -125,6 +125,32 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
   - ✅ Manual trigger for on-demand scans
   - ✅ PR integration for dependency file changes
 
+#### Documentation: MEMORY_SYSTEM.md v1.1.0 (May 2026)
+- **Updated Documentation**: Updated `docs/MEMORY_SYSTEM.md` v1.0.0 → v1.1.0:
+  - Version: 1.1.0 (IMP-65 P1 Complete)
+  - Last update: 2026-05-20
+  - Status: ✅ Estável → ✅ Produção
+  - Expanded sections:
+    1. **Validation**: Added pre-commit hook details (IMP-65 P1, ~240 lines)
+       - Blocks test files (__test-*.md, __auto-generated-title.md, __search-test-*.md)
+       - Validates YAML frontmatter (6 valid categories)
+       - Tests: tests/test_precommit_validate_memory.py (10 tests, 100%)
+    2. **Troubleshooting: Outdated Dependencies**: Added dependency-check workflow automation
+       - Weekly automated scanning (Mondays 9h UTC)
+       - pip-audit CVE scanning
+       - Automatic P0 issue creation
+       - Artifacts: outdated.json, audit.json (retention 30 days)
+       - Tests: tests/test_dependency_check_workflow.py (17 tests, 100%)
+    3. **Changelog**: Added v1.1.0 entry with IMP-65 P1 complete details
+  - Original 7 sections maintained (~700 lines):
+    - Directory structure, scopes, best practices, naming, frontmatter, commands, troubleshooting
+
+- **Impact**:
+  - ✅ Complete memory system documentation (production-ready)
+  - ✅ Integrated with IMP-65 P1 implementations (pre-commit hook, dependency-check)
+  - ✅ Developer onboarding resource (all memory patterns documented)
+  - ✅ Troubleshooting guide (6 common scenarios)
+
 ### Fixed
 
 #### BUG-22 CRITICAL: docs/SESSIONS/ Old Folder Created During Upgrade (May 2026)

@@ -170,20 +170,27 @@ _(Nenhuma regressão pendente)_
       8. Labels: security, dependencies, P0, automated
   - **Impacto**: Detecção semanal automatizada + issues P0, prevenção de vulnerabilidades críticas
 
-- [ ] **IMP-65 P1: Documentação MEMORY_SYSTEM.md** (P1 MEDIUM)
+- [x] ~~**IMP-65 P1: Documentação MEMORY_SYSTEM.md**~~ (P1 MEDIUM) ✅ CONCLUÍDO (2026-05-20)
   - **Objetivo**: Documentar sistema de memória (boas práticas)
   - **Prioridade**: P1 MEDIUM (prevenção de problemas futuros)
-  - **Estimativa**: 1h
-  - **Seções**:
-    1. Estrutura de diretórios (/memories/ vs .memory/)
-    2. Scopes (user, repo, session)
-    3. Boas práticas (quando criar, atualizar, deletar)
-    4. Nomenclatura e YAML frontmatter
-    5. Categorias válidas
-    6. Comandos úteis
-    7. Troubleshooting
-  - **Blocker**: None
-  - **Expected Outcome**: docs/MEMORY_SYSTEM.md com guia completo
+  - **Estimativa**: 1h | **Real**: 30min (documento já existia v1.0.0, atualizado para v1.1.0)
+  - **Resultados**:
+    - ✅ Documento docs/MEMORY_SYSTEM.md já existia (~700 linhas, v1.0.0, 2026-05-18)
+    - ✅ Atualizado para v1.1.0 (2026-05-20)
+    - ✅ Seções expandidas:
+      1. Validação: Detalhes do pre-commit hook (IMP-65 P1)
+      2. Troubleshooting: Dependency-check workflow automation
+      3. Histórico de mudanças: v1.1.0 changelog
+    - ✅ Status atualizado: ✅ Estável → ✅ Produção
+    - ✅ Todas as 7 seções originais mantidas:
+      1. Estrutura de diretórios (/memories/ vs .memory/)
+      2. Scopes (user, repo, session, local)
+      3. Boas práticas (quando criar, atualizar, deletar)
+      4. Nomenclatura e YAML frontmatter
+      5. Categorias válidas (project, team, decision, pattern, incident, user)
+      6. Comandos úteis (MCP tools, scripts Python, Makefile targets)
+      7. Troubleshooting (6 cenários comuns)
+  - **Impacto**: Documentação completa e atualizada com implementações IMP-65 P1
 
 - [ ] **IMP-65 P2: Session-Start Quick Mode** (P2 LOW)
   - **Objetivo**: Modo P0-only opcional (reduzir de 8 → 4 passos)
