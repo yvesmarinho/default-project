@@ -1,5 +1,7 @@
 # Alterações necessárias Futuras
 
+- na pasta `./docs` falta as sub-pastas `implemantations`e `bugs`.
+
 - é possivel integrar a atualizações do spec-kit no projeto comando "specify init --here --force --integration copilot"?
 
 - Analisar as informações dos sites abaixo para fazer as devidas atualizações.
@@ -12,13 +14,7 @@
 ---
 
 # Alterações necessárias presente
-
-
----
-
-## Correção - IMPORTANTE - BUG
-
-- `.vscode/mcp.json` falta o servidor do Pylance e o Markitdown.
+- Verificação de dependencias desatualizada utiliza comandos em pipe, alterar para código com retorno formatado facilitando a analise e as ações seguintes.
 
 ---
 
