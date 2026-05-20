@@ -22,7 +22,7 @@ def _build_manifest(cfg) -> list[dict]:
         lang_files = [{"step": "create_structure", "op": "create", "path": "go.mod", "desc": "Módulo Go"}]
 
     ops: list[dict] = [
-        {"step": "create_structure", "op": "mkdir",   "path": "docs/SESSIONS/",                                          "desc": "Estrutura de pastas padrão"},
+        {"step": "create_structure", "op": "mkdir",   "path": ".session-docs/",                                          "desc": "Estrutura de pastas padrão"},
         {"step": "create_structure", "op": "create",  "path": "docs/INDEX.md",                                          "desc": "Índice do projeto"},
         {"step": "create_structure", "op": "create",  "path": "docs/TODO.md",                                           "desc": "Lista de tarefas"},
         {"step": "create_structure", "op": "create",  "path": ".gitignore",                                             "desc": "Gitignore padrão"},

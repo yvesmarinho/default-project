@@ -1828,7 +1828,7 @@ Apenas README.md commitado.
 
 DIRS_TO_CREATE = [
     "docs",
-    "docs/SESSIONS",
+    ".session-docs",
     "docs/architecture",
     "docs/copilot",
     "docs/debates",
@@ -2273,12 +2273,12 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
     result = _copy_file(src_mcp, dst_mcp)
     results.append(result)
 
-    # 3. DAILY_ACTIVITIES_<data>.md em docs/SESSIONS/<data>/
+    # 3. DAILY_ACTIVITIES_<data>.md em .session-docs/<data>/
     # APENAS durante scaffold NEW - pulado durante upgrade para evitar criar
-    # pasta SESSIONS/<created_at>/ vazia com data antiga
+    # pasta com data antiga
     if not is_upgrade:
         session_date = config.created_at[:10]  # YYYY-MM-DD
-        session_dir = base / "docs" / "SESSIONS" / session_date
+        session_dir = base / ".session-docs" / session_date
         session_dir.mkdir(parents=True, exist_ok=True)
 
         src_daily = src_templates / "DAILY_ACTIVITIES.template.md"
@@ -2286,7 +2286,7 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
         result = _copy_file(src_daily, dst_daily)
         results.append(result)
     else:
-        log.debug("⏭️  Pulando criação de pasta SESSIONS (upgrade mode)")
+        log.debug("⏭️  Pulando criação de pasta de sessão (upgrade mode)")
 
     return results
 
