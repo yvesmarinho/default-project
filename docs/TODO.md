@@ -1,6 +1,6 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-19 — Scaffold Validation Expanded (51 checks) + BUG-19, BUG-22 RESOLVED
+**Last Updated**: 2026-05-20 — Testes Automatizados P0 (21/21 100%) + BUG-22, BUG-16, BUG-18 RESOLVED
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
 
@@ -58,29 +58,44 @@
 
 ---
 
+## � Regressões Detectadas e Resolvidas (2026-05-20)
+
+- [x] **BUG-22 CRITICAL REGRESSION: docs/SESSIONS/ antiga criada** ✅ RESOLVIDO (2026-05-20)
+  - **Detectado por**: test_scaffold_upgrade_no_old_sessions_folder
+  - **Sintoma**: `docs/SESSIONS/<created_at>/` criado durante upgrade
+  - **Causa Raiz**: 3 localizações com código antigo referenciando `docs/SESSIONS`
+    (project.py DIRS_TO_CREATE linha 1831, setup_project_docs() linha 2281, dry_run.py linha 25)
+  - **Fix**: Mudança de `"docs/SESSIONS"` → `".session-docs"` em 3 arquivos
+  - **Commit**: `1b2bb50` — fix(scaffold): BUG-22 criar .session-docs ao invés de docs/SESSIONS
+  - **Validação**: test_scaffold_upgrade_no_old_sessions_folder ✅ PASSOU
+  - **Tempo**: 25min
+
+- [x] **BUG-16 REGRESSION: .copilot-rules não consolida (symlinks)** ✅ RESOLVIDO (2026-05-20)
+  - **Detectado por**: test_scaffold_upgrade_merge_strategy, test_scaffold_upgrade_all_validations
+  - **Sintoma**: 2 arquivos `.copilot-rules*.md` reportados (1 real + 1 symlink)
+  - **Causa Raiz**: detect_copilot_rules_files() não filtrava symlinks, não detectava padrão `.copilot-rules-*.md`
+  - **Fix**: Filtro de symlinks + novo padrão em copilot_rules_consolidate.py
+  - **Commit**: `8ff4199` — fix(scaffold): BUG-16 consolidação .copilot-rules ignora symlinks
+  - **Validação**: test_scaffold_upgrade_merge_strategy ✅ PASSOU
+  - **Tempo**: 20min
+
+- [x] **BUG-18 REGRESSION: objetivo.yaml project info (validação hardcoded)** ✅ RESOLVIDO (2026-05-20)
+  - **Detectado por**: test_scaffold_upgrade_all_validations, test_scaffold_upgrade_idempotent
+  - **Sintoma**: Validação reportava "Nome: test-upgrade-workspace" como falha
+  - **Causa Raiz**: validate_bug18_objetivo() linha 412 tinha hardcode `project_name == "test-workspace-fix"`
+  - **Tipo**: Bug na validação, não no scaffold (objetivo.yaml estava correto)
+  - **Fix**: Mudança para verificação genérica: `bool(project_name) and project_name != "CHANGE_ME"`
+  - **Commit**: `5df0c16` — fix(tests): BUG-18 validação hardcoded de project.name
+  - **Validação**: test_scaffold_upgrade_all_validations ✅ PASSOU (51/51), test_scaffold_upgrade_idempotent ✅ PASSOU
+  - **Tempo**: 15min
+
+**Resumo**: 3/3 bugs resolvidos em 60min, cobertura de testes 21/21 (100%)
+
+---
+
 ## 🟡 Regressões Detectadas (Novos Bugs)
 
-- [ ] **BUG-16 REGRESSION: .copilot-rules não consolida**
-  - **Detectado por**: test_scaffold_upgrade_merge_strategy, test_scaffold_upgrade_all_validations
-  - **Sintoma**: 2 arquivos `.copilot-rules*.md` criados em vez de 1 consolidado
-  - **Impacto**: Médio (funciona mas não segue padrão de consolidação)
-  - **Prioridade**: P1
-  - **Fix estimado**: 1-2h
-
-- [ ] **BUG-18 REGRESSION: objetivo.yaml project info vazio**
-  - **Detectado por**: test_scaffold_upgrade_all_validations
-  - **Sintoma**: Campo `project.name` não populado em objetivo.yaml
-  - **Impacto**: Baixo (campo opcional)
-  - **Prioridade**: P2
-  - **Fix estimado**: 30min
-
-- [ ] **BUG-22 CRITICAL REGRESSION: docs/SESSIONS/ antiga criada**
-  - **Detectado por**: test_scaffold_upgrade_no_old_sessions_folder
-  - **Sintoma**: `docs/SESSIONS/2026-05-20/DAILY_ACTIVITIES_2026-05-20.md` criado durante upgrade
-  - **Impacto**: ALTO (BUG-22 deveria estar resolvido!)
-  - **Prioridade**: P0 CRITICAL
-  - **Fix estimado**: 1h
-  - **Nota**: Código de fix BUG-22 não está funcionando durante upgrade
+_(Nenhuma regressão pendente)_
 
 ---
 
@@ -119,18 +134,20 @@
   - ✅ Logs em logs/memory-cleanup.log
   - ✅ **Resultado**: Automação defensiva completa
 
-- [ ] **IMP-65 P1: Pre-Commit Hook validate-memory** (P1 HIGH)
+- [x] ~~**IMP-65 P1: Pre-Commit Hook validate-memory**~~ (P1 HIGH) ✅ CONCLUÍDO (2026-05-20)
   - **Objetivo**: Bloquear commits de arquivos de teste em .memory/
   - **Prioridade**: P1 HIGH (prevenção de poluição futura)
-  - **Estimativa**: 1h
-  - **Tarefas**:
-    1. Criar scripts/git-hooks/pre-commit.d/validate-memory
-    2. Bloquear commits de test-*.md em .memory/
-    3. Validar YAML frontmatter de memórias
-    4. Exit code 1 se violações
-    5. Criar Makefile target git-hooks-install
-  - **Blocker**: None
-  - **Expected Outcome**: Commits de test files bloqueados, YAML validado
+  - **Estimativa**: 1h | **Real**: 1h
+  - **Resultados**:
+    - ✅ Hook scripts/git-hooks/pre-commit implementado (~240 linhas)
+    - ✅ Makefile target git-hooks-install já existia
+    - ✅ tests/test_precommit_validate_memory.py criado (10 testes, 100% passing)
+    - ✅ Validações implementadas:
+      1. Bloqueia test-*.md, __auto-generated-title.md, __search-test-*.md
+      2. Valida YAML frontmatter (categorias válidas: project, team, sessions, user)
+      3. Exit code 1 se violações detectadas
+      4. Mensagens de erro úteis com comandos de correção
+  - **Impacto**: Zero poluição futura de .memory/ por arquivos de teste
 
 - [ ] **IMP-65 P1: GitHub Actions Dependency Check** (P1 HIGH)
   - **Objetivo**: CI/CD semanal para dependency checks

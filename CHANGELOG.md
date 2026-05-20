@@ -48,6 +48,34 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
   - ✅ Test coverage: 21/21 tests passing (100%)
   - ✅ Validation coverage: 51/51 checks passing (100%)
   - ✅ Regression detection: 3 bugs detected and fixed (BUG-22, BUG-16, BUG-18)
+
+#### Pre-Commit Hook: Memory System Validation (May 2026)
+- **Hook Implementation**: Created `scripts/git-hooks/pre-commit` (~240 lines):
+  - Blocks commits of test files in .memory/ (__test-*.md, __auto-generated-title.md, __search-test-*.md)
+  - Validates YAML frontmatter in .memory/*.md files
+  - Enforces valid categories: project, team, sessions, user
+  - Exit code 1 if violations detected
+  - Helpful error messages with remediation commands (make memory-cleanup, conftest.py fixtures)
+
+- **Test Suite**: Created `tests/test_precommit_validate_memory.py` (10 tests, 100% passing):
+  - test_hook_blocks_test_files: Verifies __test-*.md rejection
+  - test_hook_blocks_auto_generated_title: Verifies __auto-generated-title.md rejection
+  - test_hook_blocks_search_test_files: Verifies __search-test-*.md rejection
+  - test_hook_validates_frontmatter_invalid_category: Rejects invalid categories
+  - test_hook_validates_frontmatter_missing_closing: Rejects malformed frontmatter
+  - test_hook_allows_valid_memory_file: Accepts valid files with frontmatter
+  - test_hook_allows_file_without_frontmatter: Accepts files without frontmatter (optional)
+  - test_hook_skips_non_memory_files: Ignores non-.memory/ files
+  - test_hook_allows_valid_categories: Accepts all 4 valid categories
+  - test_hook_error_messages_helpful: Verifies error messages include remediation
+
+- **Makefile Integration**: Target `git-hooks-install` already existed (installs pre-commit + commit-msg)
+
+- **Impact**:
+  - ✅ Prevents test file pollution in .memory/ (regression prevention)
+  - ✅ Enforces YAML frontmatter quality standards
+  - ✅ Complements IMP-65 P0 memory cleanup work
+  - ✅ Zero false positives: frontmatter is optional, only validates when present
   - ✅ CI/CD automation: scaffold-tests.yml active for continuous validation
 
 ### Fixed

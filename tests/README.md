@@ -225,13 +225,48 @@ pytest tests/test_scaffold_upgrade.py::test_scaffold_upgrade_all_validations -v
 - Matrix testing: Python 3.10, 3.11, 3.12
 - Triggers: push, PR, schedule (Sundays 02:00 UTC)
 
-### 4. Integration Tests
+### 4. Pre-Commit Hooks (IMP-65 P1)
+
+```bash
+# Todos os testes de hooks
+pytest tests/test_precommit_validate_memory.py -v
+
+# Teste específico de bloqueio
+pytest tests/test_precommit_validate_memory.py::test_hook_blocks_test_files -v
+
+# Teste de validação de frontmatter
+pytest tests/test_precommit_validate_memory.py::test_hook_validates_frontmatter_invalid_category -v
+```
+
+**Cobertura** (10 testes, 100%):
+- ✅ test_hook_blocks_test_files: Bloqueia __test-*.md em .memory/
+- ✅ test_hook_blocks_auto_generated_title: Bloqueia __auto-generated-title.md
+- ✅ test_hook_blocks_search_test_files: Bloqueia __search-test-*.md
+- ✅ test_hook_validates_frontmatter_invalid_category: Rejeita categorias inválidas
+- ✅ test_hook_validates_frontmatter_missing_closing: Rejeita frontmatter malformado
+- ✅ test_hook_allows_valid_memory_file: Aceita arquivos válidos com frontmatter
+- ✅ test_hook_allows_file_without_frontmatter: Aceita arquivos sem frontmatter (opcional)
+- ✅ test_hook_skips_non_memory_files: Ignora arquivos fora de .memory/
+- ✅ test_hook_allows_valid_categories: Valida 4 categorias válidas (project, team, sessions, user)
+- ✅ test_hook_error_messages_helpful: Mensagens de erro incluem comandos de remediação
+
+**Implementação**: `scripts/git-hooks/pre-commit` (~240 linhas)
+**Instalação**: `make git-hooks-install`
+**Manual test**: Stage um arquivo __test-*.md em .memory/ e tente commit
+
+**Funcionalidades**:
+- Bloqueia commits de test files (__test-*, __auto-generated-title, __search-test-*)
+- Valida YAML frontmatter (categorias válidas: project, team, sessions, user)
+- Exit code 1 se violações detectadas
+- Mensagens úteis com comandos: `make memory-cleanup`, `conftest.py` fixtures
+
+### 5. Integration Tests
 
 ```bash
 pytest tests/test_integration_*.py -v
 ```
 
-### 5. Smoke Tests (Rápidos)
+### 6. Smoke Tests (Rápidos)
 
 ```bash
 # Todos smoke tests
