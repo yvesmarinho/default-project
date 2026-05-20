@@ -1,18 +1,18 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-20 — Testes Automatizados P0 (100%) + BUG-22, BUG-16, BUG-18 ✅
+**Last Updated**: 2026-05-20 — Testes Automatizados P0 (100%) + BUG-22, BUG-16, BUG-18 ✅ + BUG-16 Manual Validation ✅
 **Project Status**: 🟢 Stable — Scaffold Test Suite + Memory System + CI/CD Security
 **Version**: 1.6.0
-**Last Session**: 2026-05-20 — ✅ Testes Automatizados P0 (21/21) + 3 Bug Fixes
+**Last Session**: 2026-05-20 — ✅ Testes Automatizados P0 (21/21) + 3 Bug Fixes + BUG-16 Manual Validation (100%)
 
 ---
 
-> **✅ SESSION 2026-05-20 COMPLETE (Scaffold Test Automation + Regression Fixes)**
-> - **Status**: ✅ COMPLETE — Testes automatizados P0 + 3 correções de regressão (100% coverage)
-> - **Duration**: 3h 56min (13:49-17:15 UTC)
-> - **Efficiency**: 100% (P0 testes + 3 bugs detectados e corrigidos)
+> **✅ SESSION 2026-05-20 COMPLETE (Scaffold Test Automation + Regression Fixes + BUG-16 Manual Validation)**
+> - **Status**: ✅ COMPLETE — Testes automatizados P0 + 3 correções de regressão + validação manual end-to-end (100% coverage)
+> - **Duration**: 4h 26min (13:49-17:45 UTC)
+> - **Efficiency**: 100% (P0 testes + 3 bugs detectados e corrigidos + validação manual BUG-16)
 > - **Branch**: master
-> - **Request**: "prossiga" → testes automatizados P0 → "prossiga com a correção" → BUG-18
+> - **Request**: "prossiga" → testes automatizados P0 → "prossiga com a correção" → BUG-18 → "execute BUG-16 manual validation"
 > - **DELIVERABLES**:
 >   - ✅ tests/test_scaffold_new.py criado (10 testes, 100% passing)
 >   - ✅ tests/test_scaffold_upgrade.py criado (11 testes, 100% passing)
@@ -21,8 +21,10 @@
 >   - ✅ BUG-22 CRITICAL corrigido (docs/SESSIONS/ criada durante upgrade)
 >   - ✅ BUG-16 corrigido (.copilot-rules consolidação com symlinks)
 >   - ✅ BUG-18 corrigido (validação hardcoded de project.name)
+>   - ✅ BUG-16 Manual Validation (30min, 100% aprovado - merge system validado em produção)
 > - **NEW FILES**:
->   - **Tests (2)**: test_scaffold_new.py (~450 linhas, 10 testes), test_scaffold_upgrade.py (~650 linhas, 11 testes)
+>   - **Tests (2)**: test_scaffold_new.py (~450 linhas, 10 testes), test_scaffol
+>   - **Session Reports (1)**: BUG-16_MANUAL_VALIDATION_REPORT.md (220 linhas, 100% aprovado)d_upgrade.py (~650 linhas, 11 testes)
 >   - **CI/CD (1)**: scaffold-tests.yml (~200 linhas, 4 jobs com matrix testing)
 > - **MODIFIED FILES**:
 >   - tests/conftest.py (Git config fixture para testes)
@@ -34,12 +36,14 @@
 > - **IMPACT**:
 >   - Test coverage: 0% → 100% (21/21 testes passando)
 >   - Validations: 92% → 100% (51/51 validações passando)
->   - Regressions fixed: 3/3 (BUG-22 P0, BUG-16 P1, BUG-18 P2)
+>   - Manual validation: BUG-16 merge system 100% aprovado (8/8 arquivos, 5/5 customizações preservadas)
 >   - CI/CD: scaffold-tests.yml ativo (push, PR, schedule Sundays 02:00 UTC)
+> - **COMMITS** (5old-tests.yml ativo (push, PR, schedule Sundays 02:00 UTC)
 > - **COMMITS** (4):
 >   - `39a3e66`: feat(tests): testes automatizados P0 para scaffold (infraestrutura)
 >   - `1b2bb50`: fix(scaffold): BUG-22 criar .session-docs ao invés de docs/SESSIONS
 >   - `8ff4199`: fix(scaffold): BUG-16 consolidação .copilot-rules ignora symlinks
+>   - `15631e3`: test(BUG-16): validação manual do merge system — 100% aprovado
 >   - `5df0c16`: fix(tests): BUG-18 validação hardcoded de project.name
 > - **NEXT STEPS**:
 >   - Documentar sessão em INDEX.md e CHANGELOG.md
@@ -79,7 +83,7 @@
 >   - `beb36ec`: feat(ci): IMP-65 P1-2 dependency-check workflow
 >   - `c874071`: feat(git-hooks): IMP-65 P1-1 pre-commit hook
 >   - `bff780b`: feat(memory,deps,tests): IMP-65 P0 cleanup
-> - **NEXT STEPS**: 
+> - **NEXT STEPS**:
 >   - Testar workflow dependency-check manualmente
 >   - Implementar IMP-65 P1 restantes (ADR-001, tests)
 >   - Implementar BUG-001 fixes (3.5h estimativa)
