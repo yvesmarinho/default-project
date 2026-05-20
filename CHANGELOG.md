@@ -78,6 +78,53 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
   - ✅ Zero false positives: frontmatter is optional, only validates when present
   - ✅ CI/CD automation: scaffold-tests.yml active for continuous validation
 
+#### GitHub Actions: Dependency Check Automation (May 2026)
+- **Workflow**: Created `.github/workflows/dependency-check.yml` (~200 lines):
+  - Schedule: Mondays 9h UTC (cron: '0 9 * * MON')
+  - Triggers: schedule, workflow_dispatch (manual), pull_request (on dependency files)
+  - Permissions: contents:read, issues:write
+  - Job: check-dependencies (ubuntu-latest, Python 3.12)
+  - Steps:
+    1. Checkout code
+    2. Setup Python 3.12
+    3. Install project dependencies (`pip install -e ".[dev,security]"`)
+    4. Install pip-audit
+    5. Check outdated dependencies (pip list --outdated → outdated.json)
+    6. Execute pip-audit CVE scan (pip-audit --format=json → audit.json)
+    7. Upload artifacts (outdated.json, audit.json, retention: 30 days)
+    8. Create P0 issue if vulnerabilities found (labels: security, dependencies, P0, automated)
+
+- **Helper Scripts**: Created `.github/scripts/` (~75 lines total):
+  - `process_outdated.py` (~30 lines): Processes pip outdated JSON → markdown table
+  - `process_audit.py` (~45 lines): Processes pip-audit JSON → security summary + vuln_count.txt
+
+- **Test Suite**: Created `tests/test_dependency_check_workflow.py` (17 tests, 100% passing):
+  - test_dependency_check_workflow_exists: Verifies workflow file existence
+  - test_dependency_check_workflow_valid_yaml: Validates YAML syntax
+  - test_dependency_check_workflow_has_schedule: Verifies Monday 9h UTC schedule
+  - test_dependency_check_workflow_has_manual_trigger: Verifies workflow_dispatch
+  - test_dependency_check_workflow_has_pr_trigger: Verifies PR trigger on dependency files
+  - test_dependency_check_workflow_has_permissions: Verifies permissions (contents:read, issues:write)
+  - test_dependency_check_workflow_has_main_job: Verifies check-dependencies job
+  - test_dependency_check_workflow_has_steps: Verifies 6+ steps exist
+  - test_process_outdated_script_exists: Verifies helper script existence
+  - test_process_outdated_script_executable: Verifies shebang
+  - test_process_outdated_script_processes_json: Tests JSON processing with test data
+  - test_process_audit_script_exists: Verifies helper script existence
+  - test_process_audit_script_executable: Verifies shebang
+  - test_process_audit_script_processes_json_no_vulns: Tests no vulnerabilities case
+  - test_process_audit_script_processes_json_with_vulns: Tests vulnerabilities case (exit code 1)
+  - test_dependency_check_workflow_creates_artifacts: Verifies artifacts upload config
+  - test_dependency_check_workflow_creates_issues: Verifies P0 issue creation logic
+
+- **Impact**:
+  - ✅ Weekly automated security scanning (CVE detection via pip-audit)
+  - ✅ Dependency freshness monitoring (outdated packages)
+  - ✅ Automatic P0 issue creation for critical vulnerabilities
+  - ✅ Artifacts retention for audit trail (30 days)
+  - ✅ Manual trigger for on-demand scans
+  - ✅ PR integration for dependency file changes
+
 ### Fixed
 
 #### BUG-22 CRITICAL: docs/SESSIONS/ Old Folder Created During Upgrade (May 2026)

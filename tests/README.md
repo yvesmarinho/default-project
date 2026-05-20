@@ -260,13 +260,64 @@ pytest tests/test_precommit_validate_memory.py::test_hook_validates_frontmatter_
 - Exit code 1 se violações detectadas
 - Mensagens úteis com comandos: `make memory-cleanup`, `conftest.py` fixtures
 
-### 5. Integration Tests
+### 5. GitHub Actions: Dependency Check (IMP-65 P1)
+
+```bash
+# Todos os testes do dependency-check workflow
+pytest tests/test_dependency_check_workflow.py -v
+
+# Teste de workflow YAML
+pytest tests/test_dependency_check_workflow.py::test_dependency_check_workflow_valid_yaml -v
+
+# Testes de scripts helper
+pytest tests/test_dependency_check_workflow.py::test_process_outdated_script_processes_json -v
+pytest tests/test_dependency_check_workflow.py::test_process_audit_script_processes_json_with_vulns -v
+```
+
+**Cobertura** (17 testes, 100%):
+- ✅ test_dependency_check_workflow_exists: Verifica existência do workflow
+- ✅ test_dependency_check_workflow_valid_yaml: Valida sintaxe YAML
+- ✅ test_dependency_check_workflow_has_schedule: Verifica schedule segundas 9h UTC
+- ✅ test_dependency_check_workflow_has_manual_trigger: Verifica workflow_dispatch
+- ✅ test_dependency_check_workflow_has_pr_trigger: Verifica trigger em PRs (dependency files)
+- ✅ test_dependency_check_workflow_has_permissions: Verifica permissions (contents:read, issues:write)
+- ✅ test_dependency_check_workflow_has_main_job: Verifica job check-dependencies
+- ✅ test_dependency_check_workflow_has_steps: Verifica 6+ steps existem
+- ✅ test_process_outdated_script_exists: Verifica script process_outdated.py
+- ✅ test_process_outdated_script_executable: Verifica shebang do script
+- ✅ test_process_outdated_script_processes_json: Testa processamento de JSON outdated
+- ✅ test_process_audit_script_exists: Verifica script process_audit.py
+- ✅ test_process_audit_script_executable: Verifica shebang do script
+- ✅ test_process_audit_script_processes_json_no_vulns: Testa caso sem vulnerabilidades (exit 0)
+- ✅ test_process_audit_script_processes_json_with_vulns: Testa caso com vulnerabilidades (exit 1)
+- ✅ test_dependency_check_workflow_creates_artifacts: Verifica upload de artifacts
+- ✅ test_dependency_check_workflow_creates_issues: Verifica criação de issues P0
+
+**Implementação**:
+- Workflow: `.github/workflows/dependency-check.yml` (~200 linhas)
+- Helper scripts: `.github/scripts/process_outdated.py` (~30 linhas), `.github/scripts/process_audit.py` (~45 linhas)
+
+**Trigger manual**:
+```bash
+gh workflow run dependency-check.yml
+```
+
+**Funcionalidades**:
+- Schedule semanal: segundas 9h UTC (cron: '0 9 * * MON')
+- pip-audit para CVE scanning (pip-audit --format=json)
+- pip list --outdated para dependency freshness
+- Artifacts upload (outdated.json, audit.json, retention: 30 dias)
+- Criação automática de issues P0 se vulnerabilidades (labels: security, dependencies, P0, automated)
+- GitHub step summary com markdown tables
+- Trigger em PRs que modificam pyproject.toml, requirements*.txt
+
+### 6. Integration Tests
 
 ```bash
 pytest tests/test_integration_*.py -v
 ```
 
-### 6. Smoke Tests (Rápidos)
+### 7. Smoke Tests (Rápidos)
 
 ```bash
 # Todos smoke tests

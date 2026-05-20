@@ -149,19 +149,26 @@ _(Nenhuma regressão pendente)_
       4. Mensagens de erro úteis com comandos de correção
   - **Impacto**: Zero poluição futura de .memory/ por arquivos de teste
 
-- [ ] **IMP-65 P1: GitHub Actions Dependency Check** (P1 HIGH)
+- [x] ~~**IMP-65 P1: GitHub Actions Dependency Check**~~ (P1 HIGH) ✅ CONCLUÍDO (2026-05-20)
   - **Objetivo**: CI/CD semanal para dependency checks
   - **Prioridade**: P1 HIGH (automação de segurança)
-  - **Estimativa**: 2h
-  - **Tarefas**:
-    1. Criar .github/workflows/dependency-check.yml
-    2. Schedule: Segundas 9h (cron: '0 9 * * MON')
-    3. Workflow dispatch (trigger manual)
-    4. pip-audit para CVE scanning
-    5. Criar issue P0 se vulnerabilidades
-    6. Upload de artifacts (outdated.json, audit.json)
-  - **Blocker**: None
-  - **Expected Outcome**: Detecção semanal automatizada + issues P0
+  - **Estimativa**: 2h | **Real**: 1.5h
+  - **Resultados**:
+    - ✅ Workflow .github/workflows/dependency-check.yml já existia (~200 linhas)
+    - ✅ Helper scripts já existiam:
+      - .github/scripts/process_outdated.py (~30 linhas)
+      - .github/scripts/process_audit.py (~45 linhas)
+    - ✅ tests/test_dependency_check_workflow.py criado (17 testes, 100% passing)
+    - ✅ Funcionalidades validadas:
+      1. Schedule segundas 9h UTC (cron: '0 9 * * MON')
+      2. Triggers: schedule, workflow_dispatch, pull_request (dependency files)
+      3. Permissions: contents:read, issues:write
+      4. pip list --outdated → outdated.json + markdown summary
+      5. pip-audit --format=json → audit.json + CVE scan
+      6. Artifacts upload (retention: 30 dias)
+      7. Criação automática de issues P0 se vulnerabilidades encontradas
+      8. Labels: security, dependencies, P0, automated
+  - **Impacto**: Detecção semanal automatizada + issues P0, prevenção de vulnerabilidades críticas
 
 - [ ] **IMP-65 P1: Documentação MEMORY_SYSTEM.md** (P1 MEDIUM)
   - **Objetivo**: Documentar sistema de memória (boas práticas)
