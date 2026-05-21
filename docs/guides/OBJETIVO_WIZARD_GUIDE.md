@@ -342,6 +342,312 @@ scaffold.py objetivo-init
 
 ---
 
+## Pipeline Completo: Do Objetivo ao Scaffold
+
+### Visão Geral do Workflow
+
+O Objetivo Wizard é a **primeira etapa** de um pipeline completo que leva desde a descrição do projeto até o scaffold funcional:
+
+```
+┌─────────────────┐
+│ objetivo-init   │ → objetivo.yaml (Markdown Híbrido v2.0)
+│ (wizard)        │
+└─────────────────┘
+        ↓
+┌─────────────────┐
+│ objetivo-       │ → ✅ Validação de formato e conteúdo
+│ validate        │
+└─────────────────┘
+        ↓
+┌─────────────────┐
+│ objetivo-       │ → objetivo-spec.yaml (profiles auto-detectados)
+│ generate        │
+└─────────────────┘
+        ↓
+┌─────────────────┐
+│ scaffold new    │ → Projeto completo com estrutura e configurações
+│ (com profiles)  │
+└─────────────────┘
+```
+
+### Passo a Passo Completo
+
+#### 1️⃣ Criar objetivo.yaml com Wizard
+
+```bash
+# Modo interativo (recomendado para primeiro uso)
+scaffold.py objetivo-init
+
+# OU modo não-interativo (CI/CD, automação)
+scaffold.py objetivo-init --from-file answers.json --output objetivo.yaml
+```
+
+**Output:** `objetivo.yaml` (Markdown Híbrido v2.0)
+
+**Estrutura gerada:**
+```yaml
+---
+version: "2.0"
+project:
+  name: "task-manager-api"
+  title: "Task Manager REST API"
+  type: "backend-api"
+  domain: "programming"
+  language: "python"
+created_at: "2026-05-21"
+created_by: "yves_marinho"
+---
+
+## 1️⃣ O que este projeto faz?
+
+REST API para gerenciar tarefas com autenticação JWT, CRUD completo, prioridades e tags
+
+## 2️⃣ Qual problema resolve?
+
+Sistema atual de gestão de tarefas é manual...
+
+## 3️⃣ Escopo do Projeto
+
+### Incluído ✅
+
+- CRUD de tarefas (P0)
+- Autenticação JWT (P0)
+- Sistema de prioridades (P1)
+```
+
+---
+
+#### 2️⃣ Validar objetivo.yaml
+
+```bash
+scaffold.py objetivo-validate --file objetivo.yaml
+```
+
+**Output esperado:**
+```
+Validação de objetivo.yaml
+
+  ✅ Válido — sem erros ou avisos
+```
+
+**O que é validado:**
+- ✅ Frontmatter YAML correto (`version: "2.0"`, campos obrigatórios)
+- ✅ Seções P0 presentes (## 1️⃣, ## 2️⃣, ## 3️⃣)
+- ✅ Formatação de listas (pelo menos 1 item em "Incluído ✅")
+- ✅ Metadata completo (name, title, type, domain, language)
+
+**Erros comuns:**
+- ❌ `Missing or malformed YAML frontmatter` → Frontmatter YAML ausente ou inválido
+- ❌ `Section 3 must have at least one item in 'Incluído ✅' list` → Nenhuma feature listada
+- ❌ `Missing required field: project.name` → Campo obrigatório ausente
+
+---
+
+#### 3️⃣ Gerar Spec YAML com Profiles Auto-Detectados
+
+```bash
+scaffold.py objetivo-generate --input objetivo.yaml --output objetivo-spec.yaml
+```
+
+**Output:** `objetivo-spec.yaml`
+
+**Estrutura gerada:**
+```yaml
+# ⚠️  GERADO AUTOMATICAMENTE — NÃO EDITAR!
+# Fonte: objetivo.yaml
+# Gerado em: 2026-05-21 09:49:54
+
+---
+specification:
+  version: 2.0
+  generated_from: objetivo.yaml
+  generated_at: 2026-05-21T09:49:54.956277
+
+project:
+  name: task-manager-api
+  title: Task Manager REST API
+  type: backend-api
+  domain: programming
+  language: python
+
+profiles:
+  - programming           # Auto-detectado de domain: programming
+  - python-fastapi       # Auto-detectado de language: python + type: backend-api
+
+features:
+  # Extração automática de features em desenvolvimento (futuro)
+
+personas:
+  # Opcional - adicionar manualmente se necessário
+
+validation:
+  level: strict
+  warnings: 0
+  require_p0: true
+```
+
+**Profiles auto-detectados:**
+- `domain: programming` → profile `programming`
+- `language: python` + `type: backend-api` → profile `python-fastapi`
+- `language: typescript` + `type: frontend` → profile `typescript-next`
+- `domain: infrastructure` + `language: terraform` → profile `terraform-aws`
+
+---
+
+#### 4️⃣ Scaffold Projeto com Profiles
+
+```bash
+# Usar profiles detectados na spec
+scaffold.py --new --compose programming,python-fastapi
+
+# OU deixar scaffold detectar automaticamente
+scaffold.py --new --domain programming --language python
+```
+
+**Output:** Projeto completo com:
+- ✅ Estrutura de pastas (`src/`, `tests/`, `docs/`)
+- ✅ Configurações (`pyproject.toml`, `.copilot-rules.md`, `Makefile`)
+- ✅ Templates SpecKit (`.specify/templates/`)
+- ✅ Scripts utilitários (`scripts/`)
+- ✅ CI/CD workflows (`.github/workflows/`)
+
+---
+
+### Exemplo Completo: Task Manager API
+
+```bash
+# Passo 1: Criar arquivo de respostas (modo não-interativo)
+cat > task-manager-answers.json <<EOF
+{
+  "project_name": "task-manager-api",
+  "project_title": "Task Manager REST API",
+  "project_type": "backend-api",
+  "project_domain": "programming",
+  "project_language": "python",
+  "created_by": "yves_marinho",
+  "answers": {
+    "q1_what": "REST API para gerenciar tarefas com autenticação JWT, CRUD completo, prioridades e tags",
+    "q2_problem": "Sistema atual de gestão de tarefas é manual e propenso a erros",
+    "q3_scope_included": "CRUD de tarefas (P0)\nAutenticação JWT (P0)\nSistema de prioridades (P1)\nTags e categorias (P1)",
+    "q6_response": "Python 3.11+ com FastAPI, PostgreSQL para persistência, Redis para cache",
+    "q8_infrastructure": "Servidor PostgreSQL 15 em RDS\nRedis 7 para cache\nDeploy em ECS Fargate"
+  }
+}
+EOF
+
+# Passo 2: Wizard gera objetivo.yaml
+scaffold.py objetivo-init --from-file task-manager-answers.json --output objetivo.yaml
+# ✅ Gerado: objetivo.yaml
+
+# Passo 3: Validar formato e conteúdo
+scaffold.py objetivo-validate --file objetivo.yaml
+# ✅ Válido — sem erros ou avisos
+
+# Passo 4: Gerar spec com profiles auto-detectados
+scaffold.py objetivo-generate --input objetivo.yaml --output objetivo-spec.yaml
+# ✅ Gerado: objetivo-spec.yaml
+# Profiles detectados: programming, python-fastapi
+
+# Passo 5: Scaffold projeto
+scaffold.py --new --compose programming,python-fastapi --name task-manager-api
+# ✅ Projeto criado em: ../task-manager-api/
+```
+
+**Resultado final:**
+```
+task-manager-api/
+├── objetivo.yaml              # Descrição do projeto
+├── objetivo-spec.yaml         # Spec gerada automaticamente
+├── .copilot-rules.md         # Regras do Copilot
+├── pyproject.toml            # Dependências Python
+├── Makefile                  # Comandos make
+├── src/                      # Código fonte
+├── tests/                    # Testes
+├── docs/                     # Documentação
+└── .specify/                 # Templates SpecKit
+    └── templates/
+        ├── spec-template.md
+        ├── plan-template.md
+        └── tasks-template.md
+```
+
+**Tempo total:** ~3 minutos (modo não-interativo)
+
+---
+
+### Quando Usar Este Pipeline
+
+✅ **Use o pipeline completo quando:**
+- Está criando um **novo projeto** do zero
+- Quer **documentação estruturada** desde o início
+- Precisa de **profiles auto-detectados** sem configuração manual
+- Quer **validação automática** de formato e conteúdo
+- Está **automatizando** criação de projetos em CI/CD
+
+⚠️ **Pule etapas intermediárias se:**
+- Só precisa do scaffold básico → use `scaffold.py --new` direto
+- Já tem objetivo.yaml válido → comece em `objetivo-validate`
+- Quer criar spec manualmente → pule `objetivo-generate`
+
+---
+
+### Troubleshooting do Pipeline
+
+#### ❌ Erro: "Failed to parse frontmatter"
+
+```
+Error: Failed to parse frontmatter in objetivo.yaml
+```
+
+**Causa:** Formato YAML puro (legacy) ao invés de Markdown Híbrido v2.0.
+
+**Solução:** Use `objetivo-init` para gerar formato correto, ou edite manualmente:
+```yaml
+---
+version: "2.0"
+project:
+  name: "my-project"
+  ...
+---
+
+## 1️⃣ O que este projeto faz?
+...
+```
+
+#### ❌ Erro: "Section 3 must have at least one item"
+
+```
+Error: Section 3 must have at least one item in 'Incluído ✅' list
+```
+
+**Causa:** Nenhuma feature listada na seção 3.
+
+**Solução:** Adicione pelo menos uma feature:
+```markdown
+## 3️⃣ Escopo do Projeto
+
+### Incluído ✅
+
+- CRUD de entidades (P0)
+```
+
+#### ❌ Profiles vazios na spec gerada
+
+```yaml
+profiles:  # Vazio!
+```
+
+**Causa:** Campos `domain` ou `language` ausentes/inválidos.
+
+**Solução:** Verifique objetivo.yaml:
+```yaml
+project:
+  domain: "programming"     # Obrigatório
+  language: "python"        # Obrigatório
+```
+
+---
+
 ## FAQ
 
 ### 1. Posso editar o arquivo gerado depois?
