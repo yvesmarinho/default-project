@@ -1,8 +1,22 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-20 — Testes Automatizados P0 (21/21 100%) + BUG-22, BUG-16, BUG-18 RESOLVED + BUG-16 Manual Validation ✅
+**Last Updated**: 2026-05-21 — BUG-23 Objetivo-Init Formato Incompatível RESOLVIDO ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-05-21+)
+
+- [x] ~~**BUG-23: Objetivo-Init Formato Incompatível**~~: ✅ RESOLVIDO (2026-05-21)
+  - ✅ Template v2.0 criado: `template-bases/objetivo-v2-template.yaml` (Markdown Híbrido)
+  - ✅ objetivo_wizard.py atualizado para usar novo template
+  - ✅ Mapeamento question_id → placeholder implementado
+  - ✅ Formatação automática de listas multiline com `- `
+  - ✅ Frontmatter YAML 100% preenchido (name, title, type, domain, language, created_at, created_by)
+  - ✅ Pipeline completo validado: wizard → validate → generate ✅
+  - ✅ Documentação: docs/bugs/BUG-23-objetivo-init-formato-incompativel.md
+  - ✅ **Resultado**: Pipeline 100% funcional end-to-end
 
 ---
 
@@ -354,7 +368,7 @@ _(Nenhuma regressão pendente)_
     - ✅ Backups: 10 arquivos .backup criados em .backups/
   - **Relatório**: docs/SESSIONS/2026-05-20/BUG-16_MANUAL_VALIDATION_REPORT.md
 
-- [ ] **Objetivo-Init Pipeline Testing** (P1 HIGH)
+- [ ] **Objetivo-Init Pipeline Testing** (P1 HIGH) 🔵 EM PROGRESSO (2026-05-21)
   - **Objetivo**: Test complete v1.0 workflow end-to-end
   - **Prioridade**: P1 HIGH (validate v1.0 pipeline)
   - **Estimativa**: 2h
@@ -366,6 +380,7 @@ _(Nenhuma regressão pendente)_
     4. Scaffold new project from spec
     5. Document pipeline usage with examples
   - **Expected Outcome**: Complete working pipeline validated + documented
+  - **Sessão**: 2026-05-21 (iniciada 12:27 UTC)
 
 - [ ] **BUG-08**: Knowledge-Harvester MCP Configuration (P2 MEDIUM)
   - **Objetivo**: Fix missing MCP configuration in knowledge-harvester-library project

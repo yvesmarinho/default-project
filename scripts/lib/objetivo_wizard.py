@@ -122,10 +122,10 @@ class ObjetivoWizard:
         """Initialize the wizard.
 
         Args:
-            template_path: Path to template base (default: template-bases/objetivo-init-template.yaml)
+            template_path: Path to template base (default: template-bases/objetivo-v2-template.yaml)
         """
         self.template_path = template_path or (
-            Path(__file__).parent.parent.parent / "template-bases" / "objetivo-init-template.yaml"
+            Path(__file__).parent.parent.parent / "template-bases" / "objetivo-v2-template.yaml"
         )
         self.answers = WizardAnswers()
         self.answer_stack: list[tuple[WizardQuestion, str]] = []  # For Ctrl+Z (undo)
@@ -350,42 +350,51 @@ class ObjetivoWizard:
 
         template = self.template_path.read_text(encoding='utf-8')
 
-        # 1. Substitute metadata placeholders
+        # 1. Substitute metadata placeholders in frontmatter
         template = template.replace('"{{PROJECT_NAME}}"', f'"{answers.project_name}"')
         template = template.replace('{{PROJECT_NAME}}', answers.project_name)
+        template = template.replace('"{{PROJECT_TITLE}}"', f'"{answers.project_title}"')
+        template = template.replace('{{PROJECT_TITLE}}', answers.project_title)
+        template = template.replace('"{{PROJECT_TYPE}}"', f'"{answers.project_type}"')
+        template = template.replace('{{PROJECT_TYPE}}', answers.project_type)
+        template = template.replace('"{{PROJECT_DOMAIN}}"', f'"{answers.project_domain}"')
+        template = template.replace('{{PROJECT_DOMAIN}}', answers.project_domain)
+        template = template.replace('"{{PROJECT_LANGUAGE}}"', f'"{answers.project_language}"')
+        template = template.replace('{{PROJECT_LANGUAGE}}', answers.project_language)
+        template = template.replace('"{{CREATED_BY}}"', f'"{answers.created_by}"')
+        template = template.replace('{{CREATED_BY}}', answers.created_by)
 
-        # Substitute YAML frontmatter fields
-        template = template.replace('name: ""', f'name: "{answers.project_name}"')
-        template = template.replace('title: ""', f'title: "{answers.project_title}"')
-        template = template.replace('type: ""', f'type: "{answers.project_type}"')
-        template = template.replace('domain: ""', f'domain: "{answers.project_domain}"')
-        template = template.replace('language: ""', f'language: "{answers.project_language}"')
-        template = template.replace('created_by: ""', f'created_by: "{answers.created_by}"')
-
-        # Add created_at timestamp if missing
+        # Add created_at timestamp
         from datetime import datetime
-        if 'created_at: ""' in template:
-            created_at = datetime.now().strftime("%Y-%m-%d")
-            template = template.replace('created_at: ""', f'created_at: "{created_at}"')
+        created_at = datetime.now().strftime("%Y-%m-%d")
+        template = template.replace('"{{CREATED_AT}}"', f'"{created_at}"')
+        template = template.replace('{{CREATED_AT}}', created_at)
 
         # 2. Process answers - expand multiline placeholders
+        # Map question IDs to placeholders using question definitions
+        question_map = {q.id: q.placeholder for q in self.questions}
         processed_placeholders = {}
 
-        for placeholder, value in answers.answers.items():
+        for question_id, value in answers.answers.items():
             if not value:
                 continue
 
-            # Check if placeholder should be expanded (e.g., {{FEATURE}} → {{FEATURE_1}}, {{FEATURE_2}})
+            # Get the placeholder for this question
+            placeholder = question_map.get(question_id, f"{{{{{question_id.upper()}}}}}")
             base_placeholder = placeholder.replace('{{', '').replace('}}', '')
 
             if '\n' in value and base_placeholder in ['FEATURE', 'RULE', 'CONSTRAINT', 'INFRASTRUCTURE', 'EXPECTED_OUTCOME']:
                 # Split multiline value into individual items
                 lines = [line.strip() for line in value.split('\n') if line.strip()]
 
-                # Create numbered placeholders
+                # Create numbered placeholders with markdown list formatting
                 for i, line in enumerate(lines, start=1):
                     numbered_placeholder = f"{{{{{base_placeholder}_{i}}}}}"
-                    processed_placeholders[numbered_placeholder] = line
+                    # Add markdown list prefix if this is a list-type placeholder
+                    if base_placeholder in ['FEATURE', 'CONSTRAINT', 'INFRASTRUCTURE', 'EXPECTED_OUTCOME']:
+                        processed_placeholders[numbered_placeholder] = f"- {line}"
+                    else:
+                        processed_placeholders[numbered_placeholder] = line
             else:
                 # Single value placeholder
                 processed_placeholders[placeholder] = value

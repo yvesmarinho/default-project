@@ -1,0 +1,119 @@
+---
+version: "2.0"  # Formato: objetivo.yaml v2.0 (Markdown Híbrido)
+project:
+  name: "{{PROJECT_NAME}}"  # ID único (kebab-case, ex: user-management-api)
+  title: "{{PROJECT_TITLE}}"  # Nome legível (ex: API de Gerenciamento de Usuários)
+  type: "{{PROJECT_TYPE}}"  # Comum: backend-api, frontend-spa, cli-tool, library, deployment-chart, infrastructure-code
+  domain: "{{PROJECT_DOMAIN}}"  # Options: programming, infrastructure, data-engineering
+  language: "{{PROJECT_LANGUAGE}}"  # Linguagem principal (python, typescript, go, hcl, etc)
+
+created_at: "{{CREATED_AT}}"  # Data de criação (YYYY-MM-DD)
+created_by: "{{CREATED_BY}}"  # Autor/responsável
+
+generation:
+  profiles_auto_detect: true  # Auto-detecta profiles baseado em domain/language
+  validate_on_save: true  # Valida quando arquivo é salvo (VS Code)
+  generate_spec_on_change: false  # Auto-gera objetivo-spec.yaml ao salvar (futuro)
+
+validation:
+  level: "strict"  # Options: strict (bloqueia erros), permissive (warns), off
+  fail_on_warning: false  # Se true, warnings são tratados como erros
+  require_p0: true  # P0 obrigatório (seções 1-3)
+  require_p1: false  # P1 opcional (seções 4-5)
+---
+
+# 🎯 Objetivo: {{PROJECT_TITLE}}
+
+<!-- Progressive Disclosure:
+     P0 (essencial): Seções 1-3 — Obrigatório
+     P1 (contextual): Seções 4-5 — Recomendado
+     P2 (avançado): Seções 6-9 — Opcional
+-->
+
+## 1️⃣ O que este projeto faz? <!-- P0 - Essencial -->
+
+**Em uma frase**: {{DESCRIPTION}}
+
+**Componentes principais**:
+{{COMPONENTS}}
+
+**Stack técnico**:
+{{RESPONSE}}
+
+---
+
+## 2️⃣ Qual problema resolve? <!-- P0 - Essencial -->
+
+### Problema Atual
+
+{{ANSWER_2}}
+
+### Resultados Esperados
+
+{{EXPECTED_OUTCOME_1}}
+{{EXPECTED_OUTCOME_2}}
+{{EXPECTED_OUTCOME_3}}
+
+---
+
+## 3️⃣ Escopo do Projeto <!-- P0 - Essencial -->
+
+### Incluído ✅
+
+{{FEATURE_1}}
+{{FEATURE_2}}
+{{FEATURE_3}}
+
+### Fora de Escopo ⚠️
+
+{{OUT_SCOPE}}
+
+---
+
+## 4️⃣ Restrições e Requisitos Não-Funcionais <!-- P1 - Contextual -->
+
+{{CONSTRAINT_1}}
+{{CONSTRAINT_2}}
+{{CONSTRAINT_3}}
+
+### Infraestrutura
+
+{{INFRASTRUCTURE_1}}
+{{INFRASTRUCTURE_2}}
+
+---
+
+## 5️⃣ Regras de Negócio <!-- P1 - Contextual -->
+
+{{RULE_1}}
+{{RULE_2}}
+{{RULE_3}}
+
+---
+
+<!-- Seções P2 abaixo são opcionais e podem ser removidas se vazias -->
+
+## 6️⃣ Estrutura de Pastas <!-- P2 - Avançado -->
+
+```
+projeto/
+{{FOLDER_STRUCTURE}}
+```
+
+---
+
+## 7️⃣ Tecnologias e Ferramentas <!-- P2 - Avançado -->
+
+### Stack Técnico
+
+{{TECH_STACK}}
+
+### Padrão de Documentação
+
+{{DOCSTYLE}}
+
+---
+
+## 8️⃣ Próximos Passos <!-- P2 - Avançado -->
+
+{{NEXT_STEPS}}
