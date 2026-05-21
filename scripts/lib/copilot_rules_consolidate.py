@@ -181,7 +181,7 @@ def detect_copilot_rules_files(project_root: Path) -> List[Path]:
 
     Returns:
         Lista de arquivos encontrados (sorted)
-        
+
     Nota: Symlinks são ignorados para preservar configurações de shared files (BUG-16).
     """
     patterns = [

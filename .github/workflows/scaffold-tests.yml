@@ -26,25 +26,25 @@ on:
       - main
       - develop
     paths:
-      - 'scripts/scaffold.py'
-      - 'scripts/lib/**'
-      - 'scripts/validate-workspace-upgrade.py'
-      - 'tests/test_scaffold_*.py'
-      - '.github/workflows/scaffold-tests.yml'
+      - "scripts/scaffold.py"
+      - "scripts/lib/**"
+      - "scripts/validate-workspace-upgrade.py"
+      - "tests/test_scaffold_*.py"
+      - ".github/workflows/scaffold-tests.yml"
   pull_request:
     branches:
       - master
       - main
       - develop
     paths:
-      - 'scripts/scaffold.py'
-      - 'scripts/lib/**'
-      - 'scripts/validate-workspace-upgrade.py'
-      - 'tests/test_scaffold_*.py'
+      - "scripts/scaffold.py"
+      - "scripts/lib/**"
+      - "scripts/validate-workspace-upgrade.py"
+      - "tests/test_scaffold_*.py"
   workflow_dispatch:
   schedule:
     # Domingos às 02:00 UTC
-    - cron: '0 2 * * 0'
+    - cron: "0 2 * * 0"
 
 jobs:
   test-scaffold-new:
@@ -55,7 +55,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ["3.10", "3.11", "3.12"]
         test-case:
           - domain: programming
             language: python
@@ -74,7 +74,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -106,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout code
@@ -116,7 +116,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -161,8 +161,8 @@ jobs:
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: |

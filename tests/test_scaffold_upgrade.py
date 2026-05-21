@@ -82,7 +82,7 @@ def base_workspace(tmp_path: Path, scaffold_script: Path) -> Path:
         check=False,
         capture_output=True,
     )
-    
+
     workspace = tmp_path / "test-upgrade-workspace"
     workspace.mkdir(parents=True, exist_ok=True)
 
@@ -118,7 +118,7 @@ def base_workspace(tmp_path: Path, scaffold_script: Path) -> Path:
     if (workspace / "test-upgrade-workspace").exists():
         print(f"DETECTED: scaffold new criou subdiretório! Ajustando workspace...")
         workspace = workspace / "test-upgrade-workspace"
-    
+
     # Simular projeto "antigo" removendo alguns arquivos
     # que serão recriados pelo upgrade
     files_to_remove = [

@@ -1,8 +1,8 @@
 # BUG-16 Manual Validation Report
 
-**Data**: 2026-05-20  
-**Duração**: 30 minutos  
-**Status**: ✅ APROVADO  
+**Data**: 2026-05-20
+**Duração**: 30 minutos
+**Status**: ✅ APROVADO
 **Prioridade**: P1 HIGH
 
 ---
@@ -147,11 +147,11 @@ bug16-manual-test/
 ```markdown
 # Copilot Rules — test-workspace-fix
 
-<!-- Consolidado de 4 arquivos: 
-  .copilot-rules.md, 
-  .copilot-rules-bug16-manual-test.md, 
-  .copilot-strict-rules.md, 
-  copilot-instructions.md 
+<!-- Consolidado de 4 arquivos:
+  .copilot-rules.md,
+  .copilot-rules-bug16-manual-test.md,
+  .copilot-strict-rules.md,
+  copilot-instructions.md
 -->
 
 ## 1. Ferramentas de Arquivo (P0 — CRÍTICO)
@@ -198,6 +198,6 @@ O sistema de merge do scaffold (BUG-16) passou em todos os critérios de valida�
 
 ---
 
-**Validado por**: GitHub Copilot (Claude Sonnet 4.5)  
-**Branch**: master  
+**Validado por**: GitHub Copilot (Claude Sonnet 4.5)
+**Branch**: master
 **Commit**: (pending)

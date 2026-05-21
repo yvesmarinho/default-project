@@ -159,14 +159,14 @@ def mock_subprocess(monkeypatch):
 def configure_git_for_tests():
     """
     Configure Git user globally for all tests.
-    
+
     This ensures scaffold tests that create Git commits don't fail
     due to missing user.email/user.name configuration.
-    
+
     Runs once per test session automatically.
     """
     import subprocess
-    
+
     # Configure Git user for tests
     subprocess.run(
         ["git", "config", "--global", "user.email", "test@example.com"],

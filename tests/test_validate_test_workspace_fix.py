@@ -54,12 +54,12 @@ class TestBug20MCP:
             mcp_config = json.load(f)
 
         github_server = mcp_config.get("mcpServers", {}).get("github")
-        
+
         if not github_server:
             pytest.skip("GitHub MCP server não configurado (OK se intencional)")
 
         server_type = github_server.get("type")
-        
+
         # BUG-20 Fix: Deve ser HTTP, não stdio
         assert server_type != "stdio", (
             f"❌ BUG-20 NÃO CORRIGIDO: GitHub server ainda usa 'stdio' (CLI obsoleto)\n"
@@ -91,12 +91,12 @@ class TestBug20MCP:
             mcp_config = json.load(f)
 
         github_server = mcp_config.get("mcpServers", {}).get("github", {})
-        
+
         if github_server.get("type") == "http":
             # Configuração HTTP não deve ter campos CLI
             obsolete_fields = ["command", "args", "env"]
             found_obsolete = [f for f in obsolete_fields if f in github_server]
-            
+
             assert not found_obsolete, (
                 f"❌ Configuração HTTP contém campos obsoletos do CLI: {found_obsolete}\n"
                 f"Remova: {', '.join(found_obsolete)}"
@@ -178,7 +178,7 @@ class TestBug19GitValidators:
         """Verificar que git_validators.py é um módulo Python válido."""
         script = workspace_path / "scripts" / "lib" / "git_validators.py"
         content = script.read_text(encoding="utf-8")
-        
+
         # Check for basic Python syntax (no syntax errors on read)
         assert "def " in content or "class " in content, (
             "git_validators.py não contém funções ou classes Python"
@@ -264,22 +264,22 @@ class TestScaffoldUpgradeLog:
 def print_validation_summary(request):
     """Print summary após todos os testes."""
     yield
-    
+
     # This runs after all tests
     if hasattr(request.config, 'pluginmanager'):
         stats = request.config.pluginmanager.get_plugin('terminalreporter').stats
-        
+
         passed = len(stats.get('passed', []))
         failed = len(stats.get('failed', []))
         skipped = len(stats.get('skipped', []))
-        
+
         print("\n" + "=" * 70)
         print("📊 RESUMO DA VALIDAÇÃO — test-workspace-fix")
         print("=" * 70)
         print(f"✅ Passaram: {passed}")
         print(f"❌ Falharam: {failed}")
         print(f"⏭️  Pulados: {skipped}")
-        
+
         if failed == 0:
             print("\n🎉 VALIDAÇÃO COMPLETA: Todos os bugs corrigidos aplicados!")
         else:

@@ -1,0 +1,411 @@
+template:
+  name: "objetivo-init"
+  version: "2.0.0"
+  description: >
+    Template de objetivo inicial para projetos guiados por especificação
+    (Spec-Driven Development), com foco em automação, qualidade de software,
+    segurança, rastreabilidade, arquitetura mínima e geração posterior de
+    artefatos como spec.md, plan.md e tasks.md.
+  usage:
+    instructions:
+      - "Substituir todos os placeholders no formato <...>."
+      - "Remover campos opcionais não utilizados."
+      - "Manter regras obrigatórias de segurança, validação e qualidade."
+      - "Usar este arquivo como fonte para gerar spec.md, plan.md e tasks.md."
+      - "Registrar explicitamente o que está fora do escopo."
+    placeholders_examples:
+      - "<PROJECT_NAME>: ex. portfolio-generator"
+      - "<PROJECT_SLUG>: ex. portfolio_generator"
+      - "<ROOT_ALLOWED_PATH>: ex. /home/usuario/Documentos/DevOps/"
+      - "<PRIMARY_LANGUAGE>: ex. Python 3.12+"
+      - "<CLI_COMMAND>: ex. portfolio-gen"
+      - "<EDITOR_NAME>: ex. vi"
+      - "<PACKAGE_MANAGER>: ex. uv"
+      - "<DOCSTYLE>: ex. reStructuredText (Python)"
+      - "<MIN_TEST_COVERAGE>: ex. 90"
+      - "<SPEC_FRAMEWORK>: ex. Spec-Driven Development"
+      - "<PROJECT_DESCRIPTION>: descrição resumida do objetivo"
+      - "<DELIVERABLE_1>: ex. Ferramenta CLI funcional"
+      - "<SUCCESS_CRITERION_1>: ex. Processar 100 projetos em menos de 30s"
+
+prompt:
+  role: user
+  content:
+    metadata:
+      project_name: "<PROJECT_NAME>"
+      project_slug: "<PROJECT_SLUG>"
+      version: "<PROJECT_VERSION>"
+      status: "<PROJECT_STATUS>"
+      owner: "<PROJECT_OWNER_OR_TEAM>"
+      created_at: "<YYYY-MM-DD>"
+      last_updated_at: "<YYYY-MM-DD>"
+      project_type: "<PROJECT_TYPE>"
+      domain: "<DOMAIN>"
+      repository:
+        enabled: <true_or_false>
+        provider: "<GIT_PROVIDER>"
+        url: "<REPOSITORY_URL>"
+        default_branch: "<DEFAULT_BRANCH>"
+      tags:
+        - "<TAG_1>"
+        - "<TAG_2>"
+        - "<TAG_3>"
+
+    context:
+      description: >
+        <PROJECT_DESCRIPTION>
+      problem_statement: >
+        <PROBLEM_STATEMENT>
+      business_value: >
+        <BUSINESS_VALUE>
+      target_users:
+        - role: "<USER_ROLE_1>"
+          skill_level: "<beginner|intermediate|advanced>"
+          description: "<USER_DESCRIPTION_1>"
+        - role: "<USER_ROLE_2>"
+          skill_level: "<beginner|intermediate|advanced>"
+          description: "<USER_DESCRIPTION_2>"
+      primary_use_cases:
+        - "<PRIMARY_USE_CASE_1>"
+        - "<PRIMARY_USE_CASE_2>"
+        - "<PRIMARY_USE_CASE_3>"
+
+    specification:
+      languages:
+        primary: "<PRIMARY_LANGUAGE>"
+        secondary:
+          - "<SECONDARY_LANGUAGE_1>"
+          - "<SECONDARY_LANGUAGE_2>"
+        alternatives_allowed: <true_or_false>
+        alternatives_note: >
+          <ALTERNATIVES_NOTE>
+      runtime:
+        operating_system: "<OPERATING_SYSTEM>"
+        editor: "<EDITOR_NAME>"
+        package_manager: "<PACKAGE_MANAGER>"
+        python_version: "<PYTHON_VERSION>"
+        shell: "<SHELL_NAME>"
+      documentation:
+        docstyle: "<DOCSTYLE>"
+        doctest_required: <true_or_false>
+        architecture_docs_required: <true_or_false>
+        adr_required: <true_or_false>
+      coding_preferences:
+        type_hints_required: <true_or_false>
+        linting_required: <true_or_false>
+        formatting_required: <true_or_false>
+        modular_design_required: <true_or_false>
+        max_file_size_guideline: "<MAX_FILE_SIZE_GUIDELINE>"
+        comments_policy: "<COMMENTS_POLICY>"
+      validation_policy:
+        enabled: true
+        description: >
+          Toda função, método, classe, comando CLI e componente de entrada
+          deve validar parâmetros quanto a vazio, nulidade, tipagem, formato
+          e invariantes mínimas do domínio.
+        mandatory_checks:
+          - "Validação de None"
+          - "Validação de tipo"
+          - "Validação de vazio"
+          - "Validação de formato"
+          - "Validação de coleção vazia quando aplicável"
+          - "Validação de path seguro quando aplicável"
+          - "Validação de schema quando aplicável"
+      error_handling_policy:
+        enabled: true
+        description: >
+          Toda fronteira externa, operação de I/O e integração externa deve
+          possuir tratamento explícito com try/except, logging e resposta
+          controlada. O uso de False como retorno em erro deve ser restrito a
+          contratos explicitamente booleanos ou fluxos operacionais documentados.
+        mandatory_rules:
+          - "Toda fronteira externa deve usar try/except"
+          - "Toda operação de I/O deve usar try/except"
+          - "Toda integração externa deve falhar de forma controlada"
+          - "Toda falha deve ser registrada em log"
+          - "Falhas parciais não devem interromper o lote completo"
+      security_policy:
+        enabled: true
+        root_allowed_path: "<ROOT_ALLOWED_PATH>"
+        mandatory_rules:
+          - "Nunca processar arquivos fora de <ROOT_ALLOWED_PATH>"
+          - "Nunca embutir segredos no código"
+          - "Sanitizar entradas de CLI e configuração"
+          - "Tratar arquivos externos como conteúdo não confiável"
+          - "Nunca registrar segredos em logs"
+      architecture:
+        style: "Layered Architecture with Lightweight DDD and simplified Ports/Adapters"
+        summary: >
+          O projeto deve seguir arquitetura em camadas, com separação entre
+          presentation, application, domain, infrastructure e shared, visando
+          baixo acoplamento, alta coesão, contratos explícitos e alta testabilidade.
+        layers:
+          - "presentation"
+          - "application"
+          - "domain"
+          - "infrastructure"
+          - "shared"
+        principles:
+          - "SOLID"
+          - "Separation of Concerns"
+          - "Dependency Inversion"
+          - "Explicit Contracts"
+          - "Fail Fast on invalid inputs"
+          - "Graceful Degradation"
+          - "High Cohesion"
+          - "Low Coupling"
+        patterns:
+          - "Factory"
+          - "Strategy"
+          - "Adapter"
+          - "Facade"
+          - "Builder"
+        mandatory_constraints:
+          - "A camada de interface não deve conter regra de negócio"
+          - "A camada de domínio não deve depender de framework de CLI, logging, banco ou SDK externo"
+          - "Integrações externas devem ser encapsuladas"
+          - "Toda saída relevante deve possuir contrato ou schema versionado"
+      workflow:
+        framework: "<SPEC_FRAMEWORK>"
+        objective_workflow: "<OBJECTIVE_WORKFLOW>"
+        derived_artifacts:
+          - "spec.md"
+          - "plan.md"
+          - "tasks.md"
+          - "docs/architecture/overview.md"
+          - "docs/decisions/adr-001.md"
+        out_of_scope_policy: >
+          Tudo o que não fizer parte do MVP ou da versão corrente deve ser
+          documentado como fora de escopo, com justificativa e possibilidade
+          futura de implementação.
+      libraries:
+        required:
+          - "<LIB_REQUIRED_1>"
+          - "<LIB_REQUIRED_2>"
+          - "<LIB_REQUIRED_3>"
+        optional:
+          - "<LIB_OPTIONAL_1>"
+          - "<LIB_OPTIONAL_2>"
+        testing:
+          - "<TEST_LIB_1>"
+          - "<TEST_LIB_2>"
+        quality:
+          - "<QUALITY_LIB_1>"
+          - "<QUALITY_LIB_2>"
+          - "<QUALITY_LIB_3>"
+      integrations:
+        ai_enabled: <true_or_false>
+        ai_optional: <true_or_false>
+        providers:
+          - "<AI_PROVIDER_1>"
+          - "<AI_PROVIDER_2>"
+        usage_policy: >
+          <AI_USAGE_POLICY>
+      data_characteristics:
+        expected_volume: "<DATA_VOLUME>"
+        size_classification: "<small|medium|large>"
+        performance_constraints:
+          - "<PERFORMANCE_CONSTRAINT_1>"
+          - "<PERFORMANCE_CONSTRAINT_2>"
+          - "<PERFORMANCE_CONSTRAINT_3>"
+
+    project_structure:
+      root_required_files:
+        - "README.md"
+        - "pyproject.toml"
+        - "mcp-questions.yaml"
+        - "objetivo.yaml"
+      directories:
+        - path: ".github/"
+          description: "Workflows, actions, templates e automações"
+          generated: <true_or_false>
+        - path: ".git-hooks/"
+          description: "Hooks personalizados"
+          generated: <true_or_false>
+        - path: ".memory/"
+          description: "Memória e contexto de agentes"
+          generated: <true_or_false>
+        - path: ".secrets/"
+          description: "Segredos não versionados"
+          generated: <true_or_false>
+        - path: ".session-index/"
+          description: "Índice de sessões"
+          generated: <true_or_false>
+        - path: ".session-time/"
+          description: "Registro temporal de sessões"
+          generated: <true_or_false>
+        - path: ".specify/"
+          description: "Configurações de especificação"
+          generated: <true_or_false>
+        - path: ".vscode/"
+          description: "Configurações de editor e MCP"
+          generated: <true_or_false>
+        - path: "docs/"
+          description: "Documentação geral"
+          generated: <true_or_false>
+        - path: "logs/"
+          description: "Logs de execução"
+          generated: <true_or_false>
+        - path: "schemas/"
+          description: "Schemas e contratos"
+          generated: <true_or_false>
+        - path: "scripts/"
+          description: "Scripts auxiliares"
+          generated: <true_or_false>
+        - path: "src/"
+          description: "Código-fonte principal"
+          generated: <true_or_false>
+        - path: "test/"
+          description: "Testes automatizados"
+          generated: <true_or_false>
+        - path: "tmp/"
+          description: "Arquivos temporários"
+          generated: <true_or_false>
+      src_structure:
+        package_root: "src/<PROJECT_SLUG>/"
+        modules:
+          - "cli/"
+          - "application/dto/"
+          - "application/services/"
+          - "application/use_cases/"
+          - "domain/entities/"
+          - "domain/value_objects/"
+          - "domain/services/"
+          - "domain/rules/"
+          - "domain/contracts/"
+          - "infrastructure/config/"
+          - "infrastructure/filesystem/"
+          - "infrastructure/integrations/"
+          - "infrastructure/exporters/"
+          - "shared/"
+
+    objectives:
+      primary_goal: >
+        <PRIMARY_GOAL>
+      expected_outcome:
+        success_criteria:
+          - "<SUCCESS_CRITERION_1>"
+          - "<SUCCESS_CRITERION_2>"
+          - "<SUCCESS_CRITERION_3>"
+        deliverables:
+          - "<DELIVERABLE_1>"
+          - "<DELIVERABLE_2>"
+          - "<DELIVERABLE_3>"
+        demo_scenarios:
+          - "<DEMO_SCENARIO_1>"
+          - "<DEMO_SCENARIO_2>"
+      out_of_scope:
+        - "<OUT_OF_SCOPE_1>"
+        - "<OUT_OF_SCOPE_2>"
+        - "<OUT_OF_SCOPE_3>"
+
+    domain_model:
+      entities:
+        - "<ENTITY_1>"
+        - "<ENTITY_2>"
+        - "<ENTITY_3>"
+      value_objects:
+        - "<VALUE_OBJECT_1>"
+        - "<VALUE_OBJECT_2>"
+      domain_services:
+        - "<DOMAIN_SERVICE_1>"
+        - "<DOMAIN_SERVICE_2>"
+      invariants:
+        - "<INVARIANT_1>"
+        - "<INVARIANT_2>"
+        - "<INVARIANT_3>"
+
+    feature_backlog:
+      mvp:
+        - name: "<MVP_FEATURE_1>"
+          description: "<MVP_FEATURE_1_DESCRIPTION>"
+          success_criterion: "<MVP_FEATURE_1_SUCCESS>"
+        - name: "<MVP_FEATURE_2>"
+          description: "<MVP_FEATURE_2_DESCRIPTION>"
+          success_criterion: "<MVP_FEATURE_2_SUCCESS>"
+        - name: "<MVP_FEATURE_3>"
+          description: "<MVP_FEATURE_3_DESCRIPTION>"
+          success_criterion: "<MVP_FEATURE_3_SUCCESS>"
+      secondary:
+        - "<SECONDARY_FEATURE_1>"
+        - "<SECONDARY_FEATURE_2>"
+        - "<SECONDARY_FEATURE_3>"
+      future:
+        - "<FUTURE_FEATURE_1>"
+        - "<FUTURE_FEATURE_2>"
+
+    quality_requirements:
+      mandatory_gates:
+        - "<LINT_COMMAND>"
+        - "<TYPECHECK_COMMAND>"
+        - "<TEST_COMMAND>"
+        - "<COVERAGE_COMMAND>"
+      minimum_test_coverage: <MIN_TEST_COVERAGE>
+      required_test_types:
+        - "unit"
+        - "integration"
+        - "contract"
+        - "e2e"
+      code_quality_rules:
+        - "Toda função pública deve ser documentada"
+        - "Toda função pública deve possuir tipagem"
+        - "Toda entrada deve ser validada"
+        - "Toda integração externa deve ser isolada"
+        - "Todo erro relevante deve gerar log"
+        - "Arquivos devem ser pequenos e coesos"
+
+    operations:
+      observability:
+        logging_tool: "<LOGGING_TOOL>"
+        tracing: "<TRACING_TOOL_OR_NA>"
+        metrics: "<METRICS_TOOL_OR_NA>"
+        alerts: "<ALERTS_OR_NA>"
+        mandatory_log_events:
+          - "start_execution"
+          - "input_validated"
+          - "processing_started"
+          - "processing_failed"
+          - "output_generated"
+          - "execution_summary"
+      configuration:
+        local_env_file: "<LOCAL_ENV_FILE_OR_NA>"
+        secrets_dir: ".secrets/"
+        config_files:
+          - "<CONFIG_FILE_1>"
+          - "<CONFIG_FILE_2>"
+      deployment:
+        execution_mode:
+          - "<EXECUTION_MODE_1>"
+          - "<EXECUTION_MODE_2>"
+        packaging_strategy: "<PACKAGING_STRATEGY>"
+        distribution_strategy: "<DISTRIBUTION_STRATEGY>"
+
+    pending_tasks:
+      - task: "<TASK_1>"
+        status: "<pending|completed|blocked>"
+        priority: 1
+        notes: "<TASK_1_NOTE>"
+      - task: "<TASK_2>"
+        status: "<pending|completed|blocked>"
+        priority: 2
+        notes: "<TASK_2_NOTE>"
+      - task: "<TASK_3>"
+        status: "<pending|completed|blocked>"
+        priority: 3
+        notes: "<TASK_3_NOTE>"
+
+    assumptions:
+      - "<ASSUMPTION_1>"
+      - "<ASSUMPTION_2>"
+      - "<ASSUMPTION_3>"
+
+    risks:
+      - risk: "<RISK_1>"
+        impact: "<low|medium|high>"
+        mitigation: "<MITIGATION_1>"
+      - risk: "<RISK_2>"
+        impact: "<low|medium|high>"
+        mitigation: "<MITIGATION_2>"
+      - risk: "<RISK_3>"
+        impact: "<low|medium|high>"
+        mitigation: "<MITIGATION_3>"

@@ -54,7 +54,7 @@ def temp_workspace(tmp_path: Path) -> Path:
     """Cria workspace temporário isolado para testes."""
     workspace = tmp_path / "test-new-project"
     workspace.mkdir(parents=True, exist_ok=True)
-    
+
     # Configurar Git globalmente para este teste
     # (necessário para scaffold new criar commits)
     subprocess.run(
@@ -67,7 +67,7 @@ def temp_workspace(tmp_path: Path) -> Path:
         check=False,
         capture_output=True,
     )
-    
+
     return workspace
 
 
@@ -118,7 +118,7 @@ def test_scaffold_new_basic(scaffold_script: Path, temp_workspace: Path):
     # DEBUG: listar conteúdo do workspace
     print(f"\n=== Workspace created at: {temp_workspace} ===")
     print(f"Contents: {list(temp_workspace.iterdir())}")
-    
+
     # Verificar diretórios básicos
     assert (temp_workspace / "docs").is_dir(), "docs/ não criado"
     assert (temp_workspace / "scripts").is_dir(), "scripts/ não criado"
@@ -325,7 +325,7 @@ def test_scaffold_new_scaffold_state(scaffold_script: Path, temp_workspace: Path
     # DEBUG: ver conteúdo real do state file
     print(f"\n=== .scaffold-state.yaml content ===")
     print(yaml.dump(state, indent=2))
-    
+
     # Verificar estrutura do state file (.scaffold-state.yaml v1.0+)
     # Estrutura: project.name, project.domain, project.language, created_at, profiles_applied
     assert "project" in state, "project section ausente"
@@ -433,7 +433,7 @@ def test_scaffold_new_combinations(
         check=False,
         capture_output=True,
     )
-    
+
     workspace = tmp_path / f"test-{domain}-{language}"
     workspace.mkdir(parents=True, exist_ok=True)
 

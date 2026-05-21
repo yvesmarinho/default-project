@@ -285,10 +285,10 @@ Complementa testes automatizados (test_scaffold_upgrade_merge_strategy.py) com c
      - `editor.rulers`: `[88, 120]`
      - `git.autofetch`: `true`
      - `customUserSetting`: `"this should be preserved after upgrade"`
-   
+
    - **.vscode/mcp.json** (1 servidor customizado):
      - `custom-database`: servidor com env vars (DATABASE_URL)
-   
+
    - **Arquivos .copilot-rules duplicados** (teste de consolidação):
      - `.copilot-strict-rules.md` (461 bytes)
      - `copilot-instructions.md` (408 bytes)
