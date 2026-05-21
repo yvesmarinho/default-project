@@ -1,11 +1,35 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-20 — Testes Automatizados P0 (100%) + BUG-22, BUG-16, BUG-18 ✅ + BUG-16 Manual Validation ✅
-**Project Status**: 🟢 Stable — Scaffold Test Suite + Memory System + CI/CD Security
-**Version**: 1.6.0
-**Last Session**: 2026-05-20 — ✅ Testes Automatizados P0 (21/21) + 3 Bug Fixes + BUG-16 Manual Validation (100%)
+**Last Updated**: 2026-05-21 — Release v1.7.1 Produção ✅ + BUG-23 Objetivo-Init Fix ✅ + Pipeline Testing (100%)
+**Project Status**: 🟢 Production — v1.7.1 Released + Objetivo-Init Pipeline + Test Suite + Memory System
+**Version**: 1.7.1
+**Last Session**: 2026-05-21 — ✅ P1 Pipeline Testing + BUG-23 Fix + Release v1.7.1 Produção
 
 ---
+
+> **✅ SESSION 2026-05-21 COMPLETE (Objetivo-Init Pipeline + BUG-23 Fix + Release v1.7.1)**
+> - **Status**: ✅ COMPLETE — Pipeline testado end-to-end + bug crítico corrigido + release publicada
+> - **Duration**: ~2h (12:27-14:20 UTC)
+> - **Efficiency**: 100% (P1 pipeline testing + BUG-23 fix + production release)
+> - **Branch**: master
+> - **Request**: "prossiga" → P1 Pipeline Testing → "A" (fix BUG-23) → "execute release v1.7.1"
+> - **DELIVERABLES**:
+>   - ✅ Objetivo-Init Pipeline 100% validado (wizard → validate → generate)
+>   - ✅ BUG-23 corrigido: template v2.0 Markdown Híbrido criado
+>   - ✅ Exemplo completo validado: task-manager-api (Python FastAPI)
+>   - ✅ Documentação pipeline end-to-end (+324 linhas)
+>   - ✅ Release v1.7.1 publicada (tarball 569 KB, tag pushed, 351 arquivos)
+> - **NEW FILES**:
+>   - **Templates (1)**: objetivo-v2-template.yaml (125 linhas, Markdown Híbrido v2.0)
+>   - **Bug Reports (1)**: BUG-23-objetivo-init-formato-incompativel.md (401 linhas)
+>   - **Session Reports (3)**: SESSION_RECOVERY, DAILY_ACTIVITIES, FINAL_STATUS
+>   - **Release Artifacts (2)**: enterprise-template-v1.7.1-20260521.tar.gz (569 KB), release-manifest JSON (15 KB)
+> - **MODIFIED FILES**:
+>   - objetivo_wizard.py (template path + placeholder mapping)
+>   - OBJETIVO_WIZARD_GUIDE.md (+324 linhas pipeline section)
+>   - CHANGELOG.md, config.py, release.py (release v1.7.1)
+> - **COMMITS**: 3 (576d4ee BUG-23, c714058 docs, af07136 release)
+> - **TAGS**: v1.7.1 (pushed to GitHub)
 
 > **✅ SESSION 2026-05-20 COMPLETE (Scaffold Test Automation + Regression Fixes + BUG-16 Manual Validation)**
 > - **Status**: ✅ COMPLETE — Testes automatizados P0 + 3 correções de regressão + validação manual end-to-end (100% coverage)
