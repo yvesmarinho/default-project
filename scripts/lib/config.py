@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Versão do scaffold e data de sincronização do SpecKit
 # ---------------------------------------------------------------------------
-SCAFFOLD_VERSION = "1.0.0"
+SCAFFOLD_VERSION = "1.7.1"
 
 # Data da última atualização dos assets SpecKit neste template.
 # Atualizar manualmente sempre que agents/prompts forem modificados.

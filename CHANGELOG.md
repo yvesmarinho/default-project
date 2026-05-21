@@ -9,6 +9,14 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.7.1] — 2026-05-21
+
+---
+
+## [1.7.1] — 2026-05-21
+
 ### Added
 
 #### Scaffold Test Automation — End-to-End Testing (May 2026)

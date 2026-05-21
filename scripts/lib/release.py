@@ -322,8 +322,8 @@ def run_release(
             from lib.publish import publish_template  # type: ignore
 
         output_dir.mkdir(parents=True, exist_ok=True)
-        publish_result = publish_template(output_dir, project_root)
-        result.tarball = publish_result.get("tarball_path")
+        publish_result = publish_template(output_dir, project_root, version=version)
+        result.tarball = publish_result.tarball_path
         result.steps_done.append(
             f"publish: tarball gerado em {result.tarball}"
         )
