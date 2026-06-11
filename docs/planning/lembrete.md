@@ -2,7 +2,7 @@
 
 ---
 
-## Alterações
+## Duvidas
 - é possível separa ambiente DEV de VERSÃO, para que cada ambinte tenha os
   arquivos necessários a cada ambiente?
 
@@ -10,14 +10,61 @@
 
 ## BUG/Correção
 
-- erro no comando que verifica se os pacotes pythos estão atualizados!!
+- adicionar instrução para substituir o comando "curl" do linux por código python especifico.
+
+- shell integration:
+  [Code shell integration](https://code.visualstudio.com/docs/terminal/shell-integration)
+  ```
+  [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+  ```
+
+- corrigir a criação do .venv com a sequencia correta do uv:
+  - `uv init`
+  - `uv venv`
+
+- atualizar lista de pacotes python necessários:
+  - flake8
+
+- erro no comando que verifica se os pacotes pythos estão atualizados!! 
+  substituir comando com pipeline por shell-script.
+
+- na execução session.start-first apresentou erro no comando pipiline de verificação 
+  do `.venv` no arquivo .gitignore. substituir comando com pipeline por shell-script.
+
+- erro no `./scripts/activate-mcp.sh --auto` informa que o JSON não é valido, porém está correto.
+  está apresentando erro no servidor Github
+
+- na verificação de pacotes desatualizados do python utiliza comando com pipe, deve ser um código python!
+
+- o `session.start` completo apresentou erro de arquivo faltando em projeto recem criado.
+  ```
+  SESSION_DOCS_STYLE_GUIDE.md não disponível (projeto não usa template default-project)
+  ```
+
+- como usar o scaffold para projetos legados anteriores ao scaffold?
+
+- session time tracker deve guardar a datetime do inicio do session.start para iniciar o time track.
+
+- objetivo-init.yaml mão tem sessão de `infrastructure`
+
 
 ---
 
 ## Alterações Futuras
 
+- estrutura do respositório deve ser main, dev e fases. Na automação git, validar se o código está correto para ir para o main.
+
+- shell integration
+
+- Questionar prioridade do projeto em objetivo-init.yaml
+
 - todos os arquivos de template devem estar separados dos arquivos usados no
   projeto, para facilitar distribuição.
+
+- corrigir o objetivo-init-V2.yaml 
+    - para adiconar a sessão "infrastructure".    
+    - adiconar padrão de nomenclatura de pastas e arquivos.
+    - adicionar padrão de nomenclatura de objetos, classes e funções
 
 - na pasta `./docs` falta as sub-pastas `implemantations`e `bugs`.
 
