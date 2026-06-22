@@ -1,3 +1,4 @@
+# Projeto Default Project
 # Relação das alterações/correções necessárias.
 
 ---
@@ -9,6 +10,11 @@
 ---
 
 ## BUG/Correção
+
+- **P0 - atualizar o projeto para utilizar a IA Claude, com configurações globais e locais.**
+
+
+- completar o modelo `objetivo-init-minimal.yaml` com os dados do arquivos `/home/yves_marinho/Documentos/DevOps/Projetos/ai-local-setup/objetivo-init-minimal.yaml` que está avançado. 
 
 - adicionar instrução para substituir o comando "curl" do linux por código python especifico.
 

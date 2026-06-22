@@ -274,6 +274,12 @@ def flow_upgrade(args: argparse.Namespace) -> int:
             "  [blue]🧑‍💻 Verificando instruções do Copilot...[/blue]")
     results.extend(project.copy_copilot_instructions(cfg, force=force))
 
+    # Claude Code: commands e skills (CLAUDE.md e settings.json via create_structure)
+    if not use_json:
+        console.print(
+            "  [blue]🤖 Verificando configuração Claude Code...[/blue]")
+    results.extend(project.copy_claude_config(cfg, force=force))
+
     # BUG-14: Session Support Libraries (scripts/lib/*.py dependencies)
     if not use_json:
         console.print("  [blue]📚 Verificando bibliotecas de suporte...[/blue]")

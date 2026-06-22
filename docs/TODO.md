@@ -1,8 +1,24 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-21 — BUG-23 Objetivo-Init Formato Incompatível RESOLVIDO ✅
+**Last Updated**: 2026-06-22 — IMP-Claude: Claude Code Integration no scaffold ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-06-22+)
+
+- [x] ~~**IMP-Claude: Integração Claude Code no Framework Scaffold**~~: ✅ CONCLUÍDO (2026-06-22)
+  - ✅ Adicionado `_CLAUDE_MD` template com placeholders `{{PROJECT_NAME}}`, `{{DOMAIN}}`, etc.
+  - ✅ Adicionado `_CLAUDE_SETTINGS_JSON` template (permissions vazias, sem paths hardcoded)
+  - ✅ `.claude`, `.claude/commands`, `.claude/skills` adicionados a `DIRS_TO_CREATE`
+  - ✅ `CLAUDE.md` e `.claude/settings.json` adicionados a `FILES_TO_CREATE`
+  - ✅ `_GITIGNORE` atualizado: exclui `.claude/settings.local.json`
+  - ✅ `copy_claude_config()` criado — copia commands/*.md e skills/ recursivamente
+  - ✅ `new_project.py` atualizado: passo 5aa (Claude Code)
+  - ✅ `upgrade.py` atualizado: verificação/atualização de config Claude
+  - ✅ 75/75 testes de scaffold passando (nenhuma regressão)
+  - **Arquivos**: `scripts/lib/project.py`, `scripts/lib/flows/new_project.py`, `scripts/lib/flows/upgrade.py`
 
 ---
 

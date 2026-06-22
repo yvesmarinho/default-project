@@ -72,6 +72,9 @@ dmypy.json
 !.vscode/tasks.json
 !.vscode/launch.json
 .idea/
+
+# Claude Code (settings.local.json tem permissões machine-specific)
+.claude/settings.local.json
 *.swp
 *.swo
 *.swn

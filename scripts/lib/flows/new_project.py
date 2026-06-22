@@ -71,6 +71,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("  [blue]🧑‍💻 Copiando instruções do Copilot...[/blue]")
     results.extend(project.copy_copilot_instructions(cfg))
 
+    # 5aa. Claude Code: CLAUDE.md (gerado em create_structure), commands e skills
+    console.print("  [blue]🤖 Copiando configuração Claude Code...[/blue]")
+    results.extend(project.copy_claude_config(cfg))
+
     # 5b. Session Support Libraries: scripts/lib/*.py (dependências)
     console.print("  [blue]📚 Copiando bibliotecas de suporte...[/blue]")
     results.extend(project.copy_session_libs(cfg))

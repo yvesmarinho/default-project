@@ -241,6 +241,9 @@ npm-debug.log*
 !.vscode/mcp.json
 !.vscode/extensions.json
 
+# Claude Code
+.claude/settings.local.json
+
 # OS
 .DS_Store
 Thumbs.db
@@ -1627,6 +1630,88 @@ jobs:
           comment-summary-in-pr: always
 """
 
+_CLAUDE_MD = """\
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Visão Geral do Projeto
+
+**Projeto**: `{{PROJECT_NAME}}`
+**Descrição**: {{PROJECT_DESCRIPTION}}
+**Domínio**: {{DOMAIN}} | **Linguagem**: {{LANGUAGE}}
+**Criado em**: {{CREATED_AT}}
+
+## Comandos Frequentes
+
+```bash
+# Instalar dependências
+make install-deps
+
+# Rodar testes
+make test
+
+# Lint e formatação
+make lint && make format
+
+# Encerrar sessão (valida integridade do projeto)
+make session-end
+
+# Carregar MCP servers
+make mcp
+
+# Limpar arquivos gerados
+make clean
+```
+
+## Ambiente
+
+- Python 3.12+ gerenciado por `uv`
+- Ambiente virtual em `.venv/`
+- Dependências em `pyproject.toml`
+
+## Estrutura do Projeto
+
+```
+{{PROJECT_NAME}}/
+├── .claude/            # Claude Code: commands e skills
+├── .github/            # GitHub Copilot, CI/CD, agentes SpecKit
+├── .secrets/           # Credenciais locais (não versionado, chmod 700)
+├── .vscode/            # VS Code: settings, MCP, extensions
+├── docs/               # Documentação (INDEX, TODO, SESSIONS)
+├── scripts/            # Scripts de automação
+└── src/                # Código-fonte
+```
+
+## Sessões de Trabalho
+
+Documentar atividades em `docs/SESSIONS/YYYY-MM-DD/`:
+- `SESSION_RECOVERY_YYYY-MM-DD.md` — contexto inicial
+- `DAILY_ACTIVITIES_YYYY-MM-DD.md` — log incremental
+- `FINAL_STATUS_YYYY-MM-DD.md` — estado ao encerrar
+
+## Regras de Desenvolvimento
+
+- Nunca commitar arquivos em `.secrets/`
+- Seguir Conventional Commits: `feat`, `fix`, `docs`, `chore`, etc.
+- Rodar `make lint` antes de cada commit
+- Credenciais HTTP sempre via Python + requests (nunca curl com tokens)
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
+"""
+
+_CLAUDE_SETTINGS_JSON = """\
+{
+  "permissions": {
+    "allow": [],
+    "deny": []
+  }
+}
+"""
+
 _LOGS_README = """\
 # Pasta logs/
 
@@ -1851,6 +1936,9 @@ DIRS_TO_CREATE = [
     ".memory",
     ".session-index",
     ".session-time",
+    ".claude",
+    ".claude/commands",
+    ".claude/skills",
 ]
 
 # ---------------------------------------------------------------------------
@@ -1873,6 +1961,8 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     (".secrets/SECURITY.md",       _SECRETS_SECURITY_MD),
     (".git-hooks/pre-commit.secrets", _PRE_COMMIT_SECRETS_HOOK),
     # .vscode/mcp.json e settings.json são gerados dinamicamente por vscode.py (IMP-64)
+    ("CLAUDE.md",                   _CLAUDE_MD),
+    (".claude/settings.json",       _CLAUDE_SETTINGS_JSON),
     ("Makefile",                   _MAKEFILE),
     ("scripts/logs/.gitkeep",      ""),
     ("logs/README.md",             _LOGS_README),
@@ -2520,6 +2610,59 @@ def copy_copilot_instructions(config: ProjectConfig, force: bool = False) -> lis
     dst_rules = base / ".copilot-rules.md"
     result = _copy_file(src_rules, dst_rules, force=force)
     results.append(result)
+
+    return results
+
+
+def copy_claude_config(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia configuração do Claude Code para o novo projeto.
+
+    Arquivos copiados:
+      1. .claude/commands/*.md → .claude/commands/ (todos os slash commands)
+      2. .claude/skills/*/SKILL.md → .claude/skills/*/ (todos os skills)
+
+    Nota: .claude/settings.json e CLAUDE.md são gerados via FILES_TO_CREATE
+    em create_structure() com placeholders substituídos automaticamente.
+    settings.local.json (machine-specific) NÃO é copiado — fica em .gitignore.
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes após backup
+
+    Ref: IMP-XX — Claude Code integration
+    """
+    results: list[CreatedItem] = []
+    base = config.project_path
+    src_claude = _TEMPLATE_ROOT / ".claude"
+
+    if not src_claude.is_dir():
+        log.warning("⚠️  Diretório .claude/ não encontrado em %s", _TEMPLATE_ROOT)
+        return results
+
+    # 1. commands/ — copiar todos os .md (slash commands)
+    src_commands = src_claude / "commands"
+    if src_commands.is_dir():
+        for src_file in sorted(src_commands.glob("*.md")):
+            dst_file = base / ".claude" / "commands" / src_file.name
+            result = _copy_file(src_file, dst_file, force=force)
+            results.append(result)
+    else:
+        log.warning("⚠️  .claude/commands/ não encontrado em %s", _TEMPLATE_ROOT)
+
+    # 2. skills/ — copiar cada subdiretório (skill_name/SKILL.md e arquivos extras)
+    src_skills = src_claude / "skills"
+    if src_skills.is_dir():
+        for skill_dir in sorted(src_skills.iterdir()):
+            if skill_dir.is_dir():
+                for src_file in sorted(skill_dir.rglob("*")):
+                    if src_file.is_file():
+                        rel = src_file.relative_to(src_claude)
+                        dst_file = base / ".claude" / rel
+                        result = _copy_file(src_file, dst_file, force=force)
+                        results.append(result)
+    else:
+        log.warning("⚠️  .claude/skills/ não encontrado em %s", _TEMPLATE_ROOT)
 
     return results
 
