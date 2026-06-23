@@ -440,6 +440,14 @@ def build_parser() -> argparse.ArgumentParser:
             "  p1,p2        lista separada por vírgulas"
         ),
     )
+    fields_group.add_argument(
+        "--ai-assistant",
+        choices=["claude", "copilot", "both", "none"],
+        metavar="AI",
+        dest="ai_assistant",
+        default="both",
+        help="assistente de IA: claude | copilot | both | none (default: both)",
+    )
 
     return parser
 

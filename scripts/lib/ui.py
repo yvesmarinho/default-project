@@ -23,8 +23,10 @@ from .config import (
     DOMAIN_DEFAULT_PROFILES,
     SCAFFOLD_VERSION,
     SPECKIT_TRANSVERSAL_PROFILES,
+    VALID_AI_ASSISTANTS,
     VALID_DOMAINS,
     VALID_LANGUAGES,
+    AiAssistantType,
     CreatedItem,
     LinkStatus,
     ProjectConfig,
@@ -186,6 +188,27 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         raise ValueError(
             f"Conflito de diretório: {name} == {target_dir.name}. {error_msg}")
 
+    # Validar ai_assistant via registry de plugins
+    from .ai import resolve_plugins, get_valid_values
+    ai_assistant_raw = overrides.get("ai_assistant") or "both"
+    valid = get_valid_values()
+    if ai_assistant_raw not in valid:
+        raise ValueError(
+            f"--ai-assistant inválido: '{ai_assistant_raw}'. Válidos: {valid}")
+
+    # Coleta defaults de configuração de cada plugin ativo (ex: shared_dir do Copilot)
+    plugin_config: dict = {}
+    for plugin in resolve_plugins(ai_assistant_raw):
+        plugin_config.update(plugin.get_config_defaults(overrides))
+
+    # shared_dir: plugin_config tem prioridade, depois overrides, depois default
+    shared_dir_raw = overrides.get("shared_dir") or plugin_config.get("shared_dir")
+    shared_dir = (
+        Path(shared_dir_raw).expanduser().resolve()
+        if shared_dir_raw
+        else get_default_shared_dir().resolve()
+    )
+
     return ProjectConfig(
         project_name=name,
         project_title=overrides.get("title") or _to_title(name),
@@ -193,12 +216,12 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         domain=domain,
         language=language,
         github_repo=overrides.get("repo") or None,
-        shared_dir=Path(overrides["shared_dir"]).expanduser().resolve(
-        ) if overrides.get("shared_dir") else get_default_shared_dir().resolve(),
+        shared_dir=shared_dir,
         target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_parse_extra_profiles(overrides.get(
             "extra_profiles") or "domain-only", domain),
+        ai_assistant=ai_assistant_raw,
     )
 
 
@@ -287,6 +310,43 @@ def _select_language(default: str) -> str:
     return VALID_LANGUAGES[int(choice) - 1]
 
 
+def _select_ai_assistant(default: AiAssistantType) -> AiAssistantType:
+    """
+    Seleção de assistente de IA via menu numerado, dinâmico a partir do registry de plugins.
+
+    A ordem das opções é determinada pela ordem de registro dos plugins:
+    1 = both, 2 = claude, 3 = copilot, 4 = none
+
+    :param default: Valor padrão (ex: "both").
+    :type default: AiAssistantType
+    :return: Assistente selecionado.
+    :rtype: AiAssistantType
+    """
+    from .ai import get_plugin_menu_options
+
+    console.print("\n  [cyan]Assistente de IA:[/cyan]")
+    options = get_plugin_menu_options()
+
+    for idx, (key, desc) in enumerate(options, start=1):
+        default_marker = " [dim](default)[/dim]" if key == default else ""
+        console.print(
+            f"      [bold cyan][{idx}][/bold cyan]  {key}  [dim]({desc})[/dim]{default_marker}"
+        )
+
+    console.print()
+
+    choices = [str(i) for i in range(1, len(options) + 1)]
+    default_idx = str(next((i for i, (k, _) in enumerate(options, 1) if k == default), 1))
+
+    choice = Prompt.ask(
+        "      Escolha",
+        choices=choices,
+        default=default_idx,
+        show_choices=False,
+    )
+    return options[int(choice) - 1][0]
+
+
 def _collect_interactive(defaults: dict) -> ProjectConfig:
     """Coleta dados interativamente com Rich prompts."""
     console.print("[bold]Informações do Projeto[/bold]\n", style="blue")
@@ -323,15 +383,23 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
     # language - usando menu numerado
     language = _select_language(defaults.get("language") or "python")
 
+    # ai_assistant - menu dinâmico via registry de plugins
+    ai_assistant = _select_ai_assistant(defaults.get("ai_assistant") or "both")
+
     github_repo = Prompt.ask(
         "  [cyan]Repositório GitHub[/cyan] [dim](URL ou Enter para pular)[/dim]",
         default=defaults.get("repo") or "",
     ).strip() or None
 
-    shared_dir_str = Prompt.ask(
-        "  [cyan]Diretório compartilhado[/cyan]",
-        default=str(defaults.get("shared_dir") or get_default_shared_dir()),
-    ).strip()
+    # Coleta configuração específica de cada plugin ativo (ex: shared_dir do Copilot)
+    from .ai import resolve_plugins
+    plugin_config: dict = {}
+    for plugin in resolve_plugins(ai_assistant):
+        plugin_config.update(plugin.collect_config(defaults))
+
+    shared_dir_str = plugin_config.get("shared_dir") or str(
+        defaults.get("shared_dir") or get_default_shared_dir()
+    )
 
     target_dir_str = Prompt.ask(
         "  [cyan]Diretório alvo[/cyan] [dim](onde criar o projeto)[/dim]",
@@ -358,6 +426,7 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_collect_extra_profiles(domain, language),
+        ai_assistant=ai_assistant,
     )
 
 
@@ -715,60 +784,82 @@ def confirm_summary(config: ProjectConfig) -> bool:
     return Confirm.ask("  Confirmar e criar projeto?", default=True)
 
 
-def save_operation_log(items: list[CreatedItem | LinkStatus], project_path: Path, operation: str = "scaffold", log_dir: Path | None = None) -> Path | None:
-    """
-    Salva log detalhado da operação em arquivo no projeto.
 
-    Args:
-        items: Lista de itens criados/operados
-        project_path: Caminho do projeto
-        operation: Nome da operação (scaffold, upgrade, etc.)
-        log_dir: Diretório customizado para logs (default: <projeto>/logs/)
+# Diretório de logs da ferramenta scaffold (a-default-project/logs/).
+# Os logs da operação são gravados aqui além do projeto criado.
+_SCAFFOLD_LOGS_DIR = Path(__file__).resolve().parent.parent.parent / "logs"
 
-    Returns:
-        Path do arquivo de log criado ou None se falhar
-    """
+
+def _write_log_to_dir(
+    logs_dir: Path,
+    items: list[CreatedItem | LinkStatus],
+    project_path: Path,
+    operation: str,
+    timestamp: str,
+) -> Path | None:
+    """Grava o arquivo de log em um diretório específico. Retorna o Path ou None."""
     try:
-        # Usar log_dir customizado ou padrão <projeto>/logs
-        logs_dir = Path(log_dir) if log_dir else (project_path / "logs")
         logs_dir.mkdir(parents=True, exist_ok=True)
-
-        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
         log_file = logs_dir / f"{operation}_{timestamp}.log"
-
         with log_file.open("w", encoding="utf-8") as f:
             f.write(f"# {operation.upper()} Operation Log\n")
             f.write(f"# Timestamp: {timestamp}\n")
             f.write(f"# Project: {project_path.name}\n")
             f.write(f"# Total items: {len(items)}\n\n")
 
-            # Estatísticas
-            stats = {"created": 0, "skipped": 0, "error": 0, "ok": 0, "broken": 0, "missing": 0}
+            stats: dict[str, int] = {}
             for item in items:
-                status = item.status if isinstance(item, CreatedItem) else item.status
-                stats[status] = stats.get(status, 0) + 1
+                s = item.status if isinstance(item, CreatedItem) else item.status
+                stats[s] = stats.get(s, 0) + 1
 
             f.write("## Statistics\n")
-            for status, count in stats.items():
+            for s, count in stats.items():
                 if count > 0:
-                    f.write(f"- {status}: {count}\n")
+                    f.write(f"- {s}: {count}\n")
             f.write("\n## Detailed Items\n\n")
 
-            # Detalhes de cada item
             for item in items:
                 if isinstance(item, CreatedItem):
                     f.write(f"[{item.status.upper()}] {item.kind} | {item.path}")
                     if item.message:
                         f.write(f" | {item.message}")
                     f.write("\n")
-                else:  # LinkStatus
+                else:
                     target_str = str(item.target) if item.target else "(no target)"
                     f.write(f"[{item.status.upper()}] symlink | {item.name} -> {target_str}\n")
-
         return log_file
     except Exception as e:
-        console.print(f"[yellow]⚠️  Não foi possível salvar log: {e}[/yellow]")
+        console.print(f"[yellow]⚠️  Não foi possível salvar log em {logs_dir}: {e}[/yellow]")
         return None
+
+
+def save_operation_log(items: list[CreatedItem | LinkStatus], project_path: Path, operation: str = "scaffold", log_dir: Path | None = None) -> Path | None:
+    """
+    Salva log detalhado da operação em dois locais:
+    1. Diretório especificado (--log-dir) ou pasta logs/ do projeto criado.
+    2. Sempre também em <a-default-project>/logs/ (para rastreio da ferramenta).
+
+    Args:
+        items: Lista de itens criados/operados
+        project_path: Caminho do projeto
+        operation: Nome da operação (scaffold, upgrade, etc.)
+        log_dir: Diretório customizado; default: <projeto>/logs/
+
+    Returns:
+        Path do arquivo de log no diretório customizado/projeto, ou None se falhar
+    """
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
+
+    # 1. Log no diretório do projeto criado (ou --log-dir customizado)
+    primary_dir = Path(log_dir) if log_dir else (project_path / "logs")
+    primary_log = _write_log_to_dir(primary_dir, items, project_path, operation, timestamp)
+
+    # 2. Log adicional na pasta da ferramenta scaffold (a-default-project/logs/)
+    #    Omitido se primary_dir já É _SCAFFOLD_LOGS_DIR (evita duplicação)
+    if primary_dir.resolve() != _SCAFFOLD_LOGS_DIR.resolve():
+        _write_log_to_dir(_SCAFFOLD_LOGS_DIR, items, project_path, operation, timestamp)
+
+    return primary_log
 
 
 def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Path | None = None, save_log: bool = True, log_dir: Path | None = None) -> None:
@@ -891,14 +982,6 @@ def print_final_summary(items: list[CreatedItem | LinkStatus], project_path: Pat
     if save_log and project_path:
         log_file = save_operation_log(items, project_path, log_dir=log_dir)
         if log_file:
-            # Mostrar path relativo ao projeto ou absoluto se log_dir customizado
-            if log_dir:
-                console.print(f"  [dim]Log salvo em: {log_file}[/dim]")
-            else:
-                try:
-                    rel_path = log_file.relative_to(project_path)
-                    console.print(f"  [dim]Log salvo em: {rel_path}[/dim]")
-                except ValueError:
-                    console.print(f"  [dim]Log salvo em: {log_file}[/dim]")
+            console.print(f"  [dim]Log salvo em:\n{log_file}[/dim]")
 
     console.print()

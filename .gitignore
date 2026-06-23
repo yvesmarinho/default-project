@@ -65,7 +65,7 @@ dmypy.json
 .pytype/
 
 # IDEs
-.vscode/
+.vscode/*
 !.vscode/settings.json
 !.vscode/mcp.json
 !.vscode/extensions.json
@@ -124,3 +124,14 @@ docs/_build/
 # uv
 .uv/
 uv.lock
+
+# arquivo de localização do portfolio-generator
+.portfolio-project
+.memory/*
+.session-index/*
+.session-time/*
+
+# extensões IDE e ferramentas de desenvolvimento
+.continue/
+.claude/worktrees/
+

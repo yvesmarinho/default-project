@@ -379,8 +379,12 @@ class ObjetivoWizard:
             if not value:
                 continue
 
-            # Get the placeholder for this question
-            placeholder = question_map.get(question_id, f"{{{{{question_id.upper()}}}}}")
+            # Se a chave já é um placeholder (ex: "{{DESCRIPTION}}"), usá-la diretamente.
+            # Isso suporta tanto question IDs ("q1_what") quanto placeholders diretos.
+            if question_id.startswith("{{") and question_id.endswith("}}"):
+                placeholder = question_id
+            else:
+                placeholder = question_map.get(question_id, f"{{{{{question_id.upper()}}}}}")
             base_placeholder = placeholder.replace('{{', '').replace('}}', '')
 
             if '\n' in value and base_placeholder in ['FEATURE', 'RULE', 'CONSTRAINT', 'INFRASTRUCTURE', 'EXPECTED_OUTCOME']:

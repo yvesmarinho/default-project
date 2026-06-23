@@ -1911,11 +1911,11 @@ Apenas README.md commitado.
 # Pastas a criar
 # ---------------------------------------------------------------------------
 
-DIRS_TO_CREATE = [
+# Diretórios base (presentes em todos os projetos, independente de AI)
+DIRS_BASE = [
     "docs",
     ".session-docs",
     "docs/architecture",
-    "docs/copilot",
     "docs/debates",
     "docs/decisions",
     "docs/guides",
@@ -1941,11 +1941,37 @@ DIRS_TO_CREATE = [
     ".claude/skills",
 ]
 
+# Diretórios exclusivos do GitHub Copilot (gerenciados pelo CopilotPlugin)
+DIRS_COPILOT = [
+    "docs/copilot",
+]
+
+# Mantido para retrocompatibilidade (usado em testes e imports externos)
+DIRS_TO_CREATE = DIRS_BASE + DIRS_COPILOT
+
+
 # ---------------------------------------------------------------------------
 # Arquivos a criar: (caminho relativo, conteúdo_template)
 # ---------------------------------------------------------------------------
 
-FILES_TO_CREATE: list[tuple[str, str]] = [
+def get_claude_files() -> list[tuple[str, str]]:
+    """
+    Retorna os templates de arquivos exclusivos do Claude Code.
+
+    Utilizado pelo ClaudePlugin para obter os templates centralizados
+    sem duplicar as strings de conteúdo.
+
+    :return: Lista de (caminho_relativo, conteúdo_template).
+    :rtype: list[tuple[str, str]]
+    """
+    return [
+        ("CLAUDE.md",             _CLAUDE_MD),
+        (".claude/settings.json", _CLAUDE_SETTINGS_JSON),
+    ]
+
+
+# Arquivos base (presentes em todos os projetos, independente de AI)
+FILES_BASE: list[tuple[str, str]] = [
     ("README.md",                  _README_MD),
     ("docs/INDEX.md",              _DOCS_INDEX_MD),
     ("docs/TODO.md",               _DOCS_TODO_MD),
@@ -1961,8 +1987,6 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     (".secrets/SECURITY.md",       _SECRETS_SECURITY_MD),
     (".git-hooks/pre-commit.secrets", _PRE_COMMIT_SECRETS_HOOK),
     # .vscode/mcp.json e settings.json são gerados dinamicamente por vscode.py (IMP-64)
-    ("CLAUDE.md",                   _CLAUDE_MD),
-    (".claude/settings.json",       _CLAUDE_SETTINGS_JSON),
     ("Makefile",                   _MAKEFILE),
     ("scripts/logs/.gitkeep",      ""),
     ("logs/README.md",             _LOGS_README),
@@ -1971,6 +1995,9 @@ FILES_TO_CREATE: list[tuple[str, str]] = [
     (".session-index/README.md",   _SESSION_INDEX_README),
     (".session-time/README.md",    _SESSION_TIME_README),
 ]
+
+# Mantido para retrocompatibilidade (inclui arquivos Claude)
+FILES_TO_CREATE: list[tuple[str, str]] = FILES_BASE + get_claude_files()
 
 
 # ---------------------------------------------------------------------------
@@ -1984,13 +2011,27 @@ def create_structure(config: ProjectConfig) -> list[CreatedItem]:
     - Pastas já existentes → skipped (sem erro)
     - Arquivos já existentes → skipped (não sobrescreve)
     - Retorna lista de CreatedItem com status de cada operação
+
+    A lista de diretórios e arquivos é montada dinamicamente:
+    - DIRS_BASE e FILES_BASE para todos os projetos
+    - Plugins ativos (via resolve_plugins) contribuem com seus próprios dirs/files
     """
+    from .ai import resolve_plugins
+
     results: list[CreatedItem] = []
     base = config.project_path
     base.mkdir(parents=True, exist_ok=True)
 
+    # Monta lista de diretórios e arquivos com contribuições dos plugins
+    dirs = list(DIRS_BASE)
+    all_files = list(FILES_BASE)
+
+    for plugin in resolve_plugins(config.ai_assistant):
+        dirs.extend(plugin.get_dirs())
+        all_files.extend(plugin.get_files())
+
     # 1. Pastas
-    for dir_rel in DIRS_TO_CREATE:
+    for dir_rel in dirs:
         dir_path = base / dir_rel
         if dir_path.exists():
             results.append(CreatedItem(
@@ -2008,7 +2049,7 @@ def create_structure(config: ProjectConfig) -> list[CreatedItem]:
                 ))
 
     # 2. Arquivos
-    for file_rel, template in FILES_TO_CREATE:
+    for file_rel, template in all_files:
         file_path = base / file_rel
         if file_path.exists():
             # EXCEÇÃO: Sempre sobrescrever hooks de segurança (garantir versão atualizada)
@@ -3463,12 +3504,13 @@ def write_scaffold_state(
         "created_at": original_created_at,
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "project": {
-            "name":        config.project_name,
-            "title":       config.project_title,
-            "description": config.description,
-            "domain":      config.domain,
-            "language":    config.language,
-            "github_repo": config.github_repo or "",
+            "name":         config.project_name,
+            "title":        config.project_title,
+            "description":  config.description,
+            "domain":       config.domain,
+            "language":     config.language,
+            "github_repo":  config.github_repo or "",
+            "ai_assistant": config.ai_assistant,
         },
         "paths": {
             "target_dir": str(config.target_dir),
@@ -3481,6 +3523,7 @@ def write_scaffold_state(
 
     try:
         import yaml
+        state_path.parent.mkdir(parents=True, exist_ok=True)
         state_path.write_text(
             yaml.dump(state, allow_unicode=True,
                       default_flow_style=False, sort_keys=False),
@@ -3563,4 +3606,5 @@ def config_from_state(state: dict, override_target: Path | None = None) -> Proje
         created_at=state.get("created_at", datetime.now(
             timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")),
         extra_profiles=state.get("profiles_applied", []),
+        ai_assistant=proj.get("ai_assistant", "both"),
     )

@@ -85,13 +85,13 @@ class TestObjetivoWizard:
             """---
 version: "2.0"
 project:
-  name: ""
-  title: ""
-  type: ""
-  domain: ""
-  language: ""
-created_at: ""
-created_by: ""
+  name: "{{PROJECT_NAME}}"
+  title: "{{PROJECT_TITLE}}"
+  type: "{{PROJECT_TYPE}}"
+  domain: "{{PROJECT_DOMAIN}}"
+  language: "{{PROJECT_LANGUAGE}}"
+created_at: "{{CREATED_AT}}"
+created_by: "{{CREATED_BY}}"
 ---
 
 ## 1️⃣ O que este projeto faz?

@@ -5,10 +5,11 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .. import git, links, project, templates, vscode
+from .. import git, project, vscode
 from ..project import write_scaffold_state
 from ..ui import collect_project_info, confirm_summary, console, print_final_summary
 from ..config import DOMAIN_DEFAULT_PROFILES, SPECKIT_TRANSVERSAL_PROFILES
+from ..ai import resolve_plugins
 
 
 def flow_new_project(args: argparse.Namespace) -> int:
@@ -25,6 +26,7 @@ def flow_new_project(args: argparse.Namespace) -> int:
         "shared_dir":     args.shared_dir,
         "target_dir":     args.target_dir,
         "extra_profiles": getattr(args, "extra_profiles", None),
+        "ai_assistant":   getattr(args, "ai_assistant", None),
     }
     # Remove chaves None para não substituir defaults
     overrides = {k: v for k, v in overrides.items() if v is not None}
@@ -46,14 +48,10 @@ def flow_new_project(args: argparse.Namespace) -> int:
     console.print("\n  [blue]📁 Criando estrutura...[/blue]")
     results.extend(project.create_structure(cfg))
 
-    # 2. Symlinks .copilot-*
-    console.print("  [blue]🔗 Configurando symlinks...[/blue]")
-    results.extend(links.setup_symlinks(cfg))
-
-    # 3. Regras Copilot específicas do projeto
-    console.print("  [blue]📝 Gerando regras Copilot...[/blue]")
-    results.append(templates.generate_copilot_rules(cfg))
-    results.append(templates.generate_copilot_instructions(cfg))
+    # 2. Setup de cada AI ativo via plugins (symlinks, regras, instruções, config)
+    for plugin in resolve_plugins(cfg.ai_assistant):
+        console.print(f"  [blue]⚡ Configurando {plugin.label}...[/blue]")
+        results.extend(plugin.setup(cfg))
 
     # 4. VS Code: settings, mcp, extensions, tasks, launch
     console.print("  [blue]🔧 Gerando configuração VS Code...[/blue]")
@@ -66,14 +64,6 @@ def flow_new_project(args: argparse.Namespace) -> int:
     # 5. SpecKit: agents, prompts e perfis de domínio
     console.print("  [blue]🤖 Copiando assets SpecKit...[/blue]")
     results.extend(project.copy_speckit(cfg))
-
-    # 5a. Copilot Instructions: copilot-instructions.md, .copilot-rules.md
-    console.print("  [blue]🧑‍💻 Copiando instruções do Copilot...[/blue]")
-    results.extend(project.copy_copilot_instructions(cfg))
-
-    # 5aa. Claude Code: CLAUDE.md (gerado em create_structure), commands e skills
-    console.print("  [blue]🤖 Copiando configuração Claude Code...[/blue]")
-    results.extend(project.copy_claude_config(cfg))
 
     # 5b. Session Support Libraries: scripts/lib/*.py (dependências)
     console.print("  [blue]📚 Copiando bibliotecas de suporte...[/blue]")

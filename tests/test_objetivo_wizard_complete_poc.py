@@ -144,12 +144,10 @@ def test_complete_objective_all_variables():
     unreplaced = re.findall(r'\{\{[A-Z_0-9]+\}\}', content)
     assert not unreplaced, f"Placeholders não substituídos: {unreplaced}"
 
-    # Validar que campos obrigatórios estão presentes (formato objetivo-init.yaml)
-    assert "prompt:" in content
-    assert "role: user" in content
-    assert "content:" in content
-    assert "project_name:" in content
-    assert '"sistema-deploy-automatizado"' in content
+    # Validar que campos obrigatórios estão presentes (formato objetivo-init.yaml v2.0)
+    assert 'version: "2.0"' in content
+    assert 'name: "sistema-deploy-automatizado"' in content
+    assert 'created_by: "Yves Marinho"' in content
 
     # Validar que respostas foram incluídas (apenas campos que existem no template)
     assert "Sistema automatizado de deploy" in content  # Q1 - DESCRIPTION

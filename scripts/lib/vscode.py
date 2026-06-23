@@ -12,10 +12,13 @@ Gera:
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 from .config import CreatedItem, DomainType, LanguageType, ProjectConfig
 from . import file_merge
+
+log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Extensões — 3 camadas: BASE + DOMAIN + LANGUAGE
@@ -219,6 +222,116 @@ _MCP_BY_DOMAIN: dict[str, list[str]] = {
     "analysis":       ["memory", "sequential-thinking", "filesystem", "sqlite", "brave-search"],
 }
 
+# Padrões que identificam servidores GitHub não-oficiais (via npx args)
+_UNOFFICIAL_GITHUB_ARG_PATTERNS: list[str] = [
+    "@modelcontextprotocol/server-github",
+    "mcp-server-github",
+    "github-mcp-server",
+]
+
+
+# ---------------------------------------------------------------------------
+# Normalização do servidor GitHub MCP
+# ---------------------------------------------------------------------------
+
+def normalize_github_mcp(servers: dict) -> tuple[dict, list[str]]:
+    """
+    Garante que o servidor GitHub MCP no mcp.json seja o oficial (HTTP).
+
+    Critérios de substituição/remoção:
+    - Entrada "github" com configuração diferente da oficial → substituída
+    - Entrada com outro nome cujos args contenham padrões não-oficiais do
+      GitHub MCP (ex: @modelcontextprotocol/server-github) → removida
+    - Entrada com outro nome cuja URL aponte para github mas não seja a
+      URL oficial → removida
+
+    Args:
+        servers: Dicionário ``servers`` do mcp.json.
+
+    Returns:
+        Tupla ``(servers_normalizados, lista_de_mudanças)``.
+
+    Exemplos:
+        >>> official = {"type": "http", "url": "https://api.githubcopilot.com/mcp/"}
+        >>> old = {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"]}
+        >>> result, changes = normalize_github_mcp({"memory": {}, "github": old})
+        >>> result["github"] == official
+        True
+        >>> len(changes) == 1
+        True
+
+        >>> result2, changes2 = normalize_github_mcp({"github": official})
+        >>> len(changes2) == 0
+        True
+    """
+    official = _ALL_MCP_SERVERS["github"]
+    normalized: dict = {}
+    changes: list[str] = []
+
+    for name, cfg in servers.items():
+        if name == "github":
+            if cfg != official:
+                changes.append(
+                    f"servers.github: substituído por servidor oficial "
+                    f"(type=http, url={official['url']})"
+                )
+                normalized[name] = official
+            else:
+                normalized[name] = cfg
+            continue
+
+        # Detectar entradas não-github que são, na verdade, github não-oficial
+        args: list[str] = cfg.get("args", [])
+        url: str = cfg.get("url", "")
+        official_url: str = official.get("url", "")
+
+        is_unofficial_github = any(
+            pattern in arg
+            for pattern in _UNOFFICIAL_GITHUB_ARG_PATTERNS
+            for arg in args
+        ) or (
+            "github" in url.lower()
+            and url != official_url
+        )
+
+        if is_unofficial_github:
+            changes.append(
+                f"servers.{name}: removido (servidor GitHub não-oficial detectado)"
+            )
+        else:
+            normalized[name] = cfg
+
+    return normalized, changes
+
+
+def _apply_github_normalization(mcp_path: Path) -> None:
+    """
+    Lê mcp.json, normaliza servidor GitHub e salva se houve mudanças.
+
+    Args:
+        mcp_path: Caminho para o arquivo .vscode/mcp.json.
+    """
+    try:
+        data: dict = json.loads(mcp_path.read_text(encoding="utf-8"))
+        servers: dict = data.get("servers", {})
+        normalized, changes = normalize_github_mcp(servers)
+
+        if not changes:
+            return
+
+        for change in changes:
+            log.warning("🔄 MCP normalize: %s", change)
+
+        data["servers"] = normalized
+        mcp_path.write_text(
+            json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        log.info("✅ mcp.json normalizado (%d mudança(s))", len(changes))
+
+    except Exception as exc:
+        log.warning("⚠️  Falha ao normalizar mcp.json: %s", exc)
+
 
 # ---------------------------------------------------------------------------
 # Funções públicas
@@ -258,7 +371,8 @@ def generate_mcp(config: ProjectConfig) -> CreatedItem:
     """
     Gera `.vscode/mcp.json` com servidores pré-selecionados pelo domínio.
 
-    Se arquivo existe, usa merge inteligente (BUG-16 fix).
+    Se arquivo existe, usa merge inteligente (BUG-16 fix) seguido de
+    normalização do servidor GitHub para garantir que seja o oficial HTTP.
     """
     dest = config.project_path / ".vscode" / "mcp.json"
 
@@ -270,7 +384,10 @@ def generate_mcp(config: ProjectConfig) -> CreatedItem:
     if dest.exists():
         # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
         template_content = json.dumps({"servers": servers}, indent=2, ensure_ascii=False) + "\n"
-        return file_merge.merge_or_skip(dest, template_content, interactive=False)
+        result = file_merge.merge_or_skip(dest, template_content, interactive=False)
+        # Garantir servidor GitHub oficial após merge (cobre casos não tratados pelo BUG-20)
+        _apply_github_normalization(dest)
+        return result
 
     return _write_json(dest, {"servers": servers})
 

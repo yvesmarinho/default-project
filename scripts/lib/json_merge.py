@@ -333,10 +333,16 @@ class JSONMerger:
     """
 
     def can_merge(self, file_path: Path) -> bool:
-        """Verifica se é arquivo .json (exceto .code-workspace que tem merger próprio)."""
+        """Verifica se é arquivo .json (exceto os que têm merger próprio)."""
+        # launch.json e tasks.json em .vscode/ são tratados por VSCodeConfigMerger
+        is_vscode_config = (
+            ".vscode" in file_path.parts and
+            file_path.name in ("launch.json", "tasks.json")
+        )
         return (
             file_path.suffix == ".json" and
-            not file_path.name.endswith(".code-workspace")
+            not file_path.name.endswith(".code-workspace") and
+            not is_vscode_config
         )
 
     def merge(
