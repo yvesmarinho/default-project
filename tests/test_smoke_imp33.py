@@ -278,10 +278,10 @@ class TestValidateZeroWarnings:
         )
 
     def test_validate_thirteen_profiles_cli(self):
-        """Após IMP-33: 13 perfis registrados (11 anteriores + infra + analysis)."""
+        """Todos os perfis registrados devem ser encontrados."""
         data = self._run_json()
-        assert data["profiles_checked"] == 13, (
-            f"Esperado 13 perfis, obtido {data['profiles_checked']}"
+        assert data["profiles_checked"] == 22, (
+            f"Esperado 22 perfis, obtido {data['profiles_checked']}"
         )
 
     def test_validate_no_errors(self):

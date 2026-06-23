@@ -1,0 +1,87 @@
+---
+# docker-compose.airflow.yml — Ambiente local Apache Airflow
+# Credenciais via Docker Secrets ou arquivo — nunca em plaintext
+# Uso: make af-up
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.9.0
+  environment:
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${POSTGRES_PASSWORD:-change-me}@postgres/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${POSTGRES_PASSWORD:-change-me}@postgres/airflow
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY:-change-me-generate-with-python-c-import-cryptography}
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - airflow-logs:/opt/airflow/logs
+    - airflow-plugins:/opt/airflow/plugins
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_DB: airflow
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+    restart: always
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: always
+
+  airflow-worker:
+    <<: *airflow-common
+    command: celery worker
+    restart: always
+
+  airflow-init:
+    <<: *airflow-common
+    command: version
+    environment:
+      <<: *airflow-common
+      _AIRFLOW_DB_UPGRADE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_USERNAME:-admin}
+      _AIRFLOW_WWW_USER_PASSWORD_FILE: /run/secrets/airflow_admin_password
+
+volumes:
+  postgres-data:
+  airflow-logs:
+  airflow-plugins:
+
+secrets:
+  postgres_password:
+    file: .secrets/postgres_password.txt
+  airflow_admin_password:
+    file: .secrets/airflow_admin_password.txt

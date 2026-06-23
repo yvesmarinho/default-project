@@ -118,4 +118,4 @@ test-project/
 
 ---
 
-*Gerado por scripts/scaffold.py v1.0.0 | {{CREATED_AT}}*
+*Gerado por scripts/scaffold.py v1.7.1 | {{CREATED_AT}}*

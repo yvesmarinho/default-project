@@ -11,6 +11,7 @@ from .. import links, project, templates, vscode
 from ..project import config_from_state, read_scaffold_state, write_scaffold_state
 from ..ui import console, print_final_summary
 from ..copilot_rules_consolidate import consolidate_copilot_rules
+from ..ai import resolve_plugins
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 _PROFILE_DESCRIPTORS_DIR = _PROJECT_ROOT / "profile-descriptors"
@@ -45,6 +46,14 @@ def _validate_and_fix_paths(
     project_name = state.get("project", {}).get("name", "unknown")
     saved_target_dir = Path(paths.get("target_dir", "."))
 
+    # Normalizar saved_target_dir: se termina com project_name, extrai o pai.
+    # O state pode ter sido escrito com o diretório do projeto (upgrade in-place)
+    # ou com o diretório pai (criação inicial); ambos devem comparar igual.
+    if saved_target_dir.name == project_name:
+        saved_parent = saved_target_dir.parent
+    else:
+        saved_parent = saved_target_dir
+
     # Resolve current_target para comparação
     # Se current_target termina com project_name, extrai o pai
     if current_target.name == project_name:
@@ -53,7 +62,7 @@ def _validate_and_fix_paths(
         current_parent = current_target
 
     # Normalizar paths para comparação (resolve symlinks, relativos, etc)
-    saved_target_resolved = saved_target_dir.resolve()
+    saved_target_resolved = saved_parent.resolve()
     current_parent_resolved = current_parent.resolve()
 
     # Verificar divergência
@@ -188,15 +197,11 @@ def flow_upgrade(args: argparse.Namespace) -> int:
         console.print("  [blue]📁 Verificando estrutura...[/blue]")
     results.extend(project.create_structure(cfg))
 
-    if not use_json:
-        console.print("  [blue]🔗 Verificando symlinks...[/blue]")
-    results.extend(links.setup_symlinks(cfg))
-
-    if not use_json:
-        console.print("  [blue]📝 Verificando regras Copilot...[/blue]")
-    results.append(templates.generate_copilot_rules(cfg))
-    # FIX BUG P0: Removida chamada duplicada - copilot-instructions.md já processado em copy_copilot_instructions() L273
-    # results.append(templates.generate_copilot_instructions(cfg))
+    # Upgrade de cada AI ativo via plugins (symlinks, regras, instruções, config)
+    for plugin in resolve_plugins(cfg.ai_assistant):
+        if not use_json:
+            console.print(f"  [blue]⚡ Verificando {plugin.label}...[/blue]")
+        results.extend(plugin.upgrade(cfg, force=force))
 
     if not use_json:
         console.print("  [blue]🔧 Verificando configuração VS Code...[/blue]")
@@ -267,18 +272,6 @@ def flow_upgrade(args: argparse.Namespace) -> int:
             status="merged",
             message="Consolidação automática de múltiplos .copilot-rules*.md"
         ))
-
-    # BUG-13: Copilot Instructions (copilot-instructions.md, .copilot-rules.md)
-    if not use_json:
-        console.print(
-            "  [blue]🧑‍💻 Verificando instruções do Copilot...[/blue]")
-    results.extend(project.copy_copilot_instructions(cfg, force=force))
-
-    # Claude Code: commands e skills (CLAUDE.md e settings.json via create_structure)
-    if not use_json:
-        console.print(
-            "  [blue]🤖 Verificando configuração Claude Code...[/blue]")
-    results.extend(project.copy_claude_config(cfg, force=force))
 
     # BUG-14: Session Support Libraries (scripts/lib/*.py dependencies)
     if not use_json:

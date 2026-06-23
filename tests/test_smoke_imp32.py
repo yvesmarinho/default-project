@@ -364,7 +364,7 @@ class TestValidateDescriptorsIntegration:
 
     def test_finds_all_13_real_descriptors(self):
         report = validate_descriptors(_DESCRIPTORS_DIR)
-        assert report.profiles_checked == 13
+        assert report.profiles_checked == 22
 
     def test_real_descriptors_have_no_errors(self):
         report = validate_descriptors(_DESCRIPTORS_DIR)
@@ -424,7 +424,7 @@ class TestValidateCLI:
     def test_validate_json_profiles_checked_is_13(self):
         proc = self._run("--json")
         data = json.loads(proc.stdout)
-        assert data["profiles_checked"] == 13
+        assert data["profiles_checked"] == 22
 
     def test_validate_json_errors_is_zero(self):
         proc = self._run("--json")
@@ -435,7 +435,7 @@ class TestValidateCLI:
         proc = self._run("--json")
         data = json.loads(proc.stdout)
         assert isinstance(data["results"], list)
-        assert len(data["results"]) == 13
+        assert len(data["results"]) == 22
 
     def test_validate_json_each_result_has_name(self):
         proc = self._run("--json")

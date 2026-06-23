@@ -1,0 +1,54 @@
+schema_version: "1.0.0"
+
+name: data-pipeline-airflow
+layer: 3
+version: "1.0.0"
+last_tested: "2026-06-23"
+status: stable
+
+description: >
+  Perfil Layer 3 para data pipelines com Apache Airflow 2.x (TaskFlow API).
+  DAGs como código Python com decorators @dag/@task, docker-compose para
+  desenvolvimento local, Makefile com targets padrão, e .env.example seguro
+  sem credenciais em plaintext.
+
+meta:
+  maintained_by: "@yves_marinho"
+  language: python
+  framework: apache-airflow
+  tags:
+    - airflow
+    - data-pipeline
+    - orchestration
+    - data-engineering
+    - layer3
+
+combines_with:
+  - python-fastapi
+  - python-flask
+
+stack:
+  tool: "apache-airflow >= 2.8"
+  python: ">=3.11"
+  extras:
+    - postgres
+    - celery
+    - redis
+
+templates_path: ".github/templates/data-pipeline-airflow"
+
+templates:
+  - path: "airflow/dags/example_pipeline.py"
+    description: "DAG exemplo usando TaskFlow API (@dag/@task) com retries e catchup=False"
+
+  - path: "airflow/docker-compose.airflow.yml"
+    description: "Docker Compose para Airflow local com Postgres e Redis — credenciais via arquivo"
+
+  - path: "Makefile.airflow"
+    description: "Makefile com targets padrão: af-up, af-down, af-logs, af-test, af-trigger"
+
+  - path: "airflow/.env.airflow.example"
+    description: "Variáveis de ambiente com placeholders — nunca comitar com valores reais"
+
+  - path: "airflow/requirements-airflow.txt"
+    description: "Dependências pinadas do Airflow e providers (postgres, redis, celery)"

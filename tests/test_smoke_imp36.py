@@ -259,7 +259,7 @@ class TestCLIValidateStaleness:
     def test_validate_json_tem_profiles_checked(self):
         proc = self._run()
         data = json.loads(proc.stdout)
-        assert data["profiles_checked"] == 13
+        assert data["profiles_checked"] == 22
 
     def test_validate_json_zero_errors(self):
         """Nenhum erro novo introduzido por IMP-36."""

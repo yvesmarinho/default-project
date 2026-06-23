@@ -1,0 +1,29 @@
+# Makefile.airflow — Targets para Apache Airflow local
+# Uso: make -f Makefile.airflow <target>
+
+COMPOSE_FILE := airflow/docker-compose.airflow.yml
+AIRFLOW_CMD  := docker compose -f $(COMPOSE_FILE)
+
+.PHONY: af-up af-down af-logs af-test af-trigger af-init af-shell
+
+af-up: ## Inicia Airflow (webserver, scheduler, worker, postgres, redis)
+	$(AIRFLOW_CMD) up -d
+	@echo "Airflow disponível em http://localhost:8080"
+
+af-down: ## Para e remove containers Airflow
+	$(AIRFLOW_CMD) down
+
+af-logs: ## Exibe logs dos containers (Ctrl+C para sair)
+	$(AIRFLOW_CMD) logs -f
+
+af-test: ## Executa testes das DAGs (parse + unit tests)
+	$(AIRFLOW_CMD) exec airflow-scheduler airflow dags test example_pipeline
+
+af-trigger: ## Dispara a DAG example_pipeline manualmente
+	$(AIRFLOW_CMD) exec airflow-scheduler airflow dags trigger example_pipeline
+
+af-init: ## Inicializa banco e cria usuário admin (primeira vez)
+	$(AIRFLOW_CMD) up airflow-init
+
+af-shell: ## Abre shell no container scheduler
+	$(AIRFLOW_CMD) exec airflow-scheduler bash

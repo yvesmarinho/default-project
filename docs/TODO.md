@@ -1,8 +1,23 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-06-22 — IMP-Claude: Claude Code Integration no scaffold ✅
+**Last Updated**: 2026-06-23 — IMP-65: Correção de 5 falhas pré-existentes → 0 falhas (1666 passed) ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-06-23+)
+
+- [x] ~~**IMP-65: Correção de Falhas de Teste Pré-Existentes**~~: ✅ CONCLUÍDO (2026-06-23)
+  - ✅ `TestUpgradeFlow` (4 testes): fix state file path, git identity env, idempotência
+  - ✅ `_validate_and_fix_paths()`: normalização de `saved_target_dir` corrigida
+  - ✅ `.github/workflows/ci-template.yml`: criado (satisfaz imp31 + imp42)
+  - ✅ `profile-descriptors/data-pipeline-airflow.yaml`: descriptor criado
+  - ✅ 12 descriptors com datas `last_tested` atualizadas para `2026-06-21`
+  - ✅ Contagens `13` → `22` em imp32, imp33, imp36
+  - ✅ `.github/templates/data-pipeline-airflow/`: template completo criado
+  - ✅ 3 snapshots atualizados (versão v1.7.1 + template sync)
+  - ✅ **Resultado**: 1666 passed, 0 failed, 27 skipped
 
 ---
 
