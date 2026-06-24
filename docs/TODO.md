@@ -1,8 +1,16 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-06-23 — IMP-65: Correção de 5 falhas pré-existentes → 0 falhas (1666 passed) ✅
+**Last Updated**: 2026-06-24 — Separação template/DEV, fix --with-code-profile, validate-test-runs.py ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-06-24+)
+
+- [ ] **Rodar suite de testes completa**: verificar se git mv + refactor de `project.py` não quebrou testes existentes (`uv run pytest`)
+- [ ] **Commit das mudanças pendentes**: staged renames + unstaged modifications (`.specify/`, `.claude/skills/`, `scaffold/profiles/`, `scripts/lib/`)
+- [ ] **Validar `specify init` no projeto novo**: confirmar que `run_speckit_init()` funciona para todos os valores de `ai_assistant` (claude, copilot, both, none)
 
 ---
 
