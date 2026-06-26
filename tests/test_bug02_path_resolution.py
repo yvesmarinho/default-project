@@ -149,16 +149,17 @@ class TestBug02PathResolution:
         # Simular respostas do usuário
         target_rel = Path("../output")
         mock_prompt.side_effect = [
-            "test-project",       # name
-            "Test Project",       # title
-            "Test description",   # description
-            "1",                  # domain (1=programming)
-            "1",                  # language (1=python)
-            "",                  # github_repo
-            str(tmp_path / "shared"),  # shared_dir
-            str(target_rel),     # target_dir
-            "1",                 # extra_profiles mode
-            "1",                 # layer2 profile (skip)
+            "test-project",           # name
+            "Test Project",           # title
+            "Test description",       # description
+            "1",                      # domain (1=programming)
+            "1",                      # language (1=python)
+            "1",                      # ai_assistant (1=both)
+            "",                       # github_repo
+            str(tmp_path / "shared"), # shared_dir (via CopilotPlugin.collect_config)
+            str(target_rel),          # target_dir
+            "1",                      # extra_profiles mode
+            "1",                      # layer2 profile (skip)
         ]
 
         original_cwd = Path.cwd()

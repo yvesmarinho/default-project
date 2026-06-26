@@ -48,9 +48,6 @@ prompt:
       - "100% dos deploys via sistema automatizado (zero deploys manuais)"
       - "Tempo médio de deploy reduzido de 2-3h para <15min"
       - "Taxa de erro de deploy reduzida de 15% para <2%"
-    infrastructure:
-      - "Cluster Kubernetes 1.28+ em AWS EKS (3 nodes t3.medium)"
-      - "Banco PostgreSQL 15 em RDS (db.t3.medium, 100GB storage)"
     profile:
       - role: "copilot-assisted-developer"
         skill_level: "intermediate"

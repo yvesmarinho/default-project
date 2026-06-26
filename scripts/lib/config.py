@@ -96,6 +96,11 @@ SHARED_COPILOT_FILES: list[str] = [
 DomainType = Literal["programming", "infrastructure", "analysis"]
 LanguageType = Literal["python", "typescript", "go", "other"]
 ExtraProfilesMode = Literal["domain-only", "all", "custom"]
+AiAssistantType = Literal["claude", "copilot", "both", "none"]
+
+# Mantido para retrocompatibilidade. Após a refatoração para plugins,
+# os valores válidos são gerados dinamicamente por ai.get_valid_values().
+VALID_AI_ASSISTANTS: list[str] = ["claude", "copilot", "both", "none"]
 
 # ---------------------------------------------------------------------------
 # Perfis de domínio
@@ -138,6 +143,8 @@ class ProjectConfig:
     created_at: str                     # ISO8601 timestamp
     # perfis extras além do domínio (D-21)
     extra_profiles: list[str] = field(default_factory=list)
+    # assistente(s) de IA ativo(s): claude | copilot | both | none
+    ai_assistant: AiAssistantType = "both"
 
     @property
     def project_path(self) -> Path:

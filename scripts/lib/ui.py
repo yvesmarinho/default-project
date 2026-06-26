@@ -23,8 +23,10 @@ from .config import (
     DOMAIN_DEFAULT_PROFILES,
     SCAFFOLD_VERSION,
     SPECKIT_TRANSVERSAL_PROFILES,
+    VALID_AI_ASSISTANTS,
     VALID_DOMAINS,
     VALID_LANGUAGES,
+    AiAssistantType,
     CreatedItem,
     LinkStatus,
     ProjectConfig,
@@ -186,6 +188,27 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         raise ValueError(
             f"Conflito de diretório: {name} == {target_dir.name}. {error_msg}")
 
+    # Validar ai_assistant via registry de plugins
+    from .ai import resolve_plugins, get_valid_values
+    ai_assistant_raw = overrides.get("ai_assistant") or "both"
+    valid = get_valid_values()
+    if ai_assistant_raw not in valid:
+        raise ValueError(
+            f"--ai-assistant inválido: '{ai_assistant_raw}'. Válidos: {valid}")
+
+    # Coleta defaults de configuração de cada plugin ativo (ex: shared_dir do Copilot)
+    plugin_config: dict = {}
+    for plugin in resolve_plugins(ai_assistant_raw):
+        plugin_config.update(plugin.get_config_defaults(overrides))
+
+    # shared_dir: plugin_config tem prioridade, depois overrides, depois default
+    shared_dir_raw = overrides.get("shared_dir") or plugin_config.get("shared_dir")
+    shared_dir = (
+        Path(shared_dir_raw).expanduser().resolve()
+        if shared_dir_raw
+        else get_default_shared_dir().resolve()
+    )
+
     return ProjectConfig(
         project_name=name,
         project_title=overrides.get("title") or _to_title(name),
@@ -193,12 +216,12 @@ def _collect_ci(overrides: dict) -> ProjectConfig:
         domain=domain,
         language=language,
         github_repo=overrides.get("repo") or None,
-        shared_dir=Path(overrides["shared_dir"]).expanduser().resolve(
-        ) if overrides.get("shared_dir") else get_default_shared_dir().resolve(),
+        shared_dir=shared_dir,
         target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_parse_extra_profiles(overrides.get(
             "extra_profiles") or "domain-only", domain),
+        ai_assistant=ai_assistant_raw,
     )
 
 
@@ -287,6 +310,43 @@ def _select_language(default: str) -> str:
     return VALID_LANGUAGES[int(choice) - 1]
 
 
+def _select_ai_assistant(default: AiAssistantType) -> AiAssistantType:
+    """
+    Seleção de assistente de IA via menu numerado, dinâmico a partir do registry de plugins.
+
+    A ordem das opções é determinada pela ordem de registro dos plugins:
+    1 = both, 2 = claude, 3 = copilot, 4 = none
+
+    :param default: Valor padrão (ex: "both").
+    :type default: AiAssistantType
+    :return: Assistente selecionado.
+    :rtype: AiAssistantType
+    """
+    from .ai import get_plugin_menu_options
+
+    console.print("\n  [cyan]Assistente de IA:[/cyan]")
+    options = get_plugin_menu_options()
+
+    for idx, (key, desc) in enumerate(options, start=1):
+        default_marker = " [dim](default)[/dim]" if key == default else ""
+        console.print(
+            f"      [bold cyan][{idx}][/bold cyan]  {key}  [dim]({desc})[/dim]{default_marker}"
+        )
+
+    console.print()
+
+    choices = [str(i) for i in range(1, len(options) + 1)]
+    default_idx = str(next((i for i, (k, _) in enumerate(options, 1) if k == default), 1))
+
+    choice = Prompt.ask(
+        "      Escolha",
+        choices=choices,
+        default=default_idx,
+        show_choices=False,
+    )
+    return options[int(choice) - 1][0]
+
+
 def _collect_interactive(defaults: dict) -> ProjectConfig:
     """Coleta dados interativamente com Rich prompts."""
     console.print("[bold]Informações do Projeto[/bold]\n", style="blue")
@@ -323,15 +383,23 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
     # language - usando menu numerado
     language = _select_language(defaults.get("language") or "python")
 
+    # ai_assistant - menu dinâmico via registry de plugins
+    ai_assistant = _select_ai_assistant(defaults.get("ai_assistant") or "both")
+
     github_repo = Prompt.ask(
         "  [cyan]Repositório GitHub[/cyan] [dim](URL ou Enter para pular)[/dim]",
         default=defaults.get("repo") or "",
     ).strip() or None
 
-    shared_dir_str = Prompt.ask(
-        "  [cyan]Diretório compartilhado[/cyan]",
-        default=str(defaults.get("shared_dir") or get_default_shared_dir()),
-    ).strip()
+    # Coleta configuração específica de cada plugin ativo (ex: shared_dir do Copilot)
+    from .ai import resolve_plugins
+    plugin_config: dict = {}
+    for plugin in resolve_plugins(ai_assistant):
+        plugin_config.update(plugin.collect_config(defaults))
+
+    shared_dir_str = plugin_config.get("shared_dir") or str(
+        defaults.get("shared_dir") or get_default_shared_dir()
+    )
 
     target_dir_str = Prompt.ask(
         "  [cyan]Diretório alvo[/cyan] [dim](onde criar o projeto)[/dim]",
@@ -358,6 +426,7 @@ def _collect_interactive(defaults: dict) -> ProjectConfig:
         target_dir=target_dir,
         created_at=_iso_now(),
         extra_profiles=_collect_extra_profiles(domain, language),
+        ai_assistant=ai_assistant,
     )
 
 
