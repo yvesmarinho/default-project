@@ -29,7 +29,7 @@ Antes de começar qualquer tarefa, colete (via `speckit.clarify` ou declaração
 | **Linguagem + versão** | Python 3.12, TypeScript 5.3, Go 1.22 | ✅ |
 | **Framework principal** | FastAPI, Next.js, Django, Express, Gin | ✅ |
 | **Estrutura de testes** | pytest, jest, go test | ✅ |
-| **Linter / formatter** | black + flake8, prettier + eslint, gofmt | ✅ |
+| **Linter / formatter** | ruff (lint + format), prettier + eslint, gofmt | ✅ |
 | **Onde está o código** | `src/`, `app/`, monorepo? | ✅ |
 | **Type checking** | mypy, tsc strict, staticcheck | Recomendado |
 | **Convenções de import** | absolute, relative, isort profile | Recomendado |
@@ -71,8 +71,8 @@ Uma tarefa de programação está **concluída** quando:
 
 ### Obrigatório
 - [ ] Testes passando: `pytest` / `npm test` / `go test ./...` sem falhas
-- [ ] Lint sem erros: `flake8` / `eslint` / `golangci-lint`
-- [ ] Formatter aplicado: `black` / `prettier` / `gofmt`
+- [ ] Lint sem erros: `ruff check` / `eslint` / `golangci-lint`
+- [ ] Formatter aplicado: `ruff format` / `prettier` / `gofmt`
 - [ ] Type checking sem erros: `mypy` / `tsc --noEmit` / `staticcheck`
 - [ ] Nenhum `TODO` ou `FIXME` não rastreado introduzido
 - [ ] Commit com mensagem Conventional Commits
@@ -94,12 +94,11 @@ Uma tarefa de programação está **concluída** quando:
 
 ```bash
 # Desenvolvimento
-uv run pytest                        # testes
-uv run pytest --cov=src --cov-report=term-missing  # coverage
-uv run black src/                    # format
-uv run flake8 src/                   # lint
-uv run mypy src/                     # type check
-uv run isort src/                    # ordenar imports
+uv run pytest                                        # testes
+uv run pytest --cov=src --cov-report=term-missing    # coverage
+uv run ruff format src/                              # format (substitui black)
+uv run ruff check src/                               # lint + imports (substitui flake8 + isort)
+uv run mypy src/                                     # type check
 
 # Convenções
 # - Máximo 88 chars por linha (black default)

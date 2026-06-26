@@ -87,14 +87,14 @@ def test_config_yml_disables_blank_issues() -> None:
 
 
 # ---------------------------------------------------------------------------
-# copy_speckit() — copia ISSUE_TEMPLATE/* para o projeto filho
+# copy_github_templates() — copia ISSUE_TEMPLATE/* para o projeto filho
 # ---------------------------------------------------------------------------
 
 
 def test_copy_speckit_includes_issue_templates(make_project_config) -> None:
-    """copy_speckit() copia os arquivos de ISSUE_TEMPLATE para o projeto filho."""
+    """copy_github_templates() copia os arquivos de ISSUE_TEMPLATE para o projeto filho."""
     cfg = make_project_config("programming", "python")
-    project.copy_speckit(cfg)
+    project.copy_github_templates(cfg)
 
     dst_template_dir = cfg.target_dir / ".github" / "ISSUE_TEMPLATE"
     assert dst_template_dir.is_dir(), (
@@ -102,7 +102,7 @@ def test_copy_speckit_includes_issue_templates(make_project_config) -> None:
     )
     for expected in ("bug_report.md", "feature_request.md", "improvement.md", "config.yml"):
         assert (dst_template_dir / expected).exists(), (
-            f"{expected} não copiado pelo copy_speckit()"
+            f"{expected} não copiado pelo copy_github_templates()"
         )
 
 

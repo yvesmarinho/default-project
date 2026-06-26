@@ -18,18 +18,19 @@ Modo de execução: [quick | completo]
 ```
 
 **Modo QUICK** (IMP-65 P2 — ~5s de duração):
-- ✅ Passos essenciais apenas (1, 2, 3, 4, 4.5)
-- ❌ Pula: git status, documentos de sessão, time-tracker, escopo
+- ✅ Passos essenciais apenas (0, 1, 2, 3, 4, 4.5)
+- ❌ Pula: git status, documentos de sessão, escopo
 - **Quando usar**: Sessões rápidas de debugging, consultas pontuais, verificações rápidas
 
 **Modo COMPLETO** (~15s de duração):
-- ✅ Todos os 8 passos (completo + robusto)
+- ✅ Todos os passos (0-8, completo + robusto)
 - **Quando usar**: Sessões de desenvolvimento, implementações, sessões longas
 
 **Passos por modo**:
 
 | Passo | Quick | Completo | Descrição |
 |-------|-------|----------|-----------|
+| 0. Time Tracker | ✅ | ✅ | session-time-tracker.py start (sempre) |
 | 1. Verificar MCP | ✅ | ✅ | Configuração MCP servers |
 | 2. Recuperar Contexto | ✅ | ✅ | TODO.md, INDEX.md, sessão anterior |
 | 3. Carregar Regras | ✅ | ✅ | .copilot-rules.md enforcement |
@@ -37,7 +38,7 @@ Modo de execução: [quick | completo]
 | 4.5. Dependências | ✅ | ✅ | Verificar vulnerabilidades |
 | 5. Estado do Projeto | ❌ | ✅ | git status, log |
 | 6. Docs de Sessão | ❌ | ✅ | SESSION_RECOVERY, DAILY_ACTIVITIES |
-| 6.5. Time Tracker | ❌ | ✅ | session-time-tracker.py start |
+| 6.5. Session Index | ❌ | ✅ | Verificar session-index.db |
 | 7. Escopo da Sessão | ❌ | ✅ | Domain profile, objetivo |
 | 8. Atualizar Índice | ❌ | ✅ | TODO.md, índice de sessão |
 
@@ -47,8 +48,45 @@ Modo de execução: [quick | completo]
 
 Execute os passos abaixo em ordem. Confirme cada etapa antes de avançar.
 
-**Se modo QUICK**: Execute apenas passos 1-4.5 e pule para "Checklist Final".
-**Se modo COMPLETO**: Execute todos os passos 1-8.
+**Se modo QUICK**: Execute passos 0-4.5 e pule para "Checklist Final".
+**Se modo COMPLETO**: Execute todos os passos 0-8.
+
+---
+
+### Passo 0 — Iniciar Rastreamento de Tempo (SEMPRE — QUICK e COMPLETO)
+
+**Ação do agente**: Disparar `session-time-tracker.py start` imediatamente, antes de qualquer outro passo.
+
+```python
+python3 - << 'EOF'
+import subprocess
+from pathlib import Path
+
+tracker = Path("scripts/session-time-tracker.py")
+if not tracker.exists():
+    print("⚠️  session-time-tracker.py não encontrado — pular")
+else:
+    result = subprocess.run(
+        ["python3", str(tracker), "start"],
+        capture_output=True, text=True,
+    )
+    if result.returncode == 0:
+        print(result.stdout.strip() or "✅ Session time tracker: iniciado")
+    else:
+        # Sessão já ativa é aceitável — não bloquear o ritual
+        print(f"⚠️  Time tracker: {result.stderr.strip() or result.stdout.strip()}")
+EOF
+```
+
+**Resultado esperado**:
+```
+✅ Session time tracker: iniciado
+Session ID: [auto-generated]
+Start time: [YYYY-MM-DD HH:MM:SS]
+```
+
+> Se já existir uma sessão ativa (restart do prompt), o tracker irá reportar
+> o aviso — **não bloquear o ritual**. O tempo continuará contando da sessão existente.
 
 ---
 
@@ -291,7 +329,7 @@ Arquivos a criar:
 
 **Protocolo de Documentação Incremental**:
 
-Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIES_[YYYY-MM-DD].md` seguindo o formato estruturado definido em [`docs/SESSION_DOCS_STYLE_GUIDE.md`](../../docs/SESSION_DOCS_STYLE_GUIDE.md).
+Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIES_[YYYY-MM-DD].md` seguindo o formato estruturado definido em [`docs/guides/SESSION_DOCS_STYLE_GUIDE.md`](../../docs/guides/SESSION_DOCS_STYLE_GUIDE.md).
 
 **Regras de documentação durante a sessão**:
 
@@ -330,7 +368,7 @@ Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIE
 5. **Segurança**: NUNCA incluir credenciais, tokens, senhas, ou dados sensíveis nos blocos
 
 **Carregar style guide**:
-- Ler [`docs/SESSION_DOCS_STYLE_GUIDE.md`](../../docs/SESSION_DOCS_STYLE_GUIDE.md) após criar os arquivos de sessão
+- Ler [`docs/guides/SESSION_DOCS_STYLE_GUIDE.md`](../../docs/guides/SESSION_DOCS_STYLE_GUIDE.md) após criar os arquivos de sessão
 - Confirmar compreensão dos campos obrigatórios vs opcionais
 - Confirmar compreensão dos anti-padrões (DO/DON'T)
 
@@ -342,51 +380,43 @@ Durante a sessão, o agente deve **atualizar incrementalmente** `DAILY_ACTIVITIE
 
 ---
 
-### Passo 6.5 — Inicializar Rastreamento de Sessão
+### Passo 6.5 — Verificar Session Index
 
 > **🚀 Modo QUICK**: ⏭️ **PULAR este passo** (ir para Passo 7 ou Checklist Final)
 
-**Ação do agente**: Garantir que session-index e session-time estão operacionais.
+> **Nota**: O Session Time Tracker já foi iniciado no Passo 0 (automático). Este passo
+> verifica apenas o session-index (base de busca em sessões anteriores).
 
-#### 6.5.1 — Verificar Session Index
+**Ação do agente**: Garantir que session-index está operacional.
 
-```bash
-# Verificar se index.db existe
-if [ ! -f .session-index/index.db ]; then
-  echo "⚠ Session index não encontrado. Reconstruindo..."
-  python scripts/session-index.py --rebuild
-else
-  echo "✅ Session index OK"
-fi
-```
+```python
+python3 - << 'EOF'
+from pathlib import Path
+import subprocess
 
-**Resultado esperado**: `.session-index/index.db` presente (~50KB ou mais)
-
-#### 6.5.2 — Iniciar Session Time Tracker
-
-```bash
-# Iniciar rastreamento de tempo desta sessão
-python scripts/session-time-tracker.py start
+index_db = Path(".session-index/index.db")
+if not index_db.exists():
+    print("⚠️  Session index não encontrado. Reconstruindo...")
+    result = subprocess.run(
+        ["python3", "scripts/session-index.py", "--rebuild"],
+        capture_output=True, text=True,
+    )
+    print(result.stdout.strip() or "✅ Session index reconstruído")
+else:
+    size_kb = index_db.stat().st_size // 1024
+    print(f"✅ Session index OK ({size_kb}KB)")
+EOF
 ```
 
 **Resultado esperado**:
 ```
-📊 Session time tracking started
-Session ID: [auto-generated]
-Start time: [YYYY-MM-DD HH:MM:SS]
+✅ Session index OK (~50KB ou mais)
 ```
-
-**Verificar status**:
-```bash
-python scripts/session-time-tracker.py status
-```
-
-**Resultado esperado**: Deve mostrar 1 sessão ativa (sem end_time)
 
 **Resultado geral do passo**:
 ```
 ✅ Session index: operacional
-✅ Session time tracker: iniciado para esta sessão
+✅ Session time tracker: ativo desde Passo 0
 ```
 
 ---
@@ -456,6 +486,7 @@ Atualizar `docs/TODO.md`:
 
 Antes de começar o trabalho efetivo, confirmar:
 
+- [ ] **Session time tracker iniciado** (Passo 0 — automático)
 - [ ] MCP configurado em `.vscode/mcp.json` (memory ✅ + sequential-thinking ✅)
 - [ ] Contexto da sessão anterior recuperado e declarado
 - [ ] `.copilot-rules.md` lido e regras P0 ativas
@@ -471,6 +502,7 @@ Antes de começar o trabalho efetivo, confirmar:
 
 Antes de começar o trabalho efetivo, confirmar:
 
+- [ ] **Session time tracker iniciado** (Passo 0 — automático)
 - [ ] MCP configurado em `.vscode/mcp.json` (memory ✅ + sequential-thinking ✅)
 - [ ] Contexto da sessão anterior recuperado e declarado
 - [ ] `.copilot-rules.md` lido e regras P0 ativas
@@ -479,7 +511,7 @@ Antes de começar o trabalho efetivo, confirmar:
 - [ ] `git status` verificado — sem surpresas
 - [ ] `SESSION_RECOVERY_[data].md` criado
 - [ ] `DAILY_ACTIVITIES_[data].md` criado
-- [ ] Session time tracker iniciado
+- [ ] Session index operacional
 - [ ] Domínio declarado + Domain Profile carregado
 - [ ] Objetivo da sessão declarado em 1 frase
 

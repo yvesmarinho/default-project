@@ -56,10 +56,8 @@ tsconfig.json @frontend-team @tech-lead
 .eslintrc.* @frontend-team @tech-lead
 .prettierrc.* @frontend-team @tech-lead
 
-# Configurações Python
-.flake8 @backend-team @tech-lead
-.pylintrc @backend-team @tech-lead
-.black @backend-team @tech-lead
+# Configurações Python (ruff substitui flake8 + black + isort; config em pyproject.toml)
+pyproject.toml @backend-team @tech-lead
 
 # Editor config
 .editorconfig @tech-lead

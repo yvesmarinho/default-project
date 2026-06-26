@@ -199,9 +199,21 @@ _ALL_MCP_SERVERS: dict[str, dict] = {
         "command": "npx",
         "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
     },
+    # Servidor GitHub via GitHub Copilot (HTTP — requer assinatura Copilot)
     "github": {
         "type": "http",
         "url": "https://api.githubcopilot.com/mcp/",
+    },
+    # Servidor GitHub via Docker oficial (stdio — requer Docker + PAT)
+    # Usa ${input:github-token} resolvido pelo VS Code via seção "inputs"
+    "io.github.github/github-mcp-server": {
+        "type": "stdio",
+        "command": "docker",
+        "args": [
+            "run", "-i", "--rm",
+            "-e", "GITHUB_PERSONAL_ACCESS_TOKEN=${input:github-token}",
+            "ghcr.io/github/github-mcp-server:1.4.0",
+        ],
     },
     "sqlite": {
         "command": "npx",
@@ -223,11 +235,15 @@ _MCP_BY_DOMAIN: dict[str, list[str]] = {
 }
 
 # Padrões que identificam servidores GitHub não-oficiais (via npx args)
+# ATENÇÃO: NÃO incluir "github-mcp-server" sem prefixo — matchearia falsamente
+# a imagem Docker oficial "ghcr.io/github/github-mcp-server:*"
 _UNOFFICIAL_GITHUB_ARG_PATTERNS: list[str] = [
     "@modelcontextprotocol/server-github",
     "mcp-server-github",
-    "github-mcp-server",
 ]
+
+# Prefixo da imagem Docker oficial do GitHub MCP — não deve ser removida
+_OFFICIAL_GITHUB_DOCKER_IMAGE = "ghcr.io/github/github-mcp-server"
 
 
 # ---------------------------------------------------------------------------
@@ -289,6 +305,8 @@ def normalize_github_mcp(servers: dict) -> tuple[dict, list[str]]:
             pattern in arg
             for pattern in _UNOFFICIAL_GITHUB_ARG_PATTERNS
             for arg in args
+            # Excluir imagem Docker oficial: ghcr.io/github/github-mcp-server
+            if _OFFICIAL_GITHUB_DOCKER_IMAGE not in arg
         ) or (
             "github" in url.lower()
             and url != official_url
@@ -373,6 +391,9 @@ def generate_mcp(config: ProjectConfig) -> CreatedItem:
 
     Se arquivo existe, usa merge inteligente (BUG-16 fix) seguido de
     normalização do servidor GitHub para garantir que seja o oficial HTTP.
+
+    Preserva a seção ``inputs`` de arquivos existentes (necessária para
+    servidores que usam ${input:*} — ex: github-mcp-server via Docker + PAT).
     """
     dest = config.project_path / ".vscode" / "mcp.json"
 
@@ -381,15 +402,24 @@ def generate_mcp(config: ProjectConfig) -> CreatedItem:
     servers = {name: _ALL_MCP_SERVERS[name]
                for name in server_names if name in _ALL_MCP_SERVERS}
 
+    payload: dict = {"servers": servers}
+
     if dest.exists():
+        # Preservar seção "inputs" existente antes do merge
+        try:
+            existing = json.loads(dest.read_text(encoding="utf-8"))
+            if "inputs" in existing:
+                payload["inputs"] = existing["inputs"]
+        except Exception:
+            pass
         # FIX BUG P0: Usar merge_or_skip ao invés de skip incondicional
-        template_content = json.dumps({"servers": servers}, indent=2, ensure_ascii=False) + "\n"
+        template_content = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
         result = file_merge.merge_or_skip(dest, template_content, interactive=False)
         # Garantir servidor GitHub oficial após merge (cobre casos não tratados pelo BUG-20)
         _apply_github_normalization(dest)
         return result
 
-    return _write_json(dest, {"servers": servers})
+    return _write_json(dest, payload)
 
 
 def generate_extensions(config: ProjectConfig) -> CreatedItem:

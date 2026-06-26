@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 import os
 import shutil
+import subprocess
 from pathlib import Path
 
 from .config import (
@@ -399,83 +400,205 @@ git add .secrets/.env  # Deve FALHAR
 """
 
 _PRE_COMMIT_SECRETS_HOOK = r"""#!/usr/bin/env bash
-# Pre-commit hook: Valida que arquivos sensíveis não sejam commitados
+# Pre-commit hook: Segurança — secrets, IPs internos e credenciais (Git Guardian rules)
 # Instalação:
 #   cp .git-hooks/pre-commit.secrets .git/hooks/pre-commit
 #   chmod +x .git/hooks/pre-commit
 
 set -euo pipefail
 
-# Cores
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
 GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo -e "${YELLOW}🔍 Validando segurança de secrets...${NC}"
+echo -e "${YELLOW}🔍 Validando segurança (secrets + IPs + credenciais)...${NC}"
 
-# 1. Verificar se .secrets/ está sendo commitado
+# ---------------------------------------------------------------------------
+# 1. Bloquear commit de .secrets/
+# ---------------------------------------------------------------------------
 if git diff --cached --name-only | grep -q '^\.secrets/'; then
     echo -e "${RED}❌ BLOQUEADO: .secrets/ detectado${NC}"
     echo ""
     echo "Arquivos detectados:"
     git diff --cached --name-only | grep '^\.secrets/' | sed 's/^/  - /'
     echo ""
-    echo "💡 Solução: remova os arquivos do staging:"
-    echo "   git restore --staged .secrets/"
-    echo "   # ou: git reset .secrets/"
+    echo "💡 Solução: git restore --staged .secrets/"
     exit 1
 fi
 
-# 2. Verificar padrões de arquivos sensíveis (excluindo .git-hooks/)
+# ---------------------------------------------------------------------------
+# 2. Bloquear por nome de arquivo sensível
+# ---------------------------------------------------------------------------
 SENSITIVE_PATTERNS=(
-    '\.env'
+    '\.env$'
     '\.env\.'
-    '\*\.key$'
-    '\*\.pem$'
-    '\*\.crt$'
-    'secret'
-    'password'
-    'token'
+    '\.key$'
+    '\.pem$'
+    '\.p12$'
+    '\.pfx$'
+    '\.crt$'
+    '\.cert$'
     '\.vault_pass'
-    'credentials'
     'kubeconfig'
 )
 
 BLOCKED_FILES=()
 for pattern in "${SENSITIVE_PATTERNS[@]}"; do
     while IFS= read -r file; do
-        # Ignorar arquivos em .git-hooks/ (são scripts de validação, não secrets)
-        if [[ "$file" =~ ^\.git-hooks/ ]]; then
-            continue
-        fi
+        if [[ "$file" =~ ^\.git-hooks/ ]]; then continue; fi
         [[ -n "$file" ]] && BLOCKED_FILES+=("$file")
     done < <(git diff --cached --name-only | grep -iE "$pattern" || true)
 done
 
 if [ ${#BLOCKED_FILES[@]} -gt 0 ]; then
-    echo -e "${RED}❌ BLOQUEADO: Arquivos sensíveis detectados${NC}"
-    echo ""
-    echo "Arquivos bloqueados:"
+    echo -e "${RED}❌ BLOQUEADO: Nomes de arquivos sensíveis detectados${NC}"
     printf '  - %s\n' "${BLOCKED_FILES[@]}"
     echo ""
-    echo "💡 Estes arquivos devem estar em .secrets/"
+    echo "💡 Mova para .secrets/ ou adicione ao .gitignore"
     exit 1
 fi
 
-# 3. Verificar permissões da pasta .secrets/
+# ---------------------------------------------------------------------------
+# 3. Varredura de CONTEÚDO: IPs internos + credenciais (Git Guardian rules)
+# ---------------------------------------------------------------------------
+python3 - <<'PYEOF'
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+# Diretórios/arquivos que podem conter IPs/tokens como exemplo (não são segredos)
+SCAN_EXCLUDES = {
+    ".git-hooks", "docs/bugs", "docs/debates", "docs/implementations",
+    "tests", ".memory", "CHANGELOG", "SECURITY.md",
+}
+
+# Extensões de texto a escanear (binários são ignorados)
+TEXT_EXTENSIONS = {
+    ".md", ".txt", ".yml", ".yaml", ".json", ".py", ".sh", ".env",
+    ".conf", ".config", ".ini", ".toml", ".xml", ".html", ".js", ".ts",
+    ".tf", ".hcl", ".j2", ".jinja", ".properties", ".cfg", ".sql",
+    ".dockerfile", "", ".env.example",
+}
+
+# ---------------------------------------------------------------------------
+# Padrões: IPs internos (RFC 1918 + loopback + link-local)
+# ---------------------------------------------------------------------------
+IP_PATTERNS = [
+    (re.compile(r'\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'),       "IP privado classe A (10.x.x.x)"),
+    (re.compile(r'\b172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}\b'), "IP privado classe B (172.16-31.x.x)"),
+    (re.compile(r'\b192\.168\.\d{1,3}\.\d{1,3}\b'),           "IP privado classe C (192.168.x.x)"),
+    (re.compile(r'\b127\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'),       "IP loopback (127.x.x.x)"),
+    (re.compile(r'\b169\.254\.\d{1,3}\.\d{1,3}\b'),           "IP link-local (169.254.x.x)"),
+]
+
+# ---------------------------------------------------------------------------
+# Padrões: credenciais hardcoded (Git Guardian rules)
+# ---------------------------------------------------------------------------
+CRED_PATTERNS = [
+    # Chaves privadas PEM
+    (re.compile(r'-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----'), "Chave privada PEM"),
+    # AWS
+    (re.compile(r'\bAKIA[0-9A-Z]{16}\b'),                     "AWS Access Key ID"),
+    (re.compile(r'(?i)aws.{0,20}(secret|key).{0,10}[=:]\s*[\'"]?[A-Za-z0-9/+]{40}'), "AWS Secret Key"),
+    # GitHub tokens
+    (re.compile(r'\bghp_[A-Za-z0-9]{36}\b'),                  "GitHub Personal Token (ghp_)"),
+    (re.compile(r'\bgho_[A-Za-z0-9]{36}\b'),                  "GitHub OAuth Token (gho_)"),
+    (re.compile(r'\bghs_[A-Za-z0-9]{36}\b'),                  "GitHub App Token (ghs_)"),
+    (re.compile(r'\bghr_[A-Za-z0-9]{36}\b'),                  "GitHub Refresh Token (ghr_)"),
+    # Credenciais em URLs (http://user:senha@host)
+    (re.compile(r'[a-zA-Z]+://[^/@\s]+:[^/@\s]+@[^/\s]'),    "Credencial em URL (user:pass@host)"),
+    # Variáveis com valor literal de senha/token
+    (re.compile(r'(?i)(password|passwd|secret|api_key|apikey|auth_token|access_token)\s*[=:]\s*[\'"][^\'"\s]{8,}[\'"]'), "Senha/token literal em variável"),
+    # Bearer tokens em código
+    (re.compile(r'(?i)Bearer\s+[A-Za-z0-9\-._~+/]{20,}={0,2}(?!\s*(#|\/\/|<!--))'), "Bearer token hardcoded"),
+    # Senhas base64 em YAML/JSON (padrão comum: password: <base64>)
+    (re.compile(r'(?i)(password|secret)\s*:\s*[A-Za-z0-9+/]{16,}={0,2}\s*$', re.MULTILINE), "Valor base64 suspeito em campo sensível"),
+]
+
+def should_exclude(filepath: str) -> bool:
+    p = Path(filepath)
+    for excl in SCAN_EXCLUDES:
+        if filepath.startswith(excl + "/") or filepath == excl:
+            return True
+    if p.suffix.lower() not in TEXT_EXTENSIONS:
+        return True
+    return False
+
+def get_staged_content(filepath: str) -> str | None:
+    try:
+        r = subprocess.run(
+            ["git", "show", f":{filepath}"],
+            capture_output=True, text=True, errors="replace", timeout=10,
+        )
+        return r.stdout if r.returncode == 0 else None
+    except Exception:
+        return None
+
+# Obter arquivos staged
+r = subprocess.run(
+    ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
+    capture_output=True, text=True,
+)
+staged = [f for f in r.stdout.strip().split("\n") if f]
+
+ip_violations: list[tuple[str, str, list[str]]] = []
+cred_violations: list[tuple[str, str]] = []
+
+for filepath in staged:
+    if should_exclude(filepath):
+        continue
+
+    content = get_staged_content(filepath)
+    if content is None:
+        continue
+
+    # Verificar IPs
+    for pattern, label in IP_PATTERNS:
+        found = list(dict.fromkeys(pattern.findall(content)))
+        if found:
+            ip_violations.append((filepath, label, found))
+
+    # Verificar credenciais
+    for pattern, label in CRED_PATTERNS:
+        if pattern.search(content):
+            cred_violations.append((filepath, label))
+
+failed = False
+
+if ip_violations:
+    print("\n❌ BLOQUEADO: IPs internos detectados no conteúdo dos arquivos:")
+    for filepath, label, ips in ip_violations:
+        masked = [ip[:3] + ".***.***" for ip in ips]
+        print(f"  {filepath} → {label}: {masked}")
+    print()
+    print("💡 Substitua os IPs por placeholders: <IP_DO_HOST>, 0.0.0.0, ou variável de ambiente")
+    failed = True
+
+if cred_violations:
+    print("\n❌ BLOQUEADO: Credenciais hardcoded detectadas (Git Guardian rules):")
+    for filepath, label in cred_violations:
+        print(f"  {filepath} → {label}")
+    print()
+    print("💡 Mova credenciais para .secrets/*.json ou variáveis de ambiente")
+    failed = True
+
+sys.exit(1 if failed else 0)
+PYEOF
+
+# ---------------------------------------------------------------------------
+# 4. Permissões de .secrets/
+# ---------------------------------------------------------------------------
 if [ -d .secrets ]; then
-    PERMS=$(stat -c "%a" .secrets 2>/dev/null || \
-            stat -f "%A" .secrets 2>/dev/null || echo "000")
+    PERMS=$(stat -c "%a" .secrets 2>/dev/null || stat -f "%A" .secrets 2>/dev/null || echo "000")
     if [ "$PERMS" != "700" ]; then
-        echo -e "${YELLOW}⚠️  .secrets/ não tem permissão 700${NC}"
-        echo "   Corrigindo automaticamente..."
+        echo -e "${YELLOW}⚠️  .secrets/ não tem permissão 700 — corrigindo...${NC}"
         chmod 700 .secrets
-        echo -e "${GREEN}✅ Permissões corrigidas${NC}"
     fi
 fi
 
-echo -e "${GREEN}✅ Validação de secrets OK${NC}"
+echo -e "${GREEN}✅ Segurança OK — secrets, IPs e credenciais verificados${NC}"
 exit 0
 """
 
@@ -1129,9 +1252,8 @@ mkdir -p docs/SESSIONS/$(date +%Y-%m-%d)
 - [docs/retrospectives/](retrospectives/) — Post-mortems e lições aprendidas
 - [docs/templates/](templates/) — Templates reutilizáveis
 
-### GitHub Copilot
+### Agentes & Automação
 
-- [.github/copilot-instructions.md](../.github/copilot-instructions.md) — Instruções do projeto
 - [.github/agents/](../.github/agents/) — Agentes customizados (SpecKit)
 - [.github/prompts/](../.github/prompts/) — Prompts de sessão
 
@@ -1164,7 +1286,7 @@ chmod +x .git/hooks/pre-commit
 
 ---
 
-## 🤖 SpecKit & GitHub Copilot
+## 🤖 SpecKit & Agentes
 
 ### Agentes Disponíveis
 
@@ -1227,7 +1349,7 @@ Seu projeto foi criado com sucesso usando o **Enterprise Default Project Templat
 
 **Características principais:**
 - ✅ Estrutura completa de diretórios
-- ✅ GitHub Copilot configurado (11 agentes + 9 prompts)
+- ✅ SpecKit configurado (11 agentes + 9 prompts)
 - ✅ Segurança avançada (secrets protegidos)
 - ✅ Git inicializado (commit + tag)
 - ✅ VS Code configurado (MCP, tasks, debug)
@@ -1237,7 +1359,7 @@ Seu projeto foi criado com sucesso usando o **Enterprise Default Project Templat
 **Suporte e Dúvidas:**
 - Consulte `docs/INDEX.md` para orientação
 - Use `@session-manager` para iniciar primeira sessão
-- Revise `.github/copilot-instructions.md` para regras do projeto
+- Revise `CLAUDE.md` para regras e contexto do projeto
 
 ---
 
@@ -1675,7 +1797,7 @@ make clean
 ```
 {{PROJECT_NAME}}/
 ├── .claude/            # Claude Code: commands e skills
-├── .github/            # GitHub Copilot, CI/CD, agentes SpecKit
+├── .github/            # CI/CD, agentes SpecKit
 ├── .secrets/           # Credenciais locais (não versionado, chmod 700)
 ├── .vscode/            # VS Code: settings, MCP, extensions
 ├── docs/               # Documentação (INDEX, TODO, SESSIONS)
@@ -2107,19 +2229,92 @@ def _prepare_content(template: str, file_rel: str, config: ProjectConfig) -> str
 
 
 # ---------------------------------------------------------------------------
-# SpecKit — cópia de agents, prompts e perfis de domínio
+# SpecKit — inicialização via specify CLI e cópia de assets customizados
 # ---------------------------------------------------------------------------
+
+# Diretório de templates customizados do SpecKit (separado do projeto DEV)
+_SPECKIT_TEMPLATES = _TEMPLATE_ROOT / "scaffold" / "templates" / "speckit"
+
+# Mapeamento ai_assistant → integração(ões) do specify CLI
+_AI_TO_SPECIFY: dict[str, list[str]] = {
+    "claude":  ["claude"],
+    "copilot": ["copilot"],
+    "both":    ["claude", "copilot"],
+    "none":    [],
+}
+
+
+def run_speckit_init(config: ProjectConfig) -> list[CreatedItem]:
+    """
+    Executa `specify init --here --force --integration <name>` no diretório do
+    projeto para instalar os assets oficiais e versionados do SpecKit.
+
+    Substitui a cópia manual de agents/prompts/specify do projeto DEV. Para
+    cada integração mapeada ao ai_assistant do projeto, roda specify uma vez.
+
+    Args:
+        config: Configuração do projeto (usa project_path e ai_assistant)
+    """
+    results: list[CreatedItem] = []
+    integrations = _AI_TO_SPECIFY.get(config.ai_assistant, [])
+
+    if not integrations:
+        log.info("ai_assistant=%s → specify init ignorado", config.ai_assistant)
+        return results
+
+    for integration in integrations:
+        cmd = ["specify", "init", "--here", "--force", "--integration", integration]
+        log.info("Executando: %s em %s", " ".join(cmd), config.project_path)
+        try:
+            proc = subprocess.run(
+                cmd,
+                cwd=str(config.project_path),
+                capture_output=True,
+                text=True,
+                timeout=120,
+                stdin=subprocess.DEVNULL,  # evita hanging quando stdin é um TTY interativo
+            )
+            if proc.returncode == 0:
+                results.append(CreatedItem(
+                    path=config.project_path / ".specify",
+                    kind="dir",
+                    status="created",
+                    message=f"specify init --integration {integration}",
+                ))
+            else:
+                output_diag = (proc.stderr or proc.stdout or "")[:400]
+                log.error("specify init falhou (%s):\n%s", integration, output_diag)
+                results.append(CreatedItem(
+                    path=config.project_path / ".specify",
+                    kind="dir",
+                    status="error",
+                    message=f"specify init --integration {integration}: {output_diag[:200]}",
+                ))
+        except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+            log.error("Erro ao executar specify init: %s", exc)
+            results.append(CreatedItem(
+                path=config.project_path / ".specify",
+                kind="dir",
+                status="error",
+                message=f"specify não encontrado ou timeout: {exc}",
+            ))
+
+    return results
+
 
 def copy_speckit(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
-    Copia assets SpecKit do template para o projeto gerado.
+    Compõe perfis de domínio do scaffold para o projeto gerado.
 
-    Copia (de _TEMPLATE_ROOT → config.project_path):
-      - .github/agents/speckit.*.agent.md
-      - .github/prompts/speckit.*.prompt.md
-      - .github/prompts/session-*.prompt.md
-      - .specify/templates/ (diretório completo)
-      - .specify/config.json (se existir)
+    Agents, prompts e .specify/ são gerados exclusivamente por run_speckit_init()
+    via `specify init --here --force --integration <IA>`. Esta função NÃO copia
+    nenhum asset do SpecKit — apenas os perfis de domínio do scaffold próprio.
+
+    Perfis de domínio vão para .github/prompts/domain/ e são usados por TODAS as IAs:
+      - Claude: session-start referencia .github/prompts/domain/ diretamente
+      - Copilot: referenciados via .github/prompts/
+
+    Compõe perfis (de scaffold/profiles/):
       - Perfil de domínio principal (DOMAIN_DEFAULT_PROFILES[cfg.domain])
       - Perfis extras selecionados (cfg.extra_profiles)
       - Sempre: SPECKIT_TRANSVERSAL_PROFILES (ex: devops-security)
@@ -2127,85 +2322,86 @@ def copy_speckit(config: ProjectConfig, force: bool = False) -> list[CreatedItem
     Args:
         config: Configuração do projeto
         force: Se True, sobrescreve arquivos existentes (com backup)
-
-    Arquivos já existentes no destino:
-      - Se idênticos: saltados
-      - Se diferentes e force=False: marcados com 'drift'
-      - Se diferentes e force=True: backupados e sobrescritos
     """
     results: list[CreatedItem] = []
     errors: list[str] = []
-    base = config.project_path  # BUG FIX: usar project_path, não target_dir
-    src_root = _TEMPLATE_ROOT
+    base = config.project_path
 
-    # --- Padrões glob de arquivos SpecKit a copiar ---
-    speckit_globs = [
-        (".github/agents",                "*.agent.md"),
-        (".github/prompts",               "speckit.*.prompt.md"),
-        (".github/prompts",               "session-*.prompt.md"),
-        (".github/ISSUE_TEMPLATE",        "*.md"),
-        (".github/ISSUE_TEMPLATE",        "*.yml"),
-    ]
-
-    for rel_dir, pattern in speckit_globs:
-        src_dir = src_root / rel_dir
-        if not src_dir.is_dir():
-            log.warning("⚠️  Diretório de origem não encontrado: %s", src_dir)
-            continue
-        for src_file in sorted(src_dir.glob(pattern)):
-            dst_file = base / rel_dir / src_file.name
-            result = _copy_file(src_file, dst_file, force=force)
-            if result.status == "error":
-                errors.append(str(src_file))
-            results.append(result)
-
-    # --- .specify/templates/ (diretório completo) ---
-    src_specify = src_root / ".specify" / "templates"
-    if src_specify.is_dir():
-        for src_file in sorted(src_specify.rglob("*")):
-            if src_file.is_file():
-                rel = src_file.relative_to(src_root)
-                dst_file = base / rel
-                result = _copy_file(src_file, dst_file, force=force)
-                if result.status == "error":
-                    errors.append(str(src_file))
-                results.append(result)
-    else:
-        log.warning("⚠️  .specify/templates/ não encontrado em %s", src_root)
-
-    # --- .specify/config.json ---
-    src_cfg = src_root / ".specify" / "config.json"
-    if src_cfg.is_file():
-        dst_cfg = base / ".specify" / "config.json"
-        result = _copy_file(src_cfg, dst_cfg, force=force)
-        if result.status == "error":
-            errors.append(str(src_cfg))
-        results.append(result)
-
-    # --- Perfis de domínio ---
+    # --- Perfis de domínio — usados por todas as IAs ---
     # 1) principal (pelo domínio)
     domain_profile = DOMAIN_DEFAULT_PROFILES.get(config.domain)
     if domain_profile:
         result = _copy_domain_profile(
-            src_root, base, domain_profile, errors, force=force)
+            _TEMPLATE_ROOT, base, domain_profile, errors, force=force)
         results.append(result)
 
     # 2) extras selecionados pelo utilizador (D-21)
     for profile_name in config.extra_profiles:
         if profile_name != domain_profile:  # evita duplicata
             result = _copy_domain_profile(
-                src_root, base, profile_name, errors, force=force)
+                _TEMPLATE_ROOT, base, profile_name, errors, force=force)
             results.append(result)
 
     # 3) transversais — sempre copiados (D-20)
     for profile_name in SPECKIT_TRANSVERSAL_PROFILES:
         result = _copy_domain_profile(
-            src_root, base, profile_name, errors, force=force)
+            _TEMPLATE_ROOT, base, profile_name, errors, force=force)
         results.append(result)
 
     if errors:
-        log.warning("⚠️  %d erro(s) ao copiar SpecKit: %s",
-                    len(errors), errors)
+        log.warning("⚠️  %d erro(s) ao copiar SpecKit: %s", len(errors), errors)
+
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Custom Agents — etapa independente do SpecKit, por assistente de IA
+# ---------------------------------------------------------------------------
+
+def copy_custom_agents(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
+    """
+    Copia agents customizados do scaffold para o projeto gerado, conforme a IA selecionada.
+
+    Esta etapa é independente do SpecKit:
+      - Agents `speckit.*` são gerenciados pelo `specify init` e NÃO são copiados aqui.
+      - Agents customizados (ex: session-manager, debug, devops-expert) foram criados
+        pelo usuário e devem estar presentes em TODAS as IAs configuradas.
+
+    Destinos por ai_assistant:
+      - "claude" / "both"  → .github/agents/ (formato agent.md, acessível ao Claude)
+                              Obs: .claude/commands/session-manager..md já existe via
+                              copy_claude_config(); esta etapa adiciona a versão agent.
+      - "copilot" / "both" → .github/agents/ (idem)
+      - "none"             → ignorado.
+
+    Args:
+        config: Configuração do projeto
+        force: Se True, sobrescreve arquivos existentes (com backup)
+    """
+    results: list[CreatedItem] = []
+    errors: list[str] = []
+    base = config.project_path
+
+    if config.ai_assistant == "none":
+        log.info("⏭️  agents customizados ignorados (ai_assistant=none)")
+        return results
+
+    src_agents = _SPECKIT_TEMPLATES / "agents"
+    if not src_agents.is_dir():
+        log.warning("⚠️  scaffold/templates/speckit/agents/ não encontrado")
+        return results
+
+    for src_file in sorted(src_agents.glob("*.agent.md")):
+        if src_file.name.startswith("speckit."):
+            continue  # gerido pelo specify init
+        dst_file = base / ".github" / "agents" / src_file.name
+        result = _copy_file(src_file, dst_file, force=force)
+        if result.status == "error":
+            errors.append(str(src_file))
+        results.append(result)
+
+    if errors:
+        log.warning("⚠️  %d erro(s) ao copiar agents customizados: %s", len(errors), errors)
 
     return results
 
@@ -2335,6 +2531,8 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
     Operações:
       1. objetivo-manifest-template.yaml → objetivo.yaml (raiz, com placeholders)
       2. mcp-questions-template.yaml → mcp-questions.yaml (raiz)
+      2b. SESSION_DOCS_STYLE_GUIDE.md → docs/guides/SESSION_DOCS_STYLE_GUIDE.md
+          (referenciado pelo session-start.prompt.md de todo projeto novo)
       3. DAILY_ACTIVITIES.template.md → docs/SESSIONS/<data>/DAILY_ACTIVITIES_<data>.md
          (APENAS em scaffold NEW - pulado durante upgrade)
 
@@ -2360,7 +2558,7 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
     results: list[CreatedItem] = []
     base = config.project_path
     src_root = _TEMPLATE_ROOT
-    src_templates = src_root / "docs" / "templates"
+    src_templates = _TEMPLATE_ROOT / "scaffold" / "templates" / "docs"
 
     if not src_templates.is_dir():
         log.warning("⚠️  Diretório de origem não encontrado: %s",
@@ -2403,6 +2601,21 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
     dst_mcp = base / "mcp-questions.yaml"
     result = _copy_file(src_mcp, dst_mcp)
     results.append(result)
+
+    # 2b. SESSION_DOCS_STYLE_GUIDE.md → docs/guides/
+    # Referenciado em session-start.prompt.md; sem ele o agente não consegue
+    # carregar o style guide no início de sessão.
+    src_style_guide = src_root / "docs" / "guides" / "SESSION_DOCS_STYLE_GUIDE.md"
+    dst_guides_dir = base / "docs" / "guides"
+    dst_style_guide = dst_guides_dir / "SESSION_DOCS_STYLE_GUIDE.md"
+    try:
+        dst_guides_dir.mkdir(parents=True, exist_ok=True)
+        result = _copy_file(src_style_guide, dst_style_guide)
+        results.append(result)
+    except OSError as exc:
+        log.warning("⚠️  erro ao criar docs/guides/SESSION_DOCS_STYLE_GUIDE.md: %s", exc)
+        results.append(CreatedItem(path=dst_style_guide,
+                       kind="file", status="error", message=str(exc)))
 
     # 3. DAILY_ACTIVITIES_<data>.md em .session-docs/<data>/
     # APENAS durante scaffold NEW - pulado durante upgrade para evitar criar
@@ -2738,7 +2951,7 @@ def copy_github_templates(config: ProjectConfig, force: bool = False) -> list[Cr
     """
     results: list[CreatedItem] = []
     base = config.project_path
-    src_root = _TEMPLATE_ROOT / ".github" / "templates" / "common"
+    src_root = _TEMPLATE_ROOT / "scaffold" / "templates" / "base-configs" / "common"
 
     # Mapeamento de variáveis customizadas para templates GitHub
     github_owner_repo = config.github_repo if config.github_repo else "owner/repo"
@@ -2779,13 +2992,19 @@ def copy_github_templates(config: ProjectConfig, force: bool = False) -> list[Cr
 
     # === P2 Templates ===
 
-    # 5. Issue templates → .github/ISSUE_TEMPLATE/
-    issue_templates = ["bug_report.yml", "feature_request.yml", "documentation.yml", "question.yml", "config.yml"]
-    for template_name in issue_templates:
+    # 5. Issue templates → .github/ISSUE_TEMPLATE/ (.yml da base-configs + .md do template root)
+    issue_templates_yml = ["bug_report.yml", "feature_request.yml", "documentation.yml", "question.yml", "config.yml"]
+    for template_name in issue_templates_yml:
         src_issue = src_root / "ISSUE_TEMPLATE" / template_name
         dst_issue = base / ".github" / "ISSUE_TEMPLATE" / template_name
         result = _copy_file_with_vars(src_issue, dst_issue, template_vars, force=force)
         results.append(result)
+    src_issue_md = _TEMPLATE_ROOT / ".github" / "ISSUE_TEMPLATE"
+    if src_issue_md.is_dir():
+        for src_file in sorted(src_issue_md.glob("*.md")):
+            dst_file = base / ".github" / "ISSUE_TEMPLATE" / src_file.name
+            result = _copy_file(src_file, dst_file, force=force)
+            results.append(result)
 
     # 6. GitHub Actions workflows → .github/workflows/
     src_workflow = src_root / "workflows" / "git-validation.yml"
@@ -2887,11 +3106,9 @@ def _copy_domain_profile(
     errors: list[str],
     force: bool = False,
 ) -> CreatedItem:
-    """Copia um perfil de domínio individual."""
-    src_file = src_root / ".github" / "prompts" / \
-        "domain" / f"{profile_name}.prompt.md"
-    dst_file = base / ".github" / "prompts" / \
-        "domain" / f"{profile_name}.prompt.md"
+    """Copia um perfil de domínio individual de scaffold/templates/speckit/prompts/domain/."""
+    src_file = _SPECKIT_TEMPLATES / "prompts" / "domain" / f"{profile_name}.prompt.md"
+    dst_file = base / ".github" / "prompts" / "domain" / f"{profile_name}.prompt.md"
     result = _copy_file(src_file, dst_file, force=force)
     if result.status == "error":
         errors.append(str(src_file))

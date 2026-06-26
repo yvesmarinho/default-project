@@ -93,7 +93,7 @@ Antes de commitar código:
 # Python
 uv run pytest                          # testes passando?
 uv run black --check src/             # formatação OK?
-uv run flake8 src/                    # lint OK?
+uv run ruff check src/                # lint OK?
 uv run mypy src/                      # types OK?
 
 # TypeScript
@@ -150,7 +150,7 @@ hadolint Dockerfile                              # se Docker
 |-------|------------------|-----------------|
 | API Keys | `API_KEY=sk_live_abc123...` | `API_KEY=<REDACTED>` |
 | URLs internas | `https://internal-db.company.local` | `https://<INTERNAL_DB>` |
-| IPs privados | `ssh admin@10.20.30.40` | `ssh admin@<PRIVATE_IP>` |
+| IPs privados | `ssh admin@198.51.100.40` | `ssh admin@<PRIVATE_IP>` |
 | Emails reais | `contato@empresa-real.com` | `user@example.com` |
 | Tokens JWT | `Bearer eyJhbGciOi...` | `Bearer <JWT_TOKEN>` |
 | Senhas | `DB_PASS=MyS3cr3tP@ss` | `DB_PASS=<REDACTED>` |

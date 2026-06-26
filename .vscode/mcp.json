@@ -33,18 +33,16 @@
 				"-i",
 				"--rm",
 				"-e",
-				"GITHUB_PERSONAL_ACCESS_TOKEN=${input:token}",
+				"GITHUB_PERSONAL_ACCESS_TOKEN=${input:github-token}",
 				"ghcr.io/github/github-mcp-server:1.4.0"
-			],
-			"gallery": "https://api.mcp.github.com",
-			"version": "1.4.0"
+			]
 		}
 	},
 	"inputs": [
 		{
-			"id": "token",
+			"id": "github-token",
 			"type": "promptString",
-			"description": "",
+			"description": "GitHub Personal Access Token (PAT) com permissões: repo, read:org, read:user",
 			"password": true
 		}
 	]

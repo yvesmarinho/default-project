@@ -29,6 +29,18 @@ Se `uv` não estiver instalado:
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
+> **⚠️ Regra de Segurança — Requisições HTTP no Projeto**
+> O `curl` acima é exclusivamente para instalar o `uv` (bootstrap único).
+> Para qualquer outra requisição HTTP dentro do projeto (APIs, validação, download de dados),
+> **use sempre Python + `requests`** lendo credenciais de `.secrets/`:
+> ```python
+> import requests, json
+> from pathlib import Path
+> creds = json.loads(Path(".secrets/api_config.json").read_text())
+> r = requests.get(endpoint, headers={"Authorization": f"Bearer {creds['token']}"})
+> ```
+> Nunca usar `curl` com tokens, senhas ou chaves na linha de comando.
+
 ---
 
 ### Passo 1.1 — Criar Ambiente Virtual (projetos Python)
@@ -40,8 +52,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 if [ -d .venv ]; then
     echo "✅ Ambiente virtual já existe (.venv/)"
 else
-    echo "🔧 Criando ambiente virtual com uv..."
-    uv venv
+    echo "🔧 Inicializando projeto e criando ambiente virtual com uv..."
+    uv init    # inicializa pyproject.toml se ainda não existir
+    uv venv    # cria .venv/ a partir do projeto inicializado
     echo "✅ Ambiente virtual criado (.venv/)"
 fi
 
@@ -69,13 +82,25 @@ else
     echo "⚠️  Nenhum arquivo de dependências encontrado (pyproject.toml ou requirements.txt)"
 fi
 
-# Verificar instalação
-uv pip list | head -20
+# Verificar instalação (primeiros 20 pacotes)
+python3 - << 'EOF'
+import subprocess
+result = subprocess.run(["uv", "pip", "list"], capture_output=True, text=True)
+for line in result.stdout.split("\n")[:20]:
+    print(line)
+EOF
 ```
 
 **VERIFICAR .gitignore**:
-```bash
-grep -q ".venv" .gitignore && echo "✅ .venv ignorado pelo Git" || echo "❌ ATENÇÃO: .venv NÃO está no .gitignore!"
+```python
+python3 - << 'EOF'
+from pathlib import Path
+gi = Path(".gitignore")
+if gi.exists() and ".venv" in gi.read_text():
+    print("✅ .venv ignorado pelo Git")
+else:
+    print("❌ ATENÇÃO: .venv NÃO está no .gitignore!")
+EOF
 ```
 
 **Nota**: O `uv` gerencia dependências de forma mais eficiente que pip tradicional. Para projetos que já têm `pyproject.toml`, o comando `uv sync` pode ser usado como alternativa a `uv pip install -e .`.
@@ -359,7 +384,7 @@ Carregar Domain Profile correspondente:
 ## ✅ Checklist de Primeira Sessão
 
 - [ ] Pré-requisitos: `uv`, `git`, `python3 ≥3.10` presentes
-- [ ] **Ambiente virtual Python criado**: `uv venv` + `.venv/` no `.gitignore` (projetos Python)
+- [ ] **Ambiente virtual Python criado**: `uv init` → `uv venv` + `.venv/` no `.gitignore` (projetos Python)
 - [ ] MCP verificado (ou será criado pelo scaffold)
 - [ ] `scaffold.py` executado com sucesso
 - [ ] Estrutura de diretórios criada
