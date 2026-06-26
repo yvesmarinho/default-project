@@ -1,11 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3 -c ' *)",
-      "Bash(mkdir -p /home/yves_marinho/Documentos/DevOps/Vya-Jobs/enterprise-observability-dashboards/docs/SESSIONS/2026-06-22)"
-    ],
-    "additionalDirectories": [
-      "/home/yves_marinho/Documentos/DevOps/Vya-Jobs/enterprise-observability-dashboards/docs/SESSIONS"
+      "Bash(python3 -c ' *)"
     ]
   }
 }
