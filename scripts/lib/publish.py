@@ -7,8 +7,8 @@ scaffold.py via flag --publish.
 
 Arquivos incluídos no release:
   scripts/scaffold.py + scripts/lib/*.py
-  profile-descriptors/*.yaml + profile-descriptors/README.md
-  .github/templates/**/* + .github/prompts/**/*
+  scaffold/profiles/*.yaml + scaffold/profiles/README.md
+  scaffold/templates/**/* + .github/prompts/**/*
   .github/workflows/*.yml + .github/ISSUE_TEMPLATE/**/*
   .copilot-rules.md (se existir)
   Makefile, README.md, CHANGELOG.md, pyproject.toml, pytest.ini
@@ -36,9 +36,9 @@ from .config import SCAFFOLD_VERSION
 _INCLUDE_PATTERNS: list[str] = [
     "scripts/scaffold.py",
     "scripts/lib/*.py",
-    "profile-descriptors/*.yaml",
-    "profile-descriptors/README.md",
-    ".github/templates/**/*",
+    "scaffold/profiles/*.yaml",
+    "scaffold/profiles/README.md",
+    "scaffold/templates/**/*",
     ".github/prompts/**/*",
     ".github/workflows/*.yml",
     ".github/ISSUE_TEMPLATE/**/*",

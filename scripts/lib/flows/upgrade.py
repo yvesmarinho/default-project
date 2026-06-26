@@ -14,7 +14,7 @@ from ..copilot_rules_consolidate import consolidate_copilot_rules
 from ..ai import resolve_plugins
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
-_PROFILE_DESCRIPTORS_DIR = _PROJECT_ROOT / "profile-descriptors"
+_PROFILE_DESCRIPTORS_DIR = _PROJECT_ROOT / "scaffold" / "profiles"
 
 
 def _validate_and_fix_paths(

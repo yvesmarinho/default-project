@@ -114,7 +114,7 @@ combines_with:
   - backend-architect
   - qa-automation-engineer
 
-templates_path: ".github/templates/frontend-architect"
+templates_path: "scaffold/templates/project/frontend-architect"
 
 templates:
   - path: "frontend/architecture-decision-record.md"

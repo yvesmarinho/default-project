@@ -137,7 +137,7 @@ combines_with:
   - backend-architect
   - qa-automation-engineer
 
-templates_path: ".github/templates/sre-platform-engineer"
+templates_path: "scaffold/templates/project/sre-platform-engineer"
 
 templates:
   - path: "sre/slo-definition.yaml"

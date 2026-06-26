@@ -34,7 +34,7 @@ stack:
     - ecs
     - rds
 
-templates_path: ".github/templates/terraform-aws"
+templates_path: "scaffold/templates/project/terraform-aws"
 
 templates:
   - path: "terraform/versions.tf"

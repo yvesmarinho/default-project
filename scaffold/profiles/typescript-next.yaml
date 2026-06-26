@@ -33,7 +33,7 @@ stack:
   build: "next build (output: standalone)"
   containerization: "Docker multistage (node:20-slim)"
 
-templates_path: ".github/templates/typescript-next"
+templates_path: "scaffold/templates/project/typescript-next"
 
 templates:
   - path: "app/layout.tsx"

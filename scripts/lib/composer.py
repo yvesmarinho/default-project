@@ -12,7 +12,7 @@ Uso:
   from lib.composer import ProfileComposer
 
   composer = ProfileComposer(
-      descriptors_dir=Path("profile-descriptors"),
+      descriptors_dir=Path("scaffold/profiles"),
       project_root=Path("."),
   )
   result = composer.compose(["devops-programming", "typescript-next"], cfg)
@@ -209,7 +209,7 @@ class ProfileComposer:
 
     Exemplo:
         composer = ProfileComposer(
-            descriptors_dir=Path("profile-descriptors"),
+            descriptors_dir=Path("scaffold/profiles"),
             project_root=Path("."),
         )
         result = composer.compose(["typescript-next"], cfg)

@@ -24,7 +24,7 @@ requires:
 generates:
   files:
     - path: "src/app.py"
-      source: ".github/templates/python-flask/src/app.py"
+      source: "scaffold/templates/project/python-flask/src/app.py"
       description: "Application factory create_app() com blueprints + extensões"
       required: true
       when: null
@@ -36,14 +36,14 @@ generates:
       when: null
 
     - path: "src/core/config.py"
-      source: ".github/templates/python-flask/src/core/config.py"
+      source: "scaffold/templates/project/python-flask/src/core/config.py"
       description: "Config classes: Development/Production/Testing com SECRET_KEY
         obrigatório"
       required: true
       when: null
 
     - path: "src/extensions.py"
-      source: ".github/templates/python-flask/src/extensions.py"
+      source: "scaffold/templates/project/python-flask/src/extensions.py"
       description: "Instâncias CSRFProtect + Talisman (init_app pattern)"
       required: true
       when: null
@@ -55,57 +55,57 @@ generates:
       when: null
 
     - path: "src/blueprints/health/__init__.py"
-      source: ".github/templates/python-flask/src/blueprints/health/__init__.py"
+      source: "scaffold/templates/project/python-flask/src/blueprints/health/__init__.py"
       description: "Re-export do health_bp"
       required: true
       when: null
 
     - path: "src/blueprints/health/routes.py"
-      source: ".github/templates/python-flask/src/blueprints/health/routes.py"
+      source: "scaffold/templates/project/python-flask/src/blueprints/health/routes.py"
       description: "GET /health — smoke endpoint com Blueprint"
       required: true
       when: null
 
     - path: "tests/conftest.py"
-      source: ".github/templates/python-flask/tests/conftest.py"
+      source: "scaffold/templates/project/python-flask/tests/conftest.py"
       description: "Fixtures app (TestingConfig) + client (test_client)"
       required: true
       when: null
 
     - path: "tests/test_health.py"
-      source: ".github/templates/python-flask/tests/test_health.py"
+      source: "scaffold/templates/project/python-flask/tests/test_health.py"
       description: "Smoke test do endpoint GET /health"
       required: true
       when: null
 
     - path: "pyproject.toml"
-      source: ".github/templates/python-flask/pyproject.toml"
+      source: "scaffold/templates/project/python-flask/pyproject.toml"
       description: "PEP 621: flask, flask-wtf, flask-talisman, pytest, ruff, bandit,
         pip-audit"
       required: true
       when: null
 
     - path: ".env.example"
-      source: ".github/templates/python-flask/.env.example"
+      source: "scaffold/templates/project/python-flask/.env.example"
       description: "Variáveis de ambiente documentadas sem valores reais"
       required: true
       when: null
 
     - path: "Dockerfile"
-      source: ".github/templates/python-flask/Dockerfile"
+      source: "scaffold/templates/project/python-flask/Dockerfile"
       description: "Multistage: builder (uv sync --frozen --no-dev) + runtime (usuário
         não-root, gunicorn)"
       required: true
       when: null
 
     - path: "docker-compose.yml"
-      source: ".github/templates/python-flask/docker-compose.yml"
+      source: "scaffold/templates/project/python-flask/docker-compose.yml"
       description: "Serviços: app + postgres:16 com healthcheck"
       required: true
       when: null
 
     - path: "Makefile"
-      source: ".github/templates/python-flask/Makefile"
+      source: "scaffold/templates/project/python-flask/Makefile"
       description: "Targets: install, dev, test, lint, format, audit, security, sbom,
         docker-*, ci, clean"
       required: true
@@ -119,7 +119,7 @@ generates:
       when: "make sbom"
 
     - path: ".github/prompts/domain/python-flask.prompt.md"
-      source: ".github/prompts/domain/python-flask.prompt.md"
+      source: "scaffold/templates/speckit/prompts/domain/python-flask.prompt.md"
       description: "Domain profile: convenções Flask, blueprints, CSRF, security
         headers, testes"
       required: true

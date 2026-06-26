@@ -489,7 +489,7 @@ def _get_compatible_layer2_profiles(domain: str, language: str) -> list[str]:
     """
     profiles = []
     descriptors_dir = (
-        Path(__file__).parent.parent.parent / "profile-descriptors"
+        Path(__file__).parent.parent.parent / "scaffold" / "profiles"
     )
 
     if not descriptors_dir.exists():
@@ -835,29 +835,36 @@ def _write_log_to_dir(
 
 def save_operation_log(items: list[CreatedItem | LinkStatus], project_path: Path, operation: str = "scaffold", log_dir: Path | None = None) -> Path | None:
     """
-    Salva log detalhado da operação em dois locais:
-    1. Diretório especificado (--log-dir) ou pasta logs/ do projeto criado.
-    2. Sempre também em <a-default-project>/logs/ (para rastreio da ferramenta).
+    Salva log detalhado da operação em até três locais:
+    1. Sempre em <projeto-criado>/logs/ (primary — retornado).
+    2. Sempre em <a-default-project>/logs/ (rastreio da ferramenta).
+    3. Em --log-dir customizado, se diferente dos anteriores.
 
     Args:
         items: Lista de itens criados/operados
-        project_path: Caminho do projeto
+        project_path: Caminho do projeto criado
         operation: Nome da operação (scaffold, upgrade, etc.)
-        log_dir: Diretório customizado; default: <projeto>/logs/
+        log_dir: Diretório adicional via --log-dir (opcional)
 
     Returns:
-        Path do arquivo de log no diretório customizado/projeto, ou None se falhar
+        Path do arquivo de log em <projeto-criado>/logs/, ou None se falhar
     """
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
 
-    # 1. Log no diretório do projeto criado (ou --log-dir customizado)
-    primary_dir = Path(log_dir) if log_dir else (project_path / "logs")
-    primary_log = _write_log_to_dir(primary_dir, items, project_path, operation, timestamp)
+    # 1. Log sempre no projeto criado (project_path/logs/)
+    project_logs_dir = project_path / "logs"
+    primary_log = _write_log_to_dir(project_logs_dir, items, project_path, operation, timestamp)
 
-    # 2. Log adicional na pasta da ferramenta scaffold (a-default-project/logs/)
-    #    Omitido se primary_dir já É _SCAFFOLD_LOGS_DIR (evita duplicação)
-    if primary_dir.resolve() != _SCAFFOLD_LOGS_DIR.resolve():
+    # 2. Log na ferramenta scaffold (_SCAFFOLD_LOGS_DIR), se diferente do projeto
+    if project_logs_dir.resolve() != _SCAFFOLD_LOGS_DIR.resolve():
         _write_log_to_dir(_SCAFFOLD_LOGS_DIR, items, project_path, operation, timestamp)
+
+    # 3. Log em --log-dir customizado, se diferente dos anteriores
+    if log_dir:
+        custom_dir = Path(log_dir)
+        if (custom_dir.resolve() != project_logs_dir.resolve()
+                and custom_dir.resolve() != _SCAFFOLD_LOGS_DIR.resolve()):
+            _write_log_to_dir(custom_dir, items, project_path, operation, timestamp)
 
     return primary_log
 

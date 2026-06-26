@@ -12,7 +12,7 @@ from ..project import write_scaffold_state
 from ..ui import collect_project_info, console
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
-_PROFILE_DESCRIPTORS_DIR = _PROJECT_ROOT / "profile-descriptors"
+_PROFILE_DESCRIPTORS_DIR = _PROJECT_ROOT / "scaffold" / "profiles"
 
 
 def flow_compose_profiles(args: argparse.Namespace) -> int:
@@ -27,14 +27,15 @@ def flow_compose_profiles(args: argparse.Namespace) -> int:
         return 1
 
     overrides = {
-        "name":        args.name,
-        "title":       args.title,
-        "description": args.description,
-        "domain":      args.domain,
-        "language":    args.language,
-        "repo":        args.repo,
-        "shared_dir":  args.shared_dir,
-        "target_dir":  args.target_dir,
+        "name":         args.name,
+        "title":        args.title,
+        "description":  args.description,
+        "domain":       args.domain,
+        "language":     args.language,
+        "ai_assistant": getattr(args, "ai_assistant", None),
+        "repo":         args.repo,
+        "shared_dir":   args.shared_dir,
+        "target_dir":   args.target_dir,
     }
     overrides = {k: v for k, v in overrides.items() if v is not None}
 

@@ -9,7 +9,7 @@ from pathlib import Path
 from .. import validate as _validate_module
 from ..ui import console
 
-_PROFILE_DESCRIPTORS_DIR = Path(__file__).parent.parent.parent.parent / "profile-descriptors"
+_PROFILE_DESCRIPTORS_DIR = Path(__file__).parent.parent.parent.parent / "scaffold" / "profiles"
 
 
 def flow_validate(args: argparse.Namespace) -> int:

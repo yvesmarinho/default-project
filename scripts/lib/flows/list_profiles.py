@@ -8,7 +8,7 @@ from pathlib import Path
 
 from ..ui import console
 
-_PROFILE_DESCRIPTORS_DIR = Path(__file__).parent.parent.parent.parent / "profile-descriptors"
+_PROFILE_DESCRIPTORS_DIR = Path(__file__).parent.parent.parent.parent / "scaffold" / "profiles"
 
 
 def _load_descriptor(yaml_path: Path) -> dict:

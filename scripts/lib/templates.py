@@ -807,7 +807,7 @@ def generate_profile_guide(
             cap = 15
             rows = "\n".join(f"| `{p}` | {d} |" for p, d in entries[:cap])
             more = (
-                f"\n\n*(+{len(entries) - cap} mais — ver `profile-descriptors/{name}.yaml`)*"
+                f"\n\n*(+{len(entries) - cap} mais — ver `scaffold/profiles/{name}.yaml`)*"
                 if len(entries) > cap
                 else ""
             )

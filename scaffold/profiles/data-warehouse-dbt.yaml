@@ -40,7 +40,7 @@ combines_with:
   - python-fastapi
   - python-flask
 
-templates_path: ".github/templates/data-warehouse-dbt"
+templates_path: "scaffold/templates/project/data-warehouse-dbt"
 
 templates:
   - path: "dbt/dbt_project.yml"

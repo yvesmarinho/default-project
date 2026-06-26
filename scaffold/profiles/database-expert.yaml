@@ -83,7 +83,7 @@ combines_with:
   - data-warehouse-dbt
   - devops-infrastructure
 
-templates_path: ".github/templates/database-expert"
+templates_path: "scaffold/templates/project/database-expert"
 
 templates:
   - path: "database/schema.sql"

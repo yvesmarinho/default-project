@@ -130,7 +130,7 @@ combines_with:
   - sre-platform-engineer
   - qa-automation-engineer
 
-templates_path: ".github/templates/appsec-engineer"
+templates_path: "scaffold/templates/project/appsec-engineer"
 
 templates:
   - path: "security/threat-model-template.md"

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from ..ui import console
 
-_PROFILE_DESCRIPTORS_DIR = Path(__file__).parent.parent.parent.parent / "profile-descriptors"
+_PROFILE_DESCRIPTORS_DIR = Path(__file__).parent.parent.parent.parent / "scaffold" / "profiles"
 _KEBAB_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 
 # ---------------------------------------------------------------------------
@@ -70,7 +70,7 @@ requires:
 generates:
   files:
     - path: "TODO/path/to/generated/file"
-      source: ".github/templates/{name}/TODO"
+      source: "scaffold/templates/project/{name}/TODO"
       description: "TODO: descreva o arquivo gerado"
       required: true
       when: null   # null = sempre | "flag" = condicionalmente
@@ -287,7 +287,7 @@ def flow_new_profile(args: argparse.Namespace) -> int:
         console.print(f"  [green]✅ Criado:[/green] {md_path.relative_to(Path.cwd())}")
         console.print()
         console.print("  [bold]Próximos passos:[/bold]")
-        console.print(f"  1. Edite [cyan]profile-descriptors/{profile_name}.yaml[/cyan] — preencha os TODOs")
+        console.print(f"  1. Edite [cyan]scaffold/profiles/{profile_name}.yaml[/cyan] — preencha os TODOs")
         console.print("  2. Execute [cyan]python scripts/scaffold.py --validate[/cyan]")
         console.print()
 

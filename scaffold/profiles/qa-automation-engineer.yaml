@@ -128,7 +128,7 @@ combines_with:
   - devops-programming
   - devops-infrastructure
 
-templates_path: ".github/templates/qa-automation-engineer"
+templates_path: "scaffold/templates/project/qa-automation-engineer"
 
 templates:
   - path: "qa/test-plan-template.md"

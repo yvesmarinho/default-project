@@ -47,7 +47,7 @@ combines_with:
   - data-warehouse-dbt
   - soc2-baseline
 
-templates_path: ".github/templates/lgpd-baseline"
+templates_path: "scaffold/templates/project/lgpd-baseline"
 
 templates:
   - path: "docs/lgpd/DATA-MAPPING.md"

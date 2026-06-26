@@ -30,7 +30,7 @@ This directory contains ready-to-use Ansible playbooks for common infrastructure
 ### 1. Copy Template
 
 ```bash
-cp .github/templates/ansible/deploy-app.yml ansible/playbooks/
+cp scaffold/templates/project/ansible/deploy-app.yml ansible/playbooks/
 ```
 
 ### 2. Customize Variables

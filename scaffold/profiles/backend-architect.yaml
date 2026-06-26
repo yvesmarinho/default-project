@@ -125,7 +125,7 @@ combines_with:
   - sre-platform-engineer
   - devops-infrastructure
 
-templates_path: ".github/templates/backend-architect"
+templates_path: "scaffold/templates/project/backend-architect"
 
 templates:
   - path: "backend/api-design.yaml"

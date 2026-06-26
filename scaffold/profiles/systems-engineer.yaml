@@ -108,7 +108,7 @@ combines_with:
   - appsec-engineer
   - sre-platform-engineer
 
-templates_path: ".github/templates/systems-engineer"
+templates_path: "scaffold/templates/project/systems-engineer"
 
 templates:
   - path: "systems/architecture-diagram.md"

@@ -116,7 +116,7 @@ combines_with:
   - python-fastapi
   - devops-programming
 
-templates_path: ".github/templates/ui-design-expert"
+templates_path: "scaffold/templates/project/ui-design-expert"
 
 templates:
   - path: "design/design-system.figma"

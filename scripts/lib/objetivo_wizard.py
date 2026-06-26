@@ -122,10 +122,10 @@ class ObjetivoWizard:
         """Initialize the wizard.
 
         Args:
-            template_path: Path to template base (default: template-bases/objetivo-v2-template.yaml)
+            template_path: Path to template base (default: scaffold/templates/objetivo/objetivo-v2-template.yaml)
         """
         self.template_path = template_path or (
-            Path(__file__).parent.parent.parent / "template-bases" / "objetivo-v2-template.yaml"
+            Path(__file__).parent.parent.parent / "scaffold" / "templates" / "objetivo" / "objetivo-v2-template.yaml"
         )
         self.answers = WizardAnswers()
         self.answer_stack: list[tuple[WizardQuestion, str]] = []  # For Ctrl+Z (undo)

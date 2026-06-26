@@ -122,7 +122,7 @@ combines_with:
   - qa-automation-engineer
   - devops-analysis
 
-templates_path: ".github/templates/ux-design-expert"
+templates_path: "scaffold/templates/project/ux-design-expert"
 
 templates:
   - path: "ux/user-persona-template.md"

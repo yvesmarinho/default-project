@@ -46,7 +46,7 @@ combines_with:
   - data-warehouse-dbt
   - lgpd-baseline
 
-templates_path: ".github/templates/soc2-baseline"
+templates_path: "scaffold/templates/project/soc2-baseline"
 
 templates:
   - path: "docs/soc2/SECURITY-POLICY.md"

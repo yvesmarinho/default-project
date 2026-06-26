@@ -35,7 +35,7 @@ stack:
     - celery
     - redis
 
-templates_path: ".github/templates/data-pipeline-airflow"
+templates_path: "scaffold/templates/project/data-pipeline-airflow"
 
 templates:
   - path: "airflow/dags/example_pipeline.py"

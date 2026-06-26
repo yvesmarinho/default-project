@@ -25,7 +25,7 @@ Estes arquivos são **apenas referência** e não devem ser editados diretamente
 
 Para criar um novo projeto:
 
-1. Copie o template base de `template-bases/objetivo-init-template.yaml`
+1. Copie o template base de `scaffold/templates/objetivo/objetivo-init-template.yaml`
 2. Ou use um dos exemplos como ponto de partida
 3. Substitua os placeholders `{{...}}` pelos valores do seu projeto
 4. Coloque o arquivo na raiz do **seu projeto** (não neste template)
@@ -34,8 +34,8 @@ Para criar um novo projeto:
 
 | Arquivo | Tipo | Local | Uso |
 |---------|------|-------|-----|
-| `template-bases/objetivo-init-template.yaml` | Template | Template base | Copiar e preencher placeholders |
-| `template-bases/examples/*.yaml` | Exemplo | Este diretório | Referência de estrutura completa |
+| `scaffold/templates/objetivo/objetivo-init-template.yaml` | Template | Template base | Copiar e preencher placeholders |
+| `scaffold/templates/objetivo/examples/*.yaml` | Exemplo | Este diretório | Referência de estrutura completa |
 | `docs/templates/objetivo-manifest-template.yaml` | Template | Docs | Template de manifesto objetivo |
 | `.specify/templates/objetivo-template.yaml` | Template | SpecKit | Template para specs de features |
 

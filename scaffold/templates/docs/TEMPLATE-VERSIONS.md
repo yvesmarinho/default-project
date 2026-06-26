@@ -37,7 +37,7 @@
 
 **Layer**: core
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/devops-programming.yaml`](../profile-descriptors/devops-programming.yaml)
+**Descriptor**: [`scaffold/profiles/devops-programming.yaml`](../scaffold/profiles/devops-programming.yaml)
 **Prompt**: [`.github/prompts/domain/devops-programming.prompt.md`](../.github/prompts/domain/devops-programming.prompt.md)
 
 | Versão | Data | O que mudou |
@@ -54,7 +54,7 @@
 
 **Layer**: core
 **Status**: 🔵 stub (descriptor para resolver referências cruzadas)
-**Descriptor**: [`profile-descriptors/devops-infrastructure.yaml`](../profile-descriptors/devops-infrastructure.yaml)
+**Descriptor**: [`scaffold/profiles/devops-infrastructure.yaml`](../scaffold/profiles/devops-infrastructure.yaml)
 **Prompt**: `.github/prompts/domain/devops-infrastructure.prompt.md` _(pendente)_
 
 | Versão | Data | O que mudou |
@@ -71,7 +71,7 @@
 
 **Layer**: core
 **Status**: 🔵 stub (descriptor para resolver referências cruzadas)
-**Descriptor**: [`profile-descriptors/devops-analysis.yaml`](../profile-descriptors/devops-analysis.yaml)
+**Descriptor**: [`scaffold/profiles/devops-analysis.yaml`](../scaffold/profiles/devops-analysis.yaml)
 **Prompt**: `.github/prompts/domain/devops-analysis.prompt.md` _(pendente)_
 
 | Versão | Data | O que mudou |
@@ -88,7 +88,7 @@
 
 **Layer**: transversal
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/devops-security.yaml`](../profile-descriptors/devops-security.yaml)
+**Descriptor**: [`scaffold/profiles/devops-security.yaml`](../scaffold/profiles/devops-security.yaml)
 **Prompt**: [`.github/prompts/domain/devops-security.prompt.md`](../.github/prompts/domain/devops-security.prompt.md)
 
 | Versão | Data | O que mudou |
@@ -105,8 +105,8 @@
 
 **Layer**: layer3
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/k8s-helm.yaml`](../profile-descriptors/k8s-helm.yaml)
-**Templates**: [`.github/templates/k8s-helm/`](../.github/templates/k8s-helm/)
+**Descriptor**: [`scaffold/profiles/k8s-helm.yaml`](../scaffold/profiles/k8s-helm.yaml)
+**Templates**: [`scaffold/templates/project/k8s-helm/`](../scaffold/templates/project/k8s-helm/)
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
@@ -122,8 +122,8 @@
 
 **Layer**: layer3
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/terraform-aws.yaml`](../profile-descriptors/terraform-aws.yaml)
-**Templates**: [`.github/templates/terraform-aws/`](../.github/templates/terraform-aws/)
+**Descriptor**: [`scaffold/profiles/terraform-aws.yaml`](../scaffold/profiles/terraform-aws.yaml)
+**Templates**: [`scaffold/templates/project/terraform-aws/`](../scaffold/templates/project/terraform-aws/)
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
@@ -139,7 +139,7 @@
 
 **Layer**: layer3
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/data-warehouse-dbt.yaml`](../profile-descriptors/data-warehouse-dbt.yaml)
+**Descriptor**: [`scaffold/profiles/data-warehouse-dbt.yaml`](../scaffold/profiles/data-warehouse-dbt.yaml)
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
@@ -154,7 +154,7 @@
 
 **Layer**: layer4
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/lgpd-baseline.yaml`](../profile-descriptors/lgpd-baseline.yaml)
+**Descriptor**: [`scaffold/profiles/lgpd-baseline.yaml`](../scaffold/profiles/lgpd-baseline.yaml)
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
@@ -168,7 +168,7 @@
 
 **Layer**: layer4
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/soc2-baseline.yaml`](../profile-descriptors/soc2-baseline.yaml)
+**Descriptor**: [`scaffold/profiles/soc2-baseline.yaml`](../scaffold/profiles/soc2-baseline.yaml)
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
@@ -182,8 +182,8 @@
 
 **Layer**: layer2
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/python-fastapi.yaml`](../profile-descriptors/python-fastapi.yaml)
-**Templates**: [`.github/templates/python-fastapi/`](../.github/templates/python-fastapi/)
+**Descriptor**: [`scaffold/profiles/python-fastapi.yaml`](../scaffold/profiles/python-fastapi.yaml)
+**Templates**: [`scaffold/templates/project/python-fastapi/`](../scaffold/templates/project/python-fastapi/)
 **Prompt**: [`.github/prompts/domain/python-fastapi.prompt.md`](../.github/prompts/domain/python-fastapi.prompt.md)
 
 | Versão | Data | O que mudou |
@@ -200,8 +200,8 @@
 
 **Layer**: layer2
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/python-flask.yaml`](../profile-descriptors/python-flask.yaml)
-**Templates**: [`.github/templates/python-flask/`](../.github/templates/python-flask/)
+**Descriptor**: [`scaffold/profiles/python-flask.yaml`](../scaffold/profiles/python-flask.yaml)
+**Templates**: [`scaffold/templates/project/python-flask/`](../scaffold/templates/project/python-flask/)
 **Prompt**: [`.github/prompts/domain/python-flask.prompt.md`](../.github/prompts/domain/python-flask.prompt.md)
 
 | Versão | Data | O que mudou |
@@ -218,8 +218,8 @@
 
 **Layer**: layer2
 **Status**: ✅ stable
-**Descriptor**: [`profile-descriptors/typescript-next.yaml`](../profile-descriptors/typescript-next.yaml)
-**Templates**: [`.github/templates/typescript-next/`](../.github/templates/typescript-next/)
+**Descriptor**: [`scaffold/profiles/typescript-next.yaml`](../scaffold/profiles/typescript-next.yaml)
+**Templates**: [`scaffold/templates/project/typescript-next/`](../scaffold/templates/project/typescript-next/)
 **Prompt**: [`.github/prompts/domain/layer2-typescript-next.prompt.md`](../.github/prompts/domain/layer2-typescript-next.prompt.md)
 
 | Versão | Data | O que mudou |

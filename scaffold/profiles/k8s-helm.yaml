@@ -31,7 +31,7 @@ stack:
   hpa_api: "autoscaling/v2"
   ingress: "nginx-ingress | traefik | aws-alb"
 
-templates_path: ".github/templates/k8s-helm"
+templates_path: "scaffold/templates/project/k8s-helm"
 
 templates:
   - path: "helm/Chart.yaml"

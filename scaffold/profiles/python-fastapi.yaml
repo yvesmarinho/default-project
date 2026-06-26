@@ -23,7 +23,7 @@ requires:
 generates:
   files:
     - path: "src/main.py"
-      source: ".github/templates/python-fastapi/src/main.py"
+      source: "scaffold/templates/project/python-fastapi/src/main.py"
       description: "FastAPI app factory com lifespan e include_router"
       required: true
       when: null
@@ -35,7 +35,7 @@ generates:
       when: null
 
     - path: "src/api/router.py"
-      source: ".github/templates/python-fastapi/src/api/router.py"
+      source: "scaffold/templates/project/python-fastapi/src/api/router.py"
       description: "APIRouter principal que agrega sub-routers"
       required: true
       when: null
@@ -47,7 +47,7 @@ generates:
       when: null
 
     - path: "src/api/v1/health.py"
-      source: ".github/templates/python-fastapi/src/api/v1/health.py"
+      source: "scaffold/templates/project/python-fastapi/src/api/v1/health.py"
       description: "GET /api/health — smoke endpoint"
       required: true
       when: null
@@ -59,51 +59,51 @@ generates:
       when: null
 
     - path: "src/core/config.py"
-      source: ".github/templates/python-fastapi/src/core/config.py"
+      source: "scaffold/templates/project/python-fastapi/src/core/config.py"
       description: "pydantic-settings: PROJECT_NAME, ENV, SECRET_KEY, DATABASE_URL"
       required: true
       when: null
 
     - path: "tests/conftest.py"
-      source: ".github/templates/python-fastapi/tests/conftest.py"
+      source: "scaffold/templates/project/python-fastapi/tests/conftest.py"
       description: "Fixture AsyncClient via ASGITransport para testes HTTP em memória"
       required: true
       when: null
 
     - path: "tests/test_health.py"
-      source: ".github/templates/python-fastapi/tests/test_health.py"
+      source: "scaffold/templates/project/python-fastapi/tests/test_health.py"
       description: "Smoke test do endpoint /api/health"
       required: true
       when: null
 
     - path: "pyproject.toml"
-      source: ".github/templates/python-fastapi/pyproject.toml"
+      source: "scaffold/templates/project/python-fastapi/pyproject.toml"
       description: "PEP 621: fastapi, uvicorn, pydantic-settings, pytest-asyncio,
         ruff, bandit, pip-audit"
       required: true
       when: null
 
     - path: ".env.example"
-      source: ".github/templates/python-fastapi/.env.example"
+      source: "scaffold/templates/project/python-fastapi/.env.example"
       description: "Variáveis de ambiente documentadas sem valores reais"
       required: true
       when: null
 
     - path: "Dockerfile"
-      source: ".github/templates/python-fastapi/Dockerfile"
+      source: "scaffold/templates/project/python-fastapi/Dockerfile"
       description: "Multistage: builder (uv sync --frozen --no-dev) + runtime (usuário
         não-root)"
       required: true
       when: null
 
     - path: "docker-compose.yml"
-      source: ".github/templates/python-fastapi/docker-compose.yml"
+      source: "scaffold/templates/project/python-fastapi/docker-compose.yml"
       description: "Serviços: app + postgres:16 com healthcheck"
       required: true
       when: null
 
     - path: "Makefile"
-      source: ".github/templates/python-fastapi/Makefile"
+      source: "scaffold/templates/project/python-fastapi/Makefile"
       description: "Targets: install, dev, test, lint, format, audit, security, sbom,
         docker-*, ci, clean"
       required: true
@@ -117,7 +117,7 @@ generates:
       when: "make sbom"
 
     - path: ".github/prompts/domain/python-fastapi.prompt.md"
-      source: ".github/prompts/domain/python-fastapi.prompt.md"
+      source: "scaffold/templates/speckit/prompts/domain/python-fastapi.prompt.md"
       description: "Domain profile: convenções FastAPI, padrões de teste, segurança"
       required: true
       when: null

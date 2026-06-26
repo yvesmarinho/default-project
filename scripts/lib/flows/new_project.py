@@ -61,9 +61,17 @@ def flow_new_project(args: argparse.Namespace) -> int:
     results.append(vscode.generate_tasks(cfg))
     results.append(vscode.generate_launch(cfg))
 
-    # 5. SpecKit: agents, prompts e perfis de domínio
-    console.print("  [blue]🤖 Copiando assets SpecKit...[/blue]")
+    # 5. SpecKit: inicialização via specify CLI (agents, prompts, .specify oficiais)
+    console.print("  [blue]🤖 Inicializando SpecKit via specify CLI...[/blue]")
+    results.extend(project.run_speckit_init(cfg))
+
+    # 5a. Perfis de domínio (scaffold) para Copilot — .github/prompts/domain/
+    console.print("  [blue]🤖 Compondo perfis de domínio...[/blue]")
     results.extend(project.copy_speckit(cfg))
+
+    # 5aa. Agents customizados do scaffold — etapa independente do SpecKit
+    console.print("  [blue]🤖 Configurando agents customizados para IA selecionada...[/blue]")
+    results.extend(project.copy_custom_agents(cfg))
 
     # 5b. Session Support Libraries: scripts/lib/*.py (dependências)
     console.print("  [blue]📚 Copiando bibliotecas de suporte...[/blue]")
@@ -178,6 +186,15 @@ def flow_new_project(args: argparse.Namespace) -> int:
             compose=args.with_code_profile,
             ci=True,  # Sempre não-interativo quando chamado via --with-code-profile
             json_output=False,
+            name=cfg.project_name,
+            title=cfg.project_title,
+            description=cfg.description,
+            domain=cfg.domain,
+            language=cfg.language,
+            ai_assistant=cfg.ai_assistant,
+            repo=cfg.github_repo,
+            shared_dir=getattr(args, "shared_dir", None),
+            target_dir=str(cfg.project_path),
         )
 
         # Executar flow_compose_profiles
