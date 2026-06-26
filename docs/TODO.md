@@ -1,15 +1,51 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-06-24 — Separação template/DEV, fix --with-code-profile, validate-test-runs.py ✅
+**Last Updated**: 2026-06-26 — Segurança scaffold, limpeza repositório, templates e Dependabot ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-06-26+)
+
+- [x] ~~**BUG-scaffold-claude-agents + BUG-speckit-via-copy-not-init**~~: ✅ CONCLUÍDO (2026-06-26)
+  - ✅ `copy_speckit()` refatorada: remove cópia de agents/prompts; copia apenas perfis de domínio
+  - ✅ `copy_custom_agents()` criada: separa agents não-speckit por IA (claude/copilot/both/none)
+  - ✅ `run_speckit_init()` corrigida: `stdin=subprocess.DEVNULL` + diagnóstico de erro
+  - ✅ 251 testes passando, 5 falhas pré-existentes
+
+- [x] ~~**Pre-commit: varredura de IPs e credenciais**~~: ✅ CONCLUÍDO (2026-06-26)
+  - ✅ Hook reescrito com regras Git Guardian: IPs RFC 1918, PEM, AWS, GitHub tokens, Bearer
+  - ✅ `SCAN_EXCLUDES` com `scaffold/templates` e `scripts/lib` (evitar falsos positivos)
+  - ✅ IP de exemplo RFC 1918 substituído por `198.51.100.40` (TEST-NET, IANA)
+
+- [x] ~~**objetivo-init-minimal.yaml template enriquecido**~~: ✅ CONCLUÍDO (2026-06-26)
+  - ✅ `scaffold/templates/objetivo/objetivo-init-minimal.yaml` criado (~200 linhas)
+  - ✅ Seções: `ai_safety_instructions`, `regras_gerais`, `infrastructure`, `expected_outcome`
+
+- [x] ~~**SESSION_DOCS_STYLE_GUIDE.md em projetos novos**~~: ✅ CONCLUÍDO (2026-06-26)
+  - ✅ `setup_project_docs()`: passo 2b copia guia para `docs/guides/`
+  - ✅ Session-start-first.prompt.md: uv init + uv venv, subprocess Python (anti-pipe P0)
+
+- [x] ~~**Dependabot: 16 CVEs Airflow resolvidos**~~: ✅ CONCLUÍDO (2026-06-26)
+  - ✅ `requirements-airflow.txt`: `==2.9.0` → `>=3.2.1`
+  - ✅ `actions/checkout` v4→v7, `actions/github-script` v7→v9
+
+- [x] ~~**Limpeza repositório: 85+ arquivos commitados**~~: ✅ CONCLUÍDO (2026-06-26)
+  - ✅ Agents Copilot, SpecKit manifests, skills, docs/reference, scripts/bin/ commitados
+  - ✅ Paths `.github/templates/` → `scaffold/templates/project/` corrigidos
+  - ✅ `.claude/settings.json` limpo: removidas referências a `enterprise-observability-dashboards`
+
+- [ ] **scaffold adopt para projetos legados** — decisão pendente do usuário
+  - Opção A: criar comando `scaffold adopt` (automático)
+  - Opção B: documentar processo manual em `docs/guides/`
 
 ---
 
 ## 🎯 Próxima Sessão (2026-06-24+)
 
 - [ ] **Rodar suite de testes completa**: verificar se git mv + refactor de `project.py` não quebrou testes existentes (`uv run pytest`)
-- [ ] **Commit das mudanças pendentes**: staged renames + unstaged modifications (`.specify/`, `.claude/skills/`, `scaffold/profiles/`, `scripts/lib/`)
+- [x] ~~**Commit das mudanças pendentes**~~: ✅ CONCLUÍDO (2026-06-26) — `fabb5ab`, `4e3f67d`
 - [ ] **Validar `specify init` no projeto novo**: confirmar que `run_speckit_init()` funciona para todos os valores de `ai_assistant` (claude, copilot, both, none)
 
 ---
