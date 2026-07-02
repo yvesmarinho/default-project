@@ -1,8 +1,26 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-06-26 — Segurança scaffold, limpeza repositório, templates e Dependabot ✅
+**Last Updated**: 2026-07-02 — Agent objetivo-init + ritual de encerramento de sessão ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-07-02+)
+
+- [x] ~~**Agent `objetivo-init` agnóstico de linguagem**~~: ✅ CONCLUÍDO (2026-07-02)
+  - ✅ `.github/agents/objetivo-init.agent.md` criado
+  - ✅ `scaffold/templates/speckit/agents/objetivo-init.agent.md` criado
+  - ✅ Fonte canônica alinhada com `docs/templates/objetivo-init-minimal.yaml`
+  - ✅ Execução guiada do agent realizada com geração de mapa de respostas e YAML preenchido
+
+- [ ] **Integrar `objetivo-init` ao fluxo oficial do scaffold**
+  - Definir como o agent será invocado no workflow padrão
+  - Persistir o YAML preenchido em local versionado quando fizer sentido
+
+- [ ] **Consolidar referências antigas do template `objetivo-init-minimal`**
+  - Revisar referências ainda apontando para cópias fora de `docs/templates/`
+  - Decidir o destino final do arquivo legado na raiz do repositório
 
 ---
 

@@ -1,11 +1,29 @@
 # 📑 Project Index - Enterprise Default Project Template
 
-**Last Updated**: 2026-05-21 — Release v1.7.1 Produção ✅ + BUG-23 Objetivo-Init Fix ✅ + Pipeline Testing (100%)
-**Project Status**: 🟢 Production — v1.7.1 Released + Objetivo-Init Pipeline + Test Suite + Memory System
+**Last Updated**: 2026-07-02 — Agent objetivo-init agnóstico + session-end ✅
+**Project Status**: 🟢 Production — v1.7.1 Released + Objetivo-Init Evolution + Test Suite + Memory System
 **Version**: 1.7.1
-**Last Session**: 2026-05-21 — ✅ P1 Pipeline Testing + BUG-23 Fix + Release v1.7.1 Produção
+**Last Session**: 2026-07-02 — ✅ Agent objetivo-init + documentação de encerramento
 
 ---
+
+> **✅ SESSION 2026-07-02 COMPLETE (Agent Objetivo-Init + Canonical Template Review)**
+> - **Status**: ✅ COMPLETE — agent customizado criado, fonte canônica revisada e execução guiada concluída
+> - **Branch**: master
+> - **Request**: criar agent a partir de `objetivo-init-minimal.yaml` → revisar template canônico em `docs/templates/` → executar o agent → encerrar sessão
+> - **DELIVERABLES**:
+>   - ✅ Agent `objetivo-init` criado em `.github/agents/` e `scaffold/templates/speckit/agents/`
+>   - ✅ Agent agnóstico de linguagem, com pergunta por placeholder e sugestão obrigatória
+>   - ✅ Template canônico confirmado em `docs/templates/objetivo-init-minimal.yaml`
+>   - ✅ Execução do agent com geração de mapa de respostas e YAML preenchido
+> - **NEW FILES**:
+>   - `.github/agents/objetivo-init.agent.md`
+>   - `scaffold/templates/speckit/agents/objetivo-init.agent.md`
+>   - `docs/SESSIONS/2026-07-02/DAILY_ACTIVITIES_2026-07-02.md`
+>   - `docs/SESSIONS/2026-07-02/FINAL_STATUS_2026-07-02.md`
+> - **NEXT STEPS**:
+>   - Integrar `objetivo-init` ao fluxo oficial do scaffold
+>   - Consolidar referências antigas para o template canônico em `docs/templates/`
 
 > **✅ SESSION 2026-05-21 COMPLETE (Objetivo-Init Pipeline + BUG-23 Fix + Release v1.7.1)**
 > - **Status**: ✅ COMPLETE — Pipeline testado end-to-end + bug crítico corrigido + release publicada
@@ -1492,6 +1510,13 @@ docs/
 
 **Location**: [`templates/`](templates/)
 
+- **[objetivo-init-minimal.yaml](templates/objetivo-init-minimal.yaml)** - Template canônico enriquecido para objetivo-init
+  - Placeholder-driven, com regras, perfil, infraestrutura e expected outcome
+  - Base de referência para o agent `objetivo-init`
+
+- **[change_request-template.yaml](templates/change_request-template.yaml)** - Template de solicitação de mudança
+  - Fluxo de change request para evolução de escopo sem reiniciar todo o ciclo SpecKit
+
 - **[MODULAR_TEMPLATES.md](templates/MODULAR_TEMPLATES.md)** - ⭐ Modular template system
   - Block composition with @include directives
   - Patch system for customizations
@@ -1574,6 +1599,11 @@ Complete session history with detailed documentation for each development sessio
 
 **Recent Sessions**:
 
+- **[2026-07-02/](SESSIONS/2026-07-02/)** - Agent objetivo-init + revisão do template canônico
+  - Agent customizado criado para entrevista guiada por placeholders
+  - Fonte canônica alinhada com `docs/templates/objetivo-init-minimal.yaml`
+  - Ritual de encerramento registrado
+
 - **[2026-04-27/](SESSIONS/2026-04-27/)** - ⭐ BUG-06 + Template Issues Fix
   - BUG-06: Profile loading corrected (5 files renamed)
   - Template Issues: Placeholder substitution + hatchling config
@@ -1607,6 +1637,15 @@ Complete session history with detailed documentation for each development sessio
 ## 🤖 Copilot Agents
 
 ### Custom Agents
+- **[.github/agents/objetivo-init.agent.md](../.github/agents/objetivo-init.agent.md)** - Entrevista guiada para preencher `objetivo-init-minimal.yaml`
+  - **Version**: 1.0.0 (created 2026-07-02)
+  - **Purpose**: Transformar placeholders do template canônico em perguntas com sugestões
+  - **Features**:
+    - Leitura do template em `docs/templates/objetivo-init-minimal.yaml`
+    - Uma pergunta por placeholder relevante
+    - Sugestões obrigatórias e linguagem agnóstica de stack
+    - Geração de mapa de respostas e YAML preenchido
+
 - **[.github/agents/session-manager.agent.md](../.github/agents/session-manager.agent.md)** - ⭐ Session initialization & organization
   - **Version**: 1.2.0 (updated 2026-03-23)
   - **Purpose**: Automate session start/end workflows
