@@ -111,18 +111,27 @@ class TestBug17TimeTracker:
         script = workspace_path / "scripts" / "session-time-tracker.py"
         assert script.exists(), "scripts/session-time-tracker.py não encontrado"
 
-    def test_session_start_prompt_has_step_6_5(self, workspace_path):
-        """Verificar que session-start.prompt.md contém Passo 6.5."""
-        prompt = workspace_path / ".github" / "prompts" / "session-start.prompt.md"
-        assert prompt.exists(), "session-start.prompt.md não encontrado"
+    def test_session_start_prompt_uses_session_manager(self, workspace_path):
+        """Verificar que session-start.prompt.md usa o CLI canônico."""
+        candidates = [
+            workspace_path / ".github" / "prompts" / "session-start.prompt.md",
+            workspace_path / ".claude" / "commands" / "session-start..md",
+        ]
+        prompt = next((candidate for candidate in candidates if candidate.exists()), None)
+        assert prompt is not None, "Nenhum wrapper de session-start encontrado"
 
         content = prompt.read_text(encoding="utf-8")
-        assert "Passo 6.5" in content or "6.5" in content, (
-            "session-start.prompt.md não contém Passo 6.5 (time-tracker)"
+        assert "python scripts/session-manager.py start --json" in content, (
+            "Wrapper de session-start não usa scripts/session-manager.py"
         )
-        assert "Rastreamento de Sessão" in content or "session-time" in content, (
-            "Passo 6.5 não menciona rastreamento de sessão"
+        assert "Passo 6.5" not in content, (
+            "Wrapper de session-start ainda contém fluxo legado numerado"
         )
+
+    def test_session_manager_script_exists(self, workspace_path):
+        """Verificar que session-manager.py foi deployado."""
+        script = workspace_path / "scripts" / "session-manager.py"
+        assert script.exists(), "scripts/session-manager.py não encontrado"
 
     def test_session_time_directory_exists(self, workspace_path):
         """Verificar que diretório .session-time/ foi criado."""

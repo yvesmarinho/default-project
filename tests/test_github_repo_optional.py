@@ -139,6 +139,59 @@ def test_github_security_files_without_repo(tmp_path):
     assert not (project_dir / ".github" / "workflows" / "dependency-review.yml").exists()
 
 
+def test_github_security_files_detect_drift_without_force(tmp_path):
+    """Verifica que arquivos gerenciados reportam drift sem sobrescrever."""
+    project_dir = tmp_path / "test-project"
+    config = ProjectConfig(
+        project_name="test-project",
+        project_title="Test Project",
+        description="A test project",
+        domain="programming",
+        language="python",
+        github_repo="https://github.com/org/test-project",
+        shared_dir=Path("/tmp/shared"),
+        target_dir=tmp_path,
+        created_at="2026-04-29T10:00:00",
+    )
+    project_dir.mkdir(parents=True, exist_ok=True)
+
+    generate_github_security_files(config)
+    (project_dir / ".github" / "CODEOWNERS").write_text("* @custom-owner\n", encoding="utf-8")
+
+    results = generate_github_security_files(config, force=False)
+
+    drift_paths = {result.path.name for result in results if result.status == "drift"}
+    assert "CODEOWNERS" in drift_paths
+    assert (project_dir / ".github" / "CODEOWNERS").read_text(encoding="utf-8") == "* @custom-owner\n"
+
+
+def test_github_security_files_refresh_with_force(tmp_path):
+    """Verifica que --force atualiza arquivo gerenciado e cria backup."""
+    project_dir = tmp_path / "test-project"
+    config = ProjectConfig(
+        project_name="test-project",
+        project_title="Test Project",
+        description="A test project",
+        domain="programming",
+        language="python",
+        github_repo="https://github.com/org/test-project",
+        shared_dir=Path("/tmp/shared"),
+        target_dir=tmp_path,
+        created_at="2026-04-29T10:00:00",
+    )
+    project_dir.mkdir(parents=True, exist_ok=True)
+
+    generate_github_security_files(config)
+    codeowners = project_dir / ".github" / "CODEOWNERS"
+    codeowners.write_text("* @custom-owner\n", encoding="utf-8")
+
+    results = generate_github_security_files(config, force=True)
+
+    assert any(result.path.name == "CODEOWNERS" and result.status == "created" for result in results)
+    assert codeowners.read_text(encoding="utf-8") != "* @custom-owner\n"
+    assert (project_dir / ".github" / "CODEOWNERS.backup").exists()
+
+
 def test_project_config_github_repo_none():
     """Verifica que ProjectConfig aceita github_repo=None."""
     config = ProjectConfig(

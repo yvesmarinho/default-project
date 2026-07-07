@@ -1,11 +1,17 @@
 # _meta:
 #   criado_em: "26/06/2026 15:30"
-#   modificado_em: "26/06/2026 15:30"
+#   modificado_em: "01/07/2026 15:50"
 #
 # Template minimal enriquecido para objetivo-init.
 # Baseado no template base (objetivo-init-template.yaml) com adição das seções:
 #   regras_projeto, regras_gerais, ai_safety_instructions, infrastructure,
 #   profile (detalhado), expected_outcome (com success_criteria/quality_gates).
+#
+# Arquitetura alinhada com docs/guides/Copilot Arquitetura de Software framework
+# minimo.md (framework mínimo + resolução de lacunas /grill-me de 01/07/2026):
+#   erro por camada, IA agnóstica de provider, ADR em MADR simplificado,
+#   coverage 90% fixo, mypy como gate bloqueante, domain sem logging,
+#   schemas de saída versionados por SemVer.
 #
 # Placeholders: {{PLACEHOLDER}} — substituir antes de usar.
 # Campos com valor padrão: manter ou ajustar conforme o projeto.
@@ -43,16 +49,48 @@ prompt:
           - "DDD leve — apenas para modelar domínio e linguagem ubíqua"
           - "SOLID como critério de revisão, não como obsessão"
           - "TDD para partes críticas do domínio"
-          - "GoF apenas quando houver problema real que justifique"
-          - "Contratos de entrada/saída com schemas e validação explícita"
-          - "Logs estruturados para observabilidade"
+          - "GoF apenas quando houver problema real que justifique (Strategy, Factory, Adapter, Facade, Builder)"
+          - "Contratos de entrada/saída com schemas versionados e validação explícita"
+          - "Logs estruturados para observabilidade, aplicados apenas nas bordas (Application/Infrastructure)"
           - "Configuração por arquivos e variáveis de ambiente"
         mandatory_requirements:
           - "Testes unitários + integração + CLI"
           - "Lint, typing e coverage obrigatórios no CI"
           - "Toda entrada validada antes de chegar ao domínio"
           - "Integrações externas encapsuladas na camada Infrastructure"
-          - "Camada Domain sem dependência de framework, CLI ou SDK externo"
+          - "Camada Domain sem dependência de framework, CLI, logger concreto ou SDK externo"
+          - "Domain/Application levantam exceções tipadas e nomeadas; nunca retornam False como substituto genérico de erro"
+          - "Infrastructure e CLI/presentation capturam exceções com try/except (BaseException) nas fronteiras, registram via logging.error a descrição do erro + exc_info=True + a exceção capturada, e retornam False — conforme padrão de codificação Python do projeto"
+          - "Domain layer não contém chamadas a logging; apenas Application/Infrastructure registram logs"
+          - "Toda integração de IA implementa uma interface Strategy/Adapter comum; nenhum provider é fixado no framework mínimo"
+          - "Toda saída estruturada relevante é versionada por SemVer (schemas/<dominio>-schema-v<major>.json) e carrega campo obrigatório schema_version"
+        error_handling_standard:
+          rules:
+            - "Domain e Application levantam exceções tipadas; nunca retornam False como substituto genérico de erro"
+            - "Infrastructure e CLI/presentation capturam exceções com try/except (BaseException) nas fronteiras, registram via logging.error a descrição do erro + exc_info=True + a exceção capturada, e retornam False — conforme padrão de codificação Python do projeto"
+            - "Falhas recuperáveis são registradas em log e propagadas de forma controlada; falhas não recuperáveis abortam a operação atual com mensagem clara"
+            - "Processamentos em lote registram falhas por item sem interromper o lote inteiro, quando aplicável"
+        ai_integration_standard:
+          rules:
+            - "Nenhum provider de IA é fixado no framework mínimo; toda integração implementa uma interface Strategy/Adapter comum (ex.: SummaryProvider, AIClientPort)"
+            - "Credenciais de IA seguem o padrão global de .secrets/, nunca hardcoded ou expostas via curl"
+        schema_versioning:
+          pattern: "schemas/<dominio>-schema-v<major>.json"
+          required_field: "schema_version no JSON de saída"
+          rule: "Mudança breaking de contrato = novo arquivo com major version incrementado; mudanças aditivas/compatíveis não exigem novo arquivo"
+        change_request_standard:
+          description: >
+            Processo de Change Request (CR), inspirado no PMI e adaptado ao workflow
+            Spec-Driven Development (SpecKit), para incorporar atualizações de escopo
+            sem forçar um novo ciclo completo de specify→clarify→plan quando não é
+            necessário. Análogo ao bug-report (docs/bugs/BUG-NNN-*.md).
+          template: "docs/templates/change_request-template.yaml"
+          instances_path: "docs/changes/CR-NNN-slug.yaml"
+          decision_tree:
+            scenario_a: "Feature ativa, tasks.md em andamento — editar tasks.md/spec.md em delta + /speckit.analyze; não abre CR (tasks.md já é o rastro)"
+            scenario_b: "Feature ativa, tasks.md fechado — /speckit.converge anexa apenas o trabalho faltante; abre CR"
+            scenario_c: "Sem feature ativa — /speckit.specify (lean) → /speckit.tasks → /speckit.implement; abre CR"
+          escalation_rule: "Se impact_analysis.affects_architecture ou affects_domain_model for true no CR, refazer specify→clarify→plan completo"
       regras_projeto:
         - "✅ {{REGRA_PROJETO_1}}"
         - "✅ {{REGRA_PROJETO_2}}"
@@ -66,32 +104,35 @@ prompt:
       regras_gerais:
         - "📁 Organização de arquivos: fonte em src/, scripts em scripts/, testes em tests/, docs em docs/ (sem arquivos de projeto na raiz, exceto configurações essenciais)"
         - "🔐 Segurança: usar .secrets/ para todas as credenciais; arquivos .env nunca commitados; bandit + safety checks em CI/pre-commit"
-        - "📝 Documentação: todo bloco de código deve ter docstrings; ADRs para decisões arquiteturais; READMEs para cada módulo principal"
+        - "📝 Documentação: todo bloco de código deve ter docstrings; ADRs em formato MADR simplificado (Contexto, Decisão, Consequências, Alternativas) para decisões arquiteturais em docs/architecture/adr/; READMEs para cada módulo principal"
         - "📦 Controle de versão: commits atômicos com mensagens detalhadas; branches de feature seguem convenção de nomenclatura; sem commits sem testes passando"
         - "🔄 Gerenciamento de branches: SEMPRE fazer merge da branch de feature de volta ao master após conclusão do objetivo; limpar branches mescladas"
-        - "✅ Quality gates: hooks pre-commit aplicam black, ruff, mypy; pytest deve passar antes do merge; verificação de segurança em PRs"
+        - "✅ Quality gates bloqueantes no CI: ruff check . → mypy (0 erros) → pytest --cov-fail-under=90; falha em qualquer etapa impede o merge"
         - "📋 Validação de configuração: yamllint para todos os arquivos YAML; check-jsonschema para validação de JSON"
         - "🧪 Estratégia de testes: pytest para testes unitários/integração; nunca curl manual (sempre Python requests)"
         - "🚀 Prontidão para deploy: scripts devem ser idempotentes; configuração do ambiente reproduzível do zero; tratamento de erros abrangente"
         - "🐛 Rastreamento de bugs: todo erro/problema deve gerar bug-report em docs/bugs/ com timestamp, stack trace, passos de reprodução e workaround"
+        - "🔀 Change Request: mudanças de escopo pós-implementação (feature já concluída) ou sem feature ativa geram CR em docs/changes/CR-NNN-slug.yaml (template em docs/templates/change_request-template.yaml), com campo routing definindo o cenário (A/B/C) e a ação SpecKit recomendada"
         - "📊 Rastreamento de sessão: todo trabalho registrado em docs/SESSIONS/YYYY-MM-DD/ com timestamps, decisões e resultados"
 
     folder_structure:
-      - ".github: Agents, Workflows e ações para CI/CD (gerados automaticamente)"
+      - ".github: Workflows e ações para CI/CD (gerados automaticamente)"
       - ".git-hooks: Hooks personalizados para Git (gerados automaticamente)"
       - ".memory: Memória e contexto de agentes"
       - ".secrets: Armazenamento seguro de chaves e tokens (não versionado)"
       - ".specify: Configurações específicas do projeto (geradas automaticamente)"
-      - ".vscode: Configurações VS Code e MCP (geradas automaticamente)"
+      - ".editor: Configurações de IDE/editor e integrações de agentes de IA (geradas automaticamente, agnóstico de ferramenta/editor específico)"
       - "{{FOLDER_STRUCTURE_CUSTOM}}"
       - "docs: Documentação geral do projeto"
       - "docs/architecture: Documentos de arquitetura e design"
       - "docs/architecture/adr: Architecture Decision Records"
       - "docs/bugs: Repositório de bug reports (obrigatório para cada erro encontrado)"
+      - "docs/changes: Repositório de Change Requests (CR-NNN-slug.yaml), para mudanças de escopo pós-implementação ou sem feature ativa"
       - "docs/debates: Documentação de debates técnicos"
       - "docs/guides: Guias de como fazer tarefas comuns e boas práticas"
       - "docs/reference: Documentação de referência (fluxos de sessão, integrações)"
       - "docs/SESSIONS: Logs de atividades por sessão (subdiretórios YYYY-MM-DD/)"
+      - "schemas: Contratos JSON de saída versionados por SemVer (schemas/<dominio>-schema-v<major>.json), com campo schema_version obrigatório"
       - "scripts: Scripts de automação"
       - "src: Código-fonte do projeto (estrutura específica por tipo)"
       - "tests: Testes automatizados (pytest)"
@@ -109,15 +150,15 @@ prompt:
         - "{{SUCCESS_CRITERION_1}}"
         - "{{SUCCESS_CRITERION_2}}"
         - "{{SUCCESS_CRITERION_3}}"
-        - "Todos os testes passando (pytest --cov mostra 80%+ de cobertura)"
+        - "Todos os testes passando (pytest --cov mostra 90%+ de cobertura, gate bloqueante no CI)"
         - "Verificação de segurança limpa (sem credenciais no repo, relatório bandit/safety verde)"
-        - "Documentação completa (README, ADRs, guias)"
+        - "Documentação completa (README, ADRs em MADR simplificado, guias)"
         - "Reproduzível do zero: clone limpo → executar script de setup → ambiente completo funcionando"
       quality_gates:
-        - "Código: 100% type hints (mypy strict), 0 violações ruff, formatado com black"
-        - "Testes: 80%+ cobertura (branches), todos os testes em menos de 5s, sem testes instáveis"
-        - "Segurança: sem segredos hardcoded, todas as entradas validadas, tratamento de erros adequado"
-        - "Documentação: toda função tem docstring com exemplos, toda decisão de design registrada"
+        - "Código: 100% type hints (mypy strict, gate bloqueante no CI, 0 erros), 0 violações ruff, formatado com black"
+        - "Testes: 90%+ cobertura (branches, --cov-fail-under=90), todos os testes em menos de 5s, sem testes instáveis"
+        - "Segurança: sem segredos hardcoded, todas as entradas validadas, tratamento de erros adequado (exceções tipadas em domain/application; try/except + False nas fronteiras de infrastructure/CLI)"
+        - "Documentação: toda função tem docstring com exemplos, toda decisão de design registrada em ADR (MADR simplificado)"
 
     infrastructure:
       resource_scope: "{{RESOURCE_SCOPE}}"
@@ -148,7 +189,7 @@ prompt:
       code_and_artifact_handling:
         - "✅ APENAS criar arquivos explicitamente solicitados pelo usuário ou essenciais para completar a tarefa"
         - "✅ NUNCA gerar arquivos além do que está especificado na solicitação do usuário"
-        - "✅ NUNCA modificar arquivos de governança (.copilot-instructions.md, .copilot-rules.md) sem consentimento explícito do usuário"
+        - "✅ NUNCA modificar arquivos de governança do agente de IA configurado (ex.: instruções/regras de projeto, sejam quais forem o nome e a ferramenta) sem consentimento explícito do usuário"
         - "✅ SEMPRE preservar comentários, docstrings e estilo de documentação existentes ao editar arquivos"
         - "✅ Ao editar arquivos YAML/JSON, manter indentação e estrutura corretas; validar sintaxe antes de commitar"
         - "✅ NUNCA usar comandos de terminal (cat, echo, heredoc, mv, cp, rm) para operações de arquivo; usar ferramentas designadas"
@@ -217,6 +258,7 @@ prompt:
         - "[ ] {{CORE_TASK_2}}"
         - "[ ] {{CORE_TASK_3}}"
       phase_3_quality_validation:
-        - "[ ] Executar suite completa pytest (requisito 80%+ cobertura)"
+        - "[ ] Executar suite completa pytest (requisito 90%+ cobertura, --cov-fail-under=90)"
+        - "[ ] Executar ruff check . e mypy como gates bloqueantes no CI (0 erros)"
         - "[ ] Verificação de segurança: bandit, safety, sem credenciais no repo"
-        - "[ ] Revisão final de documentação e verificação de completude"
+        - "[ ] Revisão final de documentação (incluindo ADRs em MADR simplificado) e verificação de completude"

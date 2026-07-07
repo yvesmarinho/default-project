@@ -5,7 +5,7 @@ P0 CRITICAL: Garantir que scaffold upgrade atualiza projetos corretamente.
 
 Testa:
 - Upgrade de projetos existentes via scaffold upgrade
-- Todas as 51 validações de validate-workspace-upgrade.py
+- Todas as 52 validações de validate-workspace-upgrade.py
 - BUG fixes (BUG-20, BUG-001, BUG-11, BUG-12, BUG-13, BUG-16, BUG-17, BUG-18, BUG-19)
 - Merge strategies (JSON, YAML, Markdown)
 - Backup creation
@@ -15,12 +15,12 @@ Estratégia:
 - Criar projeto base via scaffold new
 - Executar scaffold upgrade --force
 - Importar e executar todas as 11 suites de validação
-- Assertar que todas as 51 validações passam
+- Assertar que todas as 52 validações passam
 - Validar logs e backups
 
 Relacionado:
 - scripts/scaffold.py (flow_upgrade)
-- scripts/validate-workspace-upgrade.py (51 validações)
+- scripts/validate-workspace-upgrade.py (52 validações)
 - scripts/lib/flows/upgrade.py
 """
 
@@ -186,7 +186,7 @@ def test_scaffold_upgrade_basic(scaffold_script: Path, base_workspace: Path):
 
 def test_scaffold_upgrade_all_validations(scaffold_script: Path, base_workspace: Path):
     """
-    Teste CRITICAL: Todas as 51 validações passam após upgrade.
+    Teste CRITICAL: Todas as 52 validações passam após upgrade.
 
     Executa scaffold upgrade e depois roda todas as 11 suites de validação
     do validate-workspace-upgrade.py.
@@ -249,9 +249,9 @@ def test_scaffold_upgrade_all_validations(scaffold_script: Path, base_workspace:
             f"{''.join(error_details)}"
         )
 
-    # Assertar que todas as 51 validações passaram
+    # Assertar que todas as 52 validações passaram
     assert total_failed == 0, f"{total_failed} validações falharam"
-    assert total_passed == 51, f"Esperado 51 validações, encontrado {total_passed}"
+    assert total_passed == 52, f"Esperado 52 validações, encontrado {total_passed}"
 
 
 def test_scaffold_upgrade_bug20_mcp_http(scaffold_script: Path, base_workspace: Path):
@@ -537,7 +537,7 @@ def test_scaffold_upgrade_idempotent(scaffold_script: Path, base_workspace: Path
     Teste: scaffold upgrade é idempotente.
 
     Verifica que executar upgrade múltiplas vezes não quebra o projeto.
-    Todas as 51 validações devem passar após cada upgrade.
+    Todas as 52 validações devem passar após cada upgrade.
     """
     # Executar upgrade 3 vezes
     for i in range(3):
@@ -582,6 +582,71 @@ def test_scaffold_upgrade_idempotent(scaffold_script: Path, base_workspace: Path
         f"Validações falharam após upgrade idempotente:\n"
         f"Passed: {total_passed} | Failed: {total_failed}"
     )
+
+
+def test_scaffold_upgrade_refreshes_security_files(scaffold_script: Path, tmp_path: Path):
+    """Teste: upgrade com --force atualiza arquivos gerenciados de segurança."""
+    subprocess.run(
+        ["git", "config", "--global", "user.email", "test@example.com"],
+        check=False,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "config", "--global", "user.name", "Test User"],
+        check=False,
+        capture_output=True,
+    )
+
+    workspace = tmp_path / "test-upgrade-security"
+    workspace.mkdir(parents=True, exist_ok=True)
+
+    new_result = subprocess.run(
+        [
+            sys.executable,
+            str(scaffold_script),
+            "new",
+            "--ci",
+            "--name",
+            "test-upgrade-security",
+            "--domain",
+            "programming",
+            "--language",
+            "python",
+            "--repo",
+            "https://github.com/org/test-upgrade-security",
+            "--target-dir",
+            str(workspace),
+        ],
+        cwd=workspace.parent,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert new_result.returncode == 0, f"scaffold new failed: {new_result.stderr}"
+
+    if (workspace / "test-upgrade-security").exists():
+        workspace = workspace / "test-upgrade-security"
+
+    codeowners = workspace / ".github" / "CODEOWNERS"
+    codeowners.write_text("* @custom-owner\n", encoding="utf-8")
+
+    upgrade_result = subprocess.run(
+        [
+            sys.executable,
+            str(scaffold_script),
+            "upgrade",
+            "--force",
+            "--ci",
+        ],
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert upgrade_result.returncode == 0, f"scaffold upgrade failed: {upgrade_result.stderr}"
+
+    assert "@custom-owner" not in codeowners.read_text(encoding="utf-8")
+    assert (workspace / ".github" / "CODEOWNERS.backup").exists()
 
 
 # ---------------------------------------------------------------------------

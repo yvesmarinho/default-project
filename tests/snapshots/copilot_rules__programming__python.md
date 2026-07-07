@@ -33,7 +33,7 @@ Para declarar o modo ativo no início de cada sessão:
 Modo: PROGRAMMING. Projeto: test-project. Perfil: devops-programming.
 ```
 
-Ritual completo: `.github/prompts/session-start.prompt.md`
+Ritual canônico: `python scripts/session-manager.py start --json`
 
 ---
 

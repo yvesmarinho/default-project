@@ -202,9 +202,9 @@ Implementados 7 testes cobrindo todos os cenários.
 ❌ **DON'T**: 
 ```markdown
 **Passos executados**:
-1. Configurar AWS com access_key=AKIAIOSFODNN7EXAMPLE
+1. Configurar AWS com access_key=<AWS_ACCESS_KEY>
 2. Deploy em prod-db-01.internal.company.com
-3. Testar com user admin@company.com / password123
+3. Testar com user user@example.com / <REDACTED_PASSWORD>
 ```
 
 ✅ **DO**: Usar placeholders ou omitir:
@@ -280,9 +280,9 @@ mas **não confie 100%** — sempre revisar antes de commit.
 | Tipo | Exemplo | Replacement |
 |------|---------|-------------|
 | Tokens GitHub | `ghp_abcd1234...` | `[GITHUB_TOKEN_REDACTED]` |
-| AWS Keys | `AKIA...` | `[AWS_ACCESS_KEY_REDACTED]` |
+| AWS Keys | `<AWS_ACCESS_KEY>` | `[AWS_ACCESS_KEY_REDACTED]` |
 | Senhas | `password=secret123` | `password=[PASSWORD_REDACTED]` |
-| IPs privados | `192.168.1.10` | `[PRIVATE_IP_REDACTED]` |
+| IPs privados | `<PRIVATE_IP>` | `[PRIVATE_IP_REDACTED]` |
 | Emails | `user@company.com` | `[EMAIL_REDACTED]` |
 | JWT tokens | `eyJ...` | `[JWT_TOKEN_REDACTED]` |
 

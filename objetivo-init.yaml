@@ -7,7 +7,7 @@ project:
   domain: "devops"  # Options: programming, infrastructure, data-engineering
   language: "python"  # Linguagem principal (python, typescript, go, hcl, etc)
 
-created_at: "2026-06-23"  # Data de criação (YYYY-MM-DD)
+created_at: "2026-07-07"  # Data de criação (YYYY-MM-DD)
 created_by: "Yves Marinho"  # Autor/responsável
 
 generation:

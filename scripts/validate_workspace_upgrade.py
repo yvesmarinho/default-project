@@ -344,39 +344,46 @@ def validate_bug17_timetracker(workspace: Path, verbose: bool = False) -> Valida
         str(script) if script.exists() else "Arquivo não encontrado"
     ))
 
-    # Check 2: session-start.prompt.md tem Passo 6.5
-    # CORREÇÃO #3: Validar conteúdo específico do Passo 6.5
-    prompt = workspace / ".github" / "prompts" / "session-start.prompt.md"
-    if not prompt.exists():
+    # Check 2: wrapper de início de sessão existe e usa o CLI canônico
+    candidates = [
+        workspace / ".github" / "prompts" / "session-start.prompt.md",
+        workspace / ".claude" / "commands" / "session-start..md",
+    ]
+    prompt = next((candidate for candidate in candidates if candidate.exists()), None)
+    if prompt is None:
         suite.add(ValidationResult(
-            "session-start.prompt.md exists",
+            "session-start wrapper exists",
             False,
-            "Arquivo não encontrado"
+            "Nenhum wrapper de session-start encontrado"
         ))
         return suite
 
     content = prompt.read_text(encoding="utf-8")
-    has_step = "6.5" in content or "Passo 6.5" in content
-
-    if not has_step:
+    has_session_manager = "python scripts/session-manager.py start --json" in content
+    if not has_session_manager:
         suite.add(ValidationResult(
-            "session-start has Step 6.5",
+            "session-start uses session-manager CLI",
             False,
-            "Passo 6.5 não encontrado"
+            "Comando canônico do session-manager não encontrado"
         ))
         return suite
 
-    suite.add(ValidationResult("session-start has Step 6.5", True))
+    suite.add(ValidationResult("session-start uses session-manager CLI", True, str(prompt)))
 
-    # Validar conteúdo CORRETO do Passo 6.5 (versão atual)
-    has_tracker_start = "session-time-tracker.py start" in content
-    has_tracker_section = "Iniciar Session Time Tracker" in content or "Rastreamento de Sessão" in content
-    is_current_version = has_tracker_start and has_tracker_section
-
+    # Check 3: session-manager.py deve estar deployado junto com o tracker
+    manager_script = workspace / "scripts" / "session-manager.py"
     suite.add(ValidationResult(
-        "Step 6.5 current version",
-        is_current_version,
-        "Versão atual (session-time-tracker.py start)" if is_current_version else "Versão desatualizada ou incompleta"
+        "session-manager.py deployed",
+        manager_script.exists(),
+        str(manager_script) if manager_script.exists() else "Arquivo não encontrado"
+    ))
+
+    # Check 4: prompt curto, sem fluxo legado numerado
+    has_legacy_step = "Passo 6.5" in content
+    suite.add(ValidationResult(
+        "session-start legacy step removed",
+        not has_legacy_step,
+        "Prompt enxuto sem passo 6.5 legado" if not has_legacy_step else "Prompt ainda contém passo 6.5 legado",
     ))
 
     return suite

@@ -136,10 +136,9 @@ data:
       type: "postgresql"
       version: "15"
       connection:
-        # Boas práticas: secrets não devem ficar em texto plano.
-        # Como é EXEMPLO, mantive o valor, mas marquei como "example_only".
+        # Boas práticas: usar placeholders explícitos para não parecer secret real.
         connection_string:
-          value: "postgresql://user:password@localhost:5432/user_management_db"
+          value: "<DATABASE_URL>"
           secret: true
           example_only: true
       orm: "sqlalchemy"

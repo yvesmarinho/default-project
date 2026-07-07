@@ -1,0 +1,105 @@
+# _meta:
+#   criado_em: "01/07/2026 15:30"
+#   modificado_em: "01/07/2026 15:30"
+#
+# Template de Change Request (CR), inspirado no processo de Change Request do
+# PMI, adaptado ao workflow Spec-Driven Development (SpecKit) deste projeto.
+#
+# Objetivo: registrar mudanças de escopo/requisito de forma auditável — paralelo
+# ao bug-report (docs/bugs/BUG-NNN-*.md) — e, principalmente, ROTEAR a mudança
+# para o ramo correto da árvore de decisão SpecKit sem forçar um novo ciclo
+# completo de specify → clarify → plan quando não é necessário.
+#
+# Quando usar um CR (docs/changes/CR-NNN-slug.yaml):
+#   - Mudança pós-implementação em feature já concluída (Cenário B)
+#   - Requisito novo sem feature ativa relacionada (Cenário C)
+# Quando NÃO usar (edite tasks.md direto e siga em frente):
+#   - Feature ativa com tasks.md ainda aberto/em andamento (Cenário A) —
+#     nesse caso o próprio tasks.md já é o rastro de auditoria.
+#
+# Instâncias: copiar este arquivo para docs/changes/CR-NNN-slug.yaml,
+# preencher os placeholders {{...}} e remover este bloco de comentários se
+# desejado.
+
+change_request:
+  cr_id: "CR-{{NNN}}"
+  title: "{{TITULO_CURTO_DA_MUDANCA}}"
+  status: "draft"        # draft | proposed | approved | in_progress | done | rejected
+  priority: "{{P0_P1_P2}}"
+  requested_by: "{{SOLICITANTE}}"
+  created: "{{CREATED_AT}}"
+  updated: "{{CREATED_AT}}"
+  origin:
+    # De onde veio a demanda: uso livre, mas mantenha rastreável.
+    source: "{{stakeholder | bug-report | debate-tecnico | descoberta-em-producao}}"
+    related_bug: "{{BUG-NNN ou null}}"
+    related_session: "docs/SESSIONS/{{YYYY-MM-DD}}/"
+
+  description: >
+    {{DESCRICAO_DA_MUDANCA_SOLICITADA}}
+
+  justification: >
+    {{POR_QUE_ESSA_MUDANCA_E_NECESSARIA}}
+
+  impact_analysis:
+    affects_architecture: false   # true → volta ao ciclo completo specify→clarify→plan
+    affects_domain_model: false   # true → considerar novo ciclo de clarify/plan
+    affects_schema_contract: false # true → nova versão em schemas/<dominio>-schema-v<major>.json
+    estimated_effort: "{{trivial | pequeno | medio | grande}}"
+
+  # ---------------------------------------------------------------------
+  # ROTEAMENTO — campo central deste CR.
+  # Preencha routing.feature_ativa e routing.tasks_md_state; o campo
+  # routing.scenario e routing.recommended_action devem ser definidos
+  # de acordo com a árvore de decisão abaixo (preencher manualmente,
+  # não é computado automaticamente pelo YAML):
+  #
+  #   feature_ativa=false                              → scenario: C
+  #   feature_ativa=true  + tasks_md_state=aberto       → scenario: A
+  #   feature_ativa=true  + tasks_md_state=fechado      → scenario: B
+  # ---------------------------------------------------------------------
+  routing:
+    feature_ativa: "{{true|false}}"
+    feature_path: "{{specs/NNN-nome/ ou null}}"
+    tasks_md_state: "{{aberto | fechado | not_applicable}}"
+    scenario: "{{A|B|C}}"
+    recommended_action: "{{ver mapeamento abaixo}}"
+    target_artifacts:
+      - "{{spec.md | plan.md | tasks.md}}"
+
+  # Mapeamento scenario → recommended_action (referência, copiar o texto
+  # aplicável para recommended_action acima):
+  #
+  # A — Feature ativa, tasks.md aberto:
+  #   "Editar spec.md (delta de critério de aceite, se houver) + adicionar
+  #    task(s) direto em tasks.md + rodar /speckit.analyze para checar
+  #    consistência. Não recriar plan.md nem repetir clarify."
+  #
+  # B — Feature ativa, tasks.md fechado:
+  #   "Editar spec.md em delta (se necessário) + rodar /speckit.converge
+  #    para comparar código real vs spec/plan/tasks e anexar apenas as
+  #    tasks faltantes + /speckit.implement para concluir o delta."
+  #
+  # C — Sem feature ativa:
+  #   "Rodar /speckit.specify (cria ou atualiza spec a partir da descrição
+  #    em linguagem natural) → pular /speckit.clarify se não houver
+  #    ambiguidade → pular replanejamento completo se a arquitetura não
+  #    mudar (reaproveitar plan/constituição vigente) → /speckit.tasks →
+  #    /speckit.implement. Se for trivial (nível typo/config), é legítimo
+  #    aplicar a mudança direto e apenas documentar aqui a decisão."
+
+  acceptance_criteria:
+    - "{{CRITERIO_DE_ACEITE_1}}"
+    - "{{CRITERIO_DE_ACEITE_2}}"
+
+  approvals:
+    - approver: "{{NOME}}"
+      role: "{{owner | tech-lead | stakeholder}}"
+      decision: "{{pending | approved | rejected}}"
+      date: "{{DATA}}"
+
+  execution:
+    branch: null
+    commits: []
+    resolved: null
+    resolution: null

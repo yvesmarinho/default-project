@@ -4,9 +4,11 @@ source: "https://github.com/copilot/c/6cf7fc3c-b8c4-4abf-9a42-0639e5a10a7f"
 author:
 published:
 created: 2026-05-19
+modificado: 2026-07-01 15:40
 description: "GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects."
 tags:
   - "clippings"
+  - "grill-me"
 ---
 Sim: **existe um padrão mínimo, prático e especificável** que você pode adotar para aumentar bastante a qualidade do software e reduzir a probabilidade de erros, **sem precisar dominar arquitetura avançada logo no início**.
 
@@ -851,3 +853,115 @@ Se você quiser, no próximo passo eu posso fazer uma destas três coisas:
 3. **propor a estrutura real de pastas e módulos Python do `portfolio-generator` com justificativa arquitetural detalhada**
 
 Se quiser, eu também posso fazer os **3 em sequência**.
+
+---
+
+## Complemento — Resolução de lacunas (sessão /grill-me, 01/07/2026)
+
+Este documento foi originalmente escrito com exemplos específicos do projeto `portfolio-generator`. Como `a-default-project` é o scaffold genérico que gera outros projetos (via `objetivo-init-minimal.yaml`), as lacunas e ambiguidades abaixo foram interrogadas e resolvidas para que o conteúdo acima sirva de **framework mínimo reutilizável**, não apenas de estudo de caso.
+
+### 1. Conflito: tratamento de erro (CLAUDE.md global x recomendação deste guia)
+
+O guia recomenda **não** usar "try/except em tudo" + "retorno `False` genérico em erro". O `CLAUDE.md` global do usuário exige exatamente esse padrão em todo arquivo `.py`. Os dois estavam em conflito direto.
+
+**Decisão:** híbrido por camada.
+- `domain/` e `application/` levantam **exceções tipadas e nomeadas semanticamente** (nunca retornam `False` como substituto genérico de erro).
+- `infrastructure/` (adapters, I/O, Git, parsers, exportadores, clientes de IA) e a camada `cli/presentation` aplicam `try/except` + log estruturado + retorno `False`, conforme o padrão global do `CLAUDE.md`.
+- Isso preserva o padrão global do usuário exatamente nas bordas (onde ele existe para blindar efeitos colaterais), sem contaminar o núcleo de domínio com lógica de controle de erro genérica.
+
+**Atualiza:** a seção "Ajuste importante ao que você pediu" e o bloco `error_handling_standard` — a regra "Funções não devem retornar False como substituto genérico para erro" **vale apenas para domain/application**; infra/CLI seguem `CLAUDE.md` literalmente.
+
+### 2. Escopo: exemplos específicos do `portfolio-generator`
+
+**Decisão:** generalizar com placeholders. Os exemplos concretos deste documento (paths fixos como `/home/yves_marinho/Documentos/DevOps/`, entidades `Project`/`Portfolio`) permanecem como **estudo de caso ilustrativo já aplicado**, mas ao instanciar o framework mínimo em um novo `objetivo.yaml` do scaffold, esses valores devem ser parametrizados como `{{PROJECT_NAME}}`, `{{ALLOWED_BASE_PATH}}`, `{{DOMAIN_ENTITY_*}}` etc. O framework mínimo em si (camadas, DDD leve, SOLID, patterns, quality gates) é agnóstico de projeto.
+
+### 3. Cobertura mínima de testes
+
+**Decisão:** 90% fixo e global — mantido exatamente como proposto no documento original (`pytest --cov=src --cov-fail-under=90`), sem diferenciação por camada. Todo projeto gerado pelo scaffold herda esse piso.
+
+### 4. Provider de IA
+
+**Decisão:** agnóstico de provider. O framework mínimo não fixa Anthropic, OpenAI ou qualquer outro. Toda integração de IA deve implementar uma interface comum (`SummaryProvider`, `AIClientPort` ou equivalente) via **Strategy/Adapter**, permitindo trocar de provider sem alterar domínio ou application. A escolha concreta de provider fica a critério de cada `objetivo.yaml`. Credenciais seguem sempre o padrão global de `.secrets/` (nunca hardcoded, nunca via `curl`).
+
+### 5. Formato de ADR
+
+**Decisão:** MADR simplificado. Todo `docs/decisions/adr-NNN-*.md` segue o formato reduzido: **Contexto → Decisão → Consequências → Alternativas consideradas**. Leve o suficiente para não virar burocracia, mas padronizado entre todos os projetos gerados pelo scaffold.
+
+### 6. Type checker e quality gates no CI
+
+**Decisão:** `mypy` como type checker padrão, com gates **bloqueantes** no CI (não apenas informativos). Pipeline mínimo obrigatório: `ruff check .` → `mypy` → `pytest --cov=src --cov-fail-under=90`. Falha em qualquer etapa impede merge.
+
+### 7. Logging estruturado dentro do domain
+
+O `CLAUDE.md` global exige `logging`/`config_logging()` em todo arquivo `.py`, mas este guia proíbe o domain de depender de bibliotecas de infraestrutura (incluindo loggers concretos).
+
+**Decisão:** domain não loga. A camada `domain/` permanece livre de qualquer chamada a `logging`; ela apenas levanta exceções tipadas ou retorna objetos de resultado/evento. A camada `application/infrastructure` é responsável por capturar esses eventos/exceções e aplicar `config_logging()`/`logging.*` do padrão global nas bordas do sistema.
+
+### 8. Versionamento de schema JSON de saída
+
+**Decisão:** SemVer simples por nome de arquivo. Cada schema vive em `schemas/<dominio>-schema-v<major>.json` (ex.: `schemas/portfolio-schema-v1.json`), e todo JSON de saída carrega um campo obrigatório `"schema_version"`. Mudança breaking de contrato = novo arquivo com major version incrementado; mudanças aditivas/compatíveis não exigem novo arquivo.
+
+---
+
+### Resumo das regras adicionadas ao `minimum_architecture_standard`
+
+```yaml
+error_handling_standard:
+  rules:
+    - "Domain e Application levantam exceções tipadas; nunca retornam False como substituto genérico de erro"
+    - "Infrastructure e CLI/presentation aplicam try/except + log estruturado + retorno False nas fronteiras, conforme padrão global do projeto"
+    - "Domain layer não deve conter chamadas a logging; apenas Application/Infrastructure registram logs"
+ai_integration_standard:
+  rules:
+    - "Nenhum provider de IA é fixado no framework mínimo; toda integração implementa uma interface Strategy/Adapter comum"
+    - "Credenciais de IA seguem o padrão global de .secrets/, nunca hardcoded ou via curl"
+documentation_standard:
+  adr_format: "MADR simplificado (Contexto, Decisão, Consequências, Alternativas)"
+quality_gates:
+  - "ruff check ."
+  - "mypy (gate bloqueante no CI)"
+  - "pytest --cov=src --cov-fail-under=90 (gate bloqueante no CI)"
+schema_versioning:
+  pattern: "schemas/<dominio>-schema-v<major>.json"
+  required_field: "schema_version no JSON de saída"
+  rule: "Mudança breaking = novo arquivo com major version incrementado"
+```
+
+---
+
+## Complemento — Change Request (CR) sem refazer o workflow SpecKit (01/07/2026)
+
+Pergunta resolvida via `/grill-me`: como incorporar atualizações de escopo/requisito ao workflow Spec-Driven Development (`specify → clarify → plan → tasks → implement`) sem forçar um novo ciclo completo toda vez que surge uma mudança pequena.
+
+### Árvore de decisão
+
+O custo de "refazer o SpecKit" vem de rodar `specify + clarify + plan` do zero. Isso só é necessário quando a mudança afeta arquitetura ou modelo de domínio. Nos demais casos, `spec.md`/`plan.md`/`tasks.md` devem ser tratados como documentos vivos, editados em delta:
+
+- **Cenário A — feature ativa, `tasks.md` ainda em andamento**: editar `spec.md` só se mudar critério de aceite (delta, não reescrita); adicionar a(s) task(s) nova(s) direto em `tasks.md`; rodar `/speckit.analyze` para checar consistência. Não recriar `plan.md` nem repetir `clarify`. **Não abre CR** — o próprio `tasks.md` já é o rastro de auditoria.
+- **Cenário B — feature ativa, `tasks.md` já fechado/implementado**: editar `spec.md` em delta se necessário; rodar `/speckit.converge`, que compara o código real contra spec/plan/tasks e **anexa** apenas o trabalho faltante como novas tasks; `/speckit.implement` conclui o delta. **Abre CR**.
+- **Cenário C — requisito pequeno sem feature ativa relacionada**: rodar `/speckit.specify` (cria ou atualiza spec a partir de linguagem natural); pular `/speckit.clarify` se não houver ambiguidade; pular replanejamento completo se a arquitetura não mudar (reaproveitar plan/constituição vigente); `/speckit.tasks` → `/speckit.implement`. Se for trivial (nível typo/config), é legítimo aplicar a mudança direto e só documentar a decisão. **Abre CR**.
+
+### Processo de Change Request (inspirado no PMI, adaptado ao SpecKit)
+
+Análogo ao bug-report (`docs/bugs/BUG-NNN-*.md`), toda mudança de escopo que **não** se encaixa no Cenário A deve gerar um Change Request:
+
+- **Template**: [docs/templates/change_request-template.yaml](../templates/change_request-template.yaml)
+- **Instâncias**: `docs/changes/CR-NNN-slug.yaml`
+- **Campo central — `routing`**: registra `feature_ativa`, `tasks_md_state`, o `scenario` (A/B/C) resultante e a `recommended_action` (qual comando SpecKit rodar), evitando que a decisão fique implícita na cabeça de quem está mudando o código.
+- **`impact_analysis`**: se `affects_architecture` ou `affects_domain_model` for `true`, o CR sinaliza que o atalho não se aplica — volta ao ciclo completo `specify→clarify→plan`.
+- **Quando não usar CR**: mudanças dentro do Cenário A, onde `tasks.md` já cumpre o papel de rastro auditável.
+
+```yaml
+change_request_standard:
+  when_required:
+    - "Cenário B — mudança pós-implementação em feature já concluída"
+    - "Cenário C — requisito novo sem feature ativa relacionada"
+  when_not_required:
+    - "Cenário A — feature ativa com tasks.md em andamento (tasks.md já é o rastro)"
+  routing_fields:
+    - "feature_ativa"
+    - "tasks_md_state"
+    - "scenario (A|B|C)"
+    - "recommended_action"
+  escalation_rule: "Se impact_analysis.affects_architecture ou affects_domain_model for true, refazer specify→clarify→plan completo"
+```

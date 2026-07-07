@@ -307,6 +307,10 @@ def flow_upgrade(args: argparse.Namespace) -> int:
         console.print("  [blue]🔑 Verificando load-mcp.sh...[/blue]")
     results.append(project.generate_load_mcp(cfg))
 
+    if not use_json:
+        console.print("  [blue]🔒 Verificando arquivos de segurança GitHub...[/blue]")
+    results.extend(project.generate_github_security_files(cfg, force=force))
+
     # Re-aplica perfis previamente aplicados (idempotentes)
     if profiles_applied:
         composer = _composer_module.ProfileComposer(

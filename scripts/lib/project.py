@@ -118,6 +118,18 @@ Para configurar proteção de branches no GitHub, consulte [docs/BRANCH_PROTECTI
 Consulte os [documentos de arquitetura](docs/) para detalhes.
 """
 
+_SESSION_DOCS_README = """\
+# Session Docs Workspace
+
+Esta pasta guarda artefatos de sessão criados sob demanda pelos scripts do projeto.
+
+## Regras
+
+- Não criar subpastas datadas durante o scaffold.
+- Os arquivos `DAILY_ACTIVITIES_YYYY-MM-DD.md` devem nascer apenas em sessões reais.
+- O fluxo canônico é `python scripts/session-manager.py start|start-first|end --json`.
+"""
+
 _DOCS_INDEX_MD = """\
 # 📚 Índice — {{PROJECT_TITLE}}
 
@@ -1212,8 +1224,8 @@ make clean          # Limpar arquivos gerados
 # Criar nova feature
 git checkout -b NNN-nome-da-feature
 
-# Commit com convenção
-git commit -m "feat(escopo): descrição"
+# Commit com arquivo de mensagem
+./scripts/git-commit-with-file.sh /tmp/commit.txt
 
 # Push e criar PR
 git push -u origin NNN-nome-da-feature
@@ -1222,14 +1234,8 @@ git push -u origin NNN-nome-da-feature
 ### Documentação de Sessões
 
 ```bash
-# Criar nova sessão (data atual)
-mkdir -p docs/SESSIONS/$(date +%Y-%m-%d)
-
-# Arquivos recomendados por sessão:
-# - SESSION_RECOVERY_YYYY-MM-DD.md   (contexto inicial)
-# - DAILY_ACTIVITIES_YYYY-MM-DD.md   (log incremental)
-# - SESSION_REPORT_YYYY-MM-DD.md     (relatório final)
-# - FINAL_STATUS_YYYY-MM-DD.md       (estado ao encerrar)
+# Inicializar sessão e criar arquivos canônicos
+python scripts/session-manager.py start --json
 ```
 
 ---
@@ -2532,9 +2538,8 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
       1. objetivo-manifest-template.yaml → objetivo.yaml (raiz, com placeholders)
       2. mcp-questions-template.yaml → mcp-questions.yaml (raiz)
       2b. SESSION_DOCS_STYLE_GUIDE.md → docs/guides/SESSION_DOCS_STYLE_GUIDE.md
-          (referenciado pelo session-start.prompt.md de todo projeto novo)
-      3. DAILY_ACTIVITIES.template.md → docs/SESSIONS/<data>/DAILY_ACTIVITIES_<data>.md
-         (APENAS em scaffold NEW - pulado durante upgrade)
+          (referenciado pelos rituais de sessão)
+      3. .session-docs/README.md → guia para criação lazy dos artefatos de sessão
 
     Substituições em objetivo.yaml:
       - CHANGE_ME (project.name) → config.project_name
@@ -2545,15 +2550,15 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
     Arquivos já existentes são saltados (idempotente).
 
     UPGRADE: Se objetivo.yaml existe, verifica e adiciona campos ausentes (ex: docstyle).
-             Pasta de sessão NÃO é criada (evita criar SESSIONS/<created_at>/ vazia).
+             Nenhuma pasta datada é criada automaticamente em `.session-docs`.
 
     Args:
         config: Configuração do projeto
-        is_upgrade: True se executando durante scaffold upgrade (pula criação de sessão)
+        is_upgrade: True se executando durante scaffold upgrade
 
     Ref: BUG-09 (corrigido) — documentado em docs/lembrete.md
     Ref: BUG-001 Fix #1 — patch de docstyle durante upgrade
-    Ref: BUG-22 — evitar criação de pasta SESSIONS/<created_at>/ durante upgrade
+    Ref: BUG-22 — evitar criação automática de pastas de sessão datadas
     """
     results: list[CreatedItem] = []
     base = config.project_path
@@ -2603,8 +2608,7 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
     results.append(result)
 
     # 2b. SESSION_DOCS_STYLE_GUIDE.md → docs/guides/
-    # Referenciado em session-start.prompt.md; sem ele o agente não consegue
-    # carregar o style guide no início de sessão.
+    # Referenciado pelos rituais de sessão para validar a documentação incremental.
     src_style_guide = src_root / "docs" / "guides" / "SESSION_DOCS_STYLE_GUIDE.md"
     dst_guides_dir = base / "docs" / "guides"
     dst_style_guide = dst_guides_dir / "SESSION_DOCS_STYLE_GUIDE.md"
@@ -2617,20 +2621,9 @@ def setup_project_docs(config: ProjectConfig, is_upgrade: bool = False) -> list[
         results.append(CreatedItem(path=dst_style_guide,
                        kind="file", status="error", message=str(exc)))
 
-    # 3. DAILY_ACTIVITIES_<data>.md em .session-docs/<data>/
-    # APENAS durante scaffold NEW - pulado durante upgrade para evitar criar
-    # pasta com data antiga
-    if not is_upgrade:
-        session_date = config.created_at[:10]  # YYYY-MM-DD
-        session_dir = base / ".session-docs" / session_date
-        session_dir.mkdir(parents=True, exist_ok=True)
-
-        src_daily = src_templates / "DAILY_ACTIVITIES.template.md"
-        dst_daily = session_dir / f"DAILY_ACTIVITIES_{session_date}.md"
-        result = _copy_file(src_daily, dst_daily)
-        results.append(result)
-    else:
-        log.debug("⏭️  Pulando criação de pasta de sessão (upgrade mode)")
+    # 3. README em .session-docs para manter a pasta rastreável sem cristalizar data
+    session_docs_readme = base / ".session-docs" / "README.md"
+    results.append(_write_file(session_docs_readme, _SESSION_DOCS_README))
 
     return results
 
@@ -2650,6 +2643,11 @@ def copy_session_libs(config: ProjectConfig, force: bool = False) -> list[Create
       4. scripts/lib/memory.py (usado por memory scripts)
       5. scripts/lib/git_validators.py (usado por session-time-tracker, pre-commit hooks)
       6. scripts/lib/sanitize.py (usado por mem_save para detectar/sanitizar secrets)
+      7. scripts/lib/session_context.py (usado por session-manager)
+      8. scripts/lib/session_docs.py (usado por session-manager)
+      9. scripts/lib/session_security.py (usado por session-manager)
+      10. scripts/lib/git_session.py (usado por session-manager)
+      11. scripts/lib/session_workflow.py (usado por session-manager)
 
     Esses módulos são dependências dos scripts de sessão e memory system.
     Sem eles, os scripts falham com ModuleNotFoundError.
@@ -2677,6 +2675,11 @@ def copy_session_libs(config: ProjectConfig, force: bool = False) -> list[Create
         "memory.py",
         "git_validators.py",
         "sanitize.py",
+        "session_context.py",
+        "session_docs.py",
+        "session_security.py",
+        "git_session.py",
+        "session_workflow.py",
     ]
 
     for lib_name in libs_to_copy:
@@ -2697,13 +2700,15 @@ def copy_session_scripts(config: ProjectConfig, force: bool = False) -> list[Cre
     Copia scripts de rastreamento de sessão para o novo projeto.
 
     Scripts copiados:
-      1. session-index.py → scripts/session-index.py
-      2. session-time-tracker.py → scripts/session-time-tracker.py
-      3. session-search.py → scripts/session-search.py
-      4. session-chat.py → scripts/session-chat.py
-      5. session-validate.py → scripts/session-validate.py
+      1. session-manager.py → scripts/session-manager.py
+      2. session-index.py → scripts/session-index.py
+      3. session-time-tracker.py → scripts/session-time-tracker.py
+      4. session-search.py → scripts/session-search.py
+      5. session-chat.py → scripts/session-chat.py
+      6. session-validate.py → scripts/session-validate.py
 
     Esses scripts são necessários para:
+      - Orquestrar rituais de sessão (session-manager.py)
       - Indexar documentação de sessões (session-index.py)
       - Rastrear tempo de trabalho (session-time-tracker.py)
       - Buscar em sessões indexadas (session-search.py)
@@ -2721,6 +2726,7 @@ def copy_session_scripts(config: ProjectConfig, force: bool = False) -> list[Cre
     src_root = _TEMPLATE_ROOT / "scripts"
 
     scripts_to_copy = [
+        "session-manager.py",
         "session-index.py",
         "session-time-tracker.py",
         "session-search.py",
@@ -3500,7 +3506,7 @@ def setup_secrets_security(config: ProjectConfig) -> list[CreatedItem]:
 # GitHub Security Files (BUG-06)
 # ---------------------------------------------------------------------------
 
-def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
+def generate_github_security_files(config: ProjectConfig, force: bool = False) -> list[CreatedItem]:
     """
     Gera arquivos de segurança GitHub no projeto.
 
@@ -3511,7 +3517,7 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
       - .github/workflows/security-scan.yml (CodeQL + secret scan) — apenas se github_repo configurado
       - .github/workflows/dependency-review.yml (análise de dependências em PRs) — apenas se github_repo configurado
 
-    Se github_repo não estiver configurado, cria apenas SECURITY.md com versão genérica.
+    Se github_repo não estiver configurado, gerencia apenas SECURITY.md com versão genérica.
 
     OWNER placeholder é substituído pelo dono do repo GitHub (se disponível).
 
@@ -3534,7 +3540,7 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
         content = _apply_placeholders(_SECURITY_MD_WITH_GITHUB, config)
     else:
         content = _SECURITY_MD_WITHOUT_GITHUB
-    results.append(_write_file(security_md, content))
+    results.append(_write_managed_file(security_md, content, force=force))
 
     # Arquivos 2-5: Apenas criar se houver repositório GitHub configurado
     if not config.github_repo:
@@ -3543,20 +3549,20 @@ def generate_github_security_files(config: ProjectConfig) -> list[CreatedItem]:
     # Arquivo 2: .github/CODEOWNERS
     codeowners = base / ".github" / "CODEOWNERS"
     content = _CODEOWNERS.replace("@OWNER", owner)
-    results.append(_write_file(codeowners, content))
+    results.append(_write_managed_file(codeowners, content, force=force))
 
     # Arquivo 3: .github/dependabot.yml
     dependabot = base / ".github" / "dependabot.yml"
     content = _DEPENDABOT_YML.replace("OWNER", owner.lstrip("@"))
-    results.append(_write_file(dependabot, content))
+    results.append(_write_managed_file(dependabot, content, force=force))
 
     # Arquivo 4: .github/workflows/security-scan.yml
     security_scan = base / ".github" / "workflows" / "security-scan.yml"
-    results.append(_write_file(security_scan, _SECURITY_SCAN_YML))
+    results.append(_write_managed_file(security_scan, _SECURITY_SCAN_YML, force=force))
 
     # Arquivo 5: .github/workflows/dependency-review.yml
     dependency_review = base / ".github" / "workflows" / "dependency-review.yml"
-    results.append(_write_file(dependency_review, _DEPENDENCY_REVIEW_YML))
+    results.append(_write_managed_file(dependency_review, _DEPENDENCY_REVIEW_YML, force=force))
 
     return results
 
@@ -3644,6 +3650,67 @@ def _write_file(path: Path, content: str) -> CreatedItem:
         return CreatedItem(path=path, kind="file", status="created")
     except OSError as exc:
         log.warning("⚠️  erro ao criar %s: %s", path.name, exc)
+        return CreatedItem(path=path, kind="file", status="error", message=str(exc))
+
+
+def _write_managed_file(path: Path, content: str, force: bool = False) -> CreatedItem:
+    """Escreve arquivo gerenciado com detecção de drift e backup opcional."""
+    import hashlib
+
+    content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()[:8]
+
+    if path.is_symlink():
+        log.info("🔗 skipped (symlink): %s → %s", path.name, path.resolve())
+        return CreatedItem(
+            path=path,
+            kind="symlink",
+            status="skipped",
+            message=f"Preservado symlink → {path.resolve()}",
+        )
+
+    file_exists = path.exists()
+    if file_exists:
+        try:
+            current_content = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            log.warning("⚠️  erro ao ler %s: %s", path.name, exc)
+            return CreatedItem(path=path, kind="file", status="error", message=str(exc))
+
+        current_hash = hashlib.sha256(current_content.encode("utf-8")).hexdigest()[:8]
+        if current_hash == content_hash:
+            log.info("⏭️  skipped (idêntico ao upstream): %s", path)
+            return CreatedItem(path=path, kind="file", status="skipped")
+
+        if not force:
+            log.warning(
+                "📊 drift detectado: %s (upstream: %s, local: %s)",
+                path.name,
+                content_hash,
+                current_hash,
+            )
+            return CreatedItem(
+                path=path,
+                kind="file",
+                status="drift",
+                message=f"Arquivo difere do upstream (upstream: {content_hash}, local: {current_hash})",
+            )
+
+        backup_path = path.with_suffix(path.suffix + ".backup")
+        try:
+            shutil.copy2(path, backup_path)
+            log.info("📦 backup: %s → %s", path.name, backup_path.name)
+        except OSError as exc:
+            log.warning("⚠️  erro ao criar backup de %s: %s", path.name, exc)
+            return CreatedItem(path=path, kind="file", status="error", message=str(exc))
+
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+        action = "atualizado" if file_exists else "criado"
+        log.info("✅ %s: %s", action, path)
+        return CreatedItem(path=path, kind="file", status="created")
+    except OSError as exc:
+        log.warning("⚠️  erro ao escrever %s: %s", path.name, exc)
         return CreatedItem(path=path, kind="file", status="error", message=str(exc))
 
 
