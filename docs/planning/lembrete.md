@@ -14,13 +14,6 @@ Modificado em: 26/06/2026 16:00
 
 ## BUG/Correção
 
-- [ ] P0 - revisar processo session.manager para remover ações de agente e criar código python para as ações.
-
-- [ ] P1 - revisar erro em logs/stdout.txt
-
-- [ ] P2 - os arquivos relacionados a segurnaça no workflow de commit estão desatualizados na pasta destino.
-
-- [ ] P3 - pasta em ".session-docs" está com a data hardcode, alterar para formato genérico.
 
 ---
 
@@ -37,8 +30,6 @@ Modificado em: 26/06/2026 16:00
 
 ## Alterações Futuras
 
-- Revisar todos os processos do session.manager para reduzir os tokens.
-
 - estrutura do respositório deve ser main, dev e fases. Na automação git, validar se o código está correto para ir para o main.
 
 - shell integration:
@@ -53,7 +44,7 @@ Modificado em: 26/06/2026 16:00
   projeto, para facilitar distribuição.
 
 - corrigir o objetivo-init-V2.yaml
-    - para adiconar a sessão "infrastructure".
+    - para adiconar a sessão "infrastructure" e "architeture".
     - adiconar padrão de nomenclatura de pastas e arquivos.
     - adicionar padrão de nomenclatura de objetos, classes e funções
 

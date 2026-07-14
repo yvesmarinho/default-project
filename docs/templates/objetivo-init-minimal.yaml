@@ -31,6 +31,7 @@ prompt:
       primary_workflow: "{{PRIMARY_WORKFLOW}}"
       planning_workflow: "objetivo.yaml → architecture debate → project constitution → specification → plan → tasks → implementation"
       scope_boundary: "Out-of-scope items documented separately in docs/out-of-scope.md"
+      priority: "{{PRIORITY}}"
       objetivos:
         - "{{OBJETIVO_1}}"
         - "{{OBJETIVO_2}}"
