@@ -12,7 +12,7 @@ description: Ritual de encerramento de sessão. Execute ao finalizar o trabalho 
 1. Rode o encerramento automático:
 
 ```bash
-python scripts/session-manager.py end --json
+python scripts/session-manager.py --json end
 ```
 
 2. Interprete o retorno:
@@ -25,7 +25,7 @@ python scripts/session-manager.py end --json
 3. Se o usuário quiser publicar o encerramento no repositório, execute:
 
 ```bash
-python scripts/session-manager.py end --commit --push --json
+python scripts/session-manager.py --json end --commit --push
 ```
 
 4. Se `workspace_security.clean == false` ou `session_docs_security.clean == false`, pare antes de commitar.
@@ -34,6 +34,6 @@ python scripts/session-manager.py end --commit --push --json
 
 ## Referências
 
-- Scan isolado: `python scripts/session-manager.py security-scan --json`
-- Status rápido: `python scripts/session-manager.py status --json`
+- Scan isolado: `python scripts/session-manager.py --json security-scan`
+- Status rápido: `python scripts/session-manager.py --json status`
 - Guia canônico: `docs/guides/SESSION_DOCS_STYLE_GUIDE.md`

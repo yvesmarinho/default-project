@@ -12,7 +12,7 @@ description: Ritual de início de sessão recorrente. Execute no começo de cada
 1. Rode:
 
 ```bash
-python scripts/session-manager.py start --json
+python scripts/session-manager.py --json start
 ```
 
 2. Interprete o retorno:
@@ -35,5 +35,5 @@ python scripts/session-manager.py start --json
 ## Referências
 
 - Guia canônico de docs de sessão: `docs/guides/SESSION_DOCS_STYLE_GUIDE.md`
-- Status rápido sem recriar contexto: `python scripts/session-manager.py status --json`
-- Recuperação isolada: `python scripts/session-manager.py recover --json`
+- Status rápido sem recriar contexto: `python scripts/session-manager.py --json status`
+- Recuperação isolada: `python scripts/session-manager.py --json recover`

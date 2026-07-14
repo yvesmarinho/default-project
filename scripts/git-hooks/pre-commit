@@ -3,6 +3,15 @@
 """
 Pre-commit hook: segurança (IPs, credenciais, secrets) + validação de memória.
 
+Modificado em: 14/07/2026 11:56
+
+MODO MANUAL (padrão): o hook NÃO executa as validações automaticamente a cada
+commit — evita consumo excessivo de tokens/saída quando há muitos commits/PRs.
+
+Para executar as validações:
+  - Manualmente (staged files):  python3 scripts/git-hooks/pre-commit --manual
+  - Em um commit específico:     PRE_COMMIT_VALIDATE=1 git commit ...
+
 Verificações:
   1. .secrets/ não commitado
   2. Nomes de arquivos sensíveis bloqueados
@@ -18,6 +27,7 @@ Instalação:
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -239,6 +249,15 @@ def check_memory_frontmatter(staged: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def main() -> int:
+    manual = "--manual" in sys.argv
+    if not manual and os.environ.get("PRE_COMMIT_VALIDATE") != "1":
+        print(
+            "⏭️  Pre-commit: validações desativadas no modo automático. "
+            "Rodar manualmente: python3 scripts/git-hooks/pre-commit --manual "
+            "(ou PRE_COMMIT_VALIDATE=1 git commit ...)"
+        )
+        return 0
+
     print("=" * 60)
     print("Pre-commit: Segurança + Validação de Memória")
     print("=" * 60)

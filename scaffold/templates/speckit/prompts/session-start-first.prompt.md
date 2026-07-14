@@ -18,7 +18,7 @@ uv run scripts/scaffold.py new
 2. Depois rode o ritual enxuto:
 
 ```bash
-python scripts/session-manager.py start-first --json
+python scripts/session-manager.py --json start-first
 ```
 
 3. Interprete o retorno:
@@ -38,4 +38,4 @@ python scripts/session-manager.py start-first --json
 
 - Verificação de links do scaffold: `uv run scripts/scaffold.py check`
 - Guia de docs de sessão: `docs/guides/SESSION_DOCS_STYLE_GUIDE.md`
-- Status rápido após scaffold: `python scripts/session-manager.py status --json`
+- Status rápido após scaffold: `python scripts/session-manager.py --json status`

@@ -13,12 +13,12 @@ Reduzir tokens do ritual de sessão delegando passos determinísticos para `pyth
 ## Comandos canônicos
 
 ```bash
-python scripts/session-manager.py start --json
-python scripts/session-manager.py start-first --json
-python scripts/session-manager.py recover --json
-python scripts/session-manager.py security-scan --json
-python scripts/session-manager.py status --json
-python scripts/session-manager.py end --json
+python scripts/session-manager.py --json start
+python scripts/session-manager.py --json start-first
+python scripts/session-manager.py --json recover
+python scripts/session-manager.py --json security-scan
+python scripts/session-manager.py --json status
+python scripts/session-manager.py --json end
 ```
 
 ## Responsabilidade do agente
@@ -48,8 +48,8 @@ python scripts/session-manager.py end --json
 
 ## Uso rápido
 
-- `/session-start` → `python scripts/session-manager.py start --json`
-- `/first-time-setup` → scaffold se necessário, depois `python scripts/session-manager.py start-first --json`
-- `/recover-context` → `python scripts/session-manager.py recover --json`
-- `/security-scan` → `python scripts/session-manager.py security-scan --json`
-- `/session-end` → `python scripts/session-manager.py end --json`
+- `/session-start` → `python scripts/session-manager.py --json start`
+- `/first-time-setup` → scaffold se necessário, depois `python scripts/session-manager.py --json start-first`
+- `/recover-context` → `python scripts/session-manager.py --json recover`
+- `/security-scan` → `python scripts/session-manager.py --json security-scan`
+- `/session-end` → `python scripts/session-manager.py --json end`

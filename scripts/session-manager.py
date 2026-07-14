@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 session-manager.py — CLI unificado para rituais de sessão.
+
+Modificado em: 14/07/2026 11:56 — JSON compacto para reduzir tokens.
 """
 
 from __future__ import annotations
@@ -23,7 +25,8 @@ from lib.session_workflow import (  # noqa: E402
 
 
 def _print_json(payload: dict[str, Any]) -> int:
-    print(json.dumps(payload, indent=2, ensure_ascii=False))
+    # Compacto (sem indentação) para reduzir consumo de tokens dos agentes.
+    print(json.dumps(payload, separators=(",", ":"), ensure_ascii=False))
     return 0
 
 

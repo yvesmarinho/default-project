@@ -18,6 +18,12 @@ from pathlib import Path
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def _enable_hook_validation(monkeypatch):
+    """Hook roda em modo manual por padrão; nos testes, força a validação."""
+    monkeypatch.setenv("PRE_COMMIT_VALIDATE", "1")
+
+
 @pytest.fixture
 def git_repo(tmp_path):
     """Create a temporary git repository for testing."""

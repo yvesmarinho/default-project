@@ -359,7 +359,7 @@ def validate_bug17_timetracker(workspace: Path, verbose: bool = False) -> Valida
         return suite
 
     content = prompt.read_text(encoding="utf-8")
-    has_session_manager = "python scripts/session-manager.py start --json" in content
+    has_session_manager = "python scripts/session-manager.py --json start" in content
     if not has_session_manager:
         suite.add(ValidationResult(
             "session-start uses session-manager CLI",

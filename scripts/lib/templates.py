@@ -257,7 +257,7 @@ Para declarar o modo ativo no início de cada sessão:
 Modo: {domain_upper}. Projeto: {project_name}. Perfil: {domain_profile}.
 ```
 
-Ritual canônico: `python scripts/session-manager.py start --json`
+Ritual canônico: `python scripts/session-manager.py --json start`
 
 ---
 
@@ -330,7 +330,7 @@ applyTo: "**"
 **Projeto**: `{project_name}` — {project_title}
 **Domínio**: {domain} | **Linguagem**: {language}
 **Regras completas**: `.copilot-rules-{project_name}.md`
-**Rituais de sessão**: `python scripts/session-manager.py start --json` | `python scripts/session-manager.py end --json`
+**Rituais de sessão**: `python scripts/session-manager.py --json start` | `python scripts/session-manager.py --json end`
 **Domain Profile ativo**: `.github/prompts/domain/{domain_profile}.prompt.md`
 
 ---

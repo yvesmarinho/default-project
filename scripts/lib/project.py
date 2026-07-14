@@ -127,7 +127,7 @@ Esta pasta guarda artefatos de sessão criados sob demanda pelos scripts do proj
 
 - Não criar subpastas datadas durante o scaffold.
 - Os arquivos `DAILY_ACTIVITIES_YYYY-MM-DD.md` devem nascer apenas em sessões reais.
-- O fluxo canônico é `python scripts/session-manager.py start|start-first|end --json`.
+- O fluxo canônico é `python scripts/session-manager.py --json start|start-first|end`.
 """
 
 _DOCS_INDEX_MD = """\
@@ -416,8 +416,18 @@ _PRE_COMMIT_SECRETS_HOOK = r"""#!/usr/bin/env bash
 # Instalação:
 #   cp .git-hooks/pre-commit.secrets .git/hooks/pre-commit
 #   chmod +x .git/hooks/pre-commit
+#
+# MODO MANUAL (padrão): validações não rodam automaticamente a cada commit
+# (economia de tokens). Para validar:
+#   - PRE_COMMIT_VALIDATE=1 git commit ...
+#   - bash .git-hooks/pre-commit.secrets --manual
 
 set -euo pipefail
+
+if [[ "${1:-}" != "--manual" && "${PRE_COMMIT_VALIDATE:-0}" != "1" ]]; then
+    echo "⏭️  Pre-commit: validações em modo manual (PRE_COMMIT_VALIDATE=1 git commit, ou bash .git-hooks/pre-commit.secrets --manual)"
+    exit 0
+fi
 
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
@@ -1235,7 +1245,7 @@ git push -u origin NNN-nome-da-feature
 
 ```bash
 # Inicializar sessão e criar arquivos canônicos
-python scripts/session-manager.py start --json
+python scripts/session-manager.py --json start
 ```
 
 ---

@@ -1,5 +1,8 @@
 """
 lib/session_security.py — Scans de segurança do workflow de sessão.
+
+Modificado em: 14/07/2026 11:56 — saída agregada (máx. MAX_EXAMPLES_PER_GROUP
+exemplos por grupo de achados) para reduzir consumo de tokens no modo --json.
 """
 
 from __future__ import annotations
@@ -68,6 +71,33 @@ class SecurityFinding:
 
     def to_dict(self) -> dict[str, str]:
         return asdict(self)
+
+
+MAX_EXAMPLES_PER_GROUP = 5
+
+
+def _summarize_findings(findings: list[SecurityFinding]) -> dict[str, Any]:
+    """Agrupa achados por (kind, detail) limitando exemplos para poupar tokens."""
+
+    by_kind: dict[str, int] = {}
+    grouped: dict[str, list[SecurityFinding]] = {}
+    for finding in findings:
+        by_kind[finding.kind] = by_kind.get(finding.kind, 0) + 1
+        grouped.setdefault(finding.kind, []).append(finding)
+
+    truncated: list[dict[str, str]] = []
+    omitted = 0
+    for items in grouped.values():
+        truncated.extend(item.to_dict() for item in items[:MAX_EXAMPLES_PER_GROUP])
+        omitted += max(0, len(items) - MAX_EXAMPLES_PER_GROUP)
+
+    return {
+        "clean": not findings,
+        "findings_total": len(findings),
+        "findings_by_kind": by_kind,
+        "findings_omitted": omitted,
+        "findings": truncated,
+    }
 
 
 def _should_skip_path(path: Path) -> bool:
@@ -154,11 +184,9 @@ def scan_workspace(paths: SessionPaths) -> dict[str, Any]:
             ),
         )
 
-    return {
-        "clean": not findings,
-        "gitignore_has_secrets": gitignore_has_secrets,
-        "findings": [item.to_dict() for item in findings],
-    }
+    summary = _summarize_findings(findings)
+    summary["gitignore_has_secrets"] = gitignore_has_secrets
+    return summary
 
 
 def scan_session_documents(paths: SessionPaths) -> dict[str, Any]:
@@ -166,7 +194,7 @@ def scan_session_documents(paths: SessionPaths) -> dict[str, Any]:
 
     findings: list[SecurityFinding] = []
     if not paths.sessions_dir.exists():
-        return {"clean": True, "findings": []}
+        return _summarize_findings([])
 
     for markdown_file in sorted(paths.sessions_dir.glob("*/*.md")):
         relative_path = markdown_file.relative_to(paths.root)
@@ -187,7 +215,4 @@ def scan_session_documents(paths: SessionPaths) -> dict[str, Any]:
                     ),
                 )
 
-    return {
-        "clean": not findings,
-        "findings": [item.to_dict() for item in findings],
-    }
+    return _summarize_findings(findings)
