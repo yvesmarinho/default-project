@@ -163,6 +163,35 @@ def test_adopt_honors_overrides(tmp_path: Path) -> None:
     assert state["project"]["ai_assistant"] == "claude"
 
 
+def test_adopt_dry_run_writes_nothing(tmp_path: Path) -> None:
+    """--dry-run simula e NÃO cria state nem delega ao upgrade (BUG relatado 15/07)."""
+    (tmp_path / "pyproject.toml").write_text("[project]\n", encoding="utf-8")
+    args = _args(tmp_path, dry_run=True)
+
+    with patch.object(adopt_mod, "flow_upgrade", return_value=0) as mock_up:
+        rc = flow_adopt(args)
+
+    assert rc == 0
+    mock_up.assert_not_called()
+    assert not (tmp_path / ".scaffold-state.yaml").exists()
+    # Nada do template foi criado (ignora dirs criados pela fixture isolate_tests)
+    contents = {p.name for p in tmp_path.iterdir()} - {"tmp", "home"}
+    assert contents == {"pyproject.toml"}
+
+
+def test_adopt_dry_run_json_plan(tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+    (tmp_path / "go.mod").write_text("module x\n", encoding="utf-8")
+    args = _args(tmp_path, dry_run=True, json_output=True)
+
+    assert flow_adopt(args) == 0
+    import json
+
+    plan = json.loads(capsys.readouterr().out)
+    assert plan["dry_run"] is True
+    assert plan["project"]["language"] == "go"
+    assert not (tmp_path / ".scaffold-state.yaml").exists()
+
+
 # ---------------------------------------------------------------------------
 # Integração real (pipeline completo, --ci)
 # ---------------------------------------------------------------------------

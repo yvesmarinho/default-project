@@ -4,7 +4,7 @@ flow_adopt — adota um projeto legado (sem .scaffold-state.yaml) no scaffold.
 NOME: adopt.py
 TITULO: Flow de adoção de projetos legados
 DATA: 15/07/2026 10:20
-MODIFICADO: 15/07/2026 10:20
+MODIFICADO: 15/07/2026 16:10
 VERSÃO: 1.0.0
 DEPEND: lib.project, lib.config, lib.flows.upgrade
 STATUS: DEV
@@ -144,6 +144,38 @@ def flow_adopt(args: argparse.Namespace) -> int:
             f"ai: [cyan]{ai_assistant}[/cyan]"
         )
         console.print(f"  [dim]Alvo: {target}[/dim]\n")
+
+    # --dry-run: apenas simula — NUNCA escreve state nem aplica o template
+    if getattr(args, "dry_run", False):
+        plan = {
+            "adopt": True,
+            "dry_run": True,
+            "target": str(target),
+            "project": {
+                "name": name,
+                "title": title,
+                "domain": domain,
+                "language": language,
+                "ai_assistant": ai_assistant,
+            },
+            "would_create": [
+                ".scaffold-state.yaml",
+                "estrutura do template via pipeline do upgrade "
+                "(arquivos existentes seriam preservados)",
+            ],
+        }
+        if use_json:
+            print(_json.dumps(plan, indent=2, ensure_ascii=False))
+        else:
+            console.print("  [yellow]🔍 Dry-run: nenhum arquivo foi escrito.[/yellow]")
+            console.print(
+                "  [dim]Seria criado .scaffold-state.yaml e aplicado o template "
+                "(idempotente; existentes preservados).[/dim]"
+            )
+            console.print(
+                "  [dim]Para executar de fato: remova --dry-run do comando.[/dim]\n"
+            )
+        return 0
 
     # Confirmação interativa (fora de --ci/--json)
     if not use_json and not ci_mode:
