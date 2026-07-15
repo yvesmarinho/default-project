@@ -40,3 +40,32 @@ Ritual de início apontou 5 pendências e o scan de segurança acusou 37 falsos 
 ### Arquivos modificados
 
 Ver diff do commit desta sessão (testes, hooks, agent objetivo-init, README, TODO.md, perfis YAML, snapshots).
+
+---
+
+## Feature: comando `scaffold adopt` para projetos legados (Opção A)
+
+**Horário**: 15/07/2026 10:10–14:40 · **Status**: ✅ Concluído
+**Branch**: `feature/067-scaffold-adopt` (stacked sobre `fix/pendencias-todo-sessao`)
+
+### Objetivo
+
+Implementar a Opção A da pendência "scaffold adopt": comando automático que adota projetos existentes (sem `.scaffold-state.yaml`) no scaffold.
+
+### Contexto
+
+Usuário escolheu a Opção A (comando automático) em vez da Opção B (guia manual). O `upgrade` já tinha o pipeline idempotente completo; faltava só o bootstrap do state para projetos legados.
+
+### Passos e Resultado
+
+1. `scripts/lib/flows/adopt.py`: `detect_language()` (pyproject/package.json/go.mod → python/typescript/go, precedência python>ts), `detect_domain()` (marcadores IaC → infrastructure), `_kebab()` para o slug, validações (alvo inexistente, state já existente → usar upgrade), confirmação interativa fora de `--ci`/`--json`, escrita do state e **delegação ao `flow_upgrade`** (reuso total do pipeline idempotente).
+2. CLI: subcomando `adopt` + flag `--adopt` registrados em `scaffold.py`.
+3. `tests/test_flow_adopt.py`: 16 testes (detecção, kebab, validações, delegação mockada, integração real preservando arquivos do legado). Suite completa: **1700 passed**.
+4. Validação manual end-to-end em projeto simulado: 118 arquivos criados, `pyproject.toml` preservado, re-adopt bloqueado.
+
+### Decisões
+
+- Adopt = bootstrap de state + delegação ao upgrade (zero duplicação de pipeline).
+- `touch` prévio do state garante modo in-place quando o nome do diretório não é kebab-case (bug pego pelos testes: `project_path` resolveria para subdiretório).
+- Detecção conservadora: default `programming`/`other`; overrides via `--name/--domain/--language/--ai`.
+

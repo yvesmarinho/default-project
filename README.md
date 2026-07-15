@@ -76,6 +76,20 @@ python scripts/scaffold.py new --ci --name my-api --domain programming --languag
 
 📖 **Detailed guide**: [QUICKSTART.md](QUICKSTART.md)
 
+### Option 3: Adopt a Legacy Project
+
+Para projetos **já existentes** (criados fora do scaffold, sem `.scaffold-state.yaml`):
+
+```bash
+# Detecta linguagem/domínio, confirma e aplica o template sem sobrescrever nada
+python scripts/scaffold.py adopt --target-dir /caminho/do/projeto
+
+# Não-interativo, com overrides
+python scripts/scaffold.py adopt --ci --target-dir . --language python --ai claude
+```
+
+O `adopt` detecta linguagem (`pyproject.toml`, `package.json`, `go.mod`, ...) e domínio (marcadores IaC como `*.tf`/`Chart.yaml` → `infrastructure`), grava o `.scaffold-state.yaml` e delega ao pipeline idempotente do `upgrade` — arquivos existentes são **preservados** (use `--force` para sobrescrever com backup). Depois da adoção, use `scaffold.py upgrade` normalmente.
+
 ---
 
 ## 🧙 Objetivo.yaml v2.0 — Human-Readable Project Definition
