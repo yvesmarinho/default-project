@@ -135,6 +135,10 @@ scaffold.py objetivo-init --from-file answers.json
 scaffold.py objetivo-init --template-only
 ```
 
+### Create objetivo.yaml with the `objetivo-init` Agent
+
+Alternativa ao wizard CLI: o agent [`objetivo-init`](.github/agents/objetivo-init.agent.md) conduz uma entrevista guiada (agnóstica de linguagem) a partir do template canônico [`docs/templates/objetivo-init-minimal.yaml`](docs/templates/objetivo-init-minimal.yaml), com sugestão contextual em cada pergunta, e persiste o resultado em `objetivo-init.yaml` na raiz do projeto (mesmo destino do wizard). Projetos gerados pelo scaffold recebem o agent automaticamente em `.github/agents/`.
+
 ### Validate and Generate Technical Spec
 
 ```bash

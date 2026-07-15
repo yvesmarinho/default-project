@@ -33,7 +33,7 @@ Para declarar o modo ativo no início de cada sessão:
 Modo: INFRASTRUCTURE. Projeto: test-project. Perfil: devops-infrastructure.
 ```
 
-Ritual canônico: `python scripts/session-manager.py start --json`
+Ritual canônico: `python scripts/session-manager.py --json start`
 
 ---
 

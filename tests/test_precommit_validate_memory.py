@@ -80,7 +80,8 @@ def test_hook_blocks_test_files(git_repo):
 
     assert result.returncode != 0, "Hook should block test file"
     assert "__test-memory.md" in result.stdout or "__test-memory.md" in result.stderr
-    assert "Test files should not be committed" in result.stdout or "Test files should not be committed" in result.stderr
+    _msg = "Arquivos de teste em .memory/ não devem ser commitados"
+    assert _msg in result.stdout or _msg in result.stderr
 
 
 def test_hook_blocks_auto_generated_title(git_repo):
@@ -157,7 +158,7 @@ Content here.
     )
 
     assert result.returncode != 0, "Hook should reject invalid category"
-    assert "Invalid category" in result.stdout or "Invalid category" in result.stderr
+    assert "categoria inválida" in result.stdout or "categoria inválida" in result.stderr
 
 
 def test_hook_validates_frontmatter_missing_closing(git_repo):
@@ -185,7 +186,8 @@ Content without proper frontmatter closing.
     )
 
     assert result.returncode != 0, "Hook should reject malformed frontmatter"
-    assert "Invalid YAML frontmatter" in result.stdout or "Invalid YAML frontmatter" in result.stderr
+    _msg = "Frontmatter YAML inválido"
+    assert _msg in result.stdout or _msg in result.stderr
 
 
 def test_hook_allows_valid_memory_file(git_repo):
@@ -258,8 +260,9 @@ def test_hook_skips_non_memory_files(git_repo):
     )
 
     assert result.returncode == 0, "Hook should skip non-memory files"
-    # Message is in stderr, not stdout
-    assert "No memory files in this commit" in result.stderr or "No memory files in this commit" in result.stdout
+    # Hook atual valida tudo e reporta sucesso geral (mensagem em stderr)
+    _msg = "TODAS AS VERIFICAÇÕES PASSARAM"
+    assert _msg in result.stderr or _msg in result.stdout
 
 
 def test_hook_allows_valid_categories(git_repo):

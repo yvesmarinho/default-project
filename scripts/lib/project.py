@@ -463,6 +463,7 @@ SENSITIVE_PATTERNS=(
     '\.cert$'
     '\.vault_pass'
     'kubeconfig'
+    'credentials'
 )
 
 BLOCKED_FILES=()

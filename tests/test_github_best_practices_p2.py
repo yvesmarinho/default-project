@@ -394,15 +394,15 @@ def test_copy_github_templates_applies_executable_permissions(make_project_confi
     assert is_executable, "setup-branch-protection.py deve ser executável após cópia"
 
 
-def test_copy_github_templates_creates_13_files(make_project_config) -> None:
-    """copy_github_templates() cria exatamente 13 arquivos (4 P1 + 9 P2)."""
+def test_copy_github_templates_creates_16_files(make_project_config) -> None:
+    """copy_github_templates() cria exatamente 16 arquivos (4 P1 + 12 P2)."""
     cfg = make_project_config("programming", "python")
     results = project.copy_github_templates(cfg)
 
     # Contar resultados
     created_count = sum(1 for r in results if r.status == "created")
-    assert created_count == 13, (
-        f"Esperado 13 arquivos criados, obteve {created_count}. "
+    assert created_count == 16, (
+        f"Esperado 16 arquivos criados, obteve {created_count}. "
         f"Resultados: {[r.path for r in results]}"
     )
 

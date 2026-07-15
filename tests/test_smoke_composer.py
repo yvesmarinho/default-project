@@ -30,7 +30,7 @@ from lib.composer import (  # noqa: E402
 # Paths relativos ao projeto real (usados apenas em testes de carregamento)
 # ---------------------------------------------------------------------------
 _PROJECT_ROOT = Path(__file__).parent.parent
-_DESCRIPTORS_DIR = _PROJECT_ROOT / "profile-descriptors"
+_DESCRIPTORS_DIR = _PROJECT_ROOT / "scaffold" / "profiles"
 _TEMPLATES_DIR = _PROJECT_ROOT / ".github" / "templates"
 
 
@@ -131,7 +131,7 @@ def test_get_template_entries_schema_a_typescript_next() -> None:
     for e in entries:
         assert "dest" in e
         assert "src_rel" in e
-        assert e["src_rel"].startswith(".github/templates/typescript-next/")
+        assert e["src_rel"].startswith("scaffold/templates/project/typescript-next/")
 
 
 def test_get_template_entries_schema_b_python_fastapi() -> None:

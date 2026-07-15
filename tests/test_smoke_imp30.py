@@ -69,7 +69,7 @@ class TestCollectFiles:
     def test_includes_at_least_one_profile_descriptor(self) -> None:
         files = _collect_files(_PROJECT_ROOT)
         rel = [str(f.relative_to(_PROJECT_ROOT)) for f in files]
-        descriptors = [r for r in rel if r.startswith("profile-descriptors/") and r.endswith(".yaml")]
+        descriptors = [r for r in rel if r.startswith("scaffold/profiles/") and r.endswith(".yaml")]
         assert len(descriptors) >= 1, "Nenhum profile descriptor encontrado"
 
     def test_includes_readme(self) -> None:
@@ -145,7 +145,7 @@ class TestPublishTemplate:
         result = publish_template(output_dir=tmp_path, project_root=_PROJECT_ROOT)
         with tarfile.open(result.tarball_path, "r:gz") as tar:
             names = tar.getnames()
-        descriptors = [n for n in names if n.startswith("profile-descriptors/") and n.endswith(".yaml")]
+        descriptors = [n for n in names if n.startswith("scaffold/profiles/") and n.endswith(".yaml")]
         assert len(descriptors) >= 1, "Nenhum profile descriptor no tarball"
 
     def test_manifest_version_correct(self, tmp_path: Path) -> None:

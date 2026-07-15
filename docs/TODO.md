@@ -1,8 +1,14 @@
 # ✅ TODO - Enterprise Default Project Template
 
-**Last Updated**: 2026-07-02 — Agent objetivo-init + ritual de encerramento de sessão ✅
+**Last Updated**: 2026-07-15 — Pendências do TODO concluídas (suite verde, objetivo-init integrado, specify init validado) ✅
 **Project**: Enterprise Default Project Template
 **Status**: 🟢 Active Development
+
+---
+
+## 🎯 Próxima Sessão (2026-07-15+)
+
+- [ ] **scaffold adopt para projetos legados** — decisão pendente do usuário
 
 ---
 
@@ -14,13 +20,21 @@
   - ✅ Fonte canônica alinhada com `docs/templates/objetivo-init-minimal.yaml`
   - ✅ Execução guiada do agent realizada com geração de mapa de respostas e YAML preenchido
 
-- [ ] **Integrar `objetivo-init` ao fluxo oficial do scaffold**
-  - Definir como o agent será invocado no workflow padrão
-  - Persistir o YAML preenchido em local versionado quando fizer sentido
+- [x] ~~**Integrar `objetivo-init` ao fluxo oficial do scaffold**~~: ✅ CONCLUÍDO (2026-07-15)
+  - ✅ Seções "Persistência" e "Integração com o Fluxo Oficial do Scaffold" adicionadas ao agent (ambas as cópias)
+  - ✅ YAML preenchido persiste em `objetivo-init.yaml` na raiz do projeto alvo (mesmo destino do wizard CLI)
+  - ✅ README documenta o agent como alternativa ao wizard
 
-- [ ] **Consolidar referências antigas do template `objetivo-init-minimal`**
-  - Revisar referências ainda apontando para cópias fora de `docs/templates/`
-  - Decidir o destino final do arquivo legado na raiz do repositório
+- [x] ~~**Consolidar referências antigas do template `objetivo-init-minimal`**~~: ✅ CONCLUÍDO (2026-07-15)
+  - ✅ Artefatos legados da raiz removidos (`objetivo-init.yaml`, `objetivo-init-minimal.yaml` — eram saídas dos testes POC escrevendo em `Path.cwd()`)
+  - ✅ Testes POC corrigidos para escrever em `tmp_path`
+  - ✅ Referências restantes apontam para o canônico `docs/templates/objetivo-init-minimal.yaml`
+
+- [x] ~~**Rodar suite de testes completa**~~: ✅ CONCLUÍDO (2026-07-15) — 1684 passed, 0 failed (18 falhas corrigidas: paths pós-refactor, mensagens pt-BR dos hooks, snapshots copilot, perfis desatualizados)
+
+- [x] ~~**Validar `specify init` no projeto novo**~~: ✅ CONCLUÍDO (2026-07-15)
+  - ✅ `tests/test_run_speckit_init.py` criado (7 testes: claude, copilot, both, none + erros)
+  - ✅ Validação real do CLI `specify init --integration claude|copilot` OK
 
 ---
 
