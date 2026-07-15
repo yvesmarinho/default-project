@@ -347,6 +347,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     mode_group.add_argument(
         "--log-dir",
+        "--logdir",
         metavar="PATH",
         dest="log_dir",
         help="diretório para salvar logs (default: <projeto>/logs/)",
