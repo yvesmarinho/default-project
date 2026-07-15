@@ -69,3 +69,29 @@ Usuário escolheu a Opção A (comando automático) em vez da Opção B (guia ma
 - `touch` prévio do state garante modo in-place quando o nome do diretório não é kebab-case (bug pego pelos testes: `project_path` resolveria para subdiretório).
 - Detecção conservadora: default `programming`/`other`; overrides via `--name/--domain/--language/--ai`.
 
+---
+
+## BUG-26: `adopt --dry-run` executava de verdade + alias `--logdir`
+
+**Horário**: 15/07/2026 15:30–16:30 · **Status**: ✅ Concluído
+**Branch**: `feature/067-scaffold-adopt` (PR #27)
+
+### Objetivo
+
+Corrigir dois problemas relatados pelo usuário ao testar o adopt em projeto real.
+
+### Contexto
+
+Usuário executou `scaffold adopt --dry-run --logdir /var/log/scaffold` em `~/VyaJobs/enterprise-observability`: (1) `--logdir` era rejeitado (flag registrada era `--log-dir`); (2) o `--dry-run` foi ignorado e a adoção executou de verdade, criando `.scaffold-state.yaml` e aplicando o template.
+
+### Passos e Resultado
+
+1. **Alias `--logdir`** (`2158a3e`): aceito junto com `--log-dir`, mesmo dest.
+2. **BUG-26** (`c570c50`): `flow_adopt` agora trata `dry_run` internamente — exibe plano de detecção e retorna sem escrever nada (o dispatch avalia `--adopt` antes de `--dry-run`, então a flag era silenciosamente ignorada). 2 testes novos garantem que o diretório fica intocado; suite **1702 passed**.
+3. Relatório: `docs/bugs/BUG-26-adopt-dry-run-executa-de-verdade.md` (`acbd771`), com passos de recuperação via git para o projeto afetado.
+
+### Decisões
+
+- Dry-run do adopt mostra plano de alto nível (state + template idempotente); preview arquivo-a-arquivo fica como melhoria futura.
+- Limpeza do `enterprise-observability` deixada ao usuário (git restore/clean revisado) por ser destrutiva.
+
