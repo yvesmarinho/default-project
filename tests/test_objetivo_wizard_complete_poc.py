@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from lib.objetivo_wizard import ObjetivoWizard, WizardAnswers
 
 
-def test_complete_objective_all_variables():
+def test_complete_objective_all_variables(tmp_path):
     """
     POC: Teste com TODAS as 10 questões respondidas.
     Cobre todos os placeholders do template.
@@ -127,7 +127,7 @@ def test_complete_objective_all_variables():
     )
 
     # Executar wizard em modo não-interativo
-    output_path = Path.cwd() / "objetivo-init.yaml"
+    output_path = tmp_path / "objetivo-init.yaml"
     exit_code = wizard.run_non_interactive(answers, output_path=output_path)
 
     # Validar que execução foi bem-sucedida
@@ -185,7 +185,7 @@ def test_complete_objective_all_variables():
     return 0  # Success
 
 
-def test_minimal_objective_required_only():
+def test_minimal_objective_required_only(tmp_path):
     """
     POC: Teste com APENAS questões obrigatórias (P0).
     Valida comportamento mínimo do wizard.
@@ -208,7 +208,7 @@ def test_minimal_objective_required_only():
         }
     )
 
-    output_path = Path.cwd() / "objetivo-init-minimal.yaml"
+    output_path = tmp_path / "objetivo-init-minimal.yaml"
     exit_code = wizard.run_non_interactive(answers, output_path=output_path)
     assert exit_code == 0, f"Wizard retornou erro: exit_code={exit_code}"
     assert output_path.exists()
@@ -230,12 +230,15 @@ def test_minimal_objective_required_only():
 if __name__ == "__main__":
     """Execução standalone para gerar POCs rapidamente."""
     import sys
+    import tempfile
+
+    _standalone_dir = Path(tempfile.mkdtemp(prefix="objetivo-poc-"))
 
     print("\n🚀 Gerando POCs de objetivo.yaml...\n")
 
     # POC 1: Completo com todas as variáveis
     try:
-        test_complete_objective_all_variables()
+        test_complete_objective_all_variables(_standalone_dir)
         print(f"✅ POC Completo gerado")
     except Exception as e:
         print(f"❌ Erro no POC Completo: {e}")
@@ -245,7 +248,7 @@ if __name__ == "__main__":
 
     # POC 2: Minimal apenas P0
     try:
-        test_minimal_objective_required_only()
+        test_minimal_objective_required_only(_standalone_dir)
         print(f"✅ POC Minimal gerado")
     except Exception as e:
         print(f"❌ Erro no POC Minimal: {e}")

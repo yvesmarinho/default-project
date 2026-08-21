@@ -281,11 +281,11 @@ class TestDataPipelineAirflow:
     def test_requirements_has_apache_airflow(self, proj):
         proj.assert_file_contains("airflow/requirements-airflow.txt", "apache-airflow")
 
-    def test_requirements_has_pinned_version(self, proj):
-        """Verifica que a versão está pinada (==), não apenas range."""
+    def test_requirements_has_minimum_secure_version(self, proj):
+        """Verifica versão mínima segura (>=) — lock gerado via pip-compile."""
         proj.assert_file_contains(
             "airflow/requirements-airflow.txt",
-            "apache-airflow==",
+            "apache-airflow>=",
             regex=False,
         )
 

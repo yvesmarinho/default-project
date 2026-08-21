@@ -3,7 +3,7 @@
 """
 Pre-commit hook: segurança (IPs, credenciais, secrets) + validação de memória.
 
-Modificado em: 14/07/2026 11:56
+Modificado em: 15/07/2026 10:00
 
 MODO MANUAL (padrão): o hook NÃO executa as validações automaticamente a cada
 commit — evita consumo excessivo de tokens/saída quando há muitos commits/PRs.
@@ -88,6 +88,7 @@ SENSITIVE_NAME_PATTERNS = [
     re.compile(r"\.cert$"),
     re.compile(r"\.vault_pass"),
     re.compile(r"kubeconfig"),
+    re.compile(r"credentials"),
 ]
 
 # Padrões de arquivo de teste em .memory/
@@ -215,6 +216,11 @@ def check_memory_test_files(staged: list[str]) -> list[str]:
     if blocked:
         msgs = ["❌ BLOQUEADO: Arquivos de teste em .memory/ não devem ser commitados:"]
         msgs += [f"  - {f}" for f in blocked]
+        msgs += [
+            "",
+            "💡 make memory-cleanup (dry-run) ou make memory-cleanup-force",
+            "💡 Em testes, use fixtures do conftest.py (tmp_path) em vez de commitar arquivos de teste",
+        ]
         return msgs
     return []
 

@@ -339,6 +339,21 @@ answers:
 - Campo Z ainda precisa de decisão
 ```
 
+### 4. Persistência
+
+Após aprovação do usuário, grave o YAML preenchido em **`objetivo-init.yaml` na raiz do projeto alvo** — o mesmo destino padrão de `scaffold.py objetivo-init` — e versione o arquivo no Git. Nunca deixe o resultado apenas no chat.
+
+## Integração com o Fluxo Oficial do Scaffold
+
+Este agent é a etapa de **briefing** que antecede o pipeline `objetivo.yaml`:
+
+1. `@objetivo-init` (entrevista guiada) **ou** `scaffold.py objetivo-init` (wizard CLI) → gera `objetivo-init.yaml`;
+2. `scaffold.py objetivo-validate` → valida o arquivo;
+3. `scaffold.py objetivo-generate` → gera `objetivo-spec.yaml` (profiles, features, personas);
+4. Segue o fluxo padrão do projeto (spec → plan → tasks → implementação).
+
+O agent e o wizard CLI são intercambiáveis: use o agent quando quiser sugestões contextuais em cada pergunta; use o wizard para preenchimento rápido/scriptável (`--from-file`, `--template-only`).
+
 ## Critérios de Qualidade
 
 Uma boa execução deste agent:
