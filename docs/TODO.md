@@ -8,7 +8,11 @@
 
 ## 🎯 Próxima Sessão (2026-07-15+)
 
-- [ ] **scaffold adopt para projetos legados** — decisão pendente do usuário
+- [x] ~~**scaffold adopt para projetos legados**~~: ✅ CONCLUÍDO (2026-07-15) — Opção A escolhida pelo usuário
+  - ✅ `scripts/lib/flows/adopt.py`: detecção de linguagem/domínio + state + delegação ao pipeline do upgrade
+  - ✅ CLI: `scaffold.py adopt [--target-dir PATH]` (subcomando + flag `--adopt`)
+  - ✅ `tests/test_flow_adopt.py` (16 testes) + validação manual end-to-end
+  - ✅ README: seção "Option 3: Adopt a Legacy Project"
 
 ---
 
